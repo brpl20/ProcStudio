@@ -1,7 +1,8 @@
+@import "bootstrap";
 /*
- *= require_tree .
  *= require dataTables/jquery.dataTables
- *= require_self
+ *= require metismenu/dist/metisMenu
+ *= require nprogress/nprogress
+ *= require malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar
+ *= require custom
  */
-
- @import "bootstrap";

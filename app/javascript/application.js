@@ -4,6 +4,8 @@ import "./jquery"
 import "./jquery_ujs"
 import './dataTables/jquery.dataTables'
 
+import "./custom"
+
 $(document).ready(function () {
   $('#example').DataTable({
     order: [[0, "desc"]],

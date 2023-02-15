@@ -1,0 +1,146 @@
+<div class="col-md-3 left_col menu_fixed">
+  <div class="left_col scroll-view">
+
+    <div class="navbar nav_title logo" style="border: 0;">
+      <%= link_to (image_tag('logo.svg', id:'logo-bola')), root_path %>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+
+      <div class="menu_section">
+        <ul class="nav side-menu">
+          <li>
+            <%#= link_to pages_dashboard_path do  %>
+              <i class="fa fa-home"></i> Início
+            <%# end %>
+          </li>
+        </ul>
+      </div>
+
+      <div class="menu_section">
+
+        <h3>Ações</h3>
+        <ul class="nav side-menu">
+
+          <li>
+            <a data-toggle='modal' data-target='#modal-client-type' href='#'>
+              <i class="fa fa-male"></i> Novo Cliente
+              <span class="fa fa-plus"></span>
+            </a>
+
+          </li>
+
+          <li>
+            <%#= link_to new_work_path do %>
+              <i class="fa fa-gavel"></i> Novo Trabalho
+              <span class="fa fa-plus"></span>
+            <%# end %>
+          </li>
+
+        </ul>
+      </div>
+
+      <div class="menu_section">
+
+        <h3>Cadastros</h3>
+        <ul class="nav side-menu">
+
+          <li>
+            <%#= link_to clients_path do %>
+              <i class="fa fa-users"></i> Clientes
+              <span class="fa fa-chevron-right"></span>
+            <%# end %>
+          </li>
+
+          <li>
+            <%#= link_to works_path do %>
+              <i class="fa fa-gavel"></i> Trabalhos
+              <span class="fa fa-chevron-right"></span>
+            <%# end %>
+          </li>
+
+          <li>
+            <%#= link_to jobs_path do %>
+              <i class="fa fa-list-ul"></i> Tarefas
+              <span class="fa fa-chevron-right"></span>
+            <%# end %>
+          </li>
+
+          <li>
+            <%#= link_to profile_index_path do %>
+              <i class="fa fa-group"></i> Usuários
+              <span class="fa fa-chevron-right"></span>
+            <%# end %>
+          </li>
+
+          <li><a><i class="fa fa-university"></i> Escritório <span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+              <li>
+                <%#= link_to offices_path do %>
+                  Escritórios
+                <%# end %>
+              </li>
+
+              <li>
+                <%#= link_to office_types_path do %>
+                  Tipos de Escritório
+                <%# end %>
+              </li>
+
+            </ul>
+
+          </li>
+
+        </ul>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<div class="top_nav clearfix">
+    <div class="nav_menu">
+        <div class="nav toggle">
+          <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+        </div>
+        <nav class="nav navbar-nav">
+        <ul class=" navbar-right">
+          <li class="nav-item dropdown open text-right" style="padding-left: 15px;">
+            <a href="javascript:;" class="user-profile dropdown-toggle" aria-haspopup="true" id="navbarDropdown" data-toggle="dropdown" aria-expanded="false">
+              <% if admin_signed_in? %>
+                <b><%#= current_admin.admin_profile.nil? ? ' Atualize seu cadastro ' : current_admin.user_profile.full_name %>comentado</b>
+                <% else %>
+                 <div> usuario sem log </div>
+              <% end %>
+            </a>
+
+            <div class="dropdown-menu dropdown-usermenu pull-right" aria-labelledby="navbarDropdown">
+
+              <% if admin_signed_in? %>
+                <%#= link_to "Perfil", edit_profile_path(current_admin.id), class:"dropdown-item" %> comentado
+              <% end %>
+
+              <%= link_to destroy_admin_session_path, method: :delete, class:"dropdown-item" do %>
+                <i class="fa fa-sign-out pull-right"></i> Sair
+              <% end %>
+
+            </div>
+
+            <div class="nav-item">
+              <% if admin_signed_in? %>
+                <span><b>Atribuições:</b></span>
+                <%#= retrieve_value_from_array(options_for_user_role, current_admin.user_profile.role) if current_admin.user_profile %>
+              <% end %>
+            </div>
+          </li>
+
+        </ul>
+      </nav>
+    </div>
+  </div>
+
+<%#= render partial: "clients/modal/client_type" %>
+<%#= render partial: 'shared/modal' %>
