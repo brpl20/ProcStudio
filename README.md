@@ -1,7 +1,7 @@
-Skeleton rails 7
+ProcStudio v2
 
 ## Informações do projeto
-Este projeto contém autenticação com Devise e um exemplo de tabela na página home utilizando Datatables.
+Este projeto contém a migração do procstudio para gems mais atualizadas.
 
 ## Pré requisitos
 
@@ -15,14 +15,14 @@ Este projeto contém autenticação com Devise e um exemplo de tabela na página
  - Configure o arquivo do banco de dados
    ```config/database.yml```
  - Execute em sequência no terminal os comandos:
-  ``` 
+  ```
       bundle
       rake db:create db:migrate
       rails s
   ```
 
   Então acesse via navegador:
-  ``` 
+  ```
       http://localhost:3000
   ```
 

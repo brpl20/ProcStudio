@@ -6,7 +6,7 @@ default: &default
 
 development:
   <<: *default
-  database: skeleton_development
+  database: prc4_v2_development
   username: rails_dev
   password: postgres
   host: localhost
@@ -14,7 +14,7 @@ development:
 
 test:
   <<: *default
-  database: skeleton_test
+  database: prc4_v2_test
   host: localhost
   port: 5432
   username: rails_dev
@@ -22,6 +22,6 @@ test:
 
 production:
   <<: *default
-  database: skeleton_production
+  database: prc4_v2_production
   username: prc4
   password: <%= ENV['MYAPP_DATABASE_PASSWORD'] %>
