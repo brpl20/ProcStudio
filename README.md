@@ -1,24 +1,22 @@
-# README
+# Projeto skeleton rails 7
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
 
-Things you may want to cover:
+##Pré requisitos
 
-* Ruby version
+ > Ruby 3.0.0
 
-* System dependencies
+ > Rails 7.0.4.2
 
-* Configuration
+##Instalação
 
-* Database creation
+ - Faça um clone do Projeto
+ - Configure o arquivo do banco de dados
+   ``config/database.yml```
+ - Execute em sequência no terminal os comandos:
+  ``` bundle
+      rake db:create db:migrate
+      rails s
+  ```
 
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+  Então acesse via navegador
+    ```localhost:3000```

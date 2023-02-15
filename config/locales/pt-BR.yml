@@ -1,5 +1,7 @@
 'pt-BR':
   activerecord:
     attributes:
+      password: Senha
+    models:
       admin:
-        email: E-mail
+        password: Senha
