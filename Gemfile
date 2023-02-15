@@ -4,6 +4,7 @@ git_source(:github) { |repo| 'https://github.com/#{repo}.git' }
 ruby '3.0.0'
 
 gem 'bootsnap', require: false
+gem 'bootstrap', '~> 5.2.2'
 gem 'devise'
 gem 'font-awesome-rails'
 gem 'i18n'
@@ -14,6 +15,7 @@ gem 'jquery-rails'
 gem 'pg'
 gem 'puma', '~> 5.0'
 gem 'rails', '~> 7.0.4', '>= 7.0.4.2'
+gem 'sass-rails', '~> 6.0'
 gem 'sprockets-rails'
 gem 'stimulus-rails'
 gem 'turbo-rails'
