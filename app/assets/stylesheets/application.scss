@@ -1,3 +1,9 @@
 @import "bootstrap";
 /*= require dataTables/jquery.dataTables */
 @import "font-awesome";
+
+// ajuste no menu sandwich
+#sidebarToggleTop{
+  color: #2A3F54;
+  margin-left: 5px;
+}
