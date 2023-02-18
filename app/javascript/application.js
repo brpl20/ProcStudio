@@ -5,6 +5,7 @@ import "./jquery_ujs"
 import './dataTables/jquery.dataTables'
 
 $(document).ready(function () {
+
   $('#example').DataTable({
     order: [[0, "desc"]],
     lengthMenu: [10, 25, 50],
