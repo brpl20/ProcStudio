@@ -1,146 +1,173 @@
-<div class="col-md-3 left_col menu_fixed">
-  <div class="left_col scroll-view">
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
-    <div class="navbar nav_title logo" style="border: 0;">
-      <%= link_to (image_tag('logo.svg', id:'logo-bola')), root_path %>
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+        <div class="sidebar-brand-text mx-3">Procstudio</div>
+    </a>
+
+    <hr class="sidebar-divider my-0">
+
+    <li class="nav-item">
+        <a class="nav-link" href="index.html">
+            <i class="fa fa-home"></i>
+            <span>Página inicial</span>
+        </a>
+    </li>
+
+    <hr class="sidebar-divider">
+
+    <div class="sidebar-heading">
+        AÇÕES RÁPIDAS
     </div>
 
-    <div class="clearfix"></div>
+    <li class="nav-item">
+        <a class="nav-link" href="#" >
+            <i class="fa fa-user"></i>
+            <span>Novo Cliente</span>
+        </a>
+    </li>
 
-    <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+    <li class="nav-item">
+        <a class="nav-link" href="#" >
+            <i class="fa fa-gavel"></i>
+            <span>Novo Trabalho</span>
+        </a>
+    </li>
 
-      <div class="menu_section">
-        <ul class="nav side-menu">
-          <li>
-            <%#= link_to pages_dashboard_path do  %>
-              <i class="fa fa-home"></i> Início
-            <%# end %>
-          </li>
-        </ul>
-      </div>
+    <hr class="sidebar-divider">
 
-      <div class="menu_section">
-
-        <h3>Ações</h3>
-        <ul class="nav side-menu">
-
-          <li>
-            <a data-toggle='modal' data-target='#modal-client-type' href='#'>
-              <i class="fa fa-male"></i> Novo Cliente
-              <span class="fa fa-plus"></span>
-            </a>
-
-          </li>
-
-          <li>
-            <%#= link_to new_work_path do %>
-              <i class="fa fa-gavel"></i> Novo Trabalho
-              <span class="fa fa-plus"></span>
-            <%# end %>
-          </li>
-
-        </ul>
-      </div>
-
-      <div class="menu_section">
-
-        <h3>Cadastros</h3>
-        <ul class="nav side-menu">
-
-          <li>
-            <%#= link_to clients_path do %>
-              <i class="fa fa-users"></i> Clientes
-              <span class="fa fa-chevron-right"></span>
-            <%# end %>
-          </li>
-
-          <li>
-            <%#= link_to works_path do %>
-              <i class="fa fa-gavel"></i> Trabalhos
-              <span class="fa fa-chevron-right"></span>
-            <%# end %>
-          </li>
-
-          <li>
-            <%#= link_to jobs_path do %>
-              <i class="fa fa-list-ul"></i> Tarefas
-              <span class="fa fa-chevron-right"></span>
-            <%# end %>
-          </li>
-
-          <li>
-            <%#= link_to profile_index_path do %>
-              <i class="fa fa-group"></i> Usuários
-              <span class="fa fa-chevron-right"></span>
-            <%# end %>
-          </li>
-
-          <li><a><i class="fa fa-university"></i> Escritório <span class="fa fa-chevron-down"></span></a>
-            <ul class="nav child_menu">
-              <li>
-                <%#= link_to offices_path do %>
-                  Escritórios
-                <%# end %>
-              </li>
-
-              <li>
-                <%#= link_to office_types_path do %>
-                  Tipos de Escritório
-                <%# end %>
-              </li>
-
-            </ul>
-
-          </li>
-
-        </ul>
-      </div>
-
+    <div class="sidebar-heading">
+        GERENCIAMENTO
     </div>
 
-  </div>
-</div>
+    <li class="nav-item active">
+        <a
+          class="nav-link"
+          href="#"
+          data-toggle="collapse"
+          data-target="#collapseClient"
+          aria-expanded="false"
+          aria-controls="collapseClient">
+            <i class="fa fa-users"></i>
+            <span>Clientes</span>
+        </a>
 
-<div class="top_nav clearfix">
-    <div class="nav_menu">
-        <div class="nav toggle">
-          <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+        <div
+          id="collapseClient"
+          class="collapse"
+          aria-labelledby="headingClient"
+          data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Ações:</h6>
+                <a class="collapse-item" href="login.html">Lista de clientes</a>
+                <a class="collapse-item" href="login.html">Novo cliente</a>
+            </div>
         </div>
-        <nav class="nav navbar-nav">
-        <ul class=" navbar-right">
-          <li class="nav-item dropdown open text-right" style="padding-left: 15px;">
-            <a href="javascript:;" class="user-profile dropdown-toggle" aria-haspopup="true" id="navbarDropdown" data-toggle="dropdown" aria-expanded="false">
-              <% if admin_signed_in? %>
-                <b><%#= current_admin.admin_profile.nil? ? ' Atualize seu cadastro ' : current_admin.user_profile.full_name %>comentado</b>
-                <% else %>
-                 <div> usuario sem log </div>
-              <% end %>
-            </a>
+    </li>
 
-            <div class="dropdown-menu dropdown-usermenu pull-right" aria-labelledby="navbarDropdown">
+    <li class="nav-item active">
+        <a
+          class="nav-link"
+          href="#"
+          data-toggle="collapse"
+          data-target="#collapseWork"
+          aria-expanded="false"
+          aria-controls="collapseWork">
+            <i class="fa fa-gavel"></i>
+            <span>Trabalhos</span>
+        </a>
 
-              <% if admin_signed_in? %>
-                <%#= link_to "Perfil", edit_profile_path(current_admin.id), class:"dropdown-item" %> comentado
-              <% end %>
-
-              <%= link_to destroy_admin_session_path, method: :delete, class:"dropdown-item" do %>
-                <i class="fa fa-sign-out pull-right"></i> Sair
-              <% end %>
+        <div
+          id="collapseWork"
+          class="collapse"
+          aria-labelledby="headingWork"
+          data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Ações:</h6>
+                <a class="collapse-item" href="login.html">Lista de Trabalhos</a>
+                <a class="collapse-item" href="login.html">Novo Trabalho</a>
 
             </div>
+        </div>
+    </li>
 
-            <div class="nav-item">
-              <% if admin_signed_in? %>
-                <span><b>Atribuições:</b></span>
-                <%#= retrieve_value_from_array(options_for_user_role, current_admin.user_profile.role) if current_admin.user_profile %>
-              <% end %>
+    <li class="nav-item active">
+        <a
+          class="nav-link"
+          href="#"
+          data-toggle="collapse"
+          data-target="#collapseTask"
+          aria-expanded="false"
+          aria-controls="collapseTask">
+            <i class="fa fa-list"></i>
+            <span>Tarefas</span>
+        </a>
+
+        <div
+          id="collapseTask"
+          class="collapse"
+          aria-labelledby="headingTask"
+          data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Ações:</h6>
+                <a class="collapse-item" href="login.html">Lista de Tarefas</a>
+                <a class="collapse-item" href="login.html">Nova Tarefa</a>
+
             </div>
-          </li>
+        </div>
+    </li>
 
-        </ul>
-      </nav>
-    </div>
-  </div>
+    <li class="nav-item active">
+        <a
+          class="nav-link"
+          href="#"
+          data-toggle="collapse"
+          data-target="#collapseOffice"
+          aria-expanded="false"
+          aria-controls="collapseOffice">
+            <i class="fa fa-bank"></i>
+            <span>Escritórios</span>
+        </a>
 
-<%#= render partial: "clients/modal/client_type" %>
-<%#= render partial: 'shared/modal' %>
+        <div
+          id="collapseOffice"
+          class="collapse"
+          aria-labelledby="headingOffice"
+          data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Ações:</h6>
+                <a class="collapse-item" href="login.html">Lista de Escritórios</a>
+                <a class="collapse-item" href="login.html">Novo Escritório</a>
+
+            </div>
+        </div>
+    </li>
+
+    <li class="nav-item active">
+        <a
+          class="nav-link"
+          href="#"
+          data-toggle="collapse"
+          data-target="#collapseUser"
+          aria-expanded="false"
+          aria-controls="collapseUser">
+            <i class="fa fa-users"></i>
+            <span>Usuários</span>
+        </a>
+
+        <div
+          id="collapseUser"
+          class="collapse"
+          aria-labelledby="headingUser"
+          data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Ações:</h6>
+                <a class="collapse-item" href="login.html">Lista de Usuários</a>
+                <a class="collapse-item" href="login.html">Novo Usuário</a>
+
+            </div>
+        </div>
+    </li>
+
+    <hr class="sidebar-divider d-none d-md-block">
+
+</ul>

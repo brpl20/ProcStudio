@@ -7,6 +7,7 @@ gem 'bootsnap', require: false
 gem 'bootstrap', '~> 5.2.2'
 gem 'devise'
 gem 'font-awesome-rails'
+gem 'gentelella-rails', '~> 0.1.10'
 gem 'i18n'
 gem 'importmap-rails'
 gem 'jbuilder'
