@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_14_211641) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_20_181409) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -26,4 +26,24 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_14_211641) do
     t.index ["reset_password_token"], name: "index_admins_on_reset_password_token", unique: true
   end
 
+  create_table "profile_admins", force: :cascade do |t|
+    t.integer "role"
+    t.string "name"
+    t.string "lastname"
+    t.integer "gender"
+    t.string "oab"
+    t.string "rg"
+    t.string "cpf"
+    t.string "nationality"
+    t.integer "civil_status"
+    t.date "birth"
+    t.string "mother_name"
+    t.integer "status"
+    t.bigint "admin_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_id"], name: "index_profile_admins_on_admin_id"
+  end
+
+  add_foreign_key "profile_admins", "admins"
 end

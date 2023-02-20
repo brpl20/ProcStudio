@@ -7,10 +7,9 @@
     <hr class="sidebar-divider my-0">
 
     <li class="nav-item">
-        <a class="nav-link" href="index.html">
-            <i class="fa fa-home"></i>
-            <span>Página inicial</span>
-        </a>
+      <%= link_to home_index_path, class:'nav-link' do %>
+        <i class="fa fa-home"></i> Página inicial
+      <% end %>
     </li>
 
     <hr class="sidebar-divider">
@@ -161,8 +160,18 @@
           data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Ações:</h6>
+
+                <% if current_admin.profile_admin.nil? %>
+                  <p class="collapse-item" >Atualize seu dados</p>
+
+                <% else %>
+                  <%= link_to 'Editar meu usuário', edit_profile_admin_path(current_admin.profile_admin), class:'collapse-item' %>
+
+                <% end %>
+
                 <a class="collapse-item" href="login.html">Lista de Usuários</a>
-                <a class="collapse-item" href="login.html">Novo Usuário</a>
+
+                <%= link_to 'Novo usuário', new_profile_admin_path, class: 'collapse-item' %>
 
             </div>
         </div>

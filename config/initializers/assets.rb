@@ -15,9 +15,11 @@ Rails.application.config.assets.precompile += %w[
   bootstrap.bundle.min.js
   jquery.easing.min.js
   sb-admin-2.js
+  backoffice.js
 ]
 
 Rails.application.config.assets.precompile += %w[
+  backoffice.css
   fontawesome.all.min.css
   sb-admin-2.css
   devise_custom.css
