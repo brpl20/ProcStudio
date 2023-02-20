@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>ProcStudio | Área Administrativa</title>
+
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "fontawesome.all.min" %>
+    <%= stylesheet_link_tag "sb-admin-2.min" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+
+    <%= javascript_include_tag "jquery.min" %>
+    <%= javascript_include_tag "bootstrap.bundle.min" %>
+    <%= javascript_include_tag "jquery.easing.min" %>
+    <%= javascript_include_tag "sb-admin-2" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body id="page-top" data-new-gr-c-s-check-loaded="14.1097.0" data-gr-ext-installed="">
+
+    <div id="wrapper">
+
+      <%= render partial: 'layouts/shared/side_menu' %>
+
+      <div id="content-wrapper" class="d-flex flex-column">
+        <div id="content">
+          <%= render partial: 'layouts/shared/top_menu' %>
+
+          <div class="container-fluid">
+            <%= yield %>
+          </div>
+
+        </div>
+
+        <%= render partial: 'layouts/shared/footer' %>
+      </div>
+    </div>
+
+  </body>
+
+</html>

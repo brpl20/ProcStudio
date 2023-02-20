@@ -2,6 +2,13 @@
 /*= require dataTables/jquery.dataTables */
 @import "font-awesome";
 
+:root{
+  --default_blue: #2A3F54;
+  --default_white: #FFFFFF;
+}
+
+
+
 // ajuste no menu sandwich
 #sidebarToggleTop{
   color: #2A3F54;

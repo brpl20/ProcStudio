@@ -20,4 +20,5 @@ Rails.application.config.assets.precompile += %w[
 Rails.application.config.assets.precompile += %w[
   fontawesome.all.min.css
   sb-admin-2.css
+  devise_custom.css
 ]
