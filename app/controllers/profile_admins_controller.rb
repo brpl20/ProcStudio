@@ -17,7 +17,6 @@ class ProfileAdminsController < ApplicationController
 
   private
 
-  def retrieve_admin
-    
-  end
+  def retrieve_admin; end
+  def params_profile; end
 end

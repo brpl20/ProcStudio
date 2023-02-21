@@ -1,6 +1,29 @@
 'pt-BR':
   activerecord:
+    models:
+      profile_admin: Perfil de usuário
+      admin: Usuário
     attributes:
+      profile_admin:
+        role: Papel
+        name: Nome
+        lastname: Sobrenome
+        gender: Sexo
+        oab: OAB
+        rg: RG
+        cpf: CPF
+        nationality: Nacionalidade
+        civil_status: Estado civíl
+        mother_name: Nome da mãe
+        birth: Data de nascimento
+        status: Situação
+        email: E-mail
+        password: Senha
+        password_confirmation: Confirmação de senha
+      admin:
+        email: E-mail
+        password: Senha
+        password_confirmation: Confirmação de senha
       client:
         address: Endereço
         birth: Data de nascimento

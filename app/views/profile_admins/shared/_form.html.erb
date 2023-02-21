@@ -1,0 +1,52 @@
+<%= form_with model: @profile_admin, local: true do |f| %>
+
+  <%= f.label :role %>
+  <%= f.collection_select :role, options_for_role, :first, :second, {},{class: 'form-control'} %>
+
+  <%= f.label :name %>
+  <%= f.text_field :name, class: 'form-control' %>
+
+  <%= f.label :lastname %>
+  <%= f.text_field :lastname, class: 'form-control' %>
+
+  <%= f.label :gender %>
+  <%= f.collection_select :gender, options_for_gender, :first, :second, {},{class: 'form-control'} %>
+
+  <%= f.label :oab %>
+  <%= f.text_field :oab, class: 'form-control' %>
+
+  <%= f.label :rg %>
+  <%= f.text_field :rg, class: 'form-control' %>
+
+  <%= f.label :cpf %>
+  <%= f.text_field :cpf, class: 'form-control' %>
+
+  <%= f.label :nationality %>
+  <%= f.text_field :nationality, class: 'form-control' %>
+
+  <%= f.label :civil_status %>
+  <%= f.text_field :civil_status, class: 'form-control' %>
+
+  <%= f.label :birth %>
+  <%= f.date_field :birth, class: 'form-control' %>
+
+  <%= f.label :mother_name %>
+  <%= f.text_field :mother_name, class: 'form-control' %>
+
+  <%= f.label :status %>
+  <%= f.collection_select :status, options_for_status, :first, :second, {},{class: 'form-control'} %>
+
+  <%= f.fields_for :admin do |a|%>
+
+    <label for="email">E-mail</label>
+    <%= a.text_field :email, id: 'email', class: 'form-control' %>
+
+    <label for="password">Senha</label>
+    <%= a.password_field :password, id: 'password', class: 'form-control' %>
+
+    <label for="password_confirmation">Confirmação de senha</label>
+    <%= a.password_field :password_confirmation, id: 'password_confirmation', class: 'form-control' %>
+
+  <% end %>
+
+<% end %>
