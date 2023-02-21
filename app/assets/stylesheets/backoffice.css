@@ -2,3 +2,6 @@
   font-size: .85rem;
   display: inline;
 }
+.btn-circle{
+  border-radius: 50%;
+}

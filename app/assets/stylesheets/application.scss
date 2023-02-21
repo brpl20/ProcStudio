@@ -8,9 +8,35 @@
   --button-success: #28a745;
   --green-wizard: #1ABB9C;
 }
-
 // ajuste no menu sandwich
 #sidebarToggleTop{
-  color: #2A3F54;
+  color: var(--default-blue);
   margin-left: 5px;
+}
+// ajustes em datatables
+#example_length{
+  text-align: right;
+}
+#example_length,
+#example_filter{
+  width: 50%;
+  float: right;
+}
+.dataTables_info{
+  margin-bottom: 10px;
+}
+.paginate_button:hover{
+  background-color: rgba(42, 63, 83, .6);
+  border: solid 1px rgba(42, 63, 83, .6);
+  text-decoration: none;
+  color: white;
+}
+.paginate_button{
+  border: solid 1px;
+  padding: 5px 13px;
+  text-decoration: none;
+}
+#example_previous,
+#example_next{
+  border: none;
 }
