@@ -15,7 +15,7 @@ module Prc4_v2
     config.active_record.default_timezone = :local
 
     config.autoload_paths << "#{config.root}/app/models/filters"
-    config.autoload_paths << "#{config.root}/app/services"
+    config.autoload_paths << "#{config.root}/app/models/services"
 
     # Configuration for the application, engines, and railties goes here.
     #
