@@ -1,5 +1,5 @@
 ---
-name: Nova funcionalidade
+name: Ticket padrão
 about: Novas funcionalidades para o sistema
 title: ''
 labels: ''
