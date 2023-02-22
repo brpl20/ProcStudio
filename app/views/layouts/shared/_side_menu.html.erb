@@ -161,7 +161,7 @@
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Ações:</h6>
 
-                <% if current_admin.profile_admin.nil? %>
+                <% if current_admin&.profile_admin&.nil? %>
                   <p class="collapse-item" >Atualize seu dados</p>
 
                 <% else %>

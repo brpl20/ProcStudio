@@ -10,9 +10,30 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_20_181409) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_22_004414) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "addresses", force: :cascade do |t|
+    t.string "description"
+    t.string "zip_code"
+    t.string "street"
+    t.integer "number"
+    t.string "neighborhood"
+    t.string "city"
+    t.string "state"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "admin_addresses", force: :cascade do |t|
+    t.bigint "address_id", null: false
+    t.bigint "profile_admin_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["address_id"], name: "index_admin_addresses_on_address_id"
+    t.index ["profile_admin_id"], name: "index_admin_addresses_on_profile_admin_id"
+  end
 
   create_table "admins", force: :cascade do |t|
     t.string "email", default: "", null: false
@@ -45,5 +66,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_20_181409) do
     t.index ["admin_id"], name: "index_profile_admins_on_admin_id"
   end
 
+  add_foreign_key "admin_addresses", "addresses"
+  add_foreign_key "admin_addresses", "profile_admins"
   add_foreign_key "profile_admins", "admins"
 end

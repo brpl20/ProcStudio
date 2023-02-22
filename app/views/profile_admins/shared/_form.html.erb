@@ -1,5 +1,10 @@
 <%= form_with model: @profile_admin, local: true do |f| %>
 
+
+<fieldset>
+  <legend class="form-title">Dados Pessoais</legend>
+  <hr/>
+
   <%= f.label :role %>
   <%= f.collection_select :role, options_for_role, :first, :second, {},{class: 'form-control'} %>
 
@@ -35,6 +40,49 @@
 
   <%= f.label :status %>
   <%= f.collection_select :status, options_for_status, :first, :second, {},{class: 'form-control'} %>
+</fieldset>
+
+<fieldset>
+  <legend class="form-title">Endereço</legend>
+  <hr/>
+  <%= f.fields_for :addresses do |ad|%>
+
+    <label for="description">Descrição</label>
+    <%= ad.text_field :description, id: 'description', class: 'form-control' %>
+
+    <label for="zip_code">CEP</label>
+    <%= ad.text_field :zip_code, id: 'zip_code', class: 'form-control' %>
+
+    <label for="street">Rua</label>
+    <%= ad.text_field :street, id: 'street', class: 'form-control' %>
+
+    <label for="number">Número</label>
+    <%= ad.text_field :number, id: 'number', class: 'form-control' %>
+
+    <label for="beighborhood">Bairro</label>
+    <%= ad.text_field :neighborhood, id: 'beighborhood', class: 'form-control' %>
+
+    <label for="city">Cidade</label>
+    <%= ad.text_field :city, id: 'city', class: 'form-control' %>
+
+    <label for="state">Estado</label>
+    <%= ad.text_field :state, id: 'state', class: 'form-control' %>
+  <% end %>
+</fieldset>
+
+<fieldset>
+  <legend class="form-title">Contato</legend>
+  <hr/>
+</fieldset>
+
+<fieldset>
+  <legend class="form-title">Dados Bancarios</legend>
+  <hr/>
+</fieldset>
+
+<fieldset>
+  <legend class="form-title">Acesso ao sistema</legend>
+  <hr/>
 
   <%= f.fields_for :admin do |a|%>
 
@@ -48,5 +96,9 @@
     <%= a.password_field :password_confirmation, id: 'password_confirmation', class: 'form-control' %>
 
   <% end %>
+</fieldset>
+
+  <button type="submit" class="btn btn-success">Salvar</button>
+  <%= link_to 'Cancelar', profile_admins_path, class: 'btn btn-outline-danger'%>
 
 <% end %>

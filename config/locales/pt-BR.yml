@@ -17,9 +17,6 @@
         mother_name: Nome da mãe
         birth: Data de nascimento
         status: Situação
-        email: E-mail
-        password: Senha
-        password_confirmation: Confirmação de senha
       admin:
         email: E-mail
         password: Senha
