@@ -161,17 +161,17 @@
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Ações:</h6>
 
+                <%= link_to 'Novo usuário', new_profile_admin_path, class: 'collapse-item' %>
+
                 <% if current_admin&.profile_admin&.nil? %>
                   <p class="collapse-item" >Atualize seu dados</p>
 
                 <% else %>
+                  <%= link_to 'Lista de Usuários', profile_admins_path, class:'collapse-item' %>
+
                   <%= link_to 'Editar meu usuário', edit_profile_admin_path(current_admin.profile_admin), class:'collapse-item' %>
 
                 <% end %>
-
-                <%= link_to 'Lista de Usuários', profile_admins_path, class:'collapse-item' %>
-
-                <%= link_to 'Novo usuário', new_profile_admin_path, class: 'collapse-item' %>
 
             </div>
         </div>

@@ -9,6 +9,14 @@ class ProfileAdmin < ApplicationRecord
   has_many :admin_addresses, dependent: :destroy
   has_many :addresses, through: :admin_addresses
 
-  accepts_nested_attributes_for :admin, reject_if: :all_blank
-  accepts_nested_attributes_for :admin_addresses, :addresses, reject_if: :all_blank
+  has_many :admin_phones, dependent: :destroy
+  has_many :phones, through: :admin_phones
+
+  has_many :admin_emails, dependent: :destroy
+  has_many :emails, through: :admin_emails
+
+  has_many :admin_bank_accounts, dependent: :destroy
+  has_many :bank_accounts, through: :admin_bank_accounts
+
+  accepts_nested_attributes_for :admin, :addresses, :phones, :emails, :bank_accounts, reject_if: :all_blank
 end

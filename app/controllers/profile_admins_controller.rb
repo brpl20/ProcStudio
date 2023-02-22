@@ -12,6 +12,9 @@ class ProfileAdminsController < ApplicationController
     @profile_admin = ProfileAdmin.new
     @profile_admin.build_admin
     @profile_admin.addresses.build
+    @profile_admin.phones.build
+    @profile_admin.emails.build
+    @profile_admin.bank_accounts.build
   end
 
   def create
@@ -27,7 +30,7 @@ class ProfileAdminsController < ApplicationController
 
   def update
     if @profile_admin.update(params_profile)
-      sign_in @profile_admin.admin, bypass: true
+      bypass_sign_in @profile_admin.admin
       redirect_to profile_admins_path, notice: 'Alterado com sucesso!'
     else
       render :edit
@@ -44,7 +47,10 @@ class ProfileAdminsController < ApplicationController
     params.require(:profile_admin).permit(
       :role, :name, :lastname, :gender, :oab, :rg, :cpf, :nationality, :civil_status, :birth, :mother_name, :status,
       admin_attributes: %i[id email password password_confirmation],
-      addresses_attributes: %i[id description zip_code street number neighborhood city state _destroy]
+      addresses_attributes: %i[id description zip_code street number neighborhood city state _destroy],
+      phones_attributes: %i[id phone _destroy],
+      emails_attributes: %i[id email _destroy],
+      bank_accounts_attributes: %i[id bank_name type_account agency account operation _destroy]
     )
   end
 

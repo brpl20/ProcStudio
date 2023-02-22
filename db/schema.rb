@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_22_004414) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_22_034106) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -35,6 +35,33 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_22_004414) do
     t.index ["profile_admin_id"], name: "index_admin_addresses_on_profile_admin_id"
   end
 
+  create_table "admin_bank_accounts", force: :cascade do |t|
+    t.bigint "bank_account_id", null: false
+    t.bigint "profile_admin_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["bank_account_id"], name: "index_admin_bank_accounts_on_bank_account_id"
+    t.index ["profile_admin_id"], name: "index_admin_bank_accounts_on_profile_admin_id"
+  end
+
+  create_table "admin_emails", force: :cascade do |t|
+    t.bigint "email_id", null: false
+    t.bigint "profile_admin_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email_id"], name: "index_admin_emails_on_email_id"
+    t.index ["profile_admin_id"], name: "index_admin_emails_on_profile_admin_id"
+  end
+
+  create_table "admin_phones", force: :cascade do |t|
+    t.bigint "phone_id", null: false
+    t.bigint "profile_admin_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["phone_id"], name: "index_admin_phones_on_phone_id"
+    t.index ["profile_admin_id"], name: "index_admin_phones_on_profile_admin_id"
+  end
+
   create_table "admins", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -45,6 +72,28 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_22_004414) do
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_admins_on_email", unique: true
     t.index ["reset_password_token"], name: "index_admins_on_reset_password_token", unique: true
+  end
+
+  create_table "bank_accounts", force: :cascade do |t|
+    t.string "bank_name"
+    t.string "type_account"
+    t.string "agency"
+    t.string "account"
+    t.string "operation"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "emails", force: :cascade do |t|
+    t.string "email"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "phones", force: :cascade do |t|
+    t.string "phone"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "profile_admins", force: :cascade do |t|
@@ -68,5 +117,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_22_004414) do
 
   add_foreign_key "admin_addresses", "addresses"
   add_foreign_key "admin_addresses", "profile_admins"
+  add_foreign_key "admin_bank_accounts", "bank_accounts"
+  add_foreign_key "admin_bank_accounts", "profile_admins"
+  add_foreign_key "admin_emails", "emails"
+  add_foreign_key "admin_emails", "profile_admins"
+  add_foreign_key "admin_phones", "phones"
+  add_foreign_key "admin_phones", "profile_admins"
   add_foreign_key "profile_admins", "admins"
 end
