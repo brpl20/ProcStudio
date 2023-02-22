@@ -9,3 +9,31 @@
   font-size: 1.4em;
   margin: 1em 0;
 }
+/* footer */
+.footer-container{
+  width: 80%;
+  margin: 0 auto;
+}
+.footer-item{
+  margin-top: 1.8em;
+  width: 25%;
+  float: left;
+  color: var(--gray-footer);
+  font-size: .9rem;
+}
+.footer-item:first-child{
+  margin-top: 0;
+}
+#footer-copyright{
+  font-size: .7rem;
+}
+.footer-social-icon{
+  font-size: 2rem;
+  margin-right: .8rem;
+  color: var(--gray-footer);
+}
+.footer-social-icon:hover{
+  color: var(--default-blue);
+}
+
+/* fim footer */

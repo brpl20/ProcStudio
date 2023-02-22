@@ -1,7 +1,36 @@
 <footer class="sticky-footer bg-white">
-    <div class="container my-auto">
-        <div class="copyright text-center my-auto">
-            <span>Copyright &copy; Your Website 2020</span>
-        </div>
+    <div class="my-auto footer-container clearfix">
+
+      <div class="footer-item">
+        <%= image_tag 'logo_colorido.png' %>
+        <p>Tecnologia para uma vida mais fácil.</p>
+        <p id="footer-copyright">Copyright © www.procstudio.com.br 2020 - 2023</p>
+      </div>
+
+      <div class="footer-item">
+        <p class="h-line">ProcStudio 2020</p>
+        <b>Licenciado para <%#= office_name %></b>
+
+        <p><%#= office_address %></p>
+
+        <p><b>Telefone: </b><%#= office_phone %></p>
+      </div>
+
+      <div class="footer-item">
+        <p class="h-line">Links Úteis</p>
+        <%#= link_to 'Clientes', clients_path %>
+        <%#= link_to 'Escritórios', offices_path %>
+        <%#= link_to 'Trabalhos', works_path %>
+        <%#= link_to 'Usuários', profile_index_path %>
+      </div>
+
+      <div class="footer-item">
+        <p class="h-line">Mídias Sociais</p>
+        <p><i class="fa fa-home" aria-hidden="true"></i></p>
+
+        <a href="#" class="footer-social-icon"><i class="fa fa-facebook-square"></i></a>
+        <a href="#" class="footer-social-icon"><i class="fa fa-twitter-square"></i></a>
+        <a href="#" class="footer-social-icon"><i class="fa fa-linkedin-square"></i></a>
+      </div>
     </div>
 </footer>

@@ -7,6 +7,7 @@
   --default-white: #FFFFFF;
   --button-success: #28a745;
   --green-wizard: #1ABB9C;
+  --gray-footer: #888888;
 }
 // ajuste no menu sandwich
 #sidebarToggleTop{
@@ -39,4 +40,13 @@
 #example_previous,
 #example_next{
   border: none;
+}
+// linha para títulos
+.h-line::after{
+  content: '';
+  display: block;
+  width: 65px;
+  height: 2px;
+  background: #AAAAAA;
+  margin-top: .3em;
 }
