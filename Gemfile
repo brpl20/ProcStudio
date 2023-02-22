@@ -1,10 +1,11 @@
 source 'https://rubygems.org'
-git_source(:github) { |repo| 'https://github.com/#{repo}.git' }
+git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '3.0.0'
 
 gem 'bootsnap', require: false
 gem 'bootstrap', '~> 5.2.2'
+gem 'cocoon'
 gem 'devise'
 gem 'font-awesome-rails'
 gem 'gentelella-rails', '~> 0.1.10'

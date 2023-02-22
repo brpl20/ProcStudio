@@ -1,102 +1,85 @@
 <%= form_with model: @profile_admin, local: true do |f| %>
 
+  <fieldset>
+    <legend class="form-title">Dados Pessoais</legend>
+    <hr/>
 
-<fieldset>
-  <legend class="form-title">Dados Pessoais</legend>
-  <hr/>
+    <%= f.label :role %>
+    <%= f.collection_select :role, options_for_role, :first, :second, {},{class: 'form-control'} %>
 
-  <%= f.label :role %>
-  <%= f.collection_select :role, options_for_role, :first, :second, {},{class: 'form-control'} %>
+    <%= f.label :name %>
+    <%= f.text_field :name, class: 'form-control' %>
 
-  <%= f.label :name %>
-  <%= f.text_field :name, class: 'form-control' %>
+    <%= f.label :lastname %>
+    <%= f.text_field :lastname, class: 'form-control' %>
 
-  <%= f.label :lastname %>
-  <%= f.text_field :lastname, class: 'form-control' %>
+    <%= f.label :gender %>
+    <%= f.collection_select :gender, options_for_gender, :first, :second, {},{class: 'form-control'} %>
 
-  <%= f.label :gender %>
-  <%= f.collection_select :gender, options_for_gender, :first, :second, {},{class: 'form-control'} %>
+    <%= f.label :oab %>
+    <%= f.text_field :oab, class: 'form-control' %>
 
-  <%= f.label :oab %>
-  <%= f.text_field :oab, class: 'form-control' %>
+    <%= f.label :rg %>
+    <%= f.text_field :rg, class: 'form-control' %>
 
-  <%= f.label :rg %>
-  <%= f.text_field :rg, class: 'form-control' %>
+    <%= f.label :cpf %>
+    <%= f.text_field :cpf, class: 'form-control' %>
 
-  <%= f.label :cpf %>
-  <%= f.text_field :cpf, class: 'form-control' %>
+    <%= f.label :nationality %>
+    <%= f.text_field :nationality, class: 'form-control' %>
 
-  <%= f.label :nationality %>
-  <%= f.text_field :nationality, class: 'form-control' %>
+    <%= f.label :civil_status %>
+    <%= f.text_field :civil_status, class: 'form-control' %>
 
-  <%= f.label :civil_status %>
-  <%= f.text_field :civil_status, class: 'form-control' %>
+    <%= f.label :birth %>
+    <%= f.date_field :birth, class: 'form-control' %>
 
-  <%= f.label :birth %>
-  <%= f.date_field :birth, class: 'form-control' %>
+    <%= f.label :mother_name %>
+    <%= f.text_field :mother_name, class: 'form-control' %>
 
-  <%= f.label :mother_name %>
-  <%= f.text_field :mother_name, class: 'form-control' %>
+    <%= f.label :status %>
+    <%= f.collection_select :status, options_for_status, :first, :second, {},{class: 'form-control'} %>
+  </fieldset>
 
-  <%= f.label :status %>
-  <%= f.collection_select :status, options_for_status, :first, :second, {},{class: 'form-control'} %>
-</fieldset>
 
-<fieldset>
-  <legend class="form-title">Endereço</legend>
-  <hr/>
-  <%= f.fields_for :addresses do |ad|%>
+  <fieldset>
+    <legend id="addresses-group" class="form-title">Endereço</legend>
 
-    <label for="description">Descrição</label>
-    <%= ad.text_field :description, id: 'description', class: 'form-control' %>
+    <%= link_to_add_association "Adicionar endereço", f, :addresses, 'data-association-isertion-node':'#addresses-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>
+    <hr/>
 
-    <label for="zip_code">CEP</label>
-    <%= ad.text_field :zip_code, id: 'zip_code', class: 'form-control' %>
+    <%= f.fields_for :addresses do |ad|%>
+      <%= render partial: 'address_fields', locals: {f: ad} %>
+    <% end %>
+  </fieldset>
 
-    <label for="street">Rua</label>
-    <%= ad.text_field :street, id: 'street', class: 'form-control' %>
+  <fieldset>
+    <legend class="form-title">Contato</legend>
+    <hr/>
+  </fieldset>
 
-    <label for="number">Número</label>
-    <%= ad.text_field :number, id: 'number', class: 'form-control' %>
+  <fieldset>
+    <legend class="form-title">Dados Bancarios</legend>
+    <hr/>
+  </fieldset>
 
-    <label for="beighborhood">Bairro</label>
-    <%= ad.text_field :neighborhood, id: 'beighborhood', class: 'form-control' %>
+  <fieldset>
+    <legend class="form-title">Acesso ao sistema</legend>
+    <hr/>
 
-    <label for="city">Cidade</label>
-    <%= ad.text_field :city, id: 'city', class: 'form-control' %>
+    <%= f.fields_for :admin do |a|%>
 
-    <label for="state">Estado</label>
-    <%= ad.text_field :state, id: 'state', class: 'form-control' %>
-  <% end %>
-</fieldset>
+      <label for="email">E-mail</label>
+      <%= a.text_field :email, id: 'email', class: 'form-control' %>
 
-<fieldset>
-  <legend class="form-title">Contato</legend>
-  <hr/>
-</fieldset>
+      <label for="password">Senha</label>
+      <%= a.password_field :password, id: 'password', class: 'form-control' %>
 
-<fieldset>
-  <legend class="form-title">Dados Bancarios</legend>
-  <hr/>
-</fieldset>
+      <label for="password_confirmation">Confirmação de senha</label>
+      <%= a.password_field :password_confirmation, id: 'password_confirmation', class: 'form-control' %>
 
-<fieldset>
-  <legend class="form-title">Acesso ao sistema</legend>
-  <hr/>
-
-  <%= f.fields_for :admin do |a|%>
-
-    <label for="email">E-mail</label>
-    <%= a.text_field :email, id: 'email', class: 'form-control' %>
-
-    <label for="password">Senha</label>
-    <%= a.password_field :password, id: 'password', class: 'form-control' %>
-
-    <label for="password_confirmation">Confirmação de senha</label>
-    <%= a.password_field :password_confirmation, id: 'password_confirmation', class: 'form-control' %>
-
-  <% end %>
-</fieldset>
+    <% end %>
+  </fieldset>
 
   <button type="submit" class="btn btn-success">Salvar</button>
   <%= link_to 'Cancelar', profile_admins_path, class: 'btn btn-outline-danger'%>

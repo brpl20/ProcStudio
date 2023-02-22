@@ -3,7 +3,7 @@
 class ProfileAdminFilter
   class << self
     def retrieve_admins
-      ProfileAdmin.all
+      ProfileAdmin.includes(:admin).all
     end
 
     def retrieve_admin(id)

@@ -13,7 +13,7 @@
         rg: RG
         cpf: CPF
         nationality: Nacionalidade
-        civil_status: Estado civíl
+        civil_status: Estado civil
         mother_name: Nome da mãe
         birth: Data de nascimento
         status: Situação
