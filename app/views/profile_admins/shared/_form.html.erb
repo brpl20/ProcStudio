@@ -1,113 +1,84 @@
-<%= form_with model: @profile_admin, local: true do |f| %>
+<%= form_with model: @profile_admin, id: 'form', local: true do |f| %>
+  <div id="example-basic">
+    <h3>Dados Pessoais</h3>
+    <section>
+      <%= f.label :role %>
+      <%= f.collection_select :role, options_for_role, :first, :second, {},{class: 'form-control'} %>
 
-  <fieldset>
-    <legend class="form-title">Dados Pessoais</legend>
-    <hr/>
+      <%= f.label :name %>
+      <%= f.text_field :name, class: 'form-control' %>
 
-    <%= f.label :role %>
-    <%= f.collection_select :role, options_for_role, :first, :second, {},{class: 'form-control'} %>
+      <%= f.label :lastname %>
+      <%= f.text_field :lastname, class: 'form-control' %>
 
-    <%= f.label :name %>
-    <%= f.text_field :name, class: 'form-control' %>
+      <%= f.label :gender %>
+      <%= f.collection_select :gender, options_for_gender, :first, :second, {},{class: 'form-control'} %>
 
-    <%= f.label :lastname %>
-    <%= f.text_field :lastname, class: 'form-control' %>
+      <%= f.label :oab %>
+      <%= f.text_field :oab, class: 'form-control' %>
 
-    <%= f.label :gender %>
-    <%= f.collection_select :gender, options_for_gender, :first, :second, {},{class: 'form-control'} %>
+      <%= f.label :rg %>
+      <%= f.text_field :rg, class: 'form-control' %>
 
-    <%= f.label :oab %>
-    <%= f.text_field :oab, class: 'form-control' %>
+      <%= f.label :cpf %>
+      <%= f.text_field :cpf, class: 'form-control' %>
 
-    <%= f.label :rg %>
-    <%= f.text_field :rg, class: 'form-control' %>
+      <%= f.label :nationality %>
+      <%= f.text_field :nationality, class: 'form-control' %>
 
-    <%= f.label :cpf %>
-    <%= f.text_field :cpf, class: 'form-control' %>
+      <%= f.label :civil_status %>
+      <%= f.text_field :civil_status, class: 'form-control' %>
 
-    <%= f.label :nationality %>
-    <%= f.text_field :nationality, class: 'form-control' %>
+      <%= f.label :birth %>
+      <%= f.date_field :birth, class: 'form-control' %>
 
-    <%= f.label :civil_status %>
-    <%= f.text_field :civil_status, class: 'form-control' %>
+      <%= f.label :mother_name %>
+      <%= f.text_field :mother_name, class: 'form-control' %>
 
-    <%= f.label :birth %>
-    <%= f.date_field :birth, class: 'form-control' %>
+      <%= f.label :status %>
+      <%= f.collection_select :status, options_for_status, :first, :second, {},{class: 'form-control'} %>
+    </section>
 
-    <%= f.label :mother_name %>
-    <%= f.text_field :mother_name, class: 'form-control' %>
-
-    <%= f.label :status %>
-    <%= f.collection_select :status, options_for_status, :first, :second, {},{class: 'form-control'} %>
-  </fieldset>
-
-
-  <fieldset>
-    <legend id="addresses-group" class="form-title">Endereço</legend>
-    <hr/>
-
-    <%= link_to_add_association "Adicionar endereço", f, :addresses, 'data-association-isertion-node':'#addresses-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>
-
-    <%= f.fields_for :addresses do |address|%>
-      <%= render partial: 'address_fields', locals: {f: address} %>
-    <% end %>
-  </fieldset>
-
-  <fieldset>
-    <legend class="form-title">Contato</legend>
-    <hr/>
-
-    <fieldset>
-      <legend id="phone-group" class="form-title">Telefones</legend>
-      <%= link_to_add_association "Adicionar telefone", f, :phones, 'data-association-isertion-node':'#phone-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>
-
-      <%= f.fields_for :phones do |phone|%>
-        <%= render partial: 'phone_fields', locals: {f: phone} %>
+    <h3>Endereço</h3>
+    <section>
+      <%= link_to_add_association "Adicionar endereço", f, :addresses, 'data-association-isertion-node':'#addresses-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>\
+      <%= f.fields_for :addresses do |address|%>
+          <%= render partial: 'address_fields', locals: {f: address} %>
       <% end %>
-    </fieldset>
+    </section>
 
-    <fieldset>
-      <legend id="email-group" class="form-title">E-mails</legend>
+    <h3>Contato</h3>
+    <section>
+      <%= link_to_add_association "Adicionar telefone", f, :phones, 'data-association-isertion-node':'#phone-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>
+      <%= f.fields_for :phones do |phone|%>
+          <%= render partial: 'phone_fields', locals: {f: phone} %>
+      <% end %>
       <%= link_to_add_association "Adicionar e-mail", f, :emails, 'data-association-isertion-node':'#email-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>
-
       <%= f.fields_for :emails do |email|%>
         <%= render partial: 'email_fields', locals: {f: email} %>
       <% end %>
-    </fieldset>
+    </section>
 
-  </fieldset>
+    <h3>Dados Bancarios</h3>
+    <section>
+      <%= link_to_add_association "Adicionar conta", f, :bank_accounts, 'data-association-isertion-node':'#bank-account-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>
+      <%= f.fields_for :bank_accounts do |bank|%>
+        <%= render partial: 'bank_account_fields', locals: {f: bank} %>
+      <% end %>
+    </section>
 
-  <fieldset>
-    <legend id="bank-account-group" class="form-title">Dados Bancarios</legend>
-    <hr/>
+    <h3>Dados Acesso ao sistema</h3>
+    <section>
+      <%= f.fields_for :admin do |a|%>                      
+        <label for="email">E-mail</label>
+        <%= a.text_field :email, id: 'email', class: 'form-control' %>
+    
+        <label for="password">Senha</label>
+        <%= a.password_field :password, id: 'password', class: 'form-control' %>
 
-    <%= link_to_add_association "Adicionar conta", f, :bank_accounts, 'data-association-isertion-node':'#bank-account-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>
-
-    <%= f.fields_for :bank_accounts do |bank|%>
-      <%= render partial: 'bank_account_fields', locals: {f: bank} %>
-    <% end %>
-
-  </fieldset>
-
-  <fieldset>
-    <legend class="form-title">Acesso ao sistema</legend>
-    <hr/>
-
-    <%= f.fields_for :admin do |a|%>
-
-      <label for="email">E-mail</label>
-      <%= a.text_field :email, id: 'email', class: 'form-control' %>
-
-      <label for="password">Senha</label>
-      <%= a.password_field :password, id: 'password', class: 'form-control' %>
-
-      <label for="password_confirmation">Confirmação de senha</label>
-      <%= a.password_field :password_confirmation, id: 'password_confirmation', class: 'form-control' %>
-
-    <% end %>
-  </fieldset>
-
-  <button type="submit" class="btn btn-success">Salvar</button>
-  <%= link_to 'Cancelar', profile_admins_path, class: 'btn btn-outline-danger'%>
-
+        <label for="password_confirmation">Confirmação de senha</label>
+        <%= a.password_field :password_confirmation, id: 'password_confirmation', class: 'form-control' %>
+      <% end %>
+    </section>
+  </div> 
 <% end %>
