@@ -23,6 +23,11 @@ Criando a nova branch
 
 ```git checkout -b re123```
 
+### Commits
+
+Para commitar sual alterações no projeto use o seguinte padrão:
+
+`RE #numero do ticket`, exemplo: `RE #123 - Altera isso e aquilo`
 
 ### Pull Requests
 
