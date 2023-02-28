@@ -15,7 +15,7 @@ Ticket #123 - Cria algo no sistema
 
 Ver branch atual e alterações realizadas:
 
-```git status``` 
+```git status```
 
 Após executar no terminal você deve receber a resposta `On branch master`
 
@@ -31,3 +31,6 @@ Considerando que o ticket foi finalizado, após commitar tudo que foi feito abra
 ```RE#numero_do_ticket``` exemplo: ```RE#123```
 
 Depois do Pull Request criado, retorne para a branch `master` antes de iniciar o próximo ticket.
+
+### Observação
+ O comentário no topo de todos os arquivos rb # frozen_string_literal: true é um comentário mágico, suportado pela primeira vez no Ruby 2.3, que informa ao Ruby que todas as strings literais no arquivo estão implicitamente congeladas, como se #freeze tivesse sido chamado em cada uma delas, ou seja, se uma string literal for definida em um arquivo com este comentário e você chamar um método nessa string que a modifique, como <<, você obterá RuntimeError: can't modify frozen String.
