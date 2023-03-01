@@ -41,7 +41,7 @@
 
     <h3>Endereço</h3>
     <section>
-      <%= link_to_add_association "Adicionar endereço", f, :addresses, 'data-association-isertion-node':'#addresses-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>\
+      <%= link_to_add_association "Adicionar endereço", f, :addresses, 'data-association-isertion-node':'#addresses-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>
       <%= f.fields_for :addresses do |address|%>
           <%= render partial: 'address_fields', locals: {f: address} %>
       <% end %>
@@ -70,13 +70,13 @@
     <h3>Dados Acesso ao sistema</h3>
     <section>
       <%= f.fields_for :admin do |a|%>                      
-        <label for="email">E-mail</label>
+        <%= a.label :email %>
         <%= a.text_field :email, id: 'email', class: 'form-control' %>
     
-        <label for="password">Senha</label>
+        <%= a.label :password %>
         <%= a.password_field :password, id: 'password', class: 'form-control' %>
 
-        <label for="password_confirmation">Confirmação de senha</label>
+        <%= a.label :password_confirmation %>
         <%= a.password_field :password_confirmation, id: 'password_confirmation', class: 'form-control' %>
       <% end %>
     </section>
