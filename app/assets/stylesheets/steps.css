@@ -46,8 +46,6 @@
     left: -999em;
 }
 
-
-
 /*
     Wizard
 */
@@ -70,11 +68,6 @@
 {
     font-size: 0.8em;
 }
-
-/* .wizard > .steps > ul > li
-{
-    width: 20%;
-} */
 
 .wizard > .steps > ul > li,
 .wizard > .actions > ul > li
@@ -272,16 +265,6 @@
     background: #eee;
     color: #aaa;
 }
-
-.wizard > .loading
-{
-}
-
-.wizard > .loading .spinner
-{
-}
-
-
 
 /*
     Tabcontrol
