@@ -19,6 +19,7 @@ class ProfileAdminsController < ApplicationController
 
   def create
     @profile_admin = ProfileAdmin.new(params_profile)
+
     if @profile_admin.save
       redirect_to profile_admins_path, notice: 'Salvo com sucesso!'
     else
