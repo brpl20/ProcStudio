@@ -44,5 +44,16 @@ Depois do Pull Request criado, retorne para a branch `master` antes de iniciar o
  - Commit: RE #123 - Altera isso e aquilo
  - Pull Request: RE #123
 
+### Rubocop
+
+`bundle exec rubocop` executa a verificação de arquivos em todo o sistema
+
+`bundle exec rubocop <arquivo>` _executa rubocop e exibe ocorrências no arquivo_
+
+`bundle exec rubocop <arquivo> -a` _executa rubocop, exibe e corrige ocorrências no arquivo_ (não muito recomendado)
+
+`bundle exec rubocop -C false --auto-gen-config --exclude-limit 10000` _atualiza rubocop_todo.yml, usar em casos de conflitos de merge e/ou ajustes de
+ocorrências já existentes_ verificar a necessidade antes de executar este comando
+
 ### Observação
- O comentário no topo de todos os arquivos rb # frozen_string_literal: true é um comentário mágico, suportado pela primeira vez no Ruby 2.3, que informa ao Ruby que todas as strings literais no arquivo estão implicitamente congeladas, como se #freeze tivesse sido chamado em cada uma delas, ou seja, se uma string literal for definida em um arquivo com este comentário e você chamar um método nessa string que a modifique, como <<, você obterá RuntimeError: can't modify frozen String.
+O comentário no topo de todos os arquivos rb # frozen_string_literal: true é um comentário mágico, suportado pela primeira vez no Ruby 2.3, que informa ao Ruby que todas as strings literais no arquivo estão implicitamente congeladas, como se #freeze tivesse sido chamado em cada uma delas, ou seja, se uma string literal for definida em um arquivo com este comentário e você chamar um método nessa string que a modifique, como <<, você obterá RuntimeError: can't modify frozen String.
