@@ -46,6 +46,11 @@ Depois do Pull Request criado, retorne para a branch `master` antes de iniciar o
 
 ### Rubocop
 
+É necessário instalar localmente as gems:
+ - rubocop
+ - rubocop-rails
+ - rubocop-rspec
+
 `bundle exec rubocop` executa a verificação de arquivos em todo o sistema
 
 `bundle exec rubocop <arquivo>` _executa rubocop e exibe ocorrências no arquivo_
