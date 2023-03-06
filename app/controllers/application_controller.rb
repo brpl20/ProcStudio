@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# controladora geral
 class ApplicationController < ActionController::Base
   layout :layout_by_resource
 
