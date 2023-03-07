@@ -8,7 +8,7 @@ Admin.create!(
 
 ProfileAdmin.create!(
   role: 1,
-  name: 'Administrador',
+  name: 'Administrador padrão',
   lastname: 'Sobrenome',
   gender: 1,
   oab: '12345',
