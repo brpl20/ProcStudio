@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
@@ -10,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_22_034106) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_01_000130) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -90,6 +92,29 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_22_034106) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "office_types", force: :cascade do |t|
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "offices", force: :cascade do |t|
+    t.string "name"
+    t.string "cnpj"
+    t.string "society"
+    t.date "foundation"
+    t.string "site"
+    t.string "street"
+    t.integer "number"
+    t.string "neighborhood"
+    t.string "city"
+    t.string "state"
+    t.bigint "office_type_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["office_type_id"], name: "index_offices_on_office_type_id"
+  end
+
   create_table "phones", force: :cascade do |t|
     t.string "phone"
     t.datetime "created_at", null: false
@@ -123,5 +148,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_22_034106) do
   add_foreign_key "admin_emails", "profile_admins"
   add_foreign_key "admin_phones", "phones"
   add_foreign_key "admin_phones", "profile_admins"
+  add_foreign_key "offices", "office_types"
   add_foreign_key "profile_admins", "admins"
 end
