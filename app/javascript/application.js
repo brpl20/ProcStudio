@@ -6,8 +6,6 @@ import './dataTables/jquery.dataTables'
 import './cocoon'
 import 'plugin/steps'
 
-
-
 $(document).ready(function(){
   $(".dataTables_filter label input[type='search']").addClass('form-control')
   $('#example_length label select').addClass('form-control')
