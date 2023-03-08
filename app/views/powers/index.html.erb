@@ -1,2 +1,33 @@
-<h1>Powers#index</h1>
-<p>Find me in app/views/powers/index.html.erb</p>
+<%= link_to 'Novo Poder', new_office_path, class: 'btn btn-success' %>
+
+<table id="example" class="table table-striped">
+
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Descrição</th>
+      <th>Categoria</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+
+  <tbody>
+
+    <% @powers.each do |power| %>
+      <tr>
+        <td><%= power.id %></td>
+        <td><%= power.description %></td>
+        <td><%= power.category %></td>
+   
+        <td>
+          <%= link_to edit_power_path(office), class: 'btn btn-primary btn-circle' do %>
+            <i class="fa fa-edit"></i>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+
+  </tbody>
+
+</table>
+
