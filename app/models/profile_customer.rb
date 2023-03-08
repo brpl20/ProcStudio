@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
-class ProfileClient < ApplicationRecord
+class ProfileCustomer < ApplicationRecord
   belongs_to :customer
 end

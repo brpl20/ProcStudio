@@ -1,6 +1,6 @@
-class CreateProfileClients < ActiveRecord::Migration[7.0]
+class CreateProfileCustomers < ActiveRecord::Migration[7.0]
   def change
-    create_table :profile_clients do |t|
+    create_table :profile_customers do |t|
       t.integer :role
       t.string :name
       t.string :lastname
