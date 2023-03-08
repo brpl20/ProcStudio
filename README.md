@@ -27,8 +27,3 @@ Este projeto contém a migração do procstudio para gems mais atualizadas.
   ```
       http://localhost:3000
   ```
-
-Caso não venha a utilizar a tela Home, você pode apagá-la executando no terminal:
-  ```
-      rails d controller home
-  ```
