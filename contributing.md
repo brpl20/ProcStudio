@@ -37,6 +37,24 @@ Considerando que o ticket foi finalizado, após commitar tudo que foi feito abra
 
 Depois do Pull Request criado, retorne para a branch `master` antes de iniciar o próximo ticket.
 
+### Rspec
+
+```
+# Executa todas as specs
+bundle exec rspec
+
+# Executa todas as specs de um diretório
+bundle exec rspec spec/models
+
+# Executa todas as specs de um arquivo específico
+bundle exec rspec spec/controllers/accounts_controller_spec.rb
+
+# Executa a spec do diretório, arquivo e linha indicados
+bundle exec rspec spec/controllers/accounts_controller_spec.rb:8
+
+# Ver todas as opções de ajuda
+bundle exec rspec --help
+```
 ### Visão geral
 
  - Ticket: #123
