@@ -2,7 +2,7 @@
 
 module ProfileAdminsHelper
   def options_for_role
-    ProfileAdmin.roles.keys.to_a.map { |k| [k, k.humanize] }
+    ProfileAdmin.roles.keys.to_a.map { |k| [k,  ProfileAdmin.human_enum_name(:role, k.to_sym).humanize] }
   end
 
   def options_for_gender
