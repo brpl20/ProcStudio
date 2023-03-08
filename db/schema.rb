@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_07_145615) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_08_175927) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -84,6 +84,18 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_07_145615) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "customers", force: :cascade do |t|
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_customers_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_customers_on_reset_password_token", unique: true
+  end
+
   create_table "emails", force: :cascade do |t|
     t.string "email"
     t.datetime "created_at", null: false
@@ -150,6 +162,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_07_145615) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "powers", force: :cascade do |t|
+    t.string "description"
+    t.integer "category"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "profile_admins", force: :cascade do |t|
     t.integer "role"
     t.string "name"
@@ -169,6 +188,32 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_07_145615) do
     t.index ["admin_id"], name: "index_profile_admins_on_admin_id"
   end
 
+  create_table "profile_clients", force: :cascade do |t|
+    t.integer "role"
+    t.string "name"
+    t.string "lastname"
+    t.integer "gender"
+    t.string "rg"
+    t.string "cpf"
+    t.string "nationality"
+    t.integer "civil_status"
+    t.integer "capacity"
+    t.string "profession"
+    t.string "company"
+    t.date "birth"
+    t.string "monther_name"
+    t.string "number_benefit"
+    t.integer "status"
+    t.json "document"
+    t.string "nit"
+    t.string "inss_password"
+    t.integer "invalid_person"
+    t.bigint "customer_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_id"], name: "index_profile_clients_on_customer_id"
+  end
+
   add_foreign_key "admin_addresses", "addresses"
   add_foreign_key "admin_addresses", "profile_admins"
   add_foreign_key "admin_bank_accounts", "bank_accounts"
@@ -186,4 +231,5 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_07_145615) do
   add_foreign_key "offices", "office_types"
   add_foreign_key "offices", "profile_admins"
   add_foreign_key "profile_admins", "admins"
+  add_foreign_key "profile_clients", "customers"
 end
