@@ -3,4 +3,7 @@
 class Phone < ApplicationRecord
   has_many :admin_phones, dependent: :destroy
   has_many :profile_admins, through: :admin_phones
+
+  has_many :office_phones, dependent: :destroy
+  has_many :offices, through: :office_phones
 end

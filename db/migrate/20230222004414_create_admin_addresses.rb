@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateAdminAddresses < ActiveRecord::Migration[7.0]
   def change
     create_table :admin_addresses do |t|

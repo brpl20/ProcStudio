@@ -1,26 +1,39 @@
 'pt-BR':
   activerecord:
     models:
-      profile_admin: Perfil de usuário
       admin: Usuário
+      address:
+        one: Endereço
+        other: Endereços
+      bank_account:
+        one: Conta Bancária
+        others: Conta Bancárias 
+      email:
+        one: E-mail
+        other: E-mails
+      phones:
+        one: Telefone 
+        other: Telefones
+      profile_admin: Perfil de usuário 
     attributes:
-      profile_admin:
-        role: Papel
-        name: Nome
-        lastname: Sobrenome
-        gender: Sexo
-        oab: OAB
-        rg: RG
-        cpf: CPF
-        nationality: Nacionalidade
-        civil_status: Estado civil
-        mother_name: Nome da mãe
-        birth: Data de nascimento
-        status: Situação
       admin:
         email: E-mail
         password: Senha
         password_confirmation: Confirmação de senha
+      address:
+        city: Cidade
+        description: Descrição
+        neighborhood: Bairro
+        number: Número
+        state: Estado
+        street: Rua
+        zip_code: CEP
+      bank_account:
+        account: Conta
+        agency: Agência
+        bank_name: Banco
+        operation: Operação
+        type_account: Tipo Conta
       client:
         address: Endereço
         birth: Data de nascimento
@@ -38,6 +51,8 @@
         profession: Profissão
         social_number: CPF
         state: Estado
+      email:
+        email: E-mail
       job:
         client: Cliente
         deadline: Prazo limite
@@ -45,6 +60,28 @@
         priority: Prioridade
         responsable: Responsável
         status: Estágio
+      phone: 
+        phone: Telefone
+      profile_admin:
+        birth: Data de nascimento
+        cpf: CPF
+        civil_status: Estado civil
+        gender: Sexo
+        lastname: Sobrenome
+        mother_name: Nome da mãe
+        nationality: Nacionalidade
+        name: Nome
+        oab: OAB     
+        role: Papel
+        rg: RG
+        roles: 
+          counter: Contador(a)                                                                                      
+          excounter: Contador(a) Externo
+          lawyer: Advogado(a)
+          paralegal: Paralegal
+          secretary: Secretário(a)                                                                                    
+          trainee: Estagiário(a)                                                                                  
+        status: Situação  
       office:
         address: Endereço
         city: Cidade
