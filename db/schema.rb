@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_22_034106) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_07_145615) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -90,6 +90,60 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_22_034106) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "office_bank_accounts", force: :cascade do |t|
+    t.bigint "bank_account_id", null: false
+    t.bigint "office_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["bank_account_id"], name: "index_office_bank_accounts_on_bank_account_id"
+    t.index ["office_id"], name: "index_office_bank_accounts_on_office_id"
+  end
+
+  create_table "office_emails", force: :cascade do |t|
+    t.bigint "office_id", null: false
+    t.bigint "email_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email_id"], name: "index_office_emails_on_email_id"
+    t.index ["office_id"], name: "index_office_emails_on_office_id"
+  end
+
+  create_table "office_phones", force: :cascade do |t|
+    t.bigint "office_id", null: false
+    t.bigint "phone_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["office_id"], name: "index_office_phones_on_office_id"
+    t.index ["phone_id"], name: "index_office_phones_on_phone_id"
+  end
+
+  create_table "office_types", force: :cascade do |t|
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "offices", force: :cascade do |t|
+    t.string "name"
+    t.string "cnpj"
+    t.string "oab"
+    t.integer "society"
+    t.date "foundation"
+    t.string "site"
+    t.string "cep"
+    t.string "street"
+    t.integer "number"
+    t.string "neighborhood"
+    t.string "city"
+    t.string "state"
+    t.bigint "office_type_id", null: false
+    t.bigint "profile_admin_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["office_type_id"], name: "index_offices_on_office_type_id"
+    t.index ["profile_admin_id"], name: "index_offices_on_profile_admin_id"
+  end
+
   create_table "phones", force: :cascade do |t|
     t.string "phone"
     t.datetime "created_at", null: false
@@ -123,5 +177,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_22_034106) do
   add_foreign_key "admin_emails", "profile_admins"
   add_foreign_key "admin_phones", "phones"
   add_foreign_key "admin_phones", "profile_admins"
+  add_foreign_key "office_bank_accounts", "bank_accounts"
+  add_foreign_key "office_bank_accounts", "offices"
+  add_foreign_key "office_emails", "emails"
+  add_foreign_key "office_emails", "offices"
+  add_foreign_key "office_phones", "offices"
+  add_foreign_key "office_phones", "phones"
+  add_foreign_key "offices", "office_types"
+  add_foreign_key "offices", "profile_admins"
   add_foreign_key "profile_admins", "admins"
 end

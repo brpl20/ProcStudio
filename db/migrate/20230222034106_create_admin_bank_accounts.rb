@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateAdminBankAccounts < ActiveRecord::Migration[7.0]
   def change
     create_table :admin_bank_accounts do |t|

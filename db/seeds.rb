@@ -1,4 +1,4 @@
-p 'Cadastrando usuário padrão'
+# frozen_string_literal: true
 
 Admin.create!(
   email: 'admin@procstudio.com.br',
@@ -8,7 +8,7 @@ Admin.create!(
 
 ProfileAdmin.create!(
   role: 1,
-  name: 'Administrador',
+  name: 'Administrador padrão',
   lastname: 'Sobrenome',
   gender: 1,
   oab: '12345',
@@ -21,5 +21,3 @@ ProfileAdmin.create!(
   status: 1,
   admin: Admin.first
 )
-
-p 'Usuário cadastrado com sucesso!'

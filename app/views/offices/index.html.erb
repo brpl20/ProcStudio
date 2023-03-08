@@ -1,0 +1,39 @@
+<%= link_to 'Novo Escritório', new_office_path, class: 'btn btn-success' %>
+
+<table id="example" class="table table-striped">
+
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Nome</th>
+      <th>CNPJ</th>
+      <th>Tipo</th>
+      <th>Cidade</th>
+      <th>Site</th>
+      <th>Email</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+
+  <tbody>
+
+    <% @offices.each do |office| %>
+      <tr>
+        <td><%= office.id %></td>
+        <td><%= office.name %></td>
+        <td><%= office.cnpj %></td>
+        <td><%= office.society %></td>
+        <td><%= office.city %></td>
+        <td><%= office.site %></td>
+        <td><%= office.emails.first.email %></td>
+        <td>
+          <%= link_to edit_office_path(office), class: 'btn btn-primary btn-circle' do %>
+            <i class="fa fa-edit"></i>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+
+  </tbody>
+
+</table>

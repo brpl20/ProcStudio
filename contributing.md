@@ -5,7 +5,7 @@ As intruções de instalação e coniguração do sistema se encontram no readme
 
 ## Convenções
 
-Aqui descrevemos algumas convenções que adotamos para melhor gerir o projeto.
+A motivação para criarmos convenções de desenvolvimento veio da necessidade de linkar as issues com os commits e com os pull requests.
 
 ### Branches
 
@@ -23,6 +23,11 @@ Criando a nova branch
 
 ```git checkout -b re123```
 
+### Commits
+
+Para commitar sual alterações no projeto use o seguinte padrão:
+
+`RE #numero do ticket`, exemplo: `RE #123 - Altera isso e aquilo`
 
 ### Pull Requests
 
@@ -50,3 +55,28 @@ bundle exec rspec spec/controllers/accounts_controller_spec.rb:8
 # Ver todas as opções de ajuda
 bundle exec rspec --help
 ```
+### Visão geral
+
+ - Ticket: #123
+ - Brach: re123
+ - Commit: RE #123 - Altera isso e aquilo
+ - Pull Request: RE #123
+
+### Rubocop
+
+É necessário instalar localmente as gems:
+ - rubocop
+ - rubocop-rails
+ - rubocop-rspec
+
+`bundle exec rubocop` executa a verificação de arquivos em todo o sistema
+
+`bundle exec rubocop <arquivo>` _executa rubocop e exibe ocorrências no arquivo_
+
+`bundle exec rubocop <arquivo> -a` _executa rubocop, exibe e corrige ocorrências no arquivo_ (não muito recomendado)
+
+`bundle exec rubocop -C false --auto-gen-config --exclude-limit 10000` _atualiza rubocop_todo.yml, usar em casos de conflitos de merge e/ou ajustes de
+ocorrências já existentes_ verificar a necessidade antes de executar este comando
+
+### Observação
+O comentário no topo de todos os arquivos rb # frozen_string_literal: true é um comentário mágico, suportado pela primeira vez no Ruby 2.3, que informa ao Ruby que todas as strings literais no arquivo estão implicitamente congeladas, como se #freeze tivesse sido chamado em cada uma delas, ou seja, se uma string literal for definida em um arquivo com este comentário e você chamar um método nessa string que a modifique, como <<, você obterá RuntimeError: can't modify frozen String.

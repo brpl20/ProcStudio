@@ -1,0 +1,102 @@
+<%= form_with model: @office, local: true do |f| %>
+
+  <fieldset>
+    <legend class="form-title">Dados Gerais</legend>
+    <hr/>
+
+    <%= f.label :name %>
+    <%= f.text_field :name, class: 'form-control' %>
+
+    <%= f.label :cnpj %>
+    <%= f.text_field :cnpj, class: 'form-control' %>
+
+    <%= f.label :oab %>
+    <%= f.text_field :oab, class: 'form-control' %>
+
+    <%= f.label :foundation %>
+    <%= f.text_field :foundation, class: 'form-control' %>
+
+    <%= f.label :society %>
+    <%= f.collection_select :society, options_for_society, :first, :second, {},{class: 'form-control'} %>
+
+    <%= f.label :site %>
+    <%= f.text_field :site, class: 'form-control' %>
+
+  </fieldset>
+
+
+  <fieldset>
+    <legend id="addresses-group" class="form-title">Endereço</legend>
+    <hr/>
+
+    <%= f.label :cep %>
+    <%= f.text_field :cep, class: 'form-control' %>
+
+    <%= f.label :street %>
+    <%= f.text_field :street, class: 'form-control' %>
+
+    <%= f.label :number %>
+    <%= f.text_field :number, class: 'form-control' %>
+
+    <%= f.label :neighborhood %>
+    <%= f.text_field :neighborhood, class: 'form-control' %>
+
+    <%= f.label :city %>
+    <%= f.text_field :city, class: 'form-control' %>
+
+    <%= f.label :state %>
+    <%= f.text_field :state, class: 'form-control' %>
+  </fieldset>
+
+  <fieldset>
+    <legend class="form-title">Contato</legend>
+    <hr/>
+
+    <fieldset>
+      <legend id="phone-group" class="form-title">Telefones</legend>
+      <%= link_to_add_association "Adicionar telefone", f, :phones, 'data-association-isertion-node':'#phone-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>
+
+      <%= f.fields_for :phones do |phone|%>
+        <%= render partial: 'phone_fields', locals: {f: phone} %>
+      <% end %>
+    </fieldset>
+
+    <fieldset>
+      <legend id="email-group" class="form-title">E-mails</legend>
+      <%= link_to_add_association "Adicionar e-mail", f, :emails, 'data-association-isertion-node':'#email-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>
+
+      <%= f.fields_for :emails do |email|%>
+        <%= render partial: 'email_fields', locals: {f: email} %>
+      <% end %>
+    </fieldset>
+
+  </fieldset>
+
+  <fieldset>
+    <legend id="bank-account-group" class="form-title">Dados Bancários</legend>
+    <hr/>
+
+    <%= link_to_add_association "Adicionar conta", f, :bank_accounts, 'data-association-isertion-node':'#bank-account-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>
+
+    <%= f.fields_for :bank_accounts do |bank|%>
+      <%= render partial: 'bank_account_fields', locals: {f: bank} %>
+    <% end %>
+
+  </fieldset>
+
+  <fieldset>
+    <legend class="form-title">Responsável</legend>
+    <hr/>
+
+    <%= f.label :profile_admin_id %>
+    <%= f.collection_select :profile_admin_id, options_for_admin, :id, :name, {},{class: 'form-control'} %>
+
+    <%= f.label :office_type_id %>
+    <%= f.collection_select :office_type_id, options_for_office_type, :id, :description, {},{class: 'form-control'} %>
+
+  </fieldset>
+
+  <button type="submit" class="btn btn-success">Salvar</button>
+  <%= link_to 'Cancelar', offices_path, class: 'btn btn-outline-danger'%>
+
+<% end %>
