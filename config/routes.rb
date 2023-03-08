@@ -2,9 +2,11 @@
 
 Rails.application.routes.draw do
   root 'home#index'
-  devise_for :admins
 
   get 'home/index'
 
+  devise_for :admins
+
   resources :profile_admins
+  resources :offices
 end

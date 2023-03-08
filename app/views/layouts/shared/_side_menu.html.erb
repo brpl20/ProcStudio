@@ -134,8 +134,10 @@
           data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Ações:</h6>
-                <a class="collapse-item" href="login.html">Lista de Escritórios</a>
-                <a class="collapse-item" href="login.html">Novo Escritório</a>
+
+                <%= link_to 'Lista de Escritórios', offices_path, class: 'collapse-item' %>
+
+                <%= link_to 'Novo Escritório', new_office_path, class: 'collapse-item' %>
 
             </div>
         </div>
