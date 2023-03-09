@@ -10,15 +10,22 @@ class ProfileCustomersController < ApplicationController
 
   def new
     @profile_customer = ProfileAdmin.new
-    @profile_customer.build_customer
-    @profile_customer.addresses.build
-    @profile_customer.phones.build
-    @profile_customer.emails.build
-    @profile_customer.bank_accounts.build
+    # @profile_customer.build_customer
+    # @profile_customer.addresses.build
+    # @profile_customer.phones.build
+    # @profile_customer.emails.build
+    # @profile_customer.bank_accounts.build
   end
 
   def create
     @profile_customer = ProfileAdmin.new(params_profile)
+
+    case @profile_customer.type
+    when 'Person'
+      @profile_customer = Person.new(person_params)
+    when 'Company'
+      @profile_customer = Company.new(company_params)
+    end
 
     if @profile_customer.save
       redirect_to profile_customers_path, notice: 'Salvo com sucesso!'
@@ -46,17 +53,14 @@ class ProfileCustomersController < ApplicationController
 
   def params_profile
     params.require(:profile_customer).permit(
-      :role,
+      :type,
       :name,
       :lastname,
       :gender,
-      :rg,
-      :cpf,
       :nationality,
       :civil_status,
       :capacity,
       :profession,
-      :company,
       :birth,
       :monther_name,
       :number_benefit,
@@ -72,6 +76,14 @@ class ProfileCustomersController < ApplicationController
       emails_attributes: %i[id email _destroy],
       bank_accounts_attributes: %i[id bank_name type_account agency account operation _destroy]
     )
+  end
+
+  def person_params
+    params.require(:person).permit(:cpf, :rg)
+  end
+
+  def company_params
+    params.require(:company).permit(:cnpj, :company)
   end
 
   def retrieve_customer

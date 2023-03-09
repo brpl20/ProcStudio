@@ -1,0 +1,16 @@
+<h1>Cadastrando novo cliente</h1>
+
+
+<%= form_with(model: @profile_customer, local: true) do |f| %>
+
+  <%= f.label :name %>
+  <%= f.text_field :name %>
+
+  <%= f.label :type %>
+  <%= f.text_field :type %>
+
+  <%= render partial: "#{params[:type].downcase}/form", locals: { f: f } %>
+
+  <%= f.submit %>
+
+<% end %>

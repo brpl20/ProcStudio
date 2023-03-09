@@ -198,13 +198,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_192857) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "powers", force: :cascade do |t|
-    t.string "description"
-    t.integer "category"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "profile_admins", force: :cascade do |t|
     t.integer "role"
     t.string "name"
@@ -224,39 +217,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_192857) do
     t.index ["admin_id"], name: "index_profile_admins_on_admin_id"
   end
 
-  create_table "profile_clients", force: :cascade do |t|
-    t.integer "role"
-    t.string "name"
-    t.string "lastname"
-    t.integer "gender"
-    t.string "rg"
-    t.string "cpf"
-    t.string "nationality"
-    t.integer "civil_status"
-    t.integer "capacity"
-    t.string "profession"
-    t.string "company"
-    t.date "birth"
-    t.string "monther_name"
-    t.string "number_benefit"
-    t.integer "status"
-    t.json "document"
-    t.string "nit"
-    t.string "inss_password"
-    t.integer "invalid_person"
-    t.bigint "customer_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["customer_id"], name: "index_profile_clients_on_customer_id"
-  end
-
   create_table "profile_customers", force: :cascade do |t|
-    t.integer "role"
+    t.integer "type"
     t.string "name"
     t.string "lastname"
     t.integer "gender"
     t.string "rg"
     t.string "cpf"
+    t.string "cnpj"
     t.string "nationality"
     t.integer "civil_status"
     t.integer "capacity"
@@ -270,10 +238,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_192857) do
     t.string "nit"
     t.string "inss_password"
     t.integer "invalid_person"
-    t.bigint "customer_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["customer_id"], name: "index_profile_customers_on_customer_id"
   end
 
   add_foreign_key "admin_addresses", "addresses"
@@ -301,6 +267,4 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_192857) do
   add_foreign_key "offices", "office_types"
   add_foreign_key "offices", "profile_admins"
   add_foreign_key "profile_admins", "admins"
-  add_foreign_key "profile_clients", "customers"
-  add_foreign_key "profile_customers", "customers"
 end
