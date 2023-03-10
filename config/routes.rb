@@ -10,4 +10,5 @@ Rails.application.routes.draw do
 
   resources :profile_admins
   resources :offices
+  resources :powers
 end

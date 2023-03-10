@@ -10,24 +10,24 @@ class PowersController < ApplicationController
   def show; end
 
   def new
-    @powers = OfficeType.new
+    @power = Power.new
   end
 
   def edit; end
 
   def create
-    @power = power.new(power_params)
+    @power = Power.new(power_params)
 
     if @power.save
-      redirect_to powers_index_path, notice: 'Poder para escritório criado com sucesso!'
+      redirect_to powers_index_path, notice: 'Criado com sucesso!'
     else
       render :new
     end
   end
 
   def update
-    if @powers.update(power_params)
-      redirect_to powers_index_path, notice: 'Poder de escritório atualizado com sucesso.'
+    if @power.update(power_params)
+      redirect_to powers_index_path, notice: 'Atualizado com sucesso.'
     else
       render :edit
     end
@@ -35,16 +35,16 @@ class PowersController < ApplicationController
 
   def destroy
     if @powers.destroy
-      redirect_to powers_url, notice: 'Poder de escritório excluído com sucesso.'
+      redirect_to powers_url, notice: 'Excluído com sucesso.'
     else
-      render :index, notice: 'Desculpe, houve um problema, tente novamente daqui a alguns minutos'
+      render :index, notice: 'Desculpe, houve um problema. Tente novamente daqui a alguns minutos'
     end
   end
 
   private
 
   def retrieve_power
-    @office_types = OfficeType.find(params[:id])
+    @power = Power.find(params[:id])
   end
 
   def power_params

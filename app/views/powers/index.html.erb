@@ -1,4 +1,4 @@
-<%= link_to 'Novo Poder', new_office_path, class: 'btn btn-success' %>
+<%= link_to 'Criar novo Poder', new_power_path, class: 'btn btn-success' %>
 
 <table id="example" class="table table-striped">
 
@@ -18,9 +18,9 @@
         <td><%= power.id %></td>
         <td><%= power.description %></td>
         <td><%= power.category %></td>
-   
+
         <td>
-          <%= link_to edit_power_path(office), class: 'btn btn-primary btn-circle' do %>
+          <%= link_to edit_power_path(power), class: 'btn btn-primary btn-circle' do %>
             <i class="fa fa-edit"></i>
           <% end %>
         </td>
@@ -30,4 +30,3 @@
   </tbody>
 
 </table>
-

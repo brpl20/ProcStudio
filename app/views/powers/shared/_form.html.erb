@@ -1,15 +1,14 @@
-<%= form_with model: @power, local: true do |f| %>
+<%= form_with model: @power, local: true, id: 'form' do |f| %>
 
-  <fieldset>
-    <legend class="form-title">Dados Gerais</legend>
-    <hr/>
+  <div id="example-basic">
+    <h3>Dados Pessoais</h3>
+    <section>
+      <%= f.label :description %>
+      <%= f.text_field :description, class: 'form-control' %>
 
-    <%= f.label :description %>
-    <%= f.text_field :description, class: 'form-control' %>
-
-    <%= f.label :category %>
-    <%= f.text_field :category, class: 'form-control' %>
-
-  </fieldset>
+      <%= f.label :category %>
+      <%= f.text_field :category, class: 'form-control' %>
+    </section>
+  </div>
 
 <% end %>
