@@ -1,5 +1,67 @@
-<%= f.label :cnpj %>
-<%= f.text.field :cnpj %>
+<div id="example-basic">
+  <h3>Dados da Empresa</h3>
+  <section>
+    <%= f.label :name %>
+    <%= f.text_field :name %>
 
-<%= f.label :company %>
-<%= f.text.field :company %>
+    <%= f.label :cnpj %>
+    <%= f.text_field :cnpj %>
+  </section>
+
+  <h3>Endereço</h3>
+  <section>
+    <%= link_to_add_association "Adicionar endereço", f, :addresses, 'data-association-isertion-node':'#addresses-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>
+
+    <%= f.fields_for :addresses do |address|%>
+        <%= render partial: 'address_fields', locals: {f: address} %>
+    <% end %>
+  </section>
+
+  <%= render partial: 'shared/contacts', locals: { f: f }  %>
+
+  <h3>Representante</h3>
+  <section>
+
+  </section>
+
+  <h3>Dados Bancários</h3>
+  <section>
+    <%= link_to_add_association "Adicionar conta", f, :bank_accounts, 'data-association-isertion-node':'#bank-account-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>
+    <%= f.fields_for :bank_accounts do |bank|%>
+      <%= render partial: 'bank_account_fields', locals: {f: bank} %>
+    <% end %>
+  </section>
+
+
+  <h3>Arquivos</h3>
+  <section>
+    <!-- <div class="col-md-6">
+      <label>Adicionar arquivos</label>
+      <%#= f.file_field :files, multiple: true %>
+      <small class="form-text text-muted">
+        Formatos aceitos: JPEG, PNG e PDF.
+      </small>
+
+      <%# if @profile_customer.errors.any? %>
+      <div id="error_explanation">
+        <ul>
+          <%# @profile_customer.errors.each do |error| %>
+          <p><%#= error.full_message %></p>
+          <%# end %>
+        </ul>
+      </div>
+      <%# else %>
+        <%# if @profile_customer.files != nil %>
+          <%# @profile_customer.files.each do |file| %>
+            <li>
+              <%#= link_to file.filename, url_for(file) %>
+              <%#= link_to ("X"), profile_customer_file_upload_path(@profile_customer, file), method: :delete, data: { confirm: "Tem certeza?" }, class:"btn btn-outline btn-danger" %>
+            </li>
+
+          <%# end %>
+        <%# end %>
+      <%# end %>
+    </div> -->
+  </section>
+
+</div>

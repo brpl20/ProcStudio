@@ -8,7 +8,10 @@ Rails.application.routes.draw do
   devise_for :admins
   devise_for :customers
 
-  resources :people, controller: 'profile_customers', type: 'Person', only: [:new, :create]
+  resources :people, controller: 'profile_customers', type: 'People'
+  resources :companies, controller: 'profile_customers', type: 'Companies'
+  resources :accountings, controller: 'profile_customers', type: 'Accountings'
+  resources :representatives, controller: 'profile_customers', type: 'Representatives'
 
   resources :offices
   resources :profile_admins

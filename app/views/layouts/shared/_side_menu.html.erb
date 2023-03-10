@@ -62,8 +62,17 @@
           data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Ações:</h6>
-                <a class="collapse-item" href="login.html">Lista de clientes</a>
-                <a class="collapse-item" href="login.html">Novo cliente</a>
+                <%= link_to profile_customers_path, class:'collapse-item' do %>
+                  <i class="fa fa-table"></i> Lista de clientes
+                <% end %>
+                <a
+                  class="collapse-item"
+                  href="login.html"
+                  data-toggle="modal"
+                  data-target="#clientModal">
+                  <i class="fa fa-plus"></i>
+                    Novo cliente
+                </a>
             </div>
         </div>
     </li>
@@ -207,31 +216,27 @@
                   <i class="fa fa-user fa-4x btn-icon"></i> <br>
                   Pessoa Física
                 <% end %>
-
               </div>
 
               <div>
-                <%#= link_to new_client_path(type: 'pj'), class: 'btn btn-outline-primary color-btn' do %>
+                <%= link_to new_company_path, class: 'btn btn-outline-primary color-btn' do %>
                   <i class="fa fa-building fa-4x btn-icon"></i> <br>
                   Pessoa Jurídica
-                <%# end %>
-
+                <% end %>
               </div>
 
               <div>
-                <%#= link_to new_client_path(type: 'cont'), class: 'btn btn-outline-primary color-btn' do %>
+                <%= link_to new_accounting_path, class: 'btn btn-outline-primary color-btn' do %>
                   <i class="fa fa-users fa-4x btn-icon"></i> <br>
                   Contador
-                <%# end %>
-
+                <% end %>
               </div>
 
               <div>
-                <%#= link_to new_client_path(type: 'rep'), class: 'btn btn-outline-primary color-btn' do %>
+                <%= link_to new_representative_path, class: 'btn btn-outline-primary color-btn' do %>
                   <i class="fa fa-calculator fa-4x btn-icon"></i> <br>
                   Representante Legal
-                <%# end %>
-
+                <% end %>
               </div>
 
             </div>

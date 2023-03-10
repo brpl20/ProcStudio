@@ -42,6 +42,7 @@
     <h3>Endereço</h3>
     <section>
       <%= link_to_add_association "Adicionar endereço", f, :addresses, 'data-association-isertion-node':'#addresses-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>
+
       <%= f.fields_for :addresses do |address|%>
           <%= render partial: 'address_fields', locals: {f: address} %>
       <% end %>
@@ -50,16 +51,19 @@
     <h3>Contato</h3>
     <section>
       <%= link_to_add_association "Adicionar telefone", f, :phones, 'data-association-isertion-node':'#phone-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>
+
       <%= f.fields_for :phones do |phone|%>
           <%= render partial: 'phone_fields', locals: {f: phone} %>
       <% end %>
+
       <%= link_to_add_association "Adicionar e-mail", f, :emails, 'data-association-isertion-node':'#email-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>
+
       <%= f.fields_for :emails do |email|%>
         <%= render partial: 'email_fields', locals: {f: email} %>
       <% end %>
     </section>
 
-    <h3>Dados Bancarios</h3>
+    <h3>Dados Bancários</h3>
     <section>
       <%= link_to_add_association "Adicionar conta", f, :bank_accounts, 'data-association-isertion-node':'#bank-account-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>
       <%= f.fields_for :bank_accounts do |bank|%>
@@ -69,10 +73,10 @@
 
     <h3>Dados Acesso ao sistema</h3>
     <section>
-      <%= f.fields_for :admin do |a|%>                      
+      <%= f.fields_for :admin do |a|%>
         <%= a.label :email %>
         <%= a.text_field :email, id: 'email', class: 'form-control' %>
-    
+
         <%= a.label :password %>
         <%= a.password_field :password, id: 'password', class: 'form-control' %>
 
@@ -80,5 +84,5 @@
         <%= a.password_field :password_confirmation, id: 'password_confirmation', class: 'form-control' %>
       <% end %>
     </section>
-  </div> 
+  </div>
 <% end %>

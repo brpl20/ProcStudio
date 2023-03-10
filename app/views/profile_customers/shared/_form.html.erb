@@ -1,0 +1,5 @@
+<%= form_with(model: @profile_customer, local: true) do |f| %>
+
+  <%= render partial: "#{params[:type].downcase}/form", locals: { f: f } %>
+
+<% end %>
