@@ -1,5 +1,30 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Power, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  let(:power) { create(:power) }
+
+  describe 'Casos de sucesso:' do
+    context 'durante a criação:' do
+      it 'salva com sucesso' do
+        expect { power.save! }.not_to raise_error
+      end
+
+      it 'objeto válido' do
+        expect(power).to be_valid
+      end
+    end
+    context 'durante a alteração' do
+      it 'altera descrição' do
+        power.update(description: 'Trabalhista')
+        expect(power.description).to eq('Trabalhista')
+      end
+
+      it 'altera categoria' do
+        power.update(category: 2)
+        expect(power.category).to eq(2)
+      end
+    end
+  end
 end

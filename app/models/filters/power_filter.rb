@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PowerFilter
   class << self
     def by_cat(category)
