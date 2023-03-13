@@ -1,4 +1,4 @@
-<%= form_with model: @office, local: true, id:'form', class: 'row row-cols-1 ms-5 me-5 needs-validation' do |f| %>
+<%= form_with model: @office, local: true, id:'form', class: '' do |f| %>
 
   <div id="smartwizard">
     <ul class="nav">
@@ -120,7 +120,6 @@
 
   </div>
 
-
 <% end %>
 
 <script type="text/javascript">
@@ -129,11 +128,29 @@
     var form = $(`#step-${currentStepIndex}`).find("form");
 
     // Verifique se o formulário é válido usando o plugin jQuery Validation
-    if (!form.valid()) {
-      // O formulário não é válido, portanto, não permita que o usuário saia do step
-      return false;
-    }
-  })
+
+    // if (!form.valid()) {
+    //   // O formulário não é válido, portanto, não permita que o usuário saia do step
+    //   return false;
+    // }
+    // form.validate({ **há algum erro aqui**
+    //   rules: {
+    //     name: {
+    //       required: true,
+    //       minlength: 3
+    //     },
+    //     // defina outras regras de validação aqui
+    //   },
+    //   messages: {
+    //     name: {
+    //       required: "Por favor, insira o seu nome",
+    //       minlength: "Seu nome deve ter pelo menos 3 caracteres"
+    //     },
+    //     // defina outras mensagens de erro aqui
+    //   }
+    // });
+  });
+
 
   $('#smartwizard').smartWizard({
     selected: 0, // Initial selected step, 0 = first step
