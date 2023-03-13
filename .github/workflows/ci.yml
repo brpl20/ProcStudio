@@ -1,0 +1,44 @@
+name: CI
+on: push
+jobs:
+  rubocop:
+    name: Rubocop
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Analyze code
+        run: bundle exec rubocop
+
+  rspec:
+    runs-on: ubuntu-latest
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: postgres://postgres:example@localhost:5432/db_test
+    services:
+      postgres:
+        image: postgres:latest
+        ports: ['5432:5432']
+        env:
+          POSTGRES_DB: db_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: example
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.0.0
+    - name: Install dependencies
+      run: |
+        gem install bundler
+        bundle install
+    - name: Run RSpec
+      run: RAILS_ENV=test bundle exec rspec

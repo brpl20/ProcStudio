@@ -94,12 +94,20 @@
           class="collapse"
           aria-labelledby="headingWork"
           data-parent="#accordionSidebar">
+
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Ações:</h6>
-                <a class="collapse-item" href="login.html">Lista de Trabalhos</a>
-                <a class="collapse-item" href="login.html">Novo Trabalho</a>
+                <a class="collapse-item" href="#">Lista de Trabalhos</a>
+                <a class="collapse-item" href="#">Novo Trabalho</a>
 
+                <div class="collapse-divider"></div>
+
+                <h6 class="collapse-header">Gerenciamento:</h6>
+                <%= link_to powers_index_path, class:'collapse-item' do %>
+                  <i class="fa fa-gavel"></i> Poderes
+                <% end %>
             </div>
+
         </div>
     </li>
 

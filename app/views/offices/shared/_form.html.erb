@@ -1,102 +1,201 @@
-<%= form_with model: @office, local: true do |f| %>
+<%= form_with model: @office, local: true, id:'form', class: '' do |f| %>
 
-  <fieldset>
-    <legend class="form-title">Dados Gerais</legend>
-    <hr/>
+  <div id="smartwizard">
+    <ul class="nav">
+        <li class="nav-item">
+          <a class="nav-link" href="#step-1">
+            <div class="num">1</div>
+            Dados Gerais
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#step-2">
+            <span class="num">2</span>
+            Endereço
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#step-3">
+            <span class="num">3</span>
+            Contato
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link " href="#step-4">
+            <span class="num">4</span>
+            Dados Bancários
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link " href="#step-5">
+            <span class="num">5</span>
+            Responsável
+          </a>
+        </li>
+    </ul>
 
-    <%= f.label :name %>
-    <%= f.text_field :name, class: 'form-control' %>
+    <div class="tab-content">
+        <div id="step-1" class="tab-pane" role="tabpanel" aria-labelledby="step-1">
+          <%= f.label :name %>
+          <%= f.text_field :name, class: 'form-control', required: true %>
 
-    <%= f.label :cnpj %>
-    <%= f.text_field :cnpj, class: 'form-control' %>
+          <%= f.label :cnpj %>
+          <%= f.text_field :cnpj, class: 'form-control' %>
 
-    <%= f.label :oab %>
-    <%= f.text_field :oab, class: 'form-control' %>
+          <%= f.label :oab %>
+          <%= f.text_field :oab, class: 'form-control' %>
 
-    <%= f.label :foundation %>
-    <%= f.text_field :foundation, class: 'form-control' %>
+          <%= f.label :foundation %>
+          <%= f.text_field :foundation, class: 'form-control' %>
 
-    <%= f.label :society %>
-    <%= f.collection_select :society, options_for_society, :first, :second, {},{class: 'form-control'} %>
+          <%= f.label :society %>
+          <%= f.collection_select :society, options_for_society, :first, :second, {},{class: 'form-control'} %>
 
-    <%= f.label :site %>
-    <%= f.text_field :site, class: 'form-control' %>
+          <%= f.label :site %>
+          <%= f.text_field :site, class: 'form-control' %>
+        </div>
+        <div id="step-2" class="tab-pane" role="tabpanel" aria-labelledby="step-2">
+          <%= f.label :cep %>
+          <%= f.text_field :cep, class: 'form-control' %>
 
-  </fieldset>
+          <%= f.label :street %>
+          <%= f.text_field :street, class: 'form-control' %>
+
+          <%= f.label :number %>
+          <%= f.text_field :number, class: 'form-control' %>
+
+          <%= f.label :neighborhood %>
+          <%= f.text_field :neighborhood, class: 'form-control' %>
+
+          <%= f.label :city %>
+          <%= f.text_field :city, class: 'form-control' %>
+
+          <%= f.label :state %>
+          <%= f.text_field :state, class: 'form-control' %>
+        </div>
+        <div id="step-3" class="tab-pane" role="tabpanel" aria-labelledby="step-3">
+          <fieldset>
+            <legend id="phone-group" class="form-title">Telefones</legend>
+            <%= link_to_add_association "Adicionar telefone", f, :phones, 'data-association-isertion-node':'#phone-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>
+
+            <%= f.fields_for :phones do |phone|%>
+              <%= render partial: 'phone_fields', locals: {f: phone} %>
+            <% end %>
+          </fieldset>
+
+          <fieldset>
+            <legend id="email-group" class="form-title">E-mails</legend>
+            <%= link_to_add_association "Adicionar e-mail", f, :emails, 'data-association-isertion-node':'#email-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>
+
+            <%= f.fields_for :emails do |email|%>
+              <%= render partial: 'email_fields', locals: {f: email} %>
+            <% end %>
+          </fieldset>
+        </div>
+        <div id="step-4" class="tab-pane" role="tabpanel" aria-labelledby="step-4">
+          <%= link_to_add_association "Adicionar conta", f, :bank_accounts, 'data-association-isertion-node':'#bank-account-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>
+
+          <%= f.fields_for :bank_accounts do |bank|%>
+            <%= render partial: 'bank_account_fields', locals: {f: bank} %>
+          <% end %>
+
+        </div>
+        <div id="step-5" class="tab-pane" role="tabpanel" aria-labelledby="step-5">
+          <%= f.label :profile_admin_id %>
+          <%= f.collection_select :profile_admin_id, options_for_admin, :id, :name, {},{class: 'form-control'} %>
+
+          <%= f.label :office_type_id %>
+          <%= f.collection_select :office_type_id, options_for_office_type, :id, :description, {},{class: 'form-control'} %>
+
+          <button type="submit" class="btn btn-success">Salvar</button>
+          <%= link_to 'Cancelar', offices_path, class: 'btn btn-outline-danger'%>
+        </div>
+
+    </div>
 
 
-  <fieldset>
-    <legend id="addresses-group" class="form-title">Endereço</legend>
-    <hr/>
+    <div class="progress">
+      <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
 
-    <%= f.label :cep %>
-    <%= f.text_field :cep, class: 'form-control' %>
-
-    <%= f.label :street %>
-    <%= f.text_field :street, class: 'form-control' %>
-
-    <%= f.label :number %>
-    <%= f.text_field :number, class: 'form-control' %>
-
-    <%= f.label :neighborhood %>
-    <%= f.text_field :neighborhood, class: 'form-control' %>
-
-    <%= f.label :city %>
-    <%= f.text_field :city, class: 'form-control' %>
-
-    <%= f.label :state %>
-    <%= f.text_field :state, class: 'form-control' %>
-  </fieldset>
-
-  <fieldset>
-    <legend class="form-title">Contato</legend>
-    <hr/>
-
-    <fieldset>
-      <legend id="phone-group" class="form-title">Telefones</legend>
-      <%= link_to_add_association "Adicionar telefone", f, :phones, 'data-association-isertion-node':'#phone-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>
-
-      <%= f.fields_for :phones do |phone|%>
-        <%= render partial: 'phone_fields', locals: {f: phone} %>
-      <% end %>
-    </fieldset>
-
-    <fieldset>
-      <legend id="email-group" class="form-title">E-mails</legend>
-      <%= link_to_add_association "Adicionar e-mail", f, :emails, 'data-association-isertion-node':'#email-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>
-
-      <%= f.fields_for :emails do |email|%>
-        <%= render partial: 'email_fields', locals: {f: email} %>
-      <% end %>
-    </fieldset>
-
-  </fieldset>
-
-  <fieldset>
-    <legend id="bank-account-group" class="form-title">Dados Bancários</legend>
-    <hr/>
-
-    <%= link_to_add_association "Adicionar conta", f, :bank_accounts, 'data-association-isertion-node':'#bank-account-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>
-
-    <%= f.fields_for :bank_accounts do |bank|%>
-      <%= render partial: 'bank_account_fields', locals: {f: bank} %>
-    <% end %>
-
-  </fieldset>
-
-  <fieldset>
-    <legend class="form-title">Responsável</legend>
-    <hr/>
-
-    <%= f.label :profile_admin_id %>
-    <%= f.collection_select :profile_admin_id, options_for_admin, :id, :name, {},{class: 'form-control'} %>
-
-    <%= f.label :office_type_id %>
-    <%= f.collection_select :office_type_id, options_for_office_type, :id, :description, {},{class: 'form-control'} %>
-
-  </fieldset>
-
-  <button type="submit" class="btn btn-success">Salvar</button>
-  <%= link_to 'Cancelar', offices_path, class: 'btn btn-outline-danger'%>
+  </div>
 
 <% end %>
+
+<script type="text/javascript">
+
+  $("#smartwizard").on("leaveStep", function(e, anchorObject, currentStepIndex, nextStepIndex, stepDirection) {
+    var form = $(`#step-${currentStepIndex}`).find("form");
+
+    // Verifique se o formulário é válido usando o plugin jQuery Validation
+
+    // if (!form.valid()) {
+    //   // O formulário não é válido, portanto, não permita que o usuário saia do step
+    //   return false;
+    // }
+    // form.validate({ **há algum erro aqui**
+    //   rules: {
+    //     name: {
+    //       required: true,
+    //       minlength: 3
+    //     },
+    //     // defina outras regras de validação aqui
+    //   },
+    //   messages: {
+    //     name: {
+    //       required: "Por favor, insira o seu nome",
+    //       minlength: "Seu nome deve ter pelo menos 3 caracteres"
+    //     },
+    //     // defina outras mensagens de erro aqui
+    //   }
+    // });
+  });
+
+
+  $('#smartwizard').smartWizard({
+    selected: 0, // Initial selected step, 0 = first step
+    theme: 'arrows', // theme for the wizard, can be: basic, arrows, square, round, dots
+    justified: false, // Nav menu justification. true/false
+    autoAdjustHeight: true, // Automatically adjust content height
+    backButtonSupport: false, // Enable the back button support
+    enableUrlHash: true, // Enable selection of the step based on url hash
+    transition: {
+        animation: 'fade', // Animation effect on navigation, none|fade|slideHorizontal|slideVertical|slideSwing|css(Animation CSS class also need to specify)
+        speed: '400', // Animation speed. Not used if animation is 'css'
+        easing: '', // Animation easing. Not supported without a jQuery easing plugin. Not used if animation is 'css'
+        prefixCss: '', // Only used if animation is 'css'. Animation CSS prefix
+        fwdShowCss: '', // Only used if animation is 'css'. Step show Animation CSS on forward direction
+        fwdHideCss: '', // Only used if animation is 'css'. Step hide Animation CSS on forward direction
+        bckShowCss: '', // Only used if animation is 'css'. Step show Animation CSS on backward direction
+        bckHideCss: '', // Only used if animation is 'css'. Step hide Animation CSS on backward direction
+    },
+    toolbar: {
+        position: 'bottom', // none|top|bottom|both
+        showNextButton: true, // show/hide a Next button
+        showPreviousButton: true, // show/hide a Previous button
+        extraHtml: '' // Extra html to show on toolbar
+    },
+    anchor: {
+        enableNavigation: true, // Enable/Disable anchor navigation
+        enableNavigationAlways: false, // Activates all anchors clickable always
+        enableDoneState: true, // Add done state on visited steps
+        markPreviousStepsAsDone: true, // When a step selected by url hash, all previous steps are marked done
+        unDoneOnBackNavigation: false, // While navigate back, done state will be cleared
+        enableDoneStateNavigation: true // Enable/Disable the done state navigation
+    },
+    keyboard: {
+        keyNavigation: false, // Enable/Disable keyboard navigation(left and right keys are used if enabled)
+        keyLeft: [37], // Left key code
+        keyRight: [39] // Right key code
+    },
+    lang: { // Language variables for button
+        next: 'Próximo',
+        previous: 'Anterior'
+    },
+    disabledSteps: [], // Array Steps disabled
+    errorSteps: [], // Array Steps error
+    warningSteps: [], // Array Steps warning
+    hiddenSteps: [], // Hidden steps
+    getContent: null // Callback function for content loading
+  });
+</script>

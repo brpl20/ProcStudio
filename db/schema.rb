@@ -198,6 +198,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_192857) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "powers", force: :cascade do |t|
+    t.string "description", null: false
+    t.integer "category", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "profile_admins", force: :cascade do |t|
     t.integer "role"
     t.string "name"
