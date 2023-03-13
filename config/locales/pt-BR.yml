@@ -7,14 +7,17 @@
         other: Endereços
       bank_account:
         one: Conta Bancária
-        others: Conta Bancárias 
+        others: Conta Bancárias
       email:
         one: E-mail
         other: E-mails
       phones:
-        one: Telefone 
+        one: Telefone
         other: Telefones
-      profile_admin: Perfil de usuário 
+      powers:
+        one: Poder
+        other: Poderes
+      profile_admin: Perfil de usuário
     attributes:
       admin:
         email: E-mail
@@ -60,8 +63,11 @@
         priority: Prioridade
         responsable: Responsável
         status: Estágio
-      phone: 
+      phone:
         phone: Telefone
+      power:
+        description: Descrição
+        category: Categoria
       profile_admin:
         birth: Data de nascimento
         cpf: CPF
@@ -71,17 +77,17 @@
         mother_name: Nome da mãe
         nationality: Nacionalidade
         name: Nome
-        oab: OAB     
+        oab: OAB
         role: Papel
         rg: RG
-        roles: 
-          counter: Contador(a)                                                                                      
+        roles:
+          counter: Contador(a)
           excounter: Contador(a) Externo
           lawyer: Advogado(a)
           paralegal: Paralegal
-          secretary: Secretário(a)                                                                                    
-          trainee: Estagiário(a)                                                                                  
-        status: Situação  
+          secretary: Secretário(a)
+          trainee: Estagiário(a)
+        status: Situação
       office:
         address: Endereço
         city: Cidade
