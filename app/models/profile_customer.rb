@@ -4,8 +4,11 @@ class ProfileCustomer < ApplicationRecord
   belongs_to :customer
 
   has_many_attached :files
+  validate :file_type
 
   attr_accessor :flag_access_data, :flag_generate_documents, :flag_signature
+
+  protected
 
   def file_type
     files.each do |file|
