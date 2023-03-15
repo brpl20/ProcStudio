@@ -1,25 +1,176 @@
 <div id="example-basic">
-  <h3>Dados Pessoais</h3>
-  <section>
-    <%= f.label :name %>
-    <%= f.text_field :name %>
+  <div id="smartwizard">
 
-    <%= f.label :lastname %>
-    <%= f.text_field :lastname %>
+    <div class="progress">
+      <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
 
-    <%= f.label :cpf %>
-    <%= f.text_field :cpf %>
+    <ul class="nav">
+      <li class="nav-item">
+        <a class="nav-link" href="#step-1">
+          <div class="num">1</div>
+          Dados pessoais
+        </a>
+      </li>
 
-    <%= f.label :rg %>
-    <%= f.text_field :rg %>
+      <li class="nav-item">
+        <a class="nav-link" href="#step-2">
+          <div class="num">2</div>
+          Endereço
+        </a>
+      </li>
 
-    <%= f.label :cnpj %>
-    <%= f.text_field :cnpj %>
+      <li class="nav-item">
+        <a class="nav-link" href="#step-3">
+          <div class="num">3</div>
+          Contato
+        </a>
+      </li>
 
-    <%= f.label :rg %>
-    <%= f.text_field :rg %>
-  </section>
+      <li class="nav-item">
+        <a class="nav-link" href="#step-4">
+          <div class="num">4</div>
+          Dados Bancários
+        </a>
+      </li>
 
-  <%= render partial: 'shared/contacts', locals: { f: f }  %>
+      <li class="nav-item">
+        <a class="nav-link" href="#step-5">
+          <div class="num">5</div>
+          Informações Adicionais
+        </a>
+      </li>
 
+      <li class="nav-item">
+        <a class="nav-link" href="#step-6">
+          <div class="num">6</div>
+          Arquivos
+        </a>
+      </li>
+    </ul>
+
+    <div class="tab-content col-12 col-md-6">
+      <div id="step-1" class="tab-pane" role="tabpanel" aria-labelledby="step-1">
+        <%= f.label :name %>
+        <%= f.text_field :name , class: 'form-control'%>
+
+        <%= f.label :lastname %>
+        <%= f.text_field :lastname, class: 'form-control' %>
+
+        <%= f.label :cpf %>
+        <%= f.text_field :cpf, class: 'form-control' %>
+
+        <%= f.label :rg %>
+        <%= f.text_field :rg, class: 'form-control' %>
+
+        <%= f.label :birth %>
+        <%= f.date_field :birth, class: 'form-control' %>
+
+        <%= f.label :gender %>
+        <%= f.collection_select :gender, options_for_gender, :first, :second, {},{class: 'form-control'} %>
+
+        <%= f.label :civil_status %>
+        <%= f.collection_select :civil_status, options_for_civil_status, :first, :second, {},{class: 'form-control'} %>
+
+        <%= f.label :nationality %>
+        <%= f.collection_select :nationality, options_for_nationality, :first, :second, {},{class: 'form-control'} %>
+
+        <%= f.label :capacity %>
+        <%= f.collection_select :capacity, options_for_capacity, :first, :second, {},{class: 'form-control'} %>
+
+      </div>
+
+      <div id="step-2" class="tab-pane" role="tabpanel" aria-labelledby="step-2">
+        <%= render partial: 'shared/addresses', locals: { f: f }  %>
+      </div>
+
+      <div id="step-3" class="tab-pane" role="tabpanel" aria-labelledby="step-3">
+        <%= render partial: 'shared/contacts', locals: { f: f }  %>
+      </div>
+
+      <div id="step-4" class="tab-pane" role="tabpanel" aria-labelledby="step-4">
+        <%= render partial: 'shared/bank_accounts', locals: { f: f }  %>
+      </div>
+
+      <div id="step-5" class="tab-pane" role="tabpanel" aria-labelledby="step-5">
+        <%= f.label :profession %>
+        <%= f.text_field :profession , class: 'form-control'%>
+
+        <%= f.label :company %>
+        <%= f.text_field :company, class: 'form-control' %>
+
+        <%= f.label :number_benefit %>
+        <%= f.text_field :number_benefit, class: 'form-control' %>
+
+        <%= f.label :nit %>
+        <%= f.text_field :nit, class: 'form-control' %>
+
+        <%= f.label :monther_name %>
+        <%= f.text_field :monther_name, class: 'form-control' %>
+
+        <%= f.label :inss_password %>
+        <%= f.text_field :inss_password, class: 'form-control' %>
+      </div>
+
+      <div id="step-6" class="tab-pane" role="tabpanel" aria-labelledby="step-6">
+        <%= render partial: 'profile_customers/shared/option_fields', locals: { f: f }  %>
+
+        <div class="btns">
+          <button type="submit" class="btn btn-success">Salvar</button>
+          <%= link_to 'Cancelar', powers_path, class: 'btn btn-outline-danger'%>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
 </div>
+
+<script type="text/javascript">
+  $('#smartwizard').smartWizard({
+    selected: 0,
+    theme: 'arrows',
+    justified: false,
+    autoAdjustHeight: true,
+    backButtonSupport: false,
+    enableUrlHash: true,
+    transition: {
+        animation: 'fade',
+        speed: '400',
+        easing: '',
+        prefixCss: '',
+        fwdShowCss: '',
+        fwdHideCss: '',
+        bckShowCss: '',
+        bckHideCss: '',
+    },
+    toolbar: {
+        position: 'bottom',
+        showNextButton: true,
+        showPreviousButton: true,
+        extraHtml: ''
+    },
+    anchor: {
+        enableNavigation: true,
+        enableNavigationAlways: false,
+        enableDoneState: true,
+        markPreviousStepsAsDone: true,
+        unDoneOnBackNavigation: false,
+        enableDoneStateNavigation: true
+    },
+    keyboard: {
+        keyNavigation: false,
+        keyLeft: [37],
+        keyRight: [39]
+    },
+    lang: {
+        next: 'Próximo',
+        previous: 'Anterior'
+    },
+    disabledSteps: [],
+    errorSteps: [],
+    warningSteps: [],
+    hiddenSteps: [],
+    getContent: null
+  });
+</script>

@@ -18,6 +18,7 @@
         one: Poder
         other: Poderes
       profile_admin: Perfil de usuário
+      profile_customer: Perfil de cliente
     attributes:
       admin:
         email: E-mail
@@ -88,6 +89,12 @@
           secretary: Secretário(a)
           trainee: Estagiário(a)
         status: Situação
+      profile_customer:
+        gender: Sexo
+      people:
+        genders:
+          male: Masculino
+          female: Feminino
       office:
         address: Endereço
         city: Cidade

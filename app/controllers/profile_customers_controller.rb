@@ -12,7 +12,6 @@ class ProfileCustomersController < ApplicationController
     @profile_customer = ProfileAdmin.new
     @profile_customer.phones.build
     @profile_customer.emails.build
-    @profile_customer.build_customer  if params[:type] == 'People'
     @profile_customer.addresses.build if params[:type] == 'Companies' || params[:type] == 'People'
     @profile_customer.bank_accounts.build if params[:type] == 'Companies' || params[:type] == 'People'
   end

@@ -3,10 +3,16 @@
 class ProfileCustomer < ApplicationRecord
   belongs_to :customer
 
+  enum :gender, %i[male female other]
+  enum :civil_status, %i[single married divorced widower union]
+  enum :nationality, %i[brazilian foreigner]
+  enum :capacity, %i[relatively absolutely unable]
+
   has_many_attached :files
-  validate :file_type
 
   attr_accessor :flag_access_data, :flag_generate_documents, :flag_signature
+
+  validate :file_type
 
   protected
 
