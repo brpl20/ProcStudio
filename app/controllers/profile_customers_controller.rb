@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ProfileCustomersController < ApplicationController
+class ProfileCustomersController < BackofficeController
   before_action :retrieve_customer, only: %i[edit update show]
   before_action :verify_password, only: [:update]
 
@@ -9,26 +9,18 @@ class ProfileCustomersController < ApplicationController
   end
 
   def new
-    @profile_customer = ProfileAdmin.new
-    @profile_customer.phones.build
+    @profile_customer = params[:type].singularize.constantize.new
     @profile_customer.emails.build
-    @profile_customer.addresses.build if params[:type] == 'Companies' || params[:type] == 'People'
-    @profile_customer.bank_accounts.build if params[:type] == 'Companies' || params[:type] == 'People'
+    @profile_customer.phones.build
+
+    @profile_customer.addresses.build if profile_is_company_or_people?
+    @profile_customer.bank_accounts.build if profile_is_company_or_people?
   end
 
   def create
-    @profile_customer = ProfileAdmin.new(params_profile)
-
-    case @profile_customer.type
-    when 'Person'
-      @profile_customer = Person.new(person_params)
-    when 'Company'
-      @profile_customer = Company.new(company_params)
-    when 'Accounting'
-      @profile_customer = Accounting.new(accounting_params)
-    when 'Representavive'
-      @profile_customer = Representavive.new(representavive_params)
-    end
+    @profile_customer = params[:type].singularize.constantize.new(
+      send("#{params[:type].singularize.downcase}_params")
+    )
 
     if @profile_customer.save
       redirect_to profile_customers_path, notice: 'Salvo com sucesso!'
@@ -65,40 +57,61 @@ class ProfileCustomersController < ApplicationController
 
   private
 
+  def profile_is_company_or_people?
+    params[:type].in?(%w[Companies People])
+  end
+
   def params_profile
+    p '----------------'
+    p 'verificando os parametros gerais'
     params.require(:profile_customer).permit(
       :type,
       :name,
-      :lastname,
-      :gender,
-      :nationality,
-      :civil_status,
-      :capacity,
-      :profession,
-      :birth,
-      :monther_name,
-      :number_benefit,
       :status,
-      :document,
-      :nit,
-      :inss_password,
-      :invalid_person,
-      :customer,
-      files: [],
-      customer_attributes: %i[id email password password_confirmation],
-      addresses_attributes: %i[id description zip_code street number neighborhood city state _destroy],
       phones_attributes: %i[id phone _destroy],
-      emails_attributes: %i[id email _destroy],
-      bank_accounts_attributes: %i[id bank_name type_account agency account operation _destroy]
+      emails_attributes: %i[id email _destroy]
     )
   end
 
   def person_params
-    params.require(:person).permit(:cpf, :rg)
+    params.require(:person).permit(
+      :lastname,
+      :cpf, :rg,
+      :birth, :gender,
+      :civil_status,
+      :nationality,
+      :capacity,
+      :profession,
+      :company,
+      :number_benefit,
+      :nit,
+      :monther_name,
+      :inss_password,
+      addresses_attributes: %i[id description zip_code street number neighborhood city state _destroy],
+      bank_accounts_attributes: %i[id bank_name type_account agency account operation _destroy],
+      customer_attributes: %i[id email password password_confirmation]
+    )
   end
 
   def company_params
-    params.require(:company).permit(:cnpj, :company)
+    params.require(:company).permit(
+      :cnpj,
+      :company,
+      addresses_attributes: %i[id description zip_code street number neighborhood city state _destroy],
+      bank_accounts_attributes: %i[id bank_name type_account agency account operation _destroy]
+    )
+  end
+
+  def representative_params
+    params.require(:representative).permit(
+      :lastname,
+      :cpf,
+      :rg
+    )
+  end
+
+  def accounting_params
+    params.require(:accounting).permit(:lastname)
   end
 
   def retrieve_customer

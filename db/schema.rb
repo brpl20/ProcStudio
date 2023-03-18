@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_08_192857) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_17_161118) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -84,39 +84,39 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_192857) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "client_addresses", force: :cascade do |t|
+  create_table "customer_addresses", force: :cascade do |t|
     t.bigint "profile_customer_id", null: false
-    t.bigint "addresses_id", null: false
+    t.bigint "address_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["addresses_id"], name: "index_client_addresses_on_addresses_id"
-    t.index ["profile_customer_id"], name: "index_client_addresses_on_profile_customer_id"
+    t.index ["address_id"], name: "index_customer_addresses_on_address_id"
+    t.index ["profile_customer_id"], name: "index_customer_addresses_on_profile_customer_id"
   end
 
   create_table "customer_bank_accounts", force: :cascade do |t|
     t.bigint "profile_customer_id", null: false
-    t.bigint "bank_accounts_id", null: false
+    t.bigint "bank_account_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["bank_accounts_id"], name: "index_customer_bank_accounts_on_bank_accounts_id"
+    t.index ["bank_account_id"], name: "index_customer_bank_accounts_on_bank_account_id"
     t.index ["profile_customer_id"], name: "index_customer_bank_accounts_on_profile_customer_id"
   end
 
   create_table "customer_emails", force: :cascade do |t|
     t.bigint "profile_customer_id", null: false
-    t.bigint "emails_id", null: false
+    t.bigint "email_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["emails_id"], name: "index_customer_emails_on_emails_id"
+    t.index ["email_id"], name: "index_customer_emails_on_email_id"
     t.index ["profile_customer_id"], name: "index_customer_emails_on_profile_customer_id"
   end
 
   create_table "customer_phones", force: :cascade do |t|
     t.bigint "profile_customer_id", null: false
-    t.bigint "phones_id", null: false
+    t.bigint "phone_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["phones_id"], name: "index_customer_phones_on_phones_id"
+    t.index ["phone_id"], name: "index_customer_phones_on_phone_id"
     t.index ["profile_customer_id"], name: "index_customer_phones_on_profile_customer_id"
   end
 
@@ -225,7 +225,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_192857) do
   end
 
   create_table "profile_customers", force: :cascade do |t|
-    t.integer "type"
+    t.string "type"
     t.string "name"
     t.string "lastname"
     t.integer "gender"
@@ -245,8 +245,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_192857) do
     t.string "nit"
     t.string "inss_password"
     t.integer "invalid_person"
+    t.bigint "customer_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["customer_id"], name: "index_profile_customers_on_customer_id"
   end
 
   add_foreign_key "admin_addresses", "addresses"
@@ -257,13 +259,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_192857) do
   add_foreign_key "admin_emails", "profile_admins"
   add_foreign_key "admin_phones", "phones"
   add_foreign_key "admin_phones", "profile_admins"
-  add_foreign_key "client_addresses", "addresses", column: "addresses_id"
-  add_foreign_key "client_addresses", "profile_customers"
-  add_foreign_key "customer_bank_accounts", "bank_accounts", column: "bank_accounts_id"
+  add_foreign_key "customer_addresses", "addresses"
+  add_foreign_key "customer_addresses", "profile_customers"
+  add_foreign_key "customer_bank_accounts", "bank_accounts"
   add_foreign_key "customer_bank_accounts", "profile_customers"
-  add_foreign_key "customer_emails", "emails", column: "emails_id"
+  add_foreign_key "customer_emails", "emails"
   add_foreign_key "customer_emails", "profile_customers"
-  add_foreign_key "customer_phones", "phones", column: "phones_id"
+  add_foreign_key "customer_phones", "phones"
   add_foreign_key "customer_phones", "profile_customers"
   add_foreign_key "office_bank_accounts", "bank_accounts"
   add_foreign_key "office_bank_accounts", "offices"
@@ -274,4 +276,5 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_192857) do
   add_foreign_key "offices", "office_types"
   add_foreign_key "offices", "profile_admins"
   add_foreign_key "profile_admins", "admins"
+  add_foreign_key "profile_customers", "customers"
 end

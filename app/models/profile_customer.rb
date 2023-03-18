@@ -10,9 +10,23 @@ class ProfileCustomer < ApplicationRecord
 
   has_many_attached :files
 
+  has_many :customer_addresses, dependent: :destroy
+  has_many :addresses, through: :customer_addresses
+
+  has_many :customer_phones, dependent: :destroy
+  has_many :phones, through: :customer_phones
+
+  has_many :customer_emails, dependent: :destroy
+  has_many :emails, through: :customer_emails
+
+  has_many :customer_bank_accounts, dependent: :destroy
+  has_many :bank_accounts, through: :customer_bank_accounts
+
   attr_accessor :flag_access_data, :flag_generate_documents, :flag_signature
 
-  validate :file_type
+  accepts_nested_attributes_for :customer, :addresses, :phones, :emails, :bank_accounts, reject_if: :all_blank
+
+  # validate :file_type
 
   protected
 

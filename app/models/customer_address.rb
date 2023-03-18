@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class CustomerEmail < ApplicationRecord
-  belongs_to :email
+class CustomerAddress < ApplicationRecord
   belongs_to :profile_customer
+  belongs_to :address
 end
