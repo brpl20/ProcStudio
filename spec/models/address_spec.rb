@@ -12,7 +12,7 @@ RSpec.describe Address, type: :model do
       end
 
       it 'objeto válido' do
-        expect { address.valid? }.to be_valid
+        expect(address).to be_valid
       end
     end
   end
