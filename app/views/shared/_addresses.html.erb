@@ -1,0 +1,5 @@
+<%= link_to_add_association "Adicionar endereço", f, :addresses, 'data-association-isertion-node':'#addresses-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>
+
+<%= f.fields_for :addresses do |address|%>
+    <%= render partial: 'address_fields', locals: {f: address} %>
+<% end %>

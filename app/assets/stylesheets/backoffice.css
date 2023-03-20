@@ -47,3 +47,11 @@
 }
 
 /* fim footer */
+/* modal tipo de cliente */
+.container-modal{
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 3rem;
+}
+/* fim modal tipo de cliente */

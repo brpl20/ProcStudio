@@ -6,4 +6,7 @@ class Phone < ApplicationRecord
 
   has_many :office_phones, dependent: :destroy
   has_many :offices, through: :office_phones
+
+  has_many :customer_phones, dependent: :destroy
+  has_many :profile_customers, through: :customer_phones
 end
