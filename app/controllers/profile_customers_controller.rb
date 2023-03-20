@@ -2,7 +2,7 @@
 
 class ProfileCustomersController < BackofficeController
   before_action :retrieve_customer, only: %i[edit update show]
-  before_action :verify_password, only: [:update]
+  # before_action :verify_password, only: [:update]
 
   def index
     @profile_customers = ProfileCustomerFilter.retrieve_customers
@@ -32,19 +32,9 @@ class ProfileCustomersController < BackofficeController
   def edit; end
 
   def update
-    flag = false
-    case @profile_customer.type
-    when 'Person'
-      flag = true if @profile_customer.update(person_profile)
-    when 'Company'
-      flag = true if @profile_customer.update(company_params)
-    when 'Accounting'
-      flag = true if @profile_customer.update(accounting_params)
-    when 'Representavive'
-      flag = true if @profile_customer.update(representative_params)
-    end
-
-    if flag
+    if @profile_customer.update(
+      send("#{@profile_customer.type.singularize.downcase}_params")
+    )
       redirect_to profile_customers_path, notice: 'Alterado com sucesso!'
     else
       render :edit
@@ -57,65 +47,71 @@ class ProfileCustomersController < BackofficeController
 
   private
 
+  def retrieve_customer
+    @profile_customer = ProfileCustomerFilter.retrieve_customer(params[:id])
+  end
+
   def profile_is_company_or_people?
     params[:type].in?(%w[Companies People])
   end
 
-  def params_profile
-    p '----------------'
-    p 'verificando os parametros gerais'
-    params.require(:profile_customer).permit(
-      :type,
-      :name,
-      :status,
+  def person_params
+    params.require(:person).permit(
+      :type, :name, :status, :customer_id, :lastname,
+      :cpf, :rg, :birth, :gender,
+      :civil_status, :nationality,
+      :capacity, :profession,
+      :company,
+      :number_benefit,
+      :nit, :monther_name,
+      :inss_password,
+      addresses_attributes: %i[id description zip_code street number neighborhood city state _destroy],
+      bank_accounts_attributes: %i[id bank_name type_account agency account operation _destroy],
+      customer_attributes: %i[id email password password_confirmation],
       phones_attributes: %i[id phone _destroy],
       emails_attributes: %i[id email _destroy]
     )
   end
 
-  def person_params
-    params.require(:person).permit(
-      :lastname,
-      :cpf, :rg,
-      :birth, :gender,
-      :civil_status,
-      :nationality,
-      :capacity,
-      :profession,
-      :company,
-      :number_benefit,
-      :nit,
-      :monther_name,
-      :inss_password,
-      addresses_attributes: %i[id description zip_code street number neighborhood city state _destroy],
-      bank_accounts_attributes: %i[id bank_name type_account agency account operation _destroy],
-      customer_attributes: %i[id email password password_confirmation]
-    )
-  end
-
   def company_params
     params.require(:company).permit(
+      :type,
+      :name,
       :cnpj,
+      :status,
       :company,
+      :customer_id,
       addresses_attributes: %i[id description zip_code street number neighborhood city state _destroy],
-      bank_accounts_attributes: %i[id bank_name type_account agency account operation _destroy]
+      bank_accounts_attributes: %i[id bank_name type_account agency account operation _destroy],
+      phones_attributes: %i[id phone _destroy],
+      emails_attributes: %i[id email _destroy]
     )
   end
 
   def representative_params
     params.require(:representative).permit(
+      :name,
       :lastname,
       :cpf,
-      :rg
+      :rg,
+      :type,
+      :status,
+      :customer_id,
+      phones_attributes: %i[id phone _destroy],
+      emails_attributes: %i[id email _destroy]
     )
   end
 
   def accounting_params
-    params.require(:accounting).permit(:lastname)
-  end
-
-  def retrieve_customer
-    @profile_customer = ProfileCustomerFilter.retrieve_customer(params[:id])
+    params.require(:accounting).permit(
+      :name,
+      :lastname,
+      :type,
+      :status,
+      :customer_id,
+      phones_attributes: %i[id phone _destroy],
+      emails_attributes: %i[id email _destroy]
+    )
   end
 
   def verify_password

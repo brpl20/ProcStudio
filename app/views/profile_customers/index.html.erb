@@ -21,9 +21,9 @@
         <td><%= profile.type %></td>
         <td><%= profile.customer.email %></td>
         <td>
-          <%#= link_to edit_office_path(office), class: 'btn btn-primary btn-circle' do %>
+          <%= link_to edit_profile_customer_path(profile), class: 'btn btn-primary btn-circle' do %>
             <i class="fa fa-edit"></i>
-          <%# end %>
+          <% end %>
         </td>
       </tr>
     <% end %>

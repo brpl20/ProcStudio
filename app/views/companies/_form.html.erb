@@ -21,21 +21,21 @@
       </li>
 
       <li class="nav-item">
-        <a class="nav-link" href="#step-2">
+        <a class="nav-link" href="#step-3">
           <div class="num">3</div>
           Contato e Representante
         </a>
       </li>
 
       <li class="nav-item">
-        <a class="nav-link" href="#step-2">
+        <a class="nav-link" href="#step-4">
           <div class="num">4</div>
           Dados Bancários
         </a>
       </li>
 
       <li class="nav-item">
-        <a class="nav-link" href="#step-2">
+        <a class="nav-link" href="#step-5">
           <div class="num">5</div>
           Arquivos
         </a>
@@ -44,8 +44,10 @@
 
     <div class="tab-content col-12 col-md-6">
       <div id="step-1" class="tab-pane" role="tabpanel" aria-labelledby="step-1">
+        <%= f.number_field :customer_id, class: 'form-control' %>
+
         <%= f.label :name %>
-        <%= f.text_field :name, class: 'form-control' %>
+        <%= f.text_field :name , class: 'form-control'%>
 
         <%= f.label :cnpj %>
         <%= f.text_field :cnpj, class: 'form-control' %>
@@ -65,28 +67,6 @@
 
       <div id="step-5" class="tab-pane" role="tabpanel" aria-labelledby="step-5">
         <label>Adicionar arquivos</label>
-
-        <%#= f.file_field :files, multiple: true %>
-          <!-- <small class="form-text text-muted">
-            Formatos aceitos: JPEG, PNG e PDF.
-          </small> -->
-
-        <%# if @profile_customer.errors.any? %>
-          <!-- <div id="error_explanation"> -->
-            <!-- <ul> -->
-              <%# @profile_customer.errors.each do |error| %>
-              <!-- <p><%#= error.full_message %></p> -->
-              <%# end %>
-            <!-- </ul>
-          </div> -->
-        <%# elsif @profile_customer.files != nil %>
-          <%# @profile_customer.files.each do |file| %>
-            <!-- <li> -->
-              <%#= link_to file.filename, url_for(file) %>
-              <%#= link_to ("X"), client_file_upload_path(@profile_customer, file), method: :delete, data: { confirm: "Tem certeza?" }, class:"adj100 btn btn-outline btn-danger btn-remove" %>
-            <!-- </li> -->
-          <%# end %>
-        <%# end %>
 
         <%= render partial: 'profile_customers/shared/option_fields', locals: { f: f }  %>
 

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  get 'powers/index'
   root 'home#index'
 
   get 'home/index'

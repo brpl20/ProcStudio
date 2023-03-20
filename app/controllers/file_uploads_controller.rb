@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class FileUploadsController < BackofficeController
   def new
     @profile_customer = ProfileCustomer.find(params[:profile_customer_id])
