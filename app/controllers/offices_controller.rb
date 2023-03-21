@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class OfficesController < ApplicationController
+class OfficesController < BackofficeController
   before_action :retrieve_office, only: %i[show edit update destroy]
 
   def index
