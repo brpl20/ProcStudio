@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class PowersController < ApplicationController
+class PowersController < BackofficeController
   before_action :retrieve_power, only: %i[edit update destroy]
 
   def index

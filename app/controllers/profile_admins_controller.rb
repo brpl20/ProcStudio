@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ProfileAdminsController < ApplicationController
+class ProfileAdminsController < BackofficeController
   before_action :retrieve_admin, only: %i[edit update show]
   before_action :verify_password, only: [:update]
 

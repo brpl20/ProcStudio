@@ -23,12 +23,9 @@
     <%= javascript_include_tag "bootstrap.bundle.min" %>
     <%= javascript_include_tag "jquery.easing.min" %>
     <%= javascript_include_tag "sb-admin-2" %>
-
     <script src="https://cdn.jsdelivr.net/npm/smartwizard@6/dist/js/jquery.smartWizard.min.js" type="text/javascript"></script>
 
-    <%= javascript_include_tag "backoffice" %>
     <%= javascript_importmap_tags %>
-
   </head>
 
   <body id="page-top" data-new-gr-c-s-check-loaded="14.1097.0" data-gr-ext-installed="">
@@ -51,6 +48,8 @@
         <%= render partial: 'shared/general_modal' %>
       </div>
     </div>
+
+    <%= javascript_include_tag "backoffice" %>
 
   </body>
 
