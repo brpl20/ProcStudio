@@ -30,6 +30,7 @@ group :development, :staging do
   gem 'database_cleaner'
   gem 'debug', platforms: %i[mri mingw x64_mingw]
   gem 'factory_bot_rails'
+  gem 'mina', '0.3.8'
   gem 'rspec-rails', '~> 6.0.0'
 end
 
