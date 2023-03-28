@@ -55,3 +55,18 @@
   gap: 3rem;
 }
 /* fim modal tipo de cliente */
+/* item modal seleção de cliente */
+.client-choose{
+  margin: 2em 0;
+  border: solid 1px var(--default-blue);
+  border-radius: 10px;
+}
+.client-choose > a{
+  color: rgba(42, 63, 84, 0.9);
+  font-size: 1em;
+}
+.client-choose:hover{
+  color: #FFFFFF;
+  background-color: var(--default-blue);
+}
+/* fim item modal seleção de cliente */
