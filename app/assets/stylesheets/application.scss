@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200;0,300;0,400;0,700;1,300&display=swap');
 @import "bootstrap";
 /*= require dataTables/jquery.dataTables */
 @import "font-awesome";
@@ -11,6 +12,9 @@
   --sw-anchor-active-primary-color:  #1ABB9C !important;
   --sw-anchor-done-primary-color:  rgba(42, 63, 84, 0.7) !important;
   --sw-progress-color:: #2A3F54 !important;
+}
+body{
+  font-family: 'Nunito', sans-serif;
 }
 // ajuste no menu sandwich
 #sidebarToggleTop{

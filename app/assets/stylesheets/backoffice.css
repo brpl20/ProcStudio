@@ -64,6 +64,7 @@
 .client-choose > a{
   color: rgba(42, 63, 84, 0.9);
   font-size: 1em;
+  font-weight: 700;
 }
 .client-choose:hover{
   color: #FFFFFF;
