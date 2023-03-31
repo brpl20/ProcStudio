@@ -1,11 +1,17 @@
-<%= link_to_add_association "Adicionar telefone", f, :phones, 'data-association-isertion-node':'#phone-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>
+<fieldset>
+  <legend id="phone-group" class="form-title">Telefones</legend>
+  <%= link_to_add_association "Adicionar telefone", f, :phones, 'data-association-isertion-node':'#phone-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>
 
-<%= f.fields_for :phones do |phone|%>
-    <%= render partial: 'phone_fields', locals: {f: phone} %>
-<% end %>
+  <%= f.fields_for :phones do |phone|%>
+      <%= render partial: 'phone_fields', locals: {f: phone} %>
+  <% end %>
+</fieldset>
 
-<%= link_to_add_association "Adicionar e-mail", f, :emails, 'data-association-isertion-node':'#email-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>
+<fieldset>
+  <legend id="email-group" class="form-title">E-mails</legend>
+  <%= link_to_add_association "Adicionar e-mail", f, :emails, 'data-association-isertion-node':'#email-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>
 
-<%= f.fields_for :emails do |email|%>
-  <%= render partial: 'email_fields', locals: {f: email} %>
-<% end %>
+  <%= f.fields_for :emails do |email|%>
+    <%= render partial: 'email_fields', locals: {f: email} %>
+  <% end %>
+</fieldset>

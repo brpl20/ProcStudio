@@ -2,7 +2,6 @@
 
 class ProfileCustomersController < BackofficeController
   before_action :retrieve_customer, only: %i[edit update show]
-  # before_action :verify_password, only: [:update]
 
   def index
     @profile_customers = ProfileCustomerFilter.retrieve_customers
@@ -12,7 +11,6 @@ class ProfileCustomersController < BackofficeController
     @profile_customer = params[:type].singularize.constantize.new
     @profile_customer.emails.build
     @profile_customer.phones.build
-
     @profile_customer.addresses.build if profile_is_company_or_people?
     @profile_customer.bank_accounts.build if profile_is_company_or_people?
   end
@@ -112,12 +110,5 @@ class ProfileCustomersController < BackofficeController
       phones_attributes: %i[id phone _destroy],
       emails_attributes: %i[id email _destroy]
     )
-  end
-
-  def verify_password
-    password = params[:profile_customer][:admin_attributes][:password].blank?
-    confirmation = params[:profile_customer][:admin_attributes][:password_confirmation].blank?
-
-    params[:profile_customer][:admin_attributes].extract!(:password, :password_confirmation) if password && confirmation
   end
 end

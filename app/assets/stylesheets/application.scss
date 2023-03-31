@@ -62,3 +62,7 @@ body{
   background-color: var(--green-wizard);
   border-color: var(--green-wizard);
 }
+// fix tab-content form wizard
+.tab-content{
+  height: auto !important;
+}
