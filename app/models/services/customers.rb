@@ -2,9 +2,11 @@
 
 class Customers
   class << self
-    def configure_profile(profile)
+    def configure_profile(profile, flags)
       profile.customer = create_customer(profile.emails.first.email)
       save_profile(profile)
+
+      NewCustomerEmailMailer.notify_new_customer(profile.customer).deliver if flags[:flag_access_data]
     end
 
     private

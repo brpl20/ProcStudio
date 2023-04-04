@@ -16,6 +16,8 @@ module Prc4_v2
     config.time_zone = 'Brasilia'
     config.active_record.default_timezone = :local
 
+    config.action_mailer.default_url_options = { host: 'procstudio.com.br' }
+
     config.autoload_paths << "#{config.root}/app/models/filters"
     config.autoload_paths << "#{config.root}/app/models/services"
 

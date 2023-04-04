@@ -20,7 +20,7 @@ class ProfileCustomersController < BackofficeController
       send("#{params[:type].singularize.downcase}_params")
     )
 
-    if Customers.configure_profile(@profile_customer)
+    if Customers.configure_profile(@profile_customer, params)
       redirect_to profile_customers_path, notice: 'Salvo com sucesso!'
     else
       render :new
