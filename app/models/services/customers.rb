@@ -6,7 +6,7 @@ class Customers
       profile.customer = create_customer(profile.emails.first.email)
       save_profile(profile)
 
-      NewCustomerEmailMailer.notify_new_customer(profile.customer).deliver_now if flags[:flag_access_data]
+      NewCustomerEmailMailer.notify_new_customer(profile.customer).deliver_later if flags[:flag_access_data]
     end
 
     private
