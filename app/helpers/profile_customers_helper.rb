@@ -1,19 +1,8 @@
 # frozen_string_literal: true
 
 module ProfileCustomersHelper
-  def options_for_gender
-    ProfileCustomer.genders.keys.to_a.map { |k| [k, k.humanize] }
-  end
-
-  def options_for_civil_status
-    ProfileCustomer.civil_statuses.keys.to_a.map { |k| [k, k.humanize] }
-  end
-
-  def options_for_nationality
-    ProfileCustomer.nationalities.keys.to_a.map { |k| [k, k.humanize] }
-  end
-
-  def options_for_capacity
-    ProfileCustomer.capacities.keys.to_a.map { |k| [k, k.humanize] }
+  def options_for(enum_name)
+    enum = ProfileCustomer.send(enum_name)
+    enum.keys.map { |k| [k, ProfileCustomer.human_enum_name(enum_name, k.to_sym).humanize] }
   end
 end

@@ -14,7 +14,7 @@ FactoryBot.define do
     profession { 'MyString' }
     company { 'MyString' }
     birth { '2023-03-08' }
-    monther_name { 'MyString' }
+    mother_name { 'MyString' }
     number_benefit { 'MyString' }
     status { 1 }
     document { '' }

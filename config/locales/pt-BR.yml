@@ -90,11 +90,38 @@
           trainee: Estagiário(a)
         status: Situação
       profile_customer:
+        name: Nome
+        lastname: Sobrenome
+        cpf: CPF
+        rg: RG
+        birth: Data de nascimento
+        civil_status: Estado civil
+        civil_statuses:
+          single: Solteiro (a)
+          married: Casado (a)
+          divorced: Divorciado (a)
+          widower: Viúvo (a)
+          union: União estável
+        nationality: Nacionalidade
+        nationalities:
+          brazilian: Brasileiro (a)
+          foreigner: Estrangeiro (a)
+        capacity: Capacidade
+        capacities:
+          able: Capaz
+          relatively: Parcialmente incapaz
+          unable: Absolutamente incapaz
         gender: Sexo
-      people:
         genders:
           male: Masculino
           female: Feminino
+          other: Outro
+        profession: Profissão
+        company: Local de trabalho
+        number_benefit: Número do benefício
+        nit: NIT
+        mother_name: Nome da mãe
+        inss_password: Senha do meu inss
       office:
         address: Endereço
         city: Cidade

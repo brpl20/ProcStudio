@@ -6,7 +6,7 @@ class ProfileCustomer < ApplicationRecord
   enum :gender, %i[male female other]
   enum :civil_status, %i[single married divorced widower union]
   enum :nationality, %i[brazilian foreigner]
-  enum :capacity, %i[relatively absolutely unable]
+  enum :capacity, %i[able relatively unable]
 
   has_many_attached :files
 

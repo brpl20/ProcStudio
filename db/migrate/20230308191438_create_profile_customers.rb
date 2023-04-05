@@ -16,7 +16,7 @@ class CreateProfileCustomers < ActiveRecord::Migration[7.0]
       t.string :profession
       t.string :company
       t.date :birth
-      t.string :monther_name
+      t.string :mother_name
       t.string :number_benefit
       t.integer :status
       t.json :document

@@ -61,7 +61,7 @@ class ProfileCustomersController < BackofficeController
       :capacity, :profession,
       :company,
       :number_benefit,
-      :nit, :monther_name,
+      :nit, :mother_name,
       :inss_password,
       addresses_attributes: %i[id description zip_code street number neighborhood city state _destroy],
       bank_accounts_attributes: %i[id bank_name type_account agency account operation _destroy],

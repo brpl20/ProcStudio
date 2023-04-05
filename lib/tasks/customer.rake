@@ -22,7 +22,7 @@ namespace :cad do
       profession: 'Estudante',
       company: '',
       birth: '2023-01-01',
-      monther_name: 'Joaquina Silva',
+      mother_name: 'Joaquina Silva',
       number_benefit: '',
       status: 0,
       document: nil,

@@ -63,16 +63,16 @@
         <%= f.date_field :birth, class: 'form-control' %>
 
         <%= f.label :gender %>
-        <%= f.collection_select :gender, options_for_gender, :first, :second, {},{class: 'form-control'} %>
+        <%= f.collection_select :gender, options_for(:genders), :first, :second, {},{class: 'form-control'} %>
 
         <%= f.label :civil_status %>
-        <%= f.collection_select :civil_status, options_for_civil_status, :first, :second, {},{class: 'form-control'} %>
+        <%= f.collection_select :civil_status, options_for(:civil_statuses), :first, :second, {},{class: 'form-control'} %>
 
         <%= f.label :nationality %>
-        <%= f.collection_select :nationality, options_for_nationality, :first, :second, {},{class: 'form-control'} %>
+        <%= f.collection_select :nationality, options_for(:nationalities), :first, :second, {},{class: 'form-control'} %>
 
         <%= f.label :capacity %>
-        <%= f.collection_select :capacity, options_for_capacity, :first, :second, {},{class: 'form-control'} %>
+        <%= f.collection_select :capacity, options_for(:capacities), :first, :second, {},{class: 'form-control'} %>
 
       </div>
 
@@ -101,8 +101,8 @@
         <%= f.label :nit %>
         <%= f.text_field :nit, class: 'form-control' %>
 
-        <%= f.label :monther_name %>
-        <%= f.text_field :monther_name, class: 'form-control' %>
+        <%= f.label :mother_name %>
+        <%= f.text_field :mother_name, class: 'form-control' %>
 
         <%= f.label :inss_password %>
         <%= f.text_field :inss_password, class: 'form-control' %>
