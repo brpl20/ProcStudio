@@ -5,10 +5,12 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '3.0.0'
 
+gem 'aws-sdk-s3'
 gem 'bootsnap', require: false
 gem 'bootstrap', '~> 5.2.2'
 gem 'cocoon'
 gem 'devise'
+gem 'docx'
 gem 'font-awesome-rails'
 gem 'i18n'
 gem 'importmap-rails'
