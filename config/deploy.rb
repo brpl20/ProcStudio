@@ -11,7 +11,7 @@ require 'mina/rvm'
 # Repository project
 set :user, 'production'
 set :deploy_to, '/home/production/public_html'
-set :repository, 'git@github.com:Jemisson/prc4_v2.git'
+set :repository, 'git@github.com:Jemisson/procstudio_api.git'
 set :domain, '34.214.81.221'
 set :forward_agent, true
 

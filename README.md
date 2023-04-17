@@ -1,4 +1,4 @@
-# ProcStudio v2
+# ProcStudio API
 
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-rubocop-brightgreen.svg)](https://github.com/rubocop/rubocop)
 
@@ -21,9 +21,4 @@ Este projeto contém a migração do procstudio para gems mais atualizadas.
       bundle
       rake db:create db:migrate
       rails s
-  ```
-
-  Então acesse via navegador:
-  ```
-      http://localhost:3000
   ```
