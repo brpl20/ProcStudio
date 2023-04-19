@@ -3,7 +3,7 @@
 Rails.application.routes.draw do
   # Admin
   post '/api/v1/auth/login', to: 'auth#authenticate'
-  delete '/api/v1/auth/sign_out', to: 'admin/sessions#destroy'
+  delete '/api/v1/auth/logout', to: 'auth#destroy'
 
   # Offices
   get '/api/v1/offices' => 'offices#index'
