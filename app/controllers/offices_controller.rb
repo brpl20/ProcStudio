@@ -4,7 +4,8 @@ class OfficesController < BackofficeController
   before_action :retrieve_office, only: %i[show edit update destroy]
 
   def index
-    @offices = OfficeFilter.retrieve_offices
+    offices = OfficeFilter.retrieve_offices
+    render status: :ok, json: offices
   end
 
   def show; end
