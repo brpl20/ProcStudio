@@ -1,0 +1,231 @@
+openapi: 3.0.0
+servers:
+  - url: //procstudio.com.br
+    description: Produção
+  - url: //staging.procstudio.com.br
+    description: Ambiente de testes
+info:
+  description: |
+    # Introdução
+
+    Este documento é uma diretriz geral do sistema ProcStudio, para entender a sua ideia geral, conceitos, princípios, para que todos possam entender a dinâmica do aplicativo, sua metodologia, usos gerais, prioridades, urgência, necessidades e implementações atuais e futuras.
+
+    ## Origem do Sistema
+
+    A ideia do sistema surgiu a partir da necessidade prática de evitar trabalhos repetitivos e aprimorar o fluxo de trabalho para o advogado e sua equipe com a ideia central de geração de documentos de forma automatizada.
+
+    O documento mais utilizado em um escritório é a Procuração. Este é o documento que permite a atuação do advogado em favor do seu cliente, daí no nome ProcStudio. Outros documentos muito utilizados são: Contrato de Honorários, Termo de Renúncia do Juizado Especial de Pequenas Causas e Declaração de Carência.
+
+    Esses são os documentos básicos que estão no sistema. O objetivo é implementar todos esses documentos de acordo com as particularidades de cada área de atuação do direito e no futuro implementar outros documentos mais avançados que permitirão ao advogado uma facilidade extra no fluxo do seu trabalho.
+
+    Apesar da ideia inicial fosse o fluxo de documentação, logo no início percebemos que a geração de documentos de forma autônoma seria inviável, uma vez que precisaríamos de cadastros, banco de dados e uma série de requisitos para gerar os documentos, o que trouxe também o acompanhamento de tarefas para o escritório.
+
+    ## Objetivo
+
+    Nosso objetivo é criar um sistema dinâmico que possa atender todos esses profissionais do direito em cada área de atuação específica, como se o sistema fosse desenvolvido para cada área de atuação em detalhes específicos. O usuário deve ter um sistema dinâmica, eficiente e inteligente. O sistema deve facilitar a vida do usuário advogado e também dos seus clientes, que serão também usuários do nosso sistema, independente dos caminhos tecnológicos que tenhamos que seguir.
+
+    ## Princípios
+
+    - Princípio do Zero Papel
+    - Usuário em Primeiro Lugar
+    - Aprendizado com o usuário
+    - Mobilidade
+    - Integração
+    - Customização pelo usuário
+    - Atendimento Automatizado
+
+    ## Zero Papel
+
+    Um dos princípios defendidos pelo ProcStudio é a adoção de ZERO papel no escritório do advogado e isso não é tão fácil como parece. É muito mais fácil imprimir uma procuração e entregar para o cliente assinar do que utilizar uma complexo sistema de identificação e assinatura digital, especialmente se ele estiver na sua frente, no seu escritório, conseguiu imaginar a situação?
+
+    Para isso, precisamos criar sistemas de assinatura muito fluídos, para que seja um processo cômodo, seguro, arquivável com segurança e fácil de ser acessado posteriormente tanto pelo nosso usuário advogado como para outros usuários.
+
+    Além da geração de documentos, instituir uma política de zero papel no escritório também é difícil por conta dos documentos físicos existentes, que precisam ser digitalizados e tratados, o que muitas vezes, por comodidade, acaba “ficando no escritório” até durante anos.
+
+    Desta forma, devemos auxiliar nosso usuário também na digitalização de documentos, o que é uma implementação também necessária em um escritório. Devemos adotar tecnologias modernas de digitalização, indexação, arquivamento para facilitar esse objetivo comum.
+
+    ## Usuário e Aprendizado com o Usuário
+
+    Devemos ter noção de que o direito, como um ramo muito extenso, possui particularidades mesmo na geração de pequenos documentos. Um advogado que atua mais na área empresarial por exemplo, utilizará pouco o Termo de Renúncia e a Declaração de Carência, enquanto que, um criminalista também precisará de documentos diferentes.
+
+    Nestas adaptações do sistema para várias áreas, percebemos que alguns clientes, como da área previdenciária utilizam alguns termos específicos, os da área tributária precisam atuar em parceria com um contador, o que trouxe essa figura ao sistema, devemos estar atentos ao que o usuário nos indica.
+
+    ## Persona/Público Alvo
+
+    Nosso foco é entre um advogado iniciante e intermediário, geralmente que trabalha de forma autônoma, com parceiros advogados e/ou contadores, uma secretária e um estagiário ou somente um dos dois.
+
+    Não necessariamente seremos um serviço de nuvem, porém, em certa medida a tendência é que seja necessário uma quantidade grande de armazenamento mesmo em razão da geração dos documentos e seu armazenamento e formas de autenticação e confiabilidade (testagem de documentos).
+
+    Neste sentido, precisamos otimizar os arquivos de PDF de forma fluída, sem necessidade de intervenção do usuário, bem como adicionar leitura de OCR e até em um futuro a geração de cadastros e documentos com base em OCR, o que tem sido facilitado com a carteira de motorista digital e o cadastro Gov.Br.
+
+    ## Mobilidade
+
+    Nossa meta também é a criação de aplicativos móveis capazes de dar o mesmo conforto na geração de documentos, hoje não podemos pensar no desenvolvimento sem pensar também no aspecto de mobilidade.
+
+    O objetivo é que o advogado possa gerar um contrato de forma “Instantânea” onde quer que ele esteja. Está em uma reunião com um cliente? Basta pegar os dados pessoais, digitar, tirar uma foto de dois ou três documentos que o cliente receberá em seu celular uma notificação (geralmente através de e-mail ou whatsapp) para assinar o referido documento.
+
+    ## Integração
+
+    Um dos nossos nortes é também comunicação com outros aplicativos através de API, tornando-se um sistema capaz de adotar os serviços mais conhecidos atualmente como Google Cloud, Microsoft e Dropbox.
+
+    Não queremos reinventar a roda. Por exemplo, seria muito mais fácil fazer a geração dos documentos diretamente em PDF. Existem centenas de ferramentas que fazem isso com base em qualquer tipo de informação, do HTML até bancos de dados mais complexos.
+
+    Mais fácil para nós, porém, melhor para o cliente? Com certeza não, porque o DOCX é um formato universal utilizado há décadas que está enraizado na cultura brasileira. E não podemos ser arrogantes ao ponto de pensar que o documento será gerado de forma tão perfeita que não será necessária uma revisão final, e quem melhor do que o próprio advogado que gera o documento para avaliar e entender se aquele documento está apto a ser assinado por todas as partes?
+
+    ## Customização pelo usuário
+
+    Precisamos de um sistema dinâmico que o usuário possa ajudar a construir e criar por si mesmo, não dependendo tanto de atualizações dos desenvolvedores para adaptação de suas necessidades particulares, o que é possível observar como tendência de grandes aplicativos como Trello, Monday e outros semelhantes.
+
+    Essa ajuda do usuário também será sempre fundamental para melhorias e o crescimento do sistema, temos muito a aprender com advogados espalhados por todo o Brasil.
+
+    ## Baixo Custo Operacional Inicial
+
+    Um dos nossos maiores gargalos iniciais é o atendimento e conforto do usuário. Uma forma de atendê-los de forma personalizada é o ideal, porém, no momento inicial, ainda inviável, de forma que precisamos pensar em soluções de atendimento ao usuário de baixo custo, como a criação de Wikis e ChatBots para tirar as dúvidas mais comuns e entender os pontos de atrito entre o usuário e o sistema.
+
+  version: 1.0.0
+  title: API Procstudio
+  termsOfService: http://www.procstudio.com.br/terms/
+  contact:
+    name: API Support
+    email: support@procstudio.com.br
+    url: https://github.com/Jemisson/prc4_v2.git
+  x-logo:
+    url: 'https://procstudio.com.br/assets/logo_colorido_500-0bc2251933f19b9f3eb14674a96c88a7b9676f00a417306b0f197d1f0088d633.png'
+    altText: Procstudio logo
+tags:
+  - name: Acesso do Admin
+    description: Endpoint que busca e lista dados
+  - name: Clientes
+    description: Busca e exibe uma listagem de clientes
+x-tagGroups:
+  - name: Acesso
+    tags:
+      - Acesso do Admin
+      - Acesso do Cliente
+  - name: Busca e Listagem
+    tags:
+      - Clientes
+paths:
+  /admin/login:
+    post:
+      tags:
+        - Acesso do Admin
+      summary: Autenticação do Admin
+      description: Autenticação com e-mail e senha
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Autenticado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              examples:
+                invalid_email_or_password:
+                  value: {"error": "Usuário ou senha inválidos"}
+  /clients:
+    get:
+      tags:
+        - Clientes
+      summary: Listagem de Clientes
+      description: Returns a list of all clients
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Client'
+              example:
+                - type: 1
+                  name: John
+                  lastname: Doe
+                  gender: 1
+                  rg: "123456"
+                  cpf: "123.456.789-00"
+                  cnpj: "12.345.678/0001-00"
+                  nationality: "Brazilian"
+                  civil_status: 1
+                  capacity: 1
+                  profession: "Developer"
+                  company: "Example Inc."
+                  birth: "1990-01-01"
+                  mother_name: "Mary"
+                  number_benefit: "123"
+                  status: 1
+                  document: {"document_key":"tmp/procuracao_simples-fatimastein_1.docx","document_name":"procuracao_simples-fatimastein_1.docx","client_id":"1","user_id":"1","document_type":"procuracao_simples","aws_link":"https://prcstudio3herokubucket.s3-us-west-2.amazonaws.com/tmp/procuracao_simples-fatimastein_1.docx","user":"1"}
+                  nit: "123"
+                  inss_password: "password"
+                  invalid_person: 0
+                  customer: 1
+components:
+  schemas:
+    Client:
+      type: object
+      properties:
+        type:
+          type: integer
+        name:
+          type: string
+        lastname:
+          type: string
+        gender:
+          type: integer
+        rg:
+          type: string
+        cpf:
+          type: string
+        cnpj:
+          type: string
+        nationality:
+          type: string
+        civil_status:
+          type: integer
+        capacity:
+          type: integer
+        profession:
+          type: string
+        company:
+          type: string
+        birth:
+          type: string
+          format: date
+        mother_name:
+          type: string
+        number_benefit:
+          type: string
+        status:
+          type: integer
+        document:
+          type: object
+        nit:
+          type: string
+        inss_password:
+          type: string
+        invalid_person:
+          type: integer
+        customer:
+          type: integer
