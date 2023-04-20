@@ -17,10 +17,31 @@ class AuthController < ApplicationController
   end
 
   def destroy
-    # Invalidar o token JWT do usuário atual
-    admin_id = decode_jwt_token(request.headers['Authorization'].split(' ').last)['admin_id']
-    current_admin = Admin.find(admin_id)
-    current_admin.update_attribute(:jwt_token, nil)
-    render json: { success: true, message: 'Saiu com successo' }
+    if request.headers['Authorization'].nil?
+      render json: { success: false, message: 'Usuário não autorizado' }, status: :unauthorized
+    else
+      token = request.headers['Authorization'].split(' ').last
+      decoded_token = decode_jwt_token(token)
+
+      if decoded_token.nil?
+        render json: { success: false, message: 'Usuário não autorizado' }, status: :unauthorized
+      else
+        admin_id = decoded_token['admin_id']
+        current_admin = Admin.find(admin_id)
+        current_admin.update_attribute(:jwt_token, nil)
+        render json: { success: true, message: 'Saiu com successo' }
+      end
+    end
+  end
+
+  private
+
+  def decode_jwt_token(token)
+    secret_key = Rails.application.secrets.secret_key_base
+    decoded_token = JWT.decode(token, secret_key)[0]
+    HashWithIndifferentAccess.new decoded_token
+  rescue JWT::DecodeError
+    # puts "Error decoding JWT token: #{e.message}"
+    nil
   end
 end

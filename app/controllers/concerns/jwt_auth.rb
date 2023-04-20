@@ -12,14 +12,6 @@ module JwtAuth
     head :unauthorized
   end
 
-  def decode_jwt_token(token)
-    secret_key = Rails.application.secrets.secret_key_base
-    decoded_token = JWT.decode(token, secret_key)[0]
-    HashWithIndifferentAccess.new decoded_token
-  rescue JWT::DecodeError
-    nil
-  end
-
   private
 
   def decode_token(token)
