@@ -4,7 +4,9 @@ require 'rails_helper'
 
 RSpec.describe 'Auths', type: :request do
   let!(:admin) { create(:admin) }
-  let!(:jwt_token) { JWT.encode({ admin_id: admin.id, exp: Time.now.to_i + 3600 }, Rails.application.secret_key_base) }
+  let!(:jwt_token) do
+    JWT.encode({ admin_id: admin.id, exp: Time.now.to_i + 3600 }, Rails.application.secret_key_base)
+  end
   let(:headers) { { 'Authorization' => "Bearer #{jwt_token}" } }
 
   describe 'POST /api/v1/auth/login' do

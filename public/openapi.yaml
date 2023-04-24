@@ -101,22 +101,24 @@ x-tagGroups:
   - name: Acesso
     tags:
       - Acesso do Admin
-      - Acesso do Cliente
   - name: Busca e Listagem
     tags:
-      - Clientes
+      - Escritórios
 paths:
-  /admin/login:
+  /api/v1/auth/login:
     post:
       tags:
         - Acesso do Admin
-      summary: Autenticação do Admin
+      summary: Autenticação do usuário Admin
       description: Autenticação com e-mail e senha
       requestBody:
         content:
           application/json:
             schema:
               type: object
+              required:
+                - email
+                - password
               properties:
                 email:
                   type: string
@@ -130,20 +132,10 @@ paths:
               schema:
                 type: object
                 properties:
-                  token:
+                  jwt_token:
                     type: string
         '401':
           description: Não autorizado
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-              examples:
-                invalid_email_or_password:
-                  value: {"error": "Usuário ou senha inválidos"}
   /clients:
     get:
       tags:
