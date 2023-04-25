@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 class OfficesController < BackofficeController
+  respond_to :json
   before_action :retrieve_office, only: %i[show edit update destroy]
 
   def index
-    offices = OfficeFilter.retrieve_offices
-    render status: :ok, json: offices
+    @offices = OfficeFilter.retrieve_offices
+    respond_with @offices
   end
 
   def show; end
