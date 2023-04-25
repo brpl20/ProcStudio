@@ -4,11 +4,13 @@ require 'docx'
 require 'tempfile'
 
 class ProfileCustomersController < BackofficeController
+  respond_to :json
   before_action :retrieve_customer, only: %i[edit update show]
 
   def index
     @profile_customers = ProfileCustomerFilter.retrieve_customers
-    generate_docx_and_upload_to_s3
+    respond_with @profile_customers
+    # generate_docx_and_upload_to_s3
   end
 
   def new
@@ -43,7 +45,9 @@ class ProfileCustomersController < BackofficeController
     end
   end
 
-  def show; end
+  def show
+    respond_with @profile_customer
+  end
 
   def delete; end
 
