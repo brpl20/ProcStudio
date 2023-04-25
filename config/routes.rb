@@ -11,6 +11,8 @@ Rails.application.routes.draw do
   get '/api/v1/admins' => 'profile_admins#index'
   get '/api/v1/admins/:id' => 'profile_admins#show'
 
+  post 'api/v1/offices' => 'offices#new_office'
+
   resources :people, controller: 'profile_customers', type: 'People'
   resources :companies, controller: 'profile_customers', type: 'Companies'
   resources :accountings, controller: 'profile_customers', type: 'Accountings'

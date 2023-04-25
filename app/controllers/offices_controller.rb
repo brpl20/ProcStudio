@@ -11,11 +11,12 @@ class OfficesController < BackofficeController
 
   def show; end
 
-  def new
-    @office = Office.new
-    @office.bank_accounts.build
-    @office.phones.build
-    @office.emails.build
+  def new_office
+    Offices.create_office(params)
+    # @office = Office.new
+    # @office.bank_accounts.build
+    # @office.phones.build
+    # @office.emails.build
   end
 
   def edit; end
