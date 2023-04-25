@@ -15,7 +15,7 @@ RSpec.describe 'Offices', type: :request do
         expect(response.status).to eq(200)
       end
 
-      it 'returns JSON data' do
+      it 'Retorna JSON' do
         expect(response.content_type).to match(/application\/json/)
       end
     end
