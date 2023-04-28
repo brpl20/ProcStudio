@@ -73,7 +73,31 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_19_164638) do
     t.string "jwt_token"
     t.index ["email"], name: "index_admins_on_email", unique: true
     t.index ["jwt_token"], name: "index_admins_on_jwt_token", unique: true
-    t.index ["reset_password_token"], name: "index_admins_on_reset_password_token", unique: true
+    t.t.string "type"
+    t.string "name"
+    t.string "lastname"
+    t.integer "gender"
+    t.string "rg"
+    t.string "cpf"
+    t.string "cnpj"
+    t.string "nationality"
+    t.integer "civil_status"
+    t.integer "capacity"
+    t.string "profession"
+    t.string "company"
+    t.date "birth"
+    t.string "mother_name"
+    t.string "number_benefit"
+    t.integer "status"
+    t.json "document"
+    t.string "nit"
+    t.string "inss_password"
+    t.integer "invalid_person"
+    t.bigint "customer_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_id"], name: "index_profile_customers_on_customer_id"
+  endindex ["reset_password_token"], name: "index_admins_on_reset_password_token", unique: true
   end
 
   create_table "bank_accounts", force: :cascade do |t|
