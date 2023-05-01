@@ -6,6 +6,8 @@ Rails.application.routes.draw do
   delete '/api/v1/auth/logout', to: 'auth#destroy'
 
   get '/api/v1/offices' => 'offices#index'
+  get '/api/v1/offices/:id' => 'offices#show'
+
   get '/api/v1/customers' => 'profile_customers#index'
   get '/api/v1/customers/:id' => 'profile_customers#show'
   get '/api/v1/admins' => 'profile_admins#index'
