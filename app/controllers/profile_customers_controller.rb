@@ -10,7 +10,6 @@ class ProfileCustomersController < BackofficeController
   def index
     @profile_customers = ProfileCustomerFilter.retrieve_customers
     respond_with @profile_customers
-    # generate_docx_and_upload_to_s3
   end
 
   def new
@@ -51,27 +50,8 @@ class ProfileCustomersController < BackofficeController
 
   def delete; end
 
-  def generate_docx_and_upload_to_s3
-    Aws.config.update(
-      {
-        region: 'us-west-2',
-        credentials: Aws::Credentials.new(
-          ENV['AWS_ID'],
-          ENV['AWS_SECRET_KEY']
-        )
-      }
-    )
-    aws_client = Aws::S3::Client.new
-    aws_doc = aws_client.get_object(bucket: 'prcstudio3herokubucket', key: 'base/procuracao_simples.docx')
-    doc = Docx::Document.open(aws_doc.body)
-
-    doc.paragraphs.each do |p|
-      p.each_text_run do |tr|
-        tr.substitute('_qualify_', 'Qualificação vai aqui')
-      end
-    end
-
-    doc.save(Rails.root.join('tmp/procuração_teste.docx').to_s)
+  def prepare_document
+    GenerateDocs.prepare_documents
   end
 
   private
