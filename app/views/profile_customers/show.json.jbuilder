@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-json.id @profile_customer.id
 json.type @profile_customer.type
 json.name @profile_customer.name
 json.lastname @profile_customer.lastname
@@ -21,35 +20,29 @@ json.document @profile_customer.document
 json.nit @profile_customer.nit
 json.inss_password @profile_customer.inss_password
 json.invalid_person @profile_customer.invalid_person
-  
 
+json.addresses @profile_customer.addresses do |ad|
+  json.description ad.description
+  json.zip_code ad.zip_code
+  json.street ad.street
+  json.number ad.number
+  json.neighborhood ad.neighborhood
+  json.city ad.city
+  json.state ad.state
+end
 
-json.description @profile_customer.description
-json.zip_code @profile_customer.zip_code
-json.street @profile_customer.street
-json.number @profile_customer.number
-json.neighborhood @profile_customer.neighborhood
-json.city @profile_customer.city
-json.state @profile_customer.state
+json.bank_accounts @profile_customer.bank_accounts do |ba|
+  json.bank ba.bank_name
+  json.state ba.type_account
+  json.agency ba.agency
+  json.account ba.account
+  json.operation ba.operation
+end
 
+json.emails @profile_customer.emails do |e|
+  json.email e.email
+end
 
-json.description @profile_customer.description
-json.zip_code @profile_customer.zip_code
-json.street @profile_customer.street
-json.number @profile_customer.number
-json.neighborhood @profile_customer.neighborhood
-json.city @profile_customer.city
-json.state @profile_customer.state
-
-json.bank @profile_customer.bank_name
-json.state @profile_customer.type_account
-json.agency @profile_customer.agency
-json.account @profile_customer.account
-json.operation @profile_customer.operation
-
-    
-json.email @profile_customer.email
-
-
-
-json.phone @profile_customer.phone
+json.phones @profile_customer.phones do |ph|
+  json.phone ph.phone
+end
