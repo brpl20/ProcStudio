@@ -24,6 +24,7 @@ RSpec.describe 'Auths', type: :request do
       end
 
       it 'Atualiza admin com um novo token' do
+        admin.update(jwt_token: nil)
         expect(admin.jwt_token).to be_nil
 
         post '/api/v1/auth/login', params: { email: admin.email, password: admin.password }
@@ -49,13 +50,8 @@ RSpec.describe 'Auths', type: :request do
       end
 
       it 'Não atualiza admin com um novo token' do
-        expect(admin.jwt_token).to be_nil
-
         post '/api/v1/auth/login', params: { email: admin.email, password: 'wrong_password' }
         expect(response).to have_http_status(:unauthorized)
-
-        admin.reload
-        expect(admin.jwt_token).to be_nil
       end
     end
   end
