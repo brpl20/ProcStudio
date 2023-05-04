@@ -1,0 +1,6 @@
+FactoryBot.define do
+  factory :customer_work do
+    profile_customer { nil }
+    work { nil }
+  end
+end

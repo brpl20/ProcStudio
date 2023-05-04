@@ -1,0 +1,2 @@
+module ChecklistDocumentsHelper
+end
