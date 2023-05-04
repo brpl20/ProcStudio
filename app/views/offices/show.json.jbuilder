@@ -13,11 +13,22 @@ json.number @office.number
 json.neighborhood @office.neighborhood
 json.city @office.city
 json.state @office.state
+json.type @office.office_type.description
 
-if @office.office_type.present?
-  json.office_type do
-    json.description @office.office_type.description
-  end
+json.bank_accounts @office.bank_accounts do |ba|
+  json.bank ba.bank_name
+  json.state ba.type_account
+  json.agency ba.agency
+  json.account ba.account
+  json.operation ba.operation
+end
+
+json.emails @office.emails do |e|
+  json.email e.email
+end
+
+json.phones @office.phones do |ph|
+  json.phone ph.phone
 end
 
 if @office.profile_admin.present?
@@ -34,6 +45,6 @@ if @office.profile_admin.present?
     json.birth @office.profile_admin.birth
     json.mother_name @office.profile_admin.mother_name
     json.status @office.profile_admin.status
-    # json.admin office.profile_admin.admin
+    json.email @office.profile_admin.admin.email
   end
 end

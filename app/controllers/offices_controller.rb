@@ -2,7 +2,8 @@
 
 class OfficesController < BackofficeController
   respond_to :json
-  before_action :retrieve_office, only: %i[show edit update destroy]
+  before_action :retrieve_office, only: %i[show update destroy]
+  rescue_from ActiveRecord::RecordNotFound, with: :render_not_found_response
 
   def index
     @offices = OfficeFilter.retrieve_offices
@@ -11,46 +12,44 @@ class OfficesController < BackofficeController
 
   def show; end
 
-  def new_office
-    Offices.create_office(params)
-    # @office = Office.new
-    # @office.bank_accounts.build
-    # @office.phones.build
-    # @office.emails.build
-  end
-
-  def edit; end
-
   def create
-    @office = Office.new(office_params)
+    @office = build_office
 
     if @office.save
-      redirect_to offices_path, notice: 'Escritório criado com sucesso!'
+      render json: { message: 'Escritório criado com sucesso' }, status: :created
     else
-      render :new
+      render json: { errors: office.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
   def update
     if @office.update(office_params)
-      redirect_to offices_path, notice: 'Escritório atualizado com sucesso!'
+      render json: { message: 'Escritório atualizado com sucesso' }, status: 200
     else
-      render :edit
+      render json: { errors: office.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
   def destroy
     if @office.destroy
-      redirect_to offices_url, notice: 'Escritório apagado com sucesso!'
+      render json: { message: 'Escritório apagado com sucesso' }, status: 200
     else
-      render :index, notice: 'Desculpe, houve um problema, tente novamente daqui a alguns minutos'
+      render json: { errors: office.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
   private
 
+  def build_office
+    Office.new(office_params)
+  end
+
   def retrieve_office
     @office = OfficeFilter.retrieve_office(params[:id])
+  end
+
+  def render_not_found_response
+    render json: { errors: 'Escritório não encontrado' }, status: :not_found
   end
 
   def office_params
@@ -63,9 +62,9 @@ class OfficesController < BackofficeController
       :city, :state,
       :profile_admin_id,
       :office_type_id,
-      phones_attributes: %i[id phone _destroy],
-      emails_attributes: %i[id email _destroy],
-      bank_accounts_attributes: %i[id bank_name type_account agency account operation _destroy]
+      phones_attributes: %i[id phone],
+      emails_attributes: %i[id email],
+      bank_accounts_attributes: %i[id bank_name type_account agency account operation]
     )
   end
 end
