@@ -7,18 +7,18 @@ default: &default
 development:
   <<: *default
   database: prc4_v2_development
-  username: rails_dev
-  password: postgres
+  username: postgres
+  password: root
   host: localhost
-  port: 5432
+  port: 5434
 
 test:
   <<: *default
   database: prc4_v2_test
   host: localhost
-  port: 5432
-  username: rails_dev
-  password: postgres
+  port: 5434
+  username: postgres
+  password: root
 
 production:
   <<: *default

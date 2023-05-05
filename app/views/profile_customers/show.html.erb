@@ -1,7 +1,0 @@
-<h1><%= @profile_customer.name %></h1>
-
-<% if @profile_customer.type == 'Person' %>
-  <%= render 'people/show', person: @profile_customer %>
-<% elsif @profile_customer.type == 'Company' %>
-  <%= render 'companies/show', company: @profile_customer %>
-<% end %>

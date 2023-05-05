@@ -1,8 +1,0 @@
-<fieldset>
-  <legend id="bank-account-group" class="form-title">Dados da conta bancária</legend>
-  <%= link_to_add_association "Adicionar conta", f, :bank_accounts, 'data-association-isertion-node':'#bank-account-group', 'data-association-insertion-method':'after', class:'btn btn-success' %>
-
-  <%= f.fields_for :bank_accounts do |bank|%>
-    <%= render partial: 'bank_account_fields', locals: {f: bank} %>
-  <% end %>
-</fieldset>
