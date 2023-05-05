@@ -1,16 +1,9 @@
 # frozen_string_literal: true
 
-class ApplicationController < ActionController::Base
-  protect_from_forgery with: :null_session
-  layout :layout_by_resource
+class ApplicationController < ActionController::API
+  rescue_from ActiveRecord::RecordNotFound, with: :not_found
 
-  protected
-
-  def layout_by_resource
-    if devise_controller?
-      'devise_admin_custom'
-    else
-      'backoffice'
-    end
+  def not_found
+    head :not_found
   end
 end

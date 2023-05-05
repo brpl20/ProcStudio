@@ -16,4 +16,10 @@ Rails.application.routes.draw do
   resources :profile_admins
   resources :profile_customers
   resources :powers
+
+  namespace :api do
+    namespace :v1 do
+      resources :profile_customers
+    end
+  end
 end
