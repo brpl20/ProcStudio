@@ -25,5 +25,3 @@ group :development, :staging do
   gem 'mina', '0.3.8'
   gem 'rspec-rails', '~> 6.0.0'
 end
-
-
