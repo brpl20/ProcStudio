@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
 class ProfileAdminsController < BackofficeController
+  respond_to :json
+
   before_action :retrieve_admin, only: %i[edit update show]
   before_action :verify_password, only: [:update]
 
   def index
     @profile_admins = ProfileAdminFilter.retrieve_admins
+    respond_with @profile_admins
   end
 
   def new
@@ -38,7 +41,9 @@ class ProfileAdminsController < BackofficeController
     end
   end
 
-  def show; end
+  def show
+    respond_with @profile_admin
+  end
 
   def delete; end
 
