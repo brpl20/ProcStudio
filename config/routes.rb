@@ -17,15 +17,6 @@ Rails.application.routes.draw do
 
   post 'api/v1/offices' => 'offices#new_office'
 
-  resources :people, controller: 'profile_customers', type: 'People'
-  resources :companies, controller: 'profile_customers', type: 'Companies'
-  resources :accountings, controller: 'profile_customers', type: 'Accountings'
-  resources :representatives, controller: 'profile_customers', type: 'Representatives'
-
-  resources :profile_admins
-  # resources :profile_customers
-  resources :powers
-
   namespace :api do
     namespace :v1 do
       resources :profile_customers

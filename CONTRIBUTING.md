@@ -1,7 +1,7 @@
 # Instruções para contribuir no projeto
 
 
-As intruções de instalação e coniguração do sistema se encontram no readme.md
+As intruções de instalação e configuração do sistema se encontram no readme.md
 
 ## Convenções
 

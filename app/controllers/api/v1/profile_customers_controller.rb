@@ -5,10 +5,17 @@ require 'tempfile'
 module Api
   module V1
     class ProfileCustomersController < BackofficeController
-      before_action :retrieve_customer, only: %i[edit update show]
+      before_action :retrieve_customer, only: %i[update show]
 
       def index
-        @profile_customers = ProfileCustomerFilter.retrieve_customers
+        profile_customers = ProfileCustomerFilter.retrieve_customers
+
+        render json: ProfileCustomerSerializer.new(
+          profile_customers,
+          meta: {
+            total_count: profile_customers.offset(nil).limit(nil).count
+          }
+        ), status: :ok
       end
 
       def create
@@ -21,37 +28,44 @@ module Api
             json: { errors: [{ code: @profile_customer.errors.full_messages }] }
           )
         end
+      rescue StandardError => e
+        render(
+          status: :bad_request,
+          json: { errors: [{ code: e }] }
+        )
       end
 
-      def edit; end
-
       def update
-        if @profile_customer.update(
-          send("#{@profile_customer.type.singularize.downcase}_params")
-        )
-          redirect_to profile_customers_path, notice: 'Alterado com sucesso!'
+        if @profile_customer.update(profile_customers_params)
+          render json: ProfileCustomerSerializer.new(
+            @profile_customer
+          ), status: :ok
         else
-          render :edit
+          render(
+            status: :bad_request,
+            json: { errors: [{ code: @profile_customer.errors.full_messages }] }
+          )
         end
       end
 
-      def show; end
-
-      def delete; end
+      def show
+        render json: ProfileCustomerSerializer.new(
+          @profile_customer,
+          include: %i[phones]
+        ), status: :ok
+      end
 
       private
 
       def retrieve_customer
         @profile_customer = ProfileCustomerFilter.retrieve_customer(params[:id])
-      end
-
-      def profile_is_company_or_people?
-        params[:type].in?(%w[Companies People])
+      rescue ActiveRecord::RecordNotFound
+        head :not_found
       end
 
       def profile_customers_params
         params.require(:profile_customer).permit(
-          :customer_type, :name, :status, :customer_id, :lastname,
+          :customer_type, :name, :status, :customer_id, :last_name,
           :cpf, :rg, :birth, :gender, :cnpj,
           :civil_status, :nationality,
           :capacity, :profession,
@@ -59,11 +73,11 @@ module Api
           :number_benefit,
           :nit, :mother_name,
           :inss_password,
-          addresses_attributes: %i[id description zip_code street number neighborhood city state _destroy],
-          bank_accounts_attributes: %i[id bank_name type_account agency account operation _destroy],
+          addresses_attributes: %i[id description zip_code street number neighborhood city state],
+          bank_accounts_attributes: %i[id bank_name type_account agency account operation],
           customer_attributes: %i[id email password password_confirmation],
-          phones_attributes: %i[id phone _destroy],
-          emails_attributes: %i[id email _destroy]
+          phones_attributes: %i[id phone_number],
+          emails_attributes: %i[id email]
         )
       end
     end

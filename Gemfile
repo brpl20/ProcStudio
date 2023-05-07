@@ -10,6 +10,7 @@ gem 'docx'
 gem 'i18n'
 gem 'importmap-rails'
 gem 'jbuilder'
+gem 'jsonapi-serializer'
 gem 'jwt'
 gem 'pg'
 gem 'puma', '~> 5.0'
@@ -22,6 +23,7 @@ group :development, :staging do
   gem 'database_cleaner'
   gem 'debug', platforms: %i[mri mingw x64_mingw]
   gem 'factory_bot_rails'
+  gem 'faker'
   gem 'mina', '0.3.8'
   gem 'rspec-rails', '~> 6.0.0'
 end

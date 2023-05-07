@@ -4,8 +4,7 @@ module Api
   module V1
     class AuthController < ApplicationController
       include JwtAuth
-      skip_before_action :verify_authenticity_token
-
+      
       def authenticate
         admin = Admin.find_for_authentication(email: params[:email])
         if admin&.valid_password?(params[:password])
