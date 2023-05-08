@@ -7,8 +7,8 @@ class GenerateDocs
         {
           region: 'us-west-2',
           credentials: Aws::Credentials.new(
-            ENV['AWS_ID'],
-            ENV['AWS_SECRET_KEY']
+            ENV.fetch('AWS_ID', nil),
+            ENV.fetch('AWS_SECRET_KEY', nil)
           )
         }
       )

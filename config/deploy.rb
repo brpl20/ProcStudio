@@ -20,7 +20,7 @@ set :forward_agent, true
 set :rails_env, 'production'
 
 task :remote_environment do
-  invoke :"rvm:use[ruby-3.0.0]"
+  invoke :'rvm:use[ruby-3.0.0]'
 end
 
 task setup: :remote_environment do

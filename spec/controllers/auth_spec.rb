@@ -86,7 +86,7 @@ RSpec.describe 'Auths', type: :request do
     end
 
     context 'Quando o token está expirado' do
-      let(:jwt_token) { JWT.encode({ admin_id: admin.id, exp: Time.now.to_i - 99 * 3600 }, Rails.application.secret_key_base) }
+      let(:jwt_token) { JWT.encode({ admin_id: admin.id, exp: Time.now.to_i - (99 * 3600) }, Rails.application.secret_key_base) }
       let(:headers) { { 'Authorization' => "Bearer #{jwt_token}" } }
 
       it 'Retorna não autorizado e não revoga token' do

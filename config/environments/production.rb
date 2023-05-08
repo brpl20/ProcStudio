@@ -73,7 +73,7 @@ Rails.application.configure do
     port: 587,
     domain: 'procstudio.com.br',
     user_name: 'noreply@procstudio.com.br',
-    password: ENV['EMAIL_PASSWORD'],
+    password: ENV.fetch('EMAIL_PASSWORD', nil),
     authentication: 'plain',
     enable_starttls_auto: true
   }

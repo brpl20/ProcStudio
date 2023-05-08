@@ -5,7 +5,7 @@ class NewCustomerEmailMailer < ApplicationMailer
     @customer = customer
 
     p '+++++++++++++++++++++++++++++++++++++++++++'
-    p ENV['EMAIL_PASSWORD']
+    p ENV.fetch('EMAIL_PASSWORD', nil)
     p '+++++++++++++++++++++++++++++++++++++++++++'
 
     mail(to: @customer.email, subject: 'Seu acesso ao sistema ProcStudio')
