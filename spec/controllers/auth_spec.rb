@@ -9,10 +9,10 @@ RSpec.describe 'Auths', type: :request do
   end
   let(:headers) { { 'Authorization' => "Bearer #{jwt_token}" } }
 
-  describe 'POST /api/v1/auth/login' do
+  describe 'POST /api/v1/login' do
     context 'Quando e-mail e senha informados são válidos' do
       it 'Retorna um token válido' do
-        post '/api/v1/auth/login', params: { email: admin.email, password: admin.password }
+        post '/api/v1/login', params: { email: admin.email, password: admin.password }
         expect(response).to have_http_status(:ok)
 
         json_response = JSON.parse(response.body)
@@ -27,7 +27,7 @@ RSpec.describe 'Auths', type: :request do
         admin.update(jwt_token: nil)
         expect(admin.jwt_token).to be_nil
 
-        post '/api/v1/auth/login', params: { email: admin.email, password: admin.password }
+        post '/api/v1/login', params: { email: admin.email, password: admin.password }
         expect(response).to have_http_status(:ok)
 
         admin.reload
@@ -37,7 +37,7 @@ RSpec.describe 'Auths', type: :request do
 
     context 'Quando e-mail ou senha inválidos são fornecidos' do
       it 'Retorna inválido' do
-        post '/api/v1/auth/login', params: { email: admin.email, password: 'wrong_password' }
+        post '/api/v1/login', params: { email: admin.email, password: 'wrong_password' }
         expect(response).to have_http_status(:unauthorized)
         begin
           json_response = JSON.parse(response.body)
@@ -50,16 +50,16 @@ RSpec.describe 'Auths', type: :request do
       end
 
       it 'Não atualiza admin com um novo token' do
-        post '/api/v1/auth/login', params: { email: admin.email, password: 'wrong_password' }
+        post '/api/v1/login', params: { email: admin.email, password: 'wrong_password' }
         expect(response).to have_http_status(:unauthorized)
       end
     end
   end
 
-  describe 'DELETE /api/v1/auth/logout' do
+  describe 'DELETE /api/v1/logout' do
     context 'Quando usuário está logado' do
       it 'Revoga o token' do
-        delete '/api/v1/auth/logout', headers: headers
+        delete '/api/v1/logout', headers: headers
         expect(response).to have_http_status(:success)
         expect(admin.reload.jwt_token).to be_nil
         response_body = JSON.parse(response.body)
@@ -74,7 +74,7 @@ RSpec.describe 'Auths', type: :request do
       it 'Retorna não autorizado' do
         admin.update_attribute(:jwt_token, jwt_token)
 
-        delete '/api/v1/auth/logout', headers: headers
+        delete '/api/v1/logout', headers: headers
 
         expect(response).to have_http_status(:unauthorized)
         expect(admin.reload.jwt_token).not_to be_nil
@@ -92,7 +92,7 @@ RSpec.describe 'Auths', type: :request do
       it 'Retorna não autorizado e não revoga token' do
         admin.update_attribute(:jwt_token, jwt_token)
 
-        delete '/api/v1/auth/logout', headers: headers
+        delete '/api/v1/logout', headers: headers
 
         expect(response).to have_http_status(:unauthorized)
         expect(admin.reload.jwt_token).not_to be_nil

@@ -2,7 +2,7 @@
 
 class Work < ApplicationRecord
   has_one :tributary, dependent: :destroy
-  has_one :perdlaunches, dependent: :destroy
+  has_one :perdlaunch, dependent: :destroy
   has_many :work_updates, dependent: :destroy
   has_many :recommendation, dependent: :destroy
 
