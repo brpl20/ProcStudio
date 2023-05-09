@@ -9,50 +9,20 @@ require 'mina/rvm'
 # set :ruby_version, '3.0.0'
 
 # Repository project
-set :user, 'production'
-set :deploy_to, '/home/production/public_html'
-set :repository, 'git@github.com:Jemisson/procstudio_api.git'
+set :application_name, 'procstudio_api'
 set :domain, '34.214.81.221'
+set :deploy_to, '/home/deploy/procstudio_api'
+set :repository, 'git@github.com:Jemisson/procstudio_api.git'
+set :branch, 'master'
+set :user, 'deploy'
+set :port, '22'
 set :forward_agent, true
+set :rails_env, 'production'
 
-# Server Production
-task :production do
-  set :rails_env, 'production'
-  set :domain, '34.214.81.221'
-  set :deploy_to, '/home/production/public_html'
-  set :branch, 'master'
-end
-
-# Server staging
-# task :staging do
-#   set :rails_env, 'staging'
-#   set :user, 'james'
-#   set :domain, '45.33.112.246'
-#   set :deploy_to, '/home/bruno/public_html'
-#   set :branch, 'staging'
-# end
-
-# Fix
-set :term_mode, nil
-
-# Manually create these paths in shared/ (eg: shared/config/database.yml) in your server.
-# They will be linked in the 'deploy:link_shared_paths' step.
-set :shared_paths, ['public/uploads', 'config/database.yml', 'log', 'tmp', 'config/application.yml', 'config/secrets.yml']
-
-# This task is the environment that is loaded for most commands, such as
-# `mina deploy` or `mina rake`.
 task :remote_environment do
-  # If you're using rbenv, use this to load the rbenv environment.
-  # Be sure to commit your .rbenv-version to your repository.
-  # invoke :'rbenv:load'
-
-  # For those using RVM, use this to load an RVM version@gemset.
-  invoke :"rvm:use[ruby-3.0.0@production]"
+  invoke :"rvm:use[ruby-3.0.0]"
 end
 
-# Put any custom mkdir's in here for when `mina setup` is ran.
-# For Rails apps, we'll make some of the shared paths that are shared between
-# all releases.
 task setup: :remote_environment do
   queue! %(mkdir -p "#{deploy_to}/shared/log")
   queue! %(chmod g+rx,u+rwx "#{deploy_to}/shared/log")
@@ -81,6 +51,44 @@ task setup: :remote_environment do
   queue  %(echo "-----> Be sure to edit 'shared/config/secrets.yml'.")
 end
 
+desc 'Deploys the current version to the server.'
+task deploy: :remote_environment do
+  deploy do
+    invoke :'git:clone'
+    invoke :'deploy:link_shared_paths'
+    invoke :'bundle:install'
+    invoke :'rails:db_migrate'
+    invoke :'deploy:cleanup'
+
+    to :launch do
+      queue %(echo -n '-----> Creating new restart.txt: ')
+      queue "touch #{deploy_to}/shared/tmp/restart.txt"
+    end
+  end
+end
+
+# Server Production
+task :production do
+  set :rails_env, 'production'
+  set :domain, '34.214.81.221'
+  set :deploy_to, '/home/deploy/procstudio_api'
+  set :branch, 'master'
+end
+
+# Server staging
+task :staging do
+  set :rails_env, 'staging'
+  set :user, 'staging'
+  set :domain, '34.214.81.221'
+  set :deploy_to, '/home/staging/procstudio_api'
+  set :branch, 'master'
+end
+
+# Fix
+set :term_mode, nil
+
+set :shared_paths, ['public/uploads', 'config/database.yml', 'log', 'tmp', 'config/application.yml', 'config/secrets.yml']
+
 # Show logs
 desc 'Show logs rails.'
 task 'logs:rails': :remote_environment do
@@ -92,22 +100,6 @@ desc 'Show logs Nginx.'
 task 'logs:nginx': :remote_environment do
   queue 'echo "Contents of the log file are as follows:"'
   queue 'tail -f /opt/nginx/logs/error.log'
-end
-
-desc 'Deploys the current version to the server.'
-task deploy: :remote_environment do
-  deploy do
-    invoke :'git:clone'
-    invoke :'deploy:link_shared_paths'
-    invoke :'bundle:install'
-    invoke :'rails:db_migrate'
-    invoke :'rails:assets_precompile'
-
-    to :launch do
-      queue %(echo -n '-----> Creating new restart.txt: ')
-      queue "touch #{deploy_to}/shared/tmp/restart.txt"
-    end
-  end
 end
 
 # Roolback

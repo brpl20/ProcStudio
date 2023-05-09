@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  # Admin
-  post '/api/v1/auth/login', to: 'auth#authenticate'
-  delete '/api/v1/auth/logout', to: 'auth#destroy'
-
   get '/api/v1/offices' => 'offices#index'
   get '/api/v1/offices/:id' => 'offices#show'
   post '/api/v1/offices' => 'offices#create'
@@ -29,4 +25,13 @@ Rails.application.routes.draw do
   resources :profile_admins
   # resources :profile_customers
   resources :powers
+
+  namespace :api do
+    namespace :v1 do
+      resources :profile_customers
+
+      post '/login', to: 'auth#authenticate'
+      delete '/logout', to: 'auth#destroy'
+    end
+  end
 end

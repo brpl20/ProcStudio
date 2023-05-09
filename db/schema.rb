@@ -316,7 +316,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_04_212859) do
   end
 
   create_table "profile_customers", force: :cascade do |t|
-    t.string "type"
+    t.string "customer_type"
     t.string "name"
     t.string "lastname"
     t.integer "gender"
