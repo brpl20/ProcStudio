@@ -89,4 +89,114 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
       end
     end
   end
+  describe 'update' do
+    let!(:profile_customer) { create(:profile_customer, id: 5) }
+    context 'when request is valid' do
+      it 'returns :ok' do
+        put '/api/v1/profile_customers/5', params: {
+          profile_customer: {
+            name: 'Nome Novo'
+          }
+        }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+
+        expect(response).to have_http_status(:ok)
+        expect(JSON.parse(response.body)).to eq(
+          'data' => {
+            'id' => profile_customer.id.to_s,
+            'type' => 'profile_customer',
+            'attributes' => {
+              'name' => 'Nome Novo',
+              'last_name' => profile_customer.last_name,
+              'cpf' => profile_customer.cpf,
+              'cnpj' => profile_customer.cnpj,
+              'customer_type' => profile_customer.customer_type,
+              'gender' => profile_customer.gender,
+              'rg' => profile_customer.rg,
+              'nationality' => profile_customer.nationality,
+              'civil_status' => profile_customer.civil_status,
+              'capacity' => profile_customer.capacity,
+              'profession' => profile_customer.profession,
+              'company' => profile_customer.company,
+              'birth' => profile_customer.birth.iso8601,
+              'mother_name' => profile_customer.mother_name,
+              'number_benefit' => profile_customer.number_benefit,
+              'status' => profile_customer.status,
+              'nit' => profile_customer.nit,
+              'customer_id' => profile_customer.customer_id
+            },
+            'relationships' => {
+              'addresses' => { 'data' => [] },
+              'bank_accounts' => { 'data' => [] },
+              'emails' => { 'data' => [] },
+              'phones' => { 'data' => [] }
+            }
+          }
+        )
+      end
+    end
+    context 'when update tries to make an request without token' do
+      it 'returns :unauthorized' do
+        put '/api/v1/profile_customers/5', params: {}
+
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+  end
+  describe 'show' do
+    let!(:profile_customer) { create(:profile_customer, id: 5) }
+    context 'when request is valid' do
+      it 'returns :ok' do
+        get '/api/v1/profile_customers/5',
+            headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        expect(response).to have_http_status(:ok)
+        expect(JSON.parse(response.body)).to eq(
+          'data' => {
+            'id' => profile_customer.id.to_s,
+            'type' => 'profile_customer',
+            'attributes' => {
+              'name' => profile_customer.name,
+              'last_name' => profile_customer.last_name,
+              'cpf' => profile_customer.cpf,
+              'cnpj' => profile_customer.cnpj,
+              'customer_type' => profile_customer.customer_type,
+              'gender' => profile_customer.gender,
+              'rg' => profile_customer.rg,
+              'nationality' => profile_customer.nationality,
+              'civil_status' => profile_customer.civil_status,
+              'capacity' => profile_customer.capacity,
+              'profession' => profile_customer.profession,
+              'company' => profile_customer.company,
+              'birth' => profile_customer.birth.iso8601,
+              'mother_name' => profile_customer.mother_name,
+              'number_benefit' => profile_customer.number_benefit,
+              'status' => profile_customer.status,
+              'nit' => profile_customer.nit,
+              'customer_id' => profile_customer.customer_id
+            },
+            'relationships' => {
+              'addresses' => { 'data' => [] },
+              'bank_accounts' => { 'data' => [] },
+              'emails' => { 'data' => [] },
+              'phones' => { 'data' => [] }
+            }
+          },
+          'included' => []
+        )
+      end
+    end
+    context 'when show tries to make an request without token' do
+      it 'returns :unauthorized' do
+        get '/api/v1/profile_customers/5', params: {}
+
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+    context 'when profile_customer dont exists' do
+      it 'returns :not_found' do
+        get '/api/v1/profile_customers/35',
+            headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
 end
