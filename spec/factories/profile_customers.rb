@@ -2,25 +2,26 @@
 
 FactoryBot.define do
   factory :profile_customer do
-    role { 1 }
-    name { 'MyString' }
-    lastname { 'MyString' }
-    gender { 1 }
-    rg { 'MyString' }
-    cpf { 'MyString' }
-    nationality { 'MyString' }
-    civil_status { 1 }
-    capacity { 1 }
-    profession { 'MyString' }
-    company { 'MyString' }
-    birth { '2023-03-08' }
-    mother_name { 'MyString' }
-    number_benefit { 'MyString' }
-    status { 1 }
+    name { Faker::Name.name }
+    last_name { Faker }
+    customer_type { 'Representative' }
+    gender { 'other' }
+    rg { Faker::Number.number(digits: 6) }
+    cpf { Faker::Number.number(digits: 11) }
+    cnpj { Faker::Number.number(digits: 14) }
+    nationality { 'brazilian' }
+    civil_status { 'married' }
+    capacity { 'able' }
+    profession { Faker::Company.profession }
+    company { Faker::Company.name }
+    birth { Faker::Date.birthday(min_age: 18, max_age: 65) }
+    mother_name { Faker::Name.name }
+    number_benefit { Faker::Number.number(digits: 5) }
+    status { 'active' }
     document { '' }
-    nit { 'MyString' }
-    inss_password { 'MyString' }
+    nit { Faker::Number.number(digits: 5) }
+    inss_password { Faker::Number.number(digits: 5) }
     invalid_person { 1 }
-    customer { nil }
+    customer
   end
 end
