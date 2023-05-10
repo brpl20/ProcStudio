@@ -1,8 +1,8 @@
 openapi: 3.0.0
 servers:
-  - url: //procstudio.com.br
+  - url: //api.procstudio.com.br
     description: Produção
-  - url: //staging.procstudio.com.br
+  - url: //api_staging.procstudio.com.br
     description: Ambiente de testes
 info:
   description: |
@@ -90,40 +90,37 @@ info:
     email: support@procstudio.com.br
     url: https://github.com/Jemisson/prc4_v2.git
   x-logo:
-    url: 'https://procstudio.com.br/assets/logo_colorido_500-0bc2251933f19b9f3eb14674a96c88a7b9676f00a417306b0f197d1f0088d633.png'
+    url: 'https://api_staging.procstudio.com.br/logo.png'
     altText: Procstudio logo
 tags:
   - name: Acesso do Admin
     description: Endpoint que busca e lista dados
   - name: Clientes
     description: Busca e exibe uma listagem de clientes
+  - name: Escritórios
+    description: Dados de escritórios cadastrados no sistema
 x-tagGroups:
-  - name: Acesso
+  - name: Acesso do Admin
     tags:
-      - Acesso do Admin
+      - Autenticação
   - name: Busca e Listagem
+    tags:
+      - Clientes
+  - name: Escritórios
     tags:
       - Escritórios
 paths:
-  /api/v1/auth/login:
+  /api/v1/login:
     post:
       tags:
-        - Acesso do Admin
-      summary: Autenticação do usuário Admin
+        - Autenticação
+      summary: Login do usuário Admin
       description: Autenticação com e-mail e senha
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - email
-                - password
-              properties:
-                email:
-                  type: string
-                password:
-                  type: string
+              $ref: '#/components/schemas/Admin'
       responses:
         '200':
           description: Autenticado com sucesso
@@ -136,45 +133,193 @@ paths:
                     type: string
         '401':
           description: Não autorizado
-  /clients:
+  /api/v1/logout:
+    delete:
+      summary: Logout do usuário Admin
+      tags:
+        - Autenticação
+      security:
+        - BearerAuth: []
+      responses:
+        '204':
+          description: Saiu com sucesso
+  /api/v1/profile_clients:
     get:
       tags:
         - Clientes
       summary: Listagem de Clientes
-      description: Returns a list of all clients
+      security:
+        - BearerAuth: []
+      description: Retorna uma lista com todos os clientes
       responses:
         '200':
-          description: Successful response
+          description: Cadastrado com sucesso
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Client'
-              example:
-                - type: 1
-                  name: John
-                  lastname: Doe
-                  gender: 1
-                  rg: "123456"
-                  cpf: "123.456.789-00"
-                  cnpj: "12.345.678/0001-00"
-                  nationality: "Brazilian"
-                  civil_status: 1
-                  capacity: 1
-                  profession: "Developer"
-                  company: "Example Inc."
-                  birth: "1990-01-01"
-                  mother_name: "Mary"
-                  number_benefit: "123"
-                  status: 1
-                  document: {"document_key":"tmp/procuracao_simples-fatimastein_1.docx","document_name":"procuracao_simples-fatimastein_1.docx","client_id":"1","user_id":"1","document_type":"procuracao_simples","aws_link":"https://prcstudio3herokubucket.s3-us-west-2.amazonaws.com/tmp/procuracao_simples-fatimastein_1.docx","user":"1"}
-                  nit: "123"
-                  inss_password: "password"
-                  invalid_person: 0
-                  customer: 1
+                $ref: '#/components/schemas/ProfileClients'
+  /api/v1/offices/new:
+    post:
+      tags:
+        - Escritórios
+      summary: Cria um novo escritório.
+      security:
+        - BearerAuth: []
+      description: Cadastra um novo usuário no sistema
+      responses:
+        '200':
+          description: Cadastrado com sucesso
+        '401':
+          description: Não autorizado
+      requestBody:
+        description: Adiciona novo escritório
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Office'
 components:
   schemas:
+    Admin:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    Office:
+      type: object
+      properties:
+        office:
+          type: object
+          properties:
+            name:
+              type: string
+            cnpj:
+              type: string
+            oab:
+              type: string
+            society:
+              type: integer
+            foundation:
+              type: string
+              format: date
+            site:
+              type: string
+            cep:
+              type: string
+            street:
+              type: string
+            number:
+              type: integer
+            neighborhood:
+              type: string
+            city:
+              type: string
+            state:
+              type: string
+            office_type_id:
+              type: integer
+            profile_admin_id:
+              type: integer
+            emails_attributes:
+              type: array
+              items:
+                type: object
+                properties:
+                  email:
+                    type: string
+            bank_accounts_attributes:
+              type: array
+              items:
+                type: object
+                properties:
+                  bank_name:
+                    type: string
+                  type_account:
+                    type: string
+                  agency:
+                    type: string
+                  account:
+                    type: string
+                  operation:
+                    type: string
+            phones_attributes:
+              type: array
+              items:
+                type: object
+                properties:
+                  phone:
+                    type: string
+      required:
+        - name
+        - cnpj
+        - oab
+        - society
+        - foundation
+        - site
+        - cep
+        - street
+        - number
+        - neighborhood
+        - city
+        - state
+        - office_type_id
+        - profile_admin_id
+      example:
+        office:
+          name: My Law Office
+          cnpj: '12345678901234'
+          oab: '123456'
+          society: 1
+          foundation: '2021-01-01'
+          site: 'https://mylawoffice.com.br'
+          cep: '01234567'
+          street: Rua dos Advogados
+          number: 123
+          neighborhood: Bela Vista
+          city: Sao Paulo
+          state: SP
+          office_type_id: 1
+          profile_admin_id: 1
+          emails_attributes:
+            - email: contato@mylawoffice.com.br
+            - email: financeiro@mylawoffice.com.br
+          bank_accounts_attributes:
+            - bank_name: Banco do Brasil
+              type_account: Conta Corrente
+              agency: 1234-5
+              account: 12345-6
+              operation: 001
+    ProfileClients:
+      type: array
+      items:
+        $ref: '#/components/schemas/Client'
+      example:
+        - type: 1
+          name: John
+          lastname: Doe
+          gender: 1
+          rg: "123456"
+          cpf: "123.456.789-00"
+          cnpj: "12.345.678/0001-00"
+          nationality: "Brazilian"
+          civil_status: 1
+          capacity: 1
+          profession: "Developer"
+          company: "Example Inc."
+          birth: "1990-01-01"
+          mother_name: "Mary"
+          number_benefit: "123"
+          status: 1
+          document: {"document_key":"tmp/procuracao_simples-fatimastein_1.docx","document_name":"procuracao_simples-fatimastein_1.docx","client_id":"1","user_id":"1","document_type":"procuracao_simples","aws_link":"https://prcstudio3herokubucket.s3-us-west-2.amazonaws.com/tmp/procuracao_simples-fatimastein_1.docx","user":"1"}
+          nit: "123"
+          inss_password: "password"
+          invalid_person: 0
+          customer: 1
     Client:
       type: object
       properties:
@@ -221,3 +366,8 @@ components:
           type: integer
         customer:
           type: integer
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
