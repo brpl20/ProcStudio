@@ -6,7 +6,7 @@ FactoryBot.define do
     password { '123456789' }
 
     after(:create) do |admin|
-      exp = Time.now.to_i + 24 * 3600
+      exp = Time.now.to_i + (24 * 3600)
       token = JWT.encode({ admin_id: admin.id, exp: exp }, Rails.application.secret_key_base)
       admin.update(jwt_token: token)
     end

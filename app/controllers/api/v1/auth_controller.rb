@@ -8,7 +8,7 @@ module Api
       def authenticate
         admin = Admin.find_for_authentication(email: params[:email])
         if admin&.valid_password?(params[:password])
-          exp = Time.now.to_i + 24 * 3600
+          exp = Time.now.to_i + (24 * 3600)
           token = JWT.encode({ admin_id: admin.id, exp: exp }, Rails.application.secret_key_base)
           admin.update(jwt_token: token)
           render json: { token: token }
@@ -21,7 +21,7 @@ module Api
         if request.headers['Authorization'].nil?
           render json: { success: false, message: 'Usuário não autorizado' }, status: :unauthorized
         else
-          token = request.headers['Authorization'].split(' ').last
+          token = request.headers['Authorization'].split.last
           decoded_token = decode_jwt_token(token)
 
           if decoded_token.nil?

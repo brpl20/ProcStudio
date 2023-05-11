@@ -8,7 +8,7 @@ RSpec.describe 'Offices', type: :request do
   describe 'GET /api/v1/offices' do
     context 'Quando autenticado' do
       before do
-        get '/api/v1/offices', headers: { 'Authorization': "Bearer #{admin.jwt_token}", 'Accept': 'application/json' }
+        get '/api/v1/offices', headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
       end
 
       it 'Retorna 200' do
@@ -16,7 +16,7 @@ RSpec.describe 'Offices', type: :request do
       end
 
       it 'Retorna JSON' do
-        expect(response.content_type).to match(/application\/json/)
+        expect(response.content_type).to match(%r{application/json})
       end
     end
 

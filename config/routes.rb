@@ -9,15 +9,6 @@ Rails.application.routes.draw do
 
   get '/api/v1/customer/document' => 'profile_customers#prepare_document'
 
-  resources :people, controller: 'profile_customers', type: 'People'
-  resources :companies, controller: 'profile_customers', type: 'Companies'
-  resources :accountings, controller: 'profile_customers', type: 'Accountings'
-  resources :representatives, controller: 'profile_customers', type: 'Representatives'
-
-  resources :profile_admins
-  # resources :profile_customers
-  resources :powers
-
   namespace :api do
     namespace :v1 do
       resources :profile_customers

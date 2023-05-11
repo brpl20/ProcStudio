@@ -22,3 +22,6 @@ Este projeto contém a migração do procstudio para gems mais atualizadas.
       rake db:create db:migrate
       rails s
   ```
+## Contribuindo
+- Para abrir PRs e criar branches assim como outras informações dê uma olhada em [Contributing](CONTRIBUTING.md) 
+- Cards com tasks a serem feitas [Trello](https://trello.com/b/mq2BG9nY/procstudiov2)

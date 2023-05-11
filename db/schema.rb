@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_05_195928) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_07_185143) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -275,7 +275,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_05_195928) do
   end
 
   create_table "phones", force: :cascade do |t|
-    t.string "phone"
+    t.string "phone_number"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -318,7 +318,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_05_195928) do
   create_table "profile_customers", force: :cascade do |t|
     t.string "customer_type"
     t.string "name"
-    t.string "lastname"
+    t.string "last_name"
     t.integer "gender"
     t.string "rg"
     t.string "cpf"

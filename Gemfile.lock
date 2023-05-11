@@ -115,6 +115,8 @@ GEM
     factory_bot_rails (6.2.0)
       factory_bot (~> 6.2.0)
       railties (>= 5.0.0)
+    faker (3.2.0)
+      i18n (>= 1.8.11, < 2)
     globalid (1.1.0)
       activesupport (>= 5.0)
     i18n (1.13.0)
@@ -130,6 +132,8 @@ GEM
       activesupport (>= 5.0.0)
     jmespath (1.6.2)
     json (2.6.3)
+    jsonapi-serializer (2.2.0)
+      activesupport (>= 4.2)
     jwt (2.7.0)
     loofah (2.20.0)
       crass (~> 1.0.2)
@@ -262,9 +266,11 @@ DEPENDENCIES
   devise
   docx
   factory_bot_rails
+  faker
   i18n
   importmap-rails
   jbuilder
+  jsonapi-serializer
   jwt
   mina (= 0.3.8)
   pg

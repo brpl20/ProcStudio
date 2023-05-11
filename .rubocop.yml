@@ -1,4 +1,16 @@
 inherit_from: .rubocop_todo.yml
 
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 3.0.0
+  Exclude:
+    - db/**/*
+    - vendor/**/*
+    - log/**/*
+    - tmp/**/*
+    - storage/**/*
+    - lib/tasks/**/*
+    - bin/*
+
 Style/Documentation:
   Enabled: false
