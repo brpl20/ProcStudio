@@ -13,7 +13,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :profile_customers
       resources :offices
-      resources :customers, only: %i[index]
+      resources :customers
       post '/login', to: 'auth#authenticate'
       delete '/logout', to: 'auth#destroy'
     end
