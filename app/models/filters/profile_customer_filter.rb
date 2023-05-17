@@ -3,7 +3,7 @@
 class ProfileCustomerFilter
   class << self
     def retrieve_customer(id)
-      ProfileCustomer.includes(:phones).find(id)
+      ProfileCustomer.includes(:phones, :addresses, :emails, :bank_accounts).find(id)
     end
 
     def retrieve_customers

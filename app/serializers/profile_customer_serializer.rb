@@ -6,11 +6,11 @@ class ProfileCustomerSerializer
              :last_name, :cpf, :rg, :birth, :gender, :cnpj, :civil_status,
              :nationality, :capacity, :profession, :company, :number_benefit, :nit, :mother_name
 
-  has_many :addresses, through: :customer_addresses
+  has_many :addresses, serializer: AddressSerializer
 
   has_many :phones, serializer: PhoneSerializer
 
-  has_many :emails, through: :customer_emails
+  has_many :emails, serializer: EmailSerializer
 
-  has_many :bank_accounts, through: :customer_bank_accounts
+  has_many :bank_accounts, serializer: BankAccountSerializer
 end
