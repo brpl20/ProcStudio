@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class CustomersSerializer
+class CustomerSerializer
   include JSONAPI::Serializer
   attributes :email
 end
