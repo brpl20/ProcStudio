@@ -7,7 +7,7 @@ module Api
 
       def index
         customers = Customer.all
-        render json: CustomersSerializer.new(
+        render json: CustomerSerializer.new(
           customers,
           meta: {
             total_count: customers.offset(nil).limit(nil).count
@@ -18,7 +18,7 @@ module Api
       def create
         customer = Customer.new(customers_params)
         if customer.save
-          render json: CustomersSerializer.new(
+          render json: CustomerSerializer.new(
             customer
           ), status: :created
         else
@@ -36,7 +36,7 @@ module Api
 
       def update
         if @customer.update(customers_params)
-          render json: CustomersSerializer.new(
+          render json: CustomerSerializer.new(
             @customer
           ), status: :ok
         else
@@ -48,7 +48,7 @@ module Api
       end
 
       def show
-        render json: CustomersSerializer.new(
+        render json: CustomerSerializer.new(
           @customer
         ), status: :ok
       end

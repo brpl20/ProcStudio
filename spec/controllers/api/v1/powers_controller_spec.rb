@@ -2,28 +2,30 @@
 
 require 'rails_helper'
 
-RSpec.describe Api::V1::CustomersController, type: :request do
+RSpec.describe Api::V1::PowersController, type: :request do
   let!(:admin) { create(:admin) }
 
   describe '#index' do
-    let!(:customer) { create(:customer) }
+    let!(:power) { create(:power) }
 
     context 'when request is valid' do
       before do
-        get '/api/v1/customers', headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        get '/api/v1/powers', headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
       end
 
       it 'returns status code 200' do
         expect(response).to have_http_status(:ok)
       end
 
-      it 'returns all customers' do
+      it 'returns all powers' do
         expect(JSON.parse(response.body)).to eq(
           'data' => [{
-            'id' => customer.id.to_s,
-            'type' => 'customer',
+            'id' => power.id.to_s,
+            'type' => 'power',
             'attributes' => {
-              'email' => customer.email
+              'description' => power.description,
+              'category' => power.category,
+              'id' => power.id
             }
           }],
           'meta' => {
@@ -34,21 +36,20 @@ RSpec.describe Api::V1::CustomersController, type: :request do
     end
     context 'when index tries to make an request without token' do
       it 'returns :unauthorized' do
-        get '/api/v1/customers', params: {}
+        get '/api/v1/powers', params: {}
 
         expect(response).to have_http_status(:unauthorized)
       end
     end
   end
   describe 'create' do
-    let(:customer) { create(:customer) }
+    let(:power) { create(:power) }
     context 'when request is valid' do
       it 'returns :ok' do
-        post '/api/v1/customers', params: {
-          customer: {
-            email: Faker::Internet.email,
-            password: '123456',
-            password_confirmation: '123456'
+        post '/api/v1/powers', params: {
+          power: {
+            description: 'texto',
+            category: 5
           }
         }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 
@@ -57,29 +58,31 @@ RSpec.describe Api::V1::CustomersController, type: :request do
     end
     context 'when create tries to make an request without token' do
       it 'returns :unauthorized' do
-        post '/api/v1/customers', params: {}
+        post '/api/v1/powers', params: {}
 
         expect(response).to have_http_status(:unauthorized)
       end
     end
   end
   describe 'update' do
-    let!(:customer) { create(:customer, id: 5) }
+    let!(:power) { create(:power, id: 5) }
     context 'when request is valid' do
       it 'returns :ok' do
-        put '/api/v1/customers/5', params: {
-          customer: {
-            email: 'emailnovo@gmail.com'
+        put '/api/v1/powers/5', params: {
+          power: {
+            description: 'New description'
           }
         }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 
         expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body)).to eq(
           'data' => {
-            'id' => customer.id.to_s,
-            'type' => 'customer',
+            'id' => power.id.to_s,
+            'type' => 'power',
             'attributes' => {
-              'email' => 'emailnovo@gmail.com'
+              'description' => 'New description',
+              'category' => power.category,
+              'id' => power.id
             }
           }
         )
@@ -87,25 +90,27 @@ RSpec.describe Api::V1::CustomersController, type: :request do
     end
     context 'when update tries to make an request without token' do
       it 'returns :unauthorized' do
-        put '/api/v1/customers/5', params: {}
+        put '/api/v1/powers/5', params: {}
 
         expect(response).to have_http_status(:unauthorized)
       end
     end
   end
   describe 'show' do
-    let!(:customer) { create(:customer, id: 5) }
+    let!(:power) { create(:power, id: 5) }
     context 'when request is valid' do
       it 'returns :ok' do
-        get '/api/v1/customers/5',
+        get '/api/v1/powers/5',
             headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body)).to eq(
           'data' => {
-            'id' => customer.id.to_s,
-            'type' => 'customer',
+            'id' => power.id.to_s,
+            'type' => 'power',
             'attributes' => {
-              'email' => customer.email
+              'description' => power.description,
+              'category' => power.category,
+              'id' => power.id
             }
           }
         )
@@ -113,14 +118,14 @@ RSpec.describe Api::V1::CustomersController, type: :request do
     end
     context 'when show tries to make an request without token' do
       it 'returns :unauthorized' do
-        get '/api/v1/customers/5', params: {}
+        get '/api/v1/powers/5', params: {}
 
         expect(response).to have_http_status(:unauthorized)
       end
     end
-    context 'when customer dont exists' do
+    context 'when power dont exists' do
       it 'returns :not_found' do
-        get '/api/v1/customers/35',
+        get '/api/v1/powers/35',
             headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         expect(response).to have_http_status(:not_found)
       end
