@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# rubocop:disable Metrics/BlockLength
 RSpec.describe Api::V1::OfficesController, type: :request do
   let!(:admin) { create(:admin) }
 
@@ -83,6 +84,78 @@ RSpec.describe Api::V1::OfficesController, type: :request do
         }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 
         expect(response).to have_http_status(:created)
+      end
+
+      context 'create nested attributes' do
+        it 'creates phones' do
+          expect do
+            post '/api/v1/offices', params: {
+              office: {
+                name: Faker::Company.name,
+                cnpj: Faker::Number.number(digits: 14),
+                oab: Faker::Number.number(digits: 6),
+                society: 'company',
+                foundation: Faker::Date.birthday(min_age: 18, max_age: 65),
+                site: Faker::Internet.url,
+                cep: '79750000',
+                street: 'Rua Um',
+                number: Faker::Number.number(digits: 3),
+                neighborhood: 'centro',
+                city: 'Nova Andradina',
+                state: 'MS',
+                office_type_id: FactoryBot.create(:office_type).id,
+                profile_admin_id: FactoryBot.create(:profile_admin).id,
+                phones_attributes: [phone_number: '123456789']
+              }
+            }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+          end.to change(OfficePhone, :count).by(1)
+        end
+        it 'creates email' do
+          expect do
+            post '/api/v1/offices', params: {
+              office: {
+                name: Faker::Company.name,
+                cnpj: Faker::Number.number(digits: 14),
+                oab: Faker::Number.number(digits: 6),
+                society: 'company',
+                foundation: Faker::Date.birthday(min_age: 18, max_age: 65),
+                site: Faker::Internet.url,
+                cep: '79750000',
+                street: 'Rua Um',
+                number: Faker::Number.number(digits: 3),
+                neighborhood: 'centro',
+                city: 'Nova Andradina',
+                state: 'MS',
+                office_type_id: FactoryBot.create(:office_type).id,
+                profile_admin_id: FactoryBot.create(:profile_admin).id,
+                emails_attributes: [email: Faker::Internet.email]
+              }
+            }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+          end.to change(OfficeEmail, :count).by(1)
+        end
+        it 'creates bank account' do
+          expect do
+            post '/api/v1/offices', params: {
+              office: {
+                name: Faker::Company.name,
+                cnpj: Faker::Number.number(digits: 14),
+                oab: Faker::Number.number(digits: 6),
+                society: 'company',
+                foundation: Faker::Date.birthday(min_age: 18, max_age: 65),
+                site: Faker::Internet.url,
+                cep: '79750000',
+                street: 'Rua Um',
+                number: Faker::Number.number(digits: 3),
+                neighborhood: 'centro',
+                city: 'Nova Andradina',
+                state: 'MS',
+                office_type_id: FactoryBot.create(:office_type).id,
+                profile_admin_id: FactoryBot.create(:profile_admin).id,
+                bank_accounts_attributes: [bank_name: 'BB', type_account: 'CC', agency: '35478', account: 254, operation: 0o02]
+              }
+            }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+          end.to change(OfficeBankAccount, :count).by(1)
+        end
       end
     end
     context 'when create tries to make an request without token' do
@@ -193,3 +266,4 @@ RSpec.describe Api::V1::OfficesController, type: :request do
     end
   end
 end
+# rubocop:enable Metrics/BlockLength
