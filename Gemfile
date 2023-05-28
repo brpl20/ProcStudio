@@ -8,8 +8,6 @@ gem 'bootsnap', require: false
 gem 'devise'
 gem 'docx'
 gem 'i18n'
-gem 'importmap-rails'
-gem 'jbuilder'
 gem 'jsonapi-serializer'
 gem 'jwt'
 gem 'pg'

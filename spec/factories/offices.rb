@@ -3,14 +3,14 @@
 FactoryBot.define do
   factory :office do
     name { 'Pellizzetti' }
-    cnpj { '12312312312345' }
-    oab { '1234566' }
+    cnpj { Faker::Number.number(digits: 14) }
+    oab { Faker::Number.number(digits: 6) }
     society { 'company' }
-    foundation { '2023-10-10' }
-    site { 'www.pellizzetti.com.br' }
+    foundation { Faker::Date.birthday(min_age: 18, max_age: 65) }
+    site { Faker::Internet.url }
     cep { '79750000' }
     street { 'Rua Um' }
-    number { 123 }
+    number { Faker::Number.number(digits: 3) }
     neighborhood { 'centro' }
     city { 'Nova Andradina' }
     state { 'MS' }
