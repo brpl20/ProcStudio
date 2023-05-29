@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# rubocop:disable Metrics/BlockLength
 RSpec.describe Api::V1::ProfileCustomersController, type: :request do
   let!(:admin) { create(:admin) }
 
@@ -79,6 +80,88 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
         }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 
         expect(response).to have_http_status(:created)
+      end
+    end
+    context 'creates nested attributes' do
+      it 'creates address' do
+        expect do
+          post '/api/v1/profile_customers', params: {
+            profile_customer: {
+              customer_id: customer.id,
+              name: Faker::Name.first_name,
+              last_name: Faker::Name.last_name,
+              cpf: Faker::IDNumber.brazilian_citizen_number(formatted: true),
+              rg: Faker::IDNumber.brazilian_id(formatted: true),
+              birth: Faker::Date.birthday(min_age: 18, max_age: 65),
+              addresses_attributes: [description: Faker::Address.street_name, zip_code: Faker::Address.zip_code,
+                                     street: Faker::Address.street_name, number: Faker::Address.building_number,
+                                     neighborhood: Faker::Address.community, city: Faker::Address.city]
+            }
+          }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        end.to change(CustomerAddress, :count).by(1)
+      end
+      it 'creates bank account' do
+        expect do
+          post '/api/v1/profile_customers', params: {
+            profile_customer: {
+              customer_id: customer.id,
+              name: Faker::Name.first_name,
+              last_name: Faker::Name.last_name,
+              cpf: Faker::IDNumber.brazilian_citizen_number(formatted: true),
+              rg: Faker::IDNumber.brazilian_id(formatted: true),
+              birth: Faker::Date.birthday(min_age: 18, max_age: 65),
+              bank_accounts_attributes: [bank_name: 'BB', type_account: 'CC', agency: '35478',
+                                         account: 254, operation: 0o02]
+            }
+          }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        end.to change(CustomerBankAccount, :count).by(1)
+      end
+
+      it 'creates phone' do
+        expect do
+          post '/api/v1/profile_customers', params: {
+            profile_customer: {
+              customer_id: customer.id,
+              name: Faker::Name.first_name,
+              last_name: Faker::Name.last_name,
+              cpf: Faker::IDNumber.brazilian_citizen_number(formatted: true),
+              rg: Faker::IDNumber.brazilian_id(formatted: true),
+              birth: Faker::Date.birthday(min_age: 18, max_age: 65),
+              phones_attributes: [phone_number: Faker::PhoneNumber.cell_phone]
+            }
+          }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        end.to change(CustomerPhone, :count).by(1)
+      end
+
+      it 'creates email' do
+        expect do
+          post '/api/v1/profile_customers', params: {
+            profile_customer: {
+              customer_id: customer.id,
+              name: Faker::Name.first_name,
+              last_name: Faker::Name.last_name,
+              cpf: Faker::IDNumber.brazilian_citizen_number(formatted: true),
+              rg: Faker::IDNumber.brazilian_id(formatted: true),
+              birth: Faker::Date.birthday(min_age: 18, max_age: 65),
+              emails_attributes: [email: Faker::Internet.email]
+            }
+          }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        end.to change(CustomerEmail, :count).by(1)
+      end
+      it 'creates customer' do
+        expect do
+          post '/api/v1/profile_customers', params: {
+            profile_customer: {
+              customer_id: customer.id,
+              name: Faker::Name.first_name,
+              last_name: Faker::Name.last_name,
+              cpf: Faker::IDNumber.brazilian_citizen_number(formatted: true),
+              rg: Faker::IDNumber.brazilian_id(formatted: true),
+              birth: Faker::Date.birthday(min_age: 18, max_age: 65),
+              customer_attributes: [email: Faker::Internet.email, password: 123_456, password_confirmation: 123_456]
+            }
+          }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        end.to change(Customer, :count).by(1)
       end
     end
     context 'when create tries to make an request without token' do
@@ -200,3 +283,4 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
     end
   end
 end
+# rubocop:enable Metrics/BlockLength

@@ -3,38 +3,58 @@
 module Api
   module V1
     class OfficesController < BackofficeController
-      respond_to :json
       before_action :retrieve_office, only: %i[show update destroy]
-      rescue_from ActiveRecord::RecordNotFound, with: :render_not_found_response
 
       def index
         @offices = OfficeFilter.retrieve_offices
-        respond_with @offices
+        render json: OfficeSerializer.new(
+          @offices,
+          meta: {
+            total_count: @offices.offset(nil).limit(nil).count
+          }
+        ), status: :ok
       end
 
-      def show; end
+      def show
+        render json: OfficeSerializer.new(
+          @office,
+          include: %i[office_emails office_phones office_bank_accounts]
+        ), status: :ok
+      end
 
       def create
-        @office = build_office
-
+        @office = Office.new(offices_params)
         if @office.save
-          render json: { message: 'Escritório criado com sucesso' }, status: :created
+          render json: @office, status: :created
         else
-          render json: { errors: office.errors.full_messages }, status: :unprocessable_entity
+          render(
+            status: :bad_request,
+            json: { errors: [{ code: @office.errors.full_messages }] }
+          )
         end
+      rescue StandardError => e
+        render(
+          status: :bad_request,
+          json: { errors: [{ code: e }] }
+        )
       end
 
       def update
-        if @office.update(office_params)
-          render json: { message: 'Escritório atualizado com sucesso' }, status: 200
+        if @office.update(offices_params)
+          render json: OfficeSerializer.new(
+            @office
+          ), status: :ok
         else
-          render json: { errors: office.errors.full_messages }, status: :unprocessable_entity
+          render(
+            status: :bad_request,
+            json: { errors: [{ code: @office.errors.full_messages }] }
+          )
         end
       end
 
       def destroy
         if @office.destroy
-          render json: { message: 'Escritório apagado com sucesso' }, status: 200
+          render head :not_found
         else
           render json: { errors: office.errors.full_messages }, status: :unprocessable_entity
         end
@@ -42,19 +62,13 @@ module Api
 
       private
 
-      def build_office
-        Office.new(office_params)
-      end
-
       def retrieve_office
         @office = OfficeFilter.retrieve_office(params[:id])
+      rescue ActiveRecord::RecordNotFound
+        head :not_found
       end
 
-      def render_not_found_response
-        render json: { errors: 'Escritório não encontrado' }, status: :not_found
-      end
-
-      def office_params
+      def offices_params
         params.require(:office).permit(
           :name, :cnpj,
           :oab, :society,
@@ -64,7 +78,7 @@ module Api
           :city, :state,
           :profile_admin_id,
           :office_type_id,
-          phones_attributes: %i[id phone],
+          phones_attributes: %i[id phone_number],
           emails_attributes: %i[id email],
           bank_accounts_attributes: %i[id bank_name type_account agency account operation]
         )
