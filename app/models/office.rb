@@ -2,7 +2,7 @@
 
 class Office < ApplicationRecord
   belongs_to :office_type
-  belongs_to :profile_admin
+  has_many :profile_admins
 
   enum :society, %i[sole_proprietorship company individual]
 

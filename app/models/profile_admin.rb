@@ -2,6 +2,7 @@
 
 class ProfileAdmin < ApplicationRecord
   belongs_to :admin
+  belongs_to :office
 
   enum :role, %i[lawyer paralegal trainee secretary counter excounter]
   enum :status, %i[active inactive pending]

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_07_185143) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_31_174717) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -299,7 +299,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_07_185143) do
   create_table "profile_admins", force: :cascade do |t|
     t.integer "role"
     t.string "name"
-    t.string "lastname"
+    t.string "last_name"
     t.integer "gender"
     t.string "oab"
     t.string "rg"
@@ -312,7 +312,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_07_185143) do
     t.bigint "admin_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "office_id", default: 1, null: false
     t.index ["admin_id"], name: "index_profile_admins_on_admin_id"
+    t.index ["office_id"], name: "index_profile_admins_on_office_id"
   end
 
   create_table "profile_customers", force: :cascade do |t|
@@ -437,6 +439,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_07_185143) do
   add_foreign_key "power_works", "powers"
   add_foreign_key "power_works", "works"
   add_foreign_key "profile_admins", "admins"
+  add_foreign_key "profile_admins", "offices"
   add_foreign_key "profile_customers", "customers"
   add_foreign_key "recommendations", "profile_customers"
   add_foreign_key "recommendations", "works"
