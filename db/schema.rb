@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_31_174717) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_31_232341) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -249,11 +249,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_31_174717) do
     t.string "city"
     t.string "state"
     t.bigint "office_type_id", null: false
-    t.bigint "profile_admin_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["office_type_id"], name: "index_offices_on_office_type_id"
-    t.index ["profile_admin_id"], name: "index_offices_on_profile_admin_id"
   end
 
   create_table "perdlaunches", force: :cascade do |t|
@@ -299,7 +297,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_31_174717) do
   create_table "profile_admins", force: :cascade do |t|
     t.integer "role"
     t.string "name"
-    t.string "last_name"
+    t.string "lastname"
     t.integer "gender"
     t.string "oab"
     t.string "rg"
@@ -434,7 +432,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_31_174717) do
   add_foreign_key "office_phones", "offices"
   add_foreign_key "office_phones", "phones"
   add_foreign_key "offices", "office_types"
-  add_foreign_key "offices", "profile_admins"
   add_foreign_key "perdlaunches", "works"
   add_foreign_key "power_works", "powers"
   add_foreign_key "power_works", "works"

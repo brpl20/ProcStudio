@@ -76,7 +76,6 @@ module Api
           :cep, :street,
           :number, :neighborhood,
           :city, :state,
-          :profile_admin_id,
           :office_type_id,
           phones_attributes: %i[id phone_number],
           emails_attributes: %i[id email],

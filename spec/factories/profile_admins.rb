@@ -14,6 +14,7 @@ FactoryBot.define do
     birth { '1980-01-01' }
     mother_name { 'Jane' }
     status { 1 }
-    association :admin, factory: :admin
+    admin
+    office
   end
 end
