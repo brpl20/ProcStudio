@@ -121,15 +121,9 @@ GEM
       activesupport (>= 5.0)
     i18n (1.13.0)
       concurrent-ruby (~> 1.0)
-    importmap-rails (1.1.6)
-      actionpack (>= 6.0.0)
-      railties (>= 6.0.0)
     io-console (0.6.0)
     irb (1.6.4)
       reline (>= 0.3.0)
-    jbuilder (2.11.5)
-      actionview (>= 5.0.0)
-      activesupport (>= 5.0.0)
     jmespath (1.6.2)
     json (2.6.3)
     jsonapi-serializer (2.2.0)
@@ -268,8 +262,6 @@ DEPENDENCIES
   factory_bot_rails
   faker
   i18n
-  importmap-rails
-  jbuilder
   jsonapi-serializer
   jwt
   mina (= 0.3.8)

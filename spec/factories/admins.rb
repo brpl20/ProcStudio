@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :admin do
-    email { 'admin_teste@procstudio.com.br' }
+    email { Faker::Internet.email }
     password { '123456789' }
 
     after(:create) do |admin|

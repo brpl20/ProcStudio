@@ -7,7 +7,7 @@ class OfficeFilter
     end
 
     def retrieve_offices
-      Office.all
+      Office.includes(:office_phones, :office_emails, :office_bank_accounts).all
     end
   end
 end
