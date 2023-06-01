@@ -15,6 +15,8 @@ FactoryBot.define do
     city { 'Nova Andradina' }
     state { 'MS' }
     office_type { FactoryBot.create(:office_type) }
-    profile_admin { FactoryBot.create(:profile_admin) }
+    transient do
+      profile_admins { [build(:profile_admin)] }
+    end
   end
 end
