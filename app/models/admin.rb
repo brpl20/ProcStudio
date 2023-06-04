@@ -7,4 +7,7 @@ class Admin < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
   has_one :profile_admin
+
+  validates :email, presence: true
+  accepts_nested_attributes_for :profile_admin, reject_if: :all_blank
 end

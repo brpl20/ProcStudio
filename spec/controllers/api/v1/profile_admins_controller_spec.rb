@@ -99,27 +99,6 @@ RSpec.describe Api::V1::ProfileAdminsController, type: :request do
       end
     end
 
-    # context 'when send admin_attributes' do
-    #   it 'creates a admin' do
-    #     expect do
-    #       post '/api/v1/profile_admins', params: {
-    #         profile_admin: {
-    #           role: 'lawyer',
-    #           status: 'active',
-    #           office_id: office.id,
-    #           name: 'John',
-    #           admin_id: admin.id,
-    #           last_name: 'Doe',
-    #           cpf: Faker::IDNumber.brazilian_citizen_number(formatted: true),
-    #           rg: Faker::IDNumber.brazilian_id(formatted: true),
-    #           birth: Faker::Date.birthday(min_age: 18, max_age: 65),
-    #           admin_attributes: [email: Faker::Internet.email, password: 123_456, password_confirmation: 123_456]
-    #         }
-    #       }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
-    #     end.to change(Admin, :count).by(1)
-    #   end
-    # end
-
     context 'when send phones_attributes' do
       it 'creates a admin' do
         expect do
