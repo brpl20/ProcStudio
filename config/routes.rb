@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-
   get '/api/v1/customer/document' => 'profile_customers#prepare_document'
 
   namespace :api do
