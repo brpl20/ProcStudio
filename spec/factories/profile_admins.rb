@@ -4,7 +4,7 @@ FactoryBot.define do
   factory :profile_admin do
     role { 1 }
     name { 'John' }
-    lastname { 'Doe' }
+    last_name { 'Doe' }
     gender { 1 }
     oab { '123456' }
     rg { '12345678' }
