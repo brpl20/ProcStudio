@@ -82,7 +82,7 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
         expect(response).to have_http_status(:created)
       end
     end
-    context 'creates nested attributes' do
+    context 'nested attributes' do
       it 'creates address' do
         expect do
           post '/api/v1/profile_customers', params: {

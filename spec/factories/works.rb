@@ -2,11 +2,11 @@
 
 FactoryBot.define do
   factory :work do
-    procedure { 'MyString' }
-    subject { 'MyString' }
-    action { 'MyString' }
+    procedure { Faker::Lorem.word }
+    subject { Faker::Lorem.word }
+    action { Faker::Lorem.word }
     number { 1 }
-    rate_percentage { 'MyString' }
+    rate_percentage { Faker::Lorem.word }
     rate_percentage_exfield { 'MyString' }
     rate_fixed { 'MyString' }
     rate_parceled_exfield { 'MyString' }
