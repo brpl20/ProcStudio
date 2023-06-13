@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_01_223151) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_11_143013) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -365,7 +365,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_01_223151) do
     t.integer "compensation"
     t.integer "craft"
     t.integer "lawsuit"
-    t.date "pojection"
+    t.date "projection"
     t.bigint "work_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

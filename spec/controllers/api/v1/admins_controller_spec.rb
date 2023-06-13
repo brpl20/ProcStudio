@@ -65,7 +65,7 @@ RSpec.describe Api::V1::AdminsController, type: :request do
       end
     end
 
-    context 'creates nested attributes' do
+    context 'nested attributes' do
       it 'creates profile admins' do
         expect do
           post '/api/v1/admins', params: {

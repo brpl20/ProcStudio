@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :checklist_work do
-    checklist { nil }
-    work { nil }
+    checklist
+    work
   end
 end

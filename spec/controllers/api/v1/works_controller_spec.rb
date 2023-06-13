@@ -1,0 +1,289 @@
+# frozen_string_literal: true
+
+require 'rails_helper'
+
+# rubocop:disable Metrics/BlockLength
+RSpec.describe Api::V1::WorksController, type: :request do
+  let!(:admin) { create(:admin) }
+
+  describe '#index' do
+    let!(:work) { create(:work) }
+
+    context 'when request is valid' do
+      before do
+        get '/api/v1/works', headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+      end
+
+      it 'returns status code 200' do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'returns all works' do
+        expect(JSON.parse(response.body)).to eq(
+          'data' => [{
+            'id' => work.id.to_s,
+            'type' => 'work',
+            'attributes' => {
+              'procedure' => work.procedure,
+              'subject' => work.subject,
+              'action' => work.action,
+              'number' => work.number,
+              'rate_percentage' => work.rate_percentage,
+              'rate_percentage_exfield' => work.rate_percentage_exfield,
+              'rate_fixed' => work.rate_fixed,
+              'rate_parceled_exfield' => work.rate_parceled_exfield,
+              'folder' => work.folder,
+              'initial_atendee' => work.initial_atendee,
+              'note' => work.note,
+              'checklist' => work.checklist,
+              'pending_document' => work.pending_document
+            },
+            'relationships' => {
+              'jobs' => { 'data' => [] },
+              'perdlaunch' => { 'data' => nil },
+              'powers' => { 'data' => [] },
+              'profile_customers' => { 'data' => [] },
+              'recommendation' => { 'data' => [] },
+              'tributary' => { 'data' => nil },
+              'checklists' => { 'data' => [] }
+            }
+          }],
+          'meta' => {
+            'total_count' => 1
+          }
+        )
+      end
+    end
+    context 'when index tries to make an request without token' do
+      it 'returns :unauthorized' do
+        get '/api/v1/works', params: {}
+
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+  end
+  describe 'create' do
+    let(:work) { create(:work) }
+    context 'when request is valid' do
+      it 'returns :ok' do
+        post '/api/v1/works', params: {
+          work: {
+            procedure: Faker::Lorem.word,
+            subject: Faker::Lorem.word,
+            action: Faker::Lorem.word,
+            number: Faker::Number.number(digits: 2),
+            rate_percentage: Faker::Number.number(digits: 2),
+            rate_percentage_exfield: Faker::Number.number(digits: 2),
+            rate_fixed: Faker::Number.number(digits: 2),
+            rate_parceled_exfield: Faker::Number.number(digits: 2),
+            folder: Faker::Lorem.word,
+            initial_atendee: Faker::Lorem.word,
+            note: Faker::Lorem.word,
+            checklist: Faker::Lorem.word,
+            pending_document: Faker::Lorem.word
+          }
+        }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+
+        expect(response).to have_http_status(:created)
+      end
+    end
+    context 'when create tries to make an request without token' do
+      it 'returns :unauthorized' do
+        post '/api/v1/works', params: {
+          work: {
+            procedure: Faker::Lorem.word,
+            subject: Faker::Lorem.word,
+            action: Faker::Lorem.word
+          }
+        }
+
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+    context 'nested attributes' do
+      it 'creates perdlaunch' do
+        expect do
+          post '/api/v1/works', params: {
+            work: {
+              procedure: Faker::Lorem.word,
+              subject: Faker::Lorem.word,
+              action: Faker::Lorem.word,
+              number: Faker::Number.number(digits: 2),
+              rate_percentage: Faker::Number.number(digits: 2),
+              rate_percentage_exfield: Faker::Number.number(digits: 2),
+              rate_fixed: Faker::Number.number(digits: 2),
+              rate_parceled_exfield: Faker::Number.number(digits: 2),
+              perdlaunch_attributes: { compensation: Faker::Lorem.word, craft: Faker::Lorem.word,
+                                       lawsuit: Faker::Lorem.word, projection: Faker::Lorem.word,
+                                       perd_number: Faker::Number.number(digits: 2),
+                                       shipping_date: Faker::Date.forward(days: 23),
+                                       payment_date: Faker::Date.forward(days: 23),
+                                       status: Faker::Lorem.word, value: Faker::Number.number(digits: 2),
+                                       responsible: Faker::Lorem.word, perd_style: Faker::Lorem.word }
+            }
+          }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        end.to change(Perdlaunch, :count).by(1)
+      end
+      it 'creates checklists' do
+        expect do
+          post '/api/v1/works', params: {
+            work: {
+              procedure: Faker::Lorem.word,
+              subject: Faker::Lorem.word,
+              action: Faker::Lorem.word,
+              number: Faker::Number.number(digits: 2),
+              rate_percentage: Faker::Number.number(digits: 2),
+              rate_percentage_exfield: Faker::Number.number(digits: 2),
+              rate_fixed: Faker::Number.number(digits: 2),
+              rate_parceled_exfield: Faker::Number.number(digits: 2),
+              checklists_attributes: [description: Faker::Lorem.word]
+            }
+          }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        end.to change(ChecklistWork, :count).by(1)
+      end
+      it 'creates tributary' do
+        expect do
+          post '/api/v1/works', params: {
+            work: {
+              procedure: Faker::Lorem.word,
+              subject: Faker::Lorem.word,
+              action: Faker::Lorem.word,
+              number: Faker::Number.number(digits: 2),
+              rate_percentage: Faker::Number.number(digits: 2),
+              rate_percentage_exfield: Faker::Number.number(digits: 2),
+              rate_fixed: Faker::Number.number(digits: 2),
+              rate_parceled_exfield: Faker::Number.number(digits: 2),
+              tributary_attributes: { compensation: Faker::Lorem.word, craft: Faker::Lorem.word,
+                                      lawsuit: Faker::Lorem.word, projection: Faker::Lorem.word }
+
+            }
+          }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        end.to change(Tributary, :count).by(1)
+      end
+      it 'creates powers' do
+        expect do
+          post '/api/v1/works', params: {
+            work: {
+              procedure: Faker::Lorem.word,
+              subject: Faker::Lorem.word,
+              action: Faker::Lorem.word,
+              number: Faker::Number.number(digits: 2),
+              rate_percentage: Faker::Number.number(digits: 2),
+              rate_percentage_exfield: Faker::Number.number(digits: 2),
+              rate_fixed: Faker::Number.number(digits: 2),
+              rate_parceled_exfield: Faker::Number.number(digits: 2),
+              powers_attributes: [description: Faker::Lorem.word, category: 5]
+            }
+          }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        end.to change(PowerWork, :count).by(1)
+      end
+    end
+  end
+  describe 'update' do
+    let!(:work) { create(:work, id: 5) }
+    context 'when request is valid' do
+      it 'returns :ok' do
+        put '/api/v1/works/5', params: {
+          work: {
+            note: 'New description'
+          }
+        }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+
+        expect(response).to have_http_status(:ok)
+        expect(JSON.parse(response.body)).to eq(
+          'data' => {
+            'id' => work.id.to_s,
+            'type' => 'work',
+            'attributes' => {
+              'procedure' => work.procedure,
+              'subject' => work.subject,
+              'action' => work.action,
+              'number' => work.number,
+              'rate_percentage' => work.rate_percentage,
+              'rate_percentage_exfield' => work.rate_percentage_exfield,
+              'rate_fixed' => work.rate_fixed,
+              'rate_parceled_exfield' => work.rate_parceled_exfield,
+              'folder' => work.folder,
+              'initial_atendee' => work.initial_atendee,
+              'note' => 'New description',
+              'checklist' => work.checklist,
+              'pending_document' => work.pending_document
+            },
+            'relationships' => {
+              'jobs' => { 'data' => [] },
+              'perdlaunch' => { 'data' => nil },
+              'powers' => { 'data' => [] },
+              'profile_customers' => { 'data' => [] },
+              'recommendation' => { 'data' => [] },
+              'tributary' => { 'data' => nil },
+              'checklists' => { 'data' => [] }
+            }
+          }
+        )
+      end
+    end
+    context 'when update tries to make an request without token' do
+      it 'returns :unauthorized' do
+        put '/api/v1/works/5', params: {}
+
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+  end
+  describe 'show' do
+    let!(:work) { create(:work, id: 5) }
+    context 'when request is valid' do
+      it 'returns :ok' do
+        get '/api/v1/works/5',
+            headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        expect(response).to have_http_status(:ok)
+        expect(JSON.parse(response.body)).to eq(
+          'data' => {
+            'id' => work.id.to_s,
+            'type' => 'work',
+            'attributes' => {
+              'procedure' => work.procedure,
+              'subject' => work.subject,
+              'action' => work.action,
+              'number' => work.number,
+              'rate_percentage' => work.rate_percentage,
+              'rate_percentage_exfield' => work.rate_percentage_exfield,
+              'rate_fixed' => work.rate_fixed,
+              'rate_parceled_exfield' => work.rate_parceled_exfield,
+              'folder' => work.folder,
+              'initial_atendee' => work.initial_atendee,
+              'note' => work.note,
+              'checklist' => work.checklist,
+              'pending_document' => work.pending_document
+            },
+            'relationships' => {
+              'jobs' => { 'data' => [] },
+              'perdlaunch' => { 'data' => nil },
+              'powers' => { 'data' => [] },
+              'profile_customers' => { 'data' => [] },
+              'recommendation' => { 'data' => [] },
+              'tributary' => { 'data' => nil },
+              'checklists' => { 'data' => [] }
+            }
+          },
+          'included' => []
+        )
+      end
+    end
+    context 'when show tries to make an request without token' do
+      it 'returns :unauthorized' do
+        get '/api/v1/works/5', params: {}
+
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+    context 'when work dont exists' do
+      it 'returns :not_found' do
+        get '/api/v1/works/35',
+            headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
+end
+# rubocop:enable Metrics/BlockLength
