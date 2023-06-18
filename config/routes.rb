@@ -12,6 +12,7 @@ Rails.application.routes.draw do
       resources :profile_admins
       resources :admins
       resources :works
+      resources :jobs
       post '/login', to: 'auth#authenticate'
       delete '/logout', to: 'auth#destroy'
     end
