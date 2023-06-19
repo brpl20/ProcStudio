@@ -85,3 +85,5 @@ jobs:
         run: |
           gem install mina
           bundle exec mina deploy staging
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
