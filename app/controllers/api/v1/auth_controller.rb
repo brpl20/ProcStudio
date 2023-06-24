@@ -6,8 +6,8 @@ module Api
       include JwtAuth
 
       def authenticate
-        admin = Admin.find_for_authentication(email: params[:email])
-        if admin&.valid_password?(params[:password])
+        admin = Admin.find_for_authentication(email: auth_params[:email])
+        if admin&.valid_password?(auth_params[:password])
           exp = Time.now.to_i + (24 * 3600)
           token = JWT.encode({ admin_id: admin.id, exp: exp }, Rails.application.secret_key_base)
           admin.update(jwt_token: token)
@@ -36,6 +36,10 @@ module Api
       end
 
       private
+
+      def auth_params
+        params.require(:auth).permit(:email, :password)
+      end
 
       def decode_jwt_token(token)
         secret_key = Rails.application.secrets.secret_key_base
