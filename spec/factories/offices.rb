@@ -19,4 +19,8 @@ FactoryBot.define do
       profile_admins { [build(:profile_admin)] }
     end
   end
+
+  trait :office_with_logo do
+    logo { Rack::Test::UploadedFile.new(Rails.root.join('spec', 'factories', 'images', 'Ruby.jpg'), 'image/jpg') }
+  end
 end
