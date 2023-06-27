@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-namespace :set do
+namespace :cad do
   desc 'Criação dos offices_types para serem utilizados nos escritórios'
-  task work_data: :environment do
+  task work: :environment do
     checklists = ['Procuração', 'Termo de Renúncia', 'Declaração de Carência', 'Termo de Residência', 'Declaração Rural']
 
     checklists.each do |t|

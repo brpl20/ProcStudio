@@ -2,11 +2,10 @@
 
 namespace :cad do
   desc 'Criação dos offices_types para serem utilizados nos escritórios'
-  task office_types: :environment do
-    types = %w[Advocacia Contabilidade Outro]
+  task offices: :environment do
 
     types.each do |t|
-      OfficeType.find_or_create_by(
+      Office.find_or_create_by(
         description: t.to_s
       )
     end
