@@ -12,7 +12,12 @@ RSpec.describe Api::V1::AuthController, type: :request do
   describe 'POST /api/v1/login' do
     context 'Quando e-mail e senha informados são válidos' do
       it 'Retorna um token válido' do
-        post '/api/v1/login', params: { email: admin.email, password: admin.password }
+        post '/api/v1/login', params: {
+          auth: {
+            email: admin.email,
+            password: admin.password
+          }
+        }
         expect(response).to have_http_status(:ok)
 
         json_response = JSON.parse(response.body)
@@ -27,7 +32,12 @@ RSpec.describe Api::V1::AuthController, type: :request do
         admin.update(jwt_token: nil)
         expect(admin.jwt_token).to be_nil
 
-        post '/api/v1/login', params: { email: admin.email, password: admin.password }
+        post '/api/v1/login', params: {
+          auth: {
+            email: admin.email,
+            password: admin.password
+          }
+        }
         expect(response).to have_http_status(:ok)
 
         admin.reload
@@ -37,7 +47,12 @@ RSpec.describe Api::V1::AuthController, type: :request do
 
     context 'Quando e-mail ou senha inválidos são fornecidos' do
       it 'Retorna inválido' do
-        post '/api/v1/login', params: { email: admin.email, password: 'wrong_password' }
+        post '/api/v1/login', params: {
+          auth: {
+            email: admin.email,
+            password: 'wrong_password'
+          }
+        }
         expect(response).to have_http_status(:unauthorized)
         begin
           json_response = JSON.parse(response.body)
@@ -50,7 +65,12 @@ RSpec.describe Api::V1::AuthController, type: :request do
       end
 
       it 'Não atualiza admin com um novo token' do
-        post '/api/v1/login', params: { email: admin.email, password: 'wrong_password' }
+        post '/api/v1/login', params: {
+          auth: {
+            email: admin.email,
+            password: 'wrong_password'
+          }
+        }
         expect(response).to have_http_status(:unauthorized)
       end
     end
