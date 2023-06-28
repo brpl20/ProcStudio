@@ -12,7 +12,7 @@ namespace :cad do
       )
     end
 
-    10.times do
+    10.times.each_with_index do |_, index|
       ProfileCustomer.create(
         customer_type: [0,2,3].sample,
         name: Faker::Name.name,
@@ -33,11 +33,11 @@ namespace :cad do
         document: nil,
         nit: Faker::Alphanumeric.alpha(number: 6),
         inss_password: Faker::Alphanumeric.alpha(number: 8),
-        customer_id: (1..10).to_a.sample
+        customer_id: index
       )
     end
 
-    10.times do
+    10.times.each_with_index do |_, index|
       ProfileCustomer.create(
         customer_type: 1,
         name: Faker::Name.name,
@@ -45,7 +45,7 @@ namespace :cad do
         gender: [0,1].sample,
         rg: Faker::Number.number(digits: 6),
         cpf: '',
-        cnpj: Faker::Number.number(digits: 14),
+        cnpj: Faker::Company.brazilian_company_number,
         nationality: [0,1].sample,
         civil_status: [0,1].sample,
         capacity: (0..2).to_a.sample,
@@ -58,7 +58,7 @@ namespace :cad do
         document: nil,
         nit: Faker::Alphanumeric.alpha(number: 6),
         inss_password: Faker::Alphanumeric.alpha(number: 8),
-        customer_id: (11..20).to_a.sample
+        customer_id: (index + 10)
       )
     end
   end

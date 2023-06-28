@@ -21,6 +21,6 @@ ProfileAdmin.create!(
   birth: '12-01-2000',
   mother_name: 'Joana Martinez Rodriguez',
   status: 1,
-  admin: Admin.last
+  admin: Admin.last,
   office: Office.last
 )

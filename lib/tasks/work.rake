@@ -18,5 +18,23 @@ namespace :cad do
         description: t.to_s
       )
     end
+
+    10.times do
+      Work.create(
+        procedure: 'administrativo',
+        subject: 'civel',
+        action: 'familia',
+        number: Faker::Number.number(digits: 4),
+        rate_percentage: Faker::Number.decimal(l_digits: 2),
+        rate_percentage_exfield: Faker::Number.decimal(l_digits: 2),
+        rate_fixed: Faker::Number.decimal(l_digits: 2),
+        rate_parceled_exfield: Faker::Number.decimal(l_digits: 2),
+        folder: Faker::Lorem.word,
+        initial_atendee: Faker::Name.name,
+        note: Faker::Lorem.paragraph,
+        checklist: Checklist.last,
+        pending_document: ''
+      )
+    end
   end
 end
