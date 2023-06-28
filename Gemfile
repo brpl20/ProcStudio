@@ -17,7 +17,8 @@ gem 'rails', '~> 7.0.4', '>= 7.0.4.2'
 gem 'rubocop', '~> 1.48', require: false
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
-group :development, :staging do
+group :development, :test, :staging do
+  gem 'faker'
   gem 'mina', '0.3.8'
 end
 
@@ -25,6 +26,5 @@ group :development, :test do
   gem 'database_cleaner'
   gem 'debug', platforms: %i[mri mingw x64_mingw]
   gem 'factory_bot_rails'
-  gem 'faker'
   gem 'rspec-rails', '~> 6.0.0'
 end
