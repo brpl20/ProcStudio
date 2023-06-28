@@ -3,6 +3,9 @@
 namespace :cad do
   desc 'Criação dos offices_types para serem utilizados nos escritórios'
   task work: :environment do
+    require 'faker'
+    Faker::Config.locale = 'pt-BR'
+
     checklists = ['Procuração', 'Termo de Renúncia', 'Declaração de Carência', 'Termo de Residência', 'Declaração Rural']
 
     checklists.each do |t|

@@ -5,6 +5,8 @@ require 'faker'
 namespace :cad do
   desc 'Criação dos offices_types para serem utilizados nos escritórios'
   task office: :environment do
+    require 'faker'
+    Faker::Config.locale = 'pt-BR'
 
     Office.find_or_create_by(
       name: Faker::Company.name,

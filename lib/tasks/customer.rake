@@ -3,6 +3,8 @@
 namespace :cad do
   desc 'Criação de Profile Customer'
   task customer: :environment do
+    require 'faker'
+    Faker::Config.locale = 'pt-BR'
 
     20.times do
       Customer.create(
