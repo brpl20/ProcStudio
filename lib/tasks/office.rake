@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'faker'
 
 namespace :cad do
   desc 'Criação dos offices_types para serem utilizados nos escritórios'
