@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# rubocop:disable Metrics/BlockLength
 RSpec.describe Api::V1::OfficesController, type: :request do
   let!(:admin) { create(:admin) }
 
@@ -81,6 +82,51 @@ RSpec.describe Api::V1::OfficesController, type: :request do
         }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 
         expect(response).to have_http_status(:created)
+      end
+
+      it 'uploads a logo' do
+        post '/api/v1/offices', params: {
+          office: {
+            name: Faker::Company.name,
+            cnpj: Faker::Number.number(digits: 14),
+            oab: Faker::Number.number(digits: 6),
+            society: 'company',
+            foundation: Faker::Date.birthday(min_age: 18, max_age: 65),
+            site: Faker::Internet.url,
+            cep: '79750000',
+            street: 'Rua Um',
+            number: Faker::Number.number(digits: 3),
+            neighborhood: 'centro',
+            city: 'Nova Andradina',
+            state: 'MS',
+            office_type_id: FactoryBot.create(:office_type).id
+          }
+        }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+
+        expect(response).to have_http_status(:created)
+      end
+
+      it 'saves logo image' do
+        expect do
+          post '/api/v1/offices', params: {
+            office: {
+              name: Faker::Company.name,
+              cnpj: Faker::Number.number(digits: 14),
+              oab: Faker::Number.number(digits: 6),
+              society: 'company',
+              foundation: Faker::Date.birthday(min_age: 18, max_age: 65),
+              site: Faker::Internet.url,
+              cep: '79750000',
+              street: 'Rua Um',
+              number: Faker::Number.number(digits: 3),
+              neighborhood: 'centro',
+              city: 'Nova Andradina',
+              state: 'MS',
+              office_type_id: FactoryBot.create(:office_type).id,
+              logo: Rack::Test::UploadedFile.new(Rails.root.join('spec', 'factories', 'images', 'Ruby.jpg'), 'image/jpg')
+            }
+          }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        end.to change(ActiveStorage::Attachment, :count).by(1)
       end
 
       context 'create nested attributes' do
@@ -258,3 +304,4 @@ RSpec.describe Api::V1::OfficesController, type: :request do
     end
   end
 end
+# rubocop:enable Metrics/BlockLength
