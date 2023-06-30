@@ -72,7 +72,9 @@ module Api
           :deadline,
           :status,
           :priority,
-          :comment
+          :comment,
+          :customer_id,
+          :profile_admin_id
         )
       end
     end

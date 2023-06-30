@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe Api::V1::JobsController, type: :request do
   let!(:admin) { create(:admin) }
   describe '#index' do
-    let!(:job) { create(:job) }
+    let!(:job) { create(:job, :job_complete) }
 
     context 'when request is valid' do
       before do
@@ -25,7 +25,9 @@ RSpec.describe Api::V1::JobsController, type: :request do
               'deadline' => job.deadline.iso8601,
               'priority' => job.priority,
               'comment' => job.comment,
-              'status' => job.status
+              'status' => job.status,
+              'customer_id' => job.customer_id,
+              'profile_admin_id' => job.profile_admin_id
             },
             'relationships' => {
               'works' => {
@@ -50,6 +52,9 @@ RSpec.describe Api::V1::JobsController, type: :request do
 
   describe 'create' do
     let(:customer) { create(:customer) }
+    let(:profile_admin) { create(:profile_admin) }
+    let(:customer) { create(:customer) }
+
     context 'when request is valid' do
       it 'returns :ok' do
         post '/api/v1/jobs', params: {
@@ -59,7 +64,9 @@ RSpec.describe Api::V1::JobsController, type: :request do
             priority: 'low',
             society: Faker::Company.name,
             comment: Faker::Lorem.sentence,
-            status: 'pending'
+            status: 'pending',
+            customer_id: customer.id,
+            profile_admin_id: profile_admin.id
           }
         }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 
@@ -75,7 +82,8 @@ RSpec.describe Api::V1::JobsController, type: :request do
     end
   end
   describe 'update' do
-    let!(:job) { create(:job, id: 5) }
+    let!(:job) { create(:job, :job_complete, id: 5) }
+
     context 'when request is valid' do
       it 'returns :ok' do
         put '/api/v1/jobs/5', params: {
@@ -94,7 +102,9 @@ RSpec.describe Api::V1::JobsController, type: :request do
               'deadline' => job.deadline.iso8601,
               'priority' => job.priority,
               'comment' => 'This is a new comment',
-              'status' => job.status
+              'status' => job.status,
+              'customer_id' => job.customer_id,
+              'profile_admin_id' => job.profile_admin_id
             },
             'relationships' => {
               'works' => {
@@ -114,7 +124,7 @@ RSpec.describe Api::V1::JobsController, type: :request do
     end
   end
   describe 'show' do
-    let!(:job) { create(:job, id: 5) }
+    let!(:job) { create(:job, :job_complete, id: 5) }
     context 'when request is valid' do
       it 'returns :ok' do
         get '/api/v1/jobs/5',
@@ -129,7 +139,9 @@ RSpec.describe Api::V1::JobsController, type: :request do
               'deadline' => job.deadline.iso8601,
               'priority' => job.priority,
               'comment' => job.comment,
-              'status' => job.status
+              'status' => job.status,
+              'customer_id' => job.customer_id,
+              'profile_admin_id' => job.profile_admin_id
             },
             'relationships' => {
               'works' => {
