@@ -230,8 +230,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_30_140347) do
     t.datetime "updated_at", null: false
     t.bigint "profile_admin_id"
     t.bigint "customer_id"
+    t.bigint "work_id"
     t.index ["customer_id"], name: "index_jobs_on_customer_id"
     t.index ["profile_admin_id"], name: "index_jobs_on_profile_admin_id"
+    t.index ["work_id"], name: "index_jobs_on_work_id"
   end
 
   create_table "office_bank_accounts", force: :cascade do |t|

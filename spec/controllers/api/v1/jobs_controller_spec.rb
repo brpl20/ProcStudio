@@ -27,12 +27,8 @@ RSpec.describe Api::V1::JobsController, type: :request do
               'comment' => job.comment,
               'status' => job.status,
               'customer_id' => job.customer_id,
-              'profile_admin_id' => job.profile_admin_id
-            },
-            'relationships' => {
-              'works' => {
-                'data' => []
-              }
+              'profile_admin_id' => job.profile_admin_id,
+              'work_id' => job.work_id
             }
           }],
           'meta' => {
@@ -54,6 +50,7 @@ RSpec.describe Api::V1::JobsController, type: :request do
     let(:customer) { create(:customer) }
     let(:profile_admin) { create(:profile_admin) }
     let(:customer) { create(:customer) }
+    let(:work) { create(:work) }
 
     context 'when request is valid' do
       it 'returns :ok' do
@@ -66,11 +63,19 @@ RSpec.describe Api::V1::JobsController, type: :request do
             comment: Faker::Lorem.sentence,
             status: 'pending',
             customer_id: customer.id,
-            profile_admin_id: profile_admin.id
+            profile_admin_id: profile_admin.id,
+            work_id: work.id
           }
         }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 
         expect(response).to have_http_status(:created)
+      end
+    end
+    context 'when create tries to make an request without token' do
+      it 'returns :unauthorized' do
+        post '/api/v1/jobs', params: {}
+
+        expect(response).to have_http_status(:unauthorized)
       end
     end
     context 'when create tries to make an request without token' do
@@ -104,12 +109,8 @@ RSpec.describe Api::V1::JobsController, type: :request do
               'comment' => 'This is a new comment',
               'status' => job.status,
               'customer_id' => job.customer_id,
-              'profile_admin_id' => job.profile_admin_id
-            },
-            'relationships' => {
-              'works' => {
-                'data' => []
-              }
+              'profile_admin_id' => job.profile_admin_id,
+              'work_id' => job.work_id
             }
           }
         )
@@ -141,14 +142,10 @@ RSpec.describe Api::V1::JobsController, type: :request do
               'comment' => job.comment,
               'status' => job.status,
               'customer_id' => job.customer_id,
-              'profile_admin_id' => job.profile_admin_id
-            },
-            'relationships' => {
-              'works' => {
-                'data' => []
-              }
+              'profile_admin_id' => job.profile_admin_id,
+              'work_id' => job.work.id
             }
-          }, 'included' => []
+          }
         )
       end
     end

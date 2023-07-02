@@ -7,7 +7,7 @@ class JobFilter
     end
 
     def retrieve_jobs
-      Job.includes(:job_works).all
+      Job.all
     end
   end
 end
