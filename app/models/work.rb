@@ -18,8 +18,7 @@ class Work < ApplicationRecord
   has_many :power_works, dependent: :destroy
   has_many :powers, through: :power_works
 
-  has_many :job_works, dependent: :destroy
-  has_many :jobs, through: :job_works
+  has_many :jobs
 
   accepts_nested_attributes_for :tributary, :perdlaunch,
                                 :checklists, :powers, reject_if: :all_blank, allow_destroy: true

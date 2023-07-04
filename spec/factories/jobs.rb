@@ -8,4 +8,9 @@ FactoryBot.define do
     priority { 'MyString' }
     comment { 'MyString' }
   end
+  trait :job_complete do
+    customer_id { create(:customer).id }
+    profile_admin_id { create(:profile_admin).id }
+    work_id { create(:work).id }
+  end
 end

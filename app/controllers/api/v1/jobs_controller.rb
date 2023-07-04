@@ -17,8 +17,7 @@ module Api
 
       def show
         render json: JobSerializer.new(
-          @job,
-          include: %i[works]
+          @job
         ), status: :ok
       end
 
@@ -72,7 +71,10 @@ module Api
           :deadline,
           :status,
           :priority,
-          :comment
+          :comment,
+          :customer_id,
+          :profile_admin_id,
+          :work_id
         )
       end
     end

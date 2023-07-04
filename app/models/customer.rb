@@ -7,4 +7,5 @@ class Customer < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
   has_one :profile_customer
+  has_many :jobs
 end
