@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_30_140347) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_05_150011) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -201,10 +201,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_30_140347) do
     t.index ["reset_password_token"], name: "index_customers_on_reset_password_token", unique: true
   end
 
-  create_table "emails", force: :cascade do |t|
-    t.string "email"
+  create_table "documents", force: :cascade do |t|
+    t.string "document_type"
+    t.bigint "work_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["work_id"], name: "index_documents_on_work_id"
   end
 
   create_table "job_works", force: :cascade do |t|
@@ -457,10 +459,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_30_140347) do
   add_foreign_key "customer_phones", "profile_customers"
   add_foreign_key "customer_works", "profile_customers"
   add_foreign_key "customer_works", "works"
-  add_foreign_key "job_works", "jobs"
-  add_foreign_key "job_works", "profile_admins"
-  add_foreign_key "job_works", "profile_customers"
-  add_foreign_key "job_works", "works"
+  add_foreign_key "documents", "works"
   add_foreign_key "office_bank_accounts", "bank_accounts"
   add_foreign_key "office_bank_accounts", "offices"
   add_foreign_key "office_emails", "emails"

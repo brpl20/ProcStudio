@@ -19,6 +19,7 @@ module Api
       def create
         work = Work.new(work_params)
         if work.save
+          Works::CreateDocumentService.call(work)
           render json: work, status: :created
         else
           render(
@@ -66,6 +67,7 @@ module Api
         params.require(:work).permit(
           :procedure, :subject, :action, :number, :rate_percentage, :rate_percentage_exfield, :rate_fixed,
           :rate_parceled_exfield, :folder, :initial_atendee, :note, :checklist, :pending_document,
+          documents_attributes: %i[id document_type],
           tributary_attributes: %i[id compensation craft lawsuit projection],
           perdlaunch_attributes: %i[id compensation craft lawsuit projection perd_number
                                     shipping_date payment_date status value responsible perd_style],
