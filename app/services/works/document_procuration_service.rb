@@ -7,6 +7,11 @@ module Works
     def initialize(work, document)
       @work = work
       @document = document
+      @customer = @work.profile_customers.first
+      @bank = @customer.bank_accounts.first
+      @address = @customer.addresses.first
+      @customer_email = @customer.emails.first
+      @office = @work.office
     end
 
     def call
@@ -23,41 +28,61 @@ module Works
 
     private
 
-    # rubocop:disable Metrics/AbcSize
-    # rubocop:disable Metrics/MethodLength
+    def substitute_bank(text)
+      return if @bank.nil?
+
+      text.substitute('_proc_bank_name_', @bank.bank_name)
+      text.substitute('_proc_agency_', @bank.agency)
+      text.substitute('_proc_type_account_', @bank.type_account)
+      text.substitute('_proc_account_', @bank.account)
+    end
+
+    def substitute_address(text)
+      return if @address.nil?
+
+      text.substitute('_proc_street_', @address.street.to_s)
+      text.substitute('_proc_number_', @address.number.to_s)
+      text.substitute('_proc_description_', @address.description.to_s)
+      text.substitute('_proc_city_', @address.city)
+      text.substitute('_proc_state_', @address.state)
+    end
+
+    def substitute_office(text)
+      return if @office.nil?
+
+      text.substitute('_proc_office_street_', @office.street.to_s)
+      text.substitute('_proc_office_number_', @office.number.to_s)
+      text.substitute('_proc_office_neighborhood_', @office.neighborhood)
+      text.substitute('_proc_office_city_', @office.city)
+      text.substitute('_proc_office_state_', @office.state)
+      text.substitute('_pro_city_', @office.city)
+      text.substitute('_proc_state_', @office.state)
+      text.substitute('_proc_oab_', @office.oab)
+      text.substitute('_proc_office_site_', @office.site)
+    end
+
+    def substitute_customer(text)
+      return if @customer.nil?
+
+      text.substitute('_proc_name_', @customer.full_name)
+      text.substitute('_proc_gender_', "#{@customer.gender} , #{@customer.civil_status}")
+      text.substitute('_proc_capacity_', @customer.capacity)
+      text.substitute('_proc_rg_', @customer.rg)
+      text.substitute('_proc_cpf_', @customer.cpf)
+      text.substitute('_proc_number_benefit_', @customer.number_benefit)
+      text.substitute('_proc_nit_', @customer.nit.to_s)
+      text.substitute('_proc_email_', @customer_email.email)
+      text.substitute('_proc_mother_', @customer.mother_name)
+    end
+
     def substitute_word(text)
       proc_date = I18n.l(Time.now, format: '%d de %B de %Y')
-      # OUTORGANTE
-      text.substitute('_proc_name_', 'Sasuke')
-      text.substitute('_proc_gender_', 'Sasuke')
-      text.substitute('_proc_status_', 'civil')
-      text.substitute('_proc_capacity_', 'Sasuke')
-      text.substitute('_proc_rg_', 'Sasuke')
-      text.substitute('_proc_cpf_', 'Sasuke')
-      text.substitute('_proc_number_benefit_', 'Sasuke')
-      text.substitute('_proc_nit_', 'Sasuke')
-      text.substitute('_proc_email_', 'Sasuke')
-      text.substitute('_proc_mother_', 'Sasuke')
-      text.substitute('_proc_bank_name_', 'Sasuke')
-      text.substitute('_proc_agency_', 'Sasuke')
-      text.substitute('_proc_type_account_', 'Sasuke')
-      text.substitute('_proc_account_', 'Sasuke')
-      text.substitute('_proc_street_', 'Sasuke')
-      text.substitute('_proc_number_', 'Sasuke')
-      text.substitute('_proc_description_', 'Sasuke')
-      text.substitute('_proc_city_', 'Sasuke')
-      text.substitute('_proc_state_', 'Sasuke')
-      text.substitute('_proc_oab_', 'Sasuke')
-      # outorgados
-      text.substitute('_proc_customer_email_', 'Sasuke')
-      # Date, state and city
-      text.substitute('_pro_city_', 'Sasuke')
-      text.substitute('_proc_state_', 'Sasuke')
+      substitute_customer(text)
+      substitute_bank(text)
+      substitute_address(text)
+      substitute_office(text)
       text.substitute('_proc_date_', proc_date)
-      # full name
-      text.substitute('_proc_full_name_', 'Sasuke')
+      text.substitute('_proc_full_name_', @customer.full_name)
     end
   end
-  # rubocop:enable Metrics/MethodLength
-  # rubocop:enable Metrics/AbcSize
 end

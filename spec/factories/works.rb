@@ -10,9 +10,9 @@ FactoryBot.define do
     rate_percentage_exfield { 'MyString' }
     rate_fixed { 'MyString' }
     rate_parceled_exfield { 'MyString' }
-    folder { 'MyString' }
+    folder { Faker::Lorem.word }
     initial_atendee { 'MyString' }
-    note { 'MyString' }
+    note { Faker::Lorem.word }
     checklist { 'MyString' }
     pending_document { 'MyString' }
     office

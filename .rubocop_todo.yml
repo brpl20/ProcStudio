@@ -39,7 +39,9 @@ Layout/SpaceInsideArrayLiteralBrackets:
 # Offense count: 1
 # Configuration parameters: AllowedMethods, AllowedPatterns, CountRepeatedAttributes.
 Metrics/AbcSize:
-  Max: 24
+  Max: 30
+  Exclude:
+    - 'app/services/**/*'
 
 # Offense count: 3
 # Configuration parameters: CountComments, CountAsOne, AllowedMethods, AllowedPatterns.

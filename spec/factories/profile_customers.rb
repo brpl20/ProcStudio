@@ -3,7 +3,7 @@
 FactoryBot.define do
   factory :profile_customer do
     name { Faker::Name.name }
-    last_name { Faker }
+    last_name { Faker::Name.last_name }
     customer_type { 'Representative' }
     gender { 'other' }
     rg { Faker::Number.number(digits: 6) }

@@ -31,6 +31,9 @@ class ProfileCustomer < ApplicationRecord
   validates :name, presence: true
 
   # validate :file_type
+  def full_name
+    [name, last_name].join(' ')
+  end
 
   protected
 
