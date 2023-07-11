@@ -2,9 +2,9 @@
 
 require 'rails_helper'
 
-# rubocop:disable Metrics/BlockLength
 RSpec.describe Api::V1::WorksController, type: :request do
   let!(:admin) { create(:admin) }
+  let!(:office) { create(:office) }
 
   describe '#index' do
     let!(:work) { create(:work) }
@@ -36,7 +36,8 @@ RSpec.describe Api::V1::WorksController, type: :request do
               'initial_atendee' => work.initial_atendee,
               'note' => work.note,
               'checklist' => work.checklist,
-              'pending_document' => work.pending_document
+              'pending_document' => work.pending_document,
+              'office_id' => work.office_id
             },
             'relationships' => {
               'jobs' => { 'data' => [] },
@@ -80,7 +81,8 @@ RSpec.describe Api::V1::WorksController, type: :request do
             initial_atendee: Faker::Lorem.word,
             note: Faker::Lorem.word,
             checklist: Faker::Lorem.word,
-            pending_document: Faker::Lorem.word
+            pending_document: Faker::Lorem.word,
+            office_id: office.id
           }
         }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 
@@ -101,6 +103,9 @@ RSpec.describe Api::V1::WorksController, type: :request do
       end
     end
     context 'nested attributes' do
+      let!(:profile_customer_one) { create(:profile_customer) }
+      let!(:profile_customer_two) { create(:profile_customer) }
+
       it 'creates perdlaunch' do
         expect do
           post '/api/v1/works', params: {
@@ -113,6 +118,7 @@ RSpec.describe Api::V1::WorksController, type: :request do
               rate_percentage_exfield: Faker::Number.number(digits: 2),
               rate_fixed: Faker::Number.number(digits: 2),
               rate_parceled_exfield: Faker::Number.number(digits: 2),
+              office_id: office.id,
               perdlaunch_attributes: { compensation: Faker::Lorem.word, craft: Faker::Lorem.word,
                                        lawsuit: Faker::Lorem.word, projection: Faker::Lorem.word,
                                        perd_number: Faker::Number.number(digits: 2),
@@ -136,7 +142,8 @@ RSpec.describe Api::V1::WorksController, type: :request do
               rate_percentage_exfield: Faker::Number.number(digits: 2),
               rate_fixed: Faker::Number.number(digits: 2),
               rate_parceled_exfield: Faker::Number.number(digits: 2),
-              checklists_attributes: [description: Faker::Lorem.word]
+              checklists_attributes: [description: Faker::Lorem.word],
+              office_id: office.id
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         end.to change(ChecklistWork, :count).by(1)
@@ -153,6 +160,7 @@ RSpec.describe Api::V1::WorksController, type: :request do
               rate_percentage_exfield: Faker::Number.number(digits: 2),
               rate_fixed: Faker::Number.number(digits: 2),
               rate_parceled_exfield: Faker::Number.number(digits: 2),
+              office_id: office.id,
               tributary_attributes: { compensation: Faker::Lorem.word, craft: Faker::Lorem.word,
                                       lawsuit: Faker::Lorem.word, projection: Faker::Lorem.word }
 
@@ -172,10 +180,29 @@ RSpec.describe Api::V1::WorksController, type: :request do
               rate_percentage_exfield: Faker::Number.number(digits: 2),
               rate_fixed: Faker::Number.number(digits: 2),
               rate_parceled_exfield: Faker::Number.number(digits: 2),
+              office_id: office.id,
               powers_attributes: [description: Faker::Lorem.word, category: 5]
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         end.to change(PowerWork, :count).by(1)
+      end
+      it 'creates customer_works relationship' do
+        expect do
+          post '/api/v1/works', params: {
+            work: {
+              procedure: Faker::Lorem.word,
+              subject: Faker::Lorem.word,
+              action: Faker::Lorem.word,
+              number: Faker::Number.number(digits: 2),
+              rate_percentage: Faker::Number.number(digits: 2),
+              rate_percentage_exfield: Faker::Number.number(digits: 2),
+              rate_fixed: Faker::Number.number(digits: 2),
+              rate_parceled_exfield: Faker::Number.number(digits: 2),
+              office_id: office.id,
+              profile_customer_ids: [profile_customer_one.id, profile_customer_two.id]
+            }
+          }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        end.to change(CustomerWork, :count).by(2)
       end
     end
   end
@@ -207,7 +234,8 @@ RSpec.describe Api::V1::WorksController, type: :request do
               'initial_atendee' => work.initial_atendee,
               'note' => 'New description',
               'checklist' => work.checklist,
-              'pending_document' => work.pending_document
+              'pending_document' => work.pending_document,
+              'office_id' => work.office_id
             },
             'relationships' => {
               'jobs' => { 'data' => [] },
@@ -254,7 +282,8 @@ RSpec.describe Api::V1::WorksController, type: :request do
               'initial_atendee' => work.initial_atendee,
               'note' => work.note,
               'checklist' => work.checklist,
-              'pending_document' => work.pending_document
+              'pending_document' => work.pending_document,
+              'office_id' => work.office_id
             },
             'relationships' => {
               'jobs' => { 'data' => [] },
@@ -286,4 +315,3 @@ RSpec.describe Api::V1::WorksController, type: :request do
     end
   end
 end
-# rubocop:enable Metrics/BlockLength

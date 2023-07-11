@@ -3,7 +3,7 @@
 class WorkSerializer
   include JSONAPI::Serializer
   attributes :procedure, :subject, :action, :number, :rate_percentage, :rate_percentage_exfield, :rate_fixed,
-             :rate_parceled_exfield, :folder, :initial_atendee, :note, :checklist, :pending_document
+             :rate_parceled_exfield, :folder, :initial_atendee, :note, :checklist, :pending_document, :office_id
 
   has_one :tributary, serializer: TributarySerializer
   has_one :perdlaunch, serializer: PerdlaunchSerializer

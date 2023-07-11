@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_05_150011) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_10_135358) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -209,17 +209,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_05_150011) do
     t.index ["work_id"], name: "index_documents_on_work_id"
   end
 
-  create_table "job_works", force: :cascade do |t|
-    t.bigint "job_id", null: false
-    t.bigint "work_id", null: false
-    t.bigint "profile_admin_id", null: false
-    t.bigint "profile_customer_id", null: false
+  create_table "emails", force: :cascade do |t|
+    t.string "email"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["job_id"], name: "index_job_works_on_job_id"
-    t.index ["profile_admin_id"], name: "index_job_works_on_profile_admin_id"
-    t.index ["profile_customer_id"], name: "index_job_works_on_profile_customer_id"
-    t.index ["work_id"], name: "index_job_works_on_work_id"
   end
 
   create_table "jobs", force: :cascade do |t|
@@ -433,6 +426,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_05_150011) do
     t.string "pending_document"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "office_id", default: 1, null: false
+    t.index ["office_id"], name: "index_works_on_office_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -478,4 +473,5 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_05_150011) do
   add_foreign_key "represents", "profile_customers"
   add_foreign_key "tributaries", "works"
   add_foreign_key "work_updates", "works"
+  add_foreign_key "works", "offices"
 end

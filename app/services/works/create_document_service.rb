@@ -9,7 +9,7 @@ module Works
 
     def call
       return if @documents.nil?
-      
+
       create_document
     end
 

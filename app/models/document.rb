@@ -9,5 +9,4 @@ class Document < ApplicationRecord
     waiver: 'waiver', # termo de renuncia
     deficiency_statement: 'deficiency statement' # declaracao de carencia
   }
-
 end

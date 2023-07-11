@@ -15,5 +15,6 @@ FactoryBot.define do
     note { 'MyString' }
     checklist { 'MyString' }
     pending_document { 'MyString' }
+    office
   end
 end

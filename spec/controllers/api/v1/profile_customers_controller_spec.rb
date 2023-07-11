@@ -2,7 +2,6 @@
 
 require 'rails_helper'
 
-# rubocop:disable Metrics/BlockLength
 RSpec.describe Api::V1::ProfileCustomersController, type: :request do
   let!(:admin) { create(:admin) }
 
@@ -283,4 +282,3 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
     end
   end
 end
-# rubocop:enable Metrics/BlockLength
