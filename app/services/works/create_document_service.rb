@@ -19,11 +19,11 @@ module Works
       @documents.each do |document|
         case document.document_type
         when 'procuration'
-          Works::DocumentProcurationService.call(@work, document)
+          Works::DocumentProcurationService.call(document.id)
         when 'waiver'
-          Works::DocumentWaiverService.call(@work, document)
-        else
-          Works::DocumentDeficiencyStatementService.call(@work, document)
+          Works::DocumentWaiverService.call(document.id)
+        when 'deficiency_statement'
+          Works::DocumentDeficiencyStatementService.call(document.id)
         end
       end
     end
