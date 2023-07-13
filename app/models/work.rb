@@ -18,8 +18,12 @@ class Work < ApplicationRecord
   has_many :power_works, dependent: :destroy
   has_many :powers, through: :power_works
 
+  has_many :documents, dependent: :destroy
+
+  belongs_to :office
+
   has_many :jobs
 
-  accepts_nested_attributes_for :tributary, :perdlaunch,
+  accepts_nested_attributes_for :tributary, :perdlaunch, :documents, :customer_works,
                                 :checklists, :powers, reject_if: :all_blank, allow_destroy: true
 end

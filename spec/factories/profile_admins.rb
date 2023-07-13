@@ -3,16 +3,16 @@
 FactoryBot.define do
   factory :profile_admin do
     role { 1 }
-    name { 'John' }
-    last_name { 'Doe' }
+    name { Faker::Name.name }
+    last_name { Faker::Name.last_name }
     gender { 1 }
-    oab { '123456' }
-    rg { '12345678' }
-    cpf { '12345678901' }
+    oab { Faker::Number.number(digits: 6) }
+    rg { Faker::Number.number(digits: 6) }
+    cpf { Faker::Number.number(digits: 11) }
     nationality { 'Brazilian' }
     civil_status { 1 }
-    birth { '1980-01-01' }
-    mother_name { 'Jane' }
+    birth { Faker::Date.birthday(min_age: 18, max_age: 65) }
+    mother_name { Faker::Name.name }
     status { 1 }
     admin
     office

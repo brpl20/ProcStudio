@@ -22,12 +22,18 @@ class ProfileCustomer < ApplicationRecord
   has_many :customer_bank_accounts, dependent: :destroy
   has_many :bank_accounts, through: :customer_bank_accounts
 
+  has_many :customer_works, dependent: :destroy
+  has_many :works, through: :customer_works
+
   attr_accessor :flag_access_data, :flag_generate_documents, :flag_signature
 
   accepts_nested_attributes_for :customer, :addresses, :phones, :emails, :bank_accounts, reject_if: :all_blank
   validates :name, presence: true
 
   # validate :file_type
+  def full_name
+    [name, last_name].join(' ')
+  end
 
   protected
 

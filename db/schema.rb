@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_30_140347) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_10_135358) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -201,23 +201,18 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_30_140347) do
     t.index ["reset_password_token"], name: "index_customers_on_reset_password_token", unique: true
   end
 
+  create_table "documents", force: :cascade do |t|
+    t.string "document_type"
+    t.bigint "work_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["work_id"], name: "index_documents_on_work_id"
+  end
+
   create_table "emails", force: :cascade do |t|
     t.string "email"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-  end
-
-  create_table "job_works", force: :cascade do |t|
-    t.bigint "job_id", null: false
-    t.bigint "work_id", null: false
-    t.bigint "profile_admin_id", null: false
-    t.bigint "profile_customer_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["job_id"], name: "index_job_works_on_job_id"
-    t.index ["profile_admin_id"], name: "index_job_works_on_profile_admin_id"
-    t.index ["profile_customer_id"], name: "index_job_works_on_profile_customer_id"
-    t.index ["work_id"], name: "index_job_works_on_work_id"
   end
 
   create_table "jobs", force: :cascade do |t|
@@ -431,6 +426,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_30_140347) do
     t.string "pending_document"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "office_id", default: 1, null: false
+    t.index ["office_id"], name: "index_works_on_office_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -457,10 +454,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_30_140347) do
   add_foreign_key "customer_phones", "profile_customers"
   add_foreign_key "customer_works", "profile_customers"
   add_foreign_key "customer_works", "works"
-  add_foreign_key "job_works", "jobs"
-  add_foreign_key "job_works", "profile_admins"
-  add_foreign_key "job_works", "profile_customers"
-  add_foreign_key "job_works", "works"
+  add_foreign_key "documents", "works"
   add_foreign_key "office_bank_accounts", "bank_accounts"
   add_foreign_key "office_bank_accounts", "offices"
   add_foreign_key "office_emails", "emails"
@@ -479,4 +473,5 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_30_140347) do
   add_foreign_key "represents", "profile_customers"
   add_foreign_key "tributaries", "works"
   add_foreign_key "work_updates", "works"
+  add_foreign_key "works", "offices"
 end

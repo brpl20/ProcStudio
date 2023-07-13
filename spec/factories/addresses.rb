@@ -2,12 +2,12 @@
 
 FactoryBot.define do
   factory :address do
-    description { 'Casa' }
-    zip_code { '79750000' }
-    street { 'Rua Um' }
-    number { '1252' }
-    neighborhood { 'Centro' }
-    city { 'Nova Andradina' }
-    state { 'Mato Grosso do Sul' }
+    description { Faker::Address.community }
+    zip_code { Faker::Address.zip_code }
+    street { Faker::Address.street_name }
+    number { Faker::Number.number(digits: 5) }
+    neighborhood { Faker::Address.street_address }
+    city { Faker::Address.city }
+    state { Faker::Address.state }
   end
 end
