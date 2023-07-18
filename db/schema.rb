@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_10_135358) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_18_224758) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -268,7 +268,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_10_135358) do
     t.string "name"
     t.string "cnpj"
     t.string "oab"
-    t.integer "society"
+    t.string "society"
     t.date "foundation"
     t.string "site"
     t.string "cep"
@@ -324,18 +324,18 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_10_135358) do
   end
 
   create_table "profile_admins", force: :cascade do |t|
-    t.integer "role"
+    t.string "role"
     t.string "name"
     t.string "last_name"
-    t.integer "gender"
+    t.string "gender"
     t.string "oab"
     t.string "rg"
     t.string "cpf"
     t.string "nationality"
-    t.integer "civil_status"
+    t.string "civil_status"
     t.date "birth"
     t.string "mother_name"
-    t.integer "status"
+    t.string "status"
     t.bigint "admin_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -348,13 +348,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_10_135358) do
     t.string "customer_type"
     t.string "name"
     t.string "last_name"
-    t.integer "gender"
+    t.string "gender"
     t.string "rg"
     t.string "cpf"
     t.string "cnpj"
     t.string "nationality"
-    t.integer "civil_status"
-    t.integer "capacity"
+    t.string "civil_status"
+    t.string "capacity"
     t.string "profession"
     t.string "company"
     t.date "birth"

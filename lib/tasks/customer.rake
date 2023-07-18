@@ -23,7 +23,7 @@ namespace :cad do
         rg: Faker::Number.number(digits: 6),
         cpf: Faker::Number.number(digits: 11),
         cnpj: '',
-        nationality: [0,1].sample,
+        nationality: ['brazilian','foreigner'].sample,
         civil_status: (0..4).to_a.sample,
         capacity: (0..2).to_a.sample,
         profession: Faker::Job.title,

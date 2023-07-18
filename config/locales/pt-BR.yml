@@ -1,4 +1,22 @@
 'pt-BR':
+  general:
+    without_email: sem endereço eletrônico
+  gender:
+    owner:
+      male: portador
+      female: portadora
+    brazilian:
+      male: brasileiro
+      female: brasileira
+    maried:
+      male: casado
+      female: casada
+    subscribe:
+      male: inscrito
+      female: inscrita
+    live:
+      male: domiciliado
+      female: domiciliada
   activerecord:
     models:
       admin: Usuário

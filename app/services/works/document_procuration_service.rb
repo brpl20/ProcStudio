@@ -12,6 +12,7 @@ module Works
       @address = @customer.addresses.first
       @customer_email = @customer.emails.first
       @office = @work.office
+      @gender = @customer.gender
     end
 
     def call
@@ -23,7 +24,7 @@ module Works
       end
       doc.save("tmp/procuracao_#{@work.id}.docx")
       @document.document_docx.attach(io: File.open("tmp/procuracao_#{@work.id}.docx"), filename: "procuracao_#{@work.id}.docx")
-      FileUtils.remove_file("tmp/procuracao_#{@work.id}.docx", true)
+      # FileUtils.remove_file("tmp/procuracao_#{@work.id}.docx", true)
     end
 
     private
@@ -58,23 +59,24 @@ module Works
       text.substitute('_proc_office_site_', @office.site.downcase)
     end
 
-    def substitute_customer(text)
+    def substitute_outorgante(text)
       return if @customer.nil?
 
-      text.substitute('_proc_name_', @customer.full_name.downcase.titleize)
-      text.substitute('_proc_gender_', "#{ProfileCustomer.human_enum_name(:gender, @customer.gender)}, #{ProfileCustomer.human_enum_name(:civil_status, @customer.civil_status)}")
-      text.substitute('_proc_capacity_', ProfileCustomer.human_enum_name(:capacity, @customer.capacity))
-      text.substitute('_proc_rg_', @customer.rg)
-      text.substitute('_proc_cpf_', @customer.cpf)
-      text.substitute('_proc_number_benefit_', @customer.number_benefit)
-      text.substitute('_proc_nit_', @customer.nit.to_s)
-      text.substitute('_proc_email_', @customer_email.email)
-      text.substitute('_proc_mother_', @customer.mother_name.downcase.titleize)
+      translated_text_one = [@customer.full_name.downcase.titleize, ProfileCustomer.human_enum_name(:nationality, @customer.nationality),
+                             ProfileCustomer.human_enum_name(:civil_status, @customer.civil_status), @customer.profession,
+                             "portador do RG n° #{@customer.rg} e inscrito no CPF sob o n° #{@customer.cpf}",
+                             @customer.last_email,
+                             "residente e domiciliado: #{@address.street.to_s.downcase.titleize}, n° #{@address.number}, #{@address.description.to_s.downcase.titleize}",
+                             "#{@address.city} - #{@address.state}, CEP #{@address.zip_code}"].join(', ')
+
+      text.substitute('_proc_outorgante_', translated_text_one)
     end
+
+    def word_for_gender(text); end
 
     def substitute_word(text)
       proc_date = I18n.l(Time.now, format: '%d de %B de %Y')
-      substitute_customer(text)
+      substitute_outorgante(text)
       substitute_bank(text)
       substitute_address(text)
       substitute_office(text)

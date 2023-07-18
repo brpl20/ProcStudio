@@ -4,8 +4,11 @@ class Office < ApplicationRecord
   belongs_to :office_type
   has_many :profile_admins
   has_one_attached :logo
-  enum :society, %i[sole_proprietorship company individual]
-
+  enum society: {
+    sole_proprietorship: 'sole_proprietorship',
+    company: 'company',
+    individual: 'individual'
+  }
   has_many :office_phones, dependent: :destroy
   has_many :phones, through: :office_phones
 
