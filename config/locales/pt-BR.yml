@@ -5,18 +5,47 @@
     owner:
       male: portador
       female: portadora
+      other: portador
     brazilian:
       male: brasileiro
       female: brasileira
-    maried:
+      other: brasileiro
+    foreigner:
+      male: estrangeiro
+      female: estrangeira
+      other: estrangeiro
+    married:
       male: casado
       female: casada
+      other: casado
+    single:
+      male: solteiro
+      female: solteira
+      other: solteiro
+    divorced:
+      male: divorciado
+      female: divorciada
+      other: divorciado
+    widower:
+      male: viúvo
+      female: viúva
+      other: viúvo
+    union:
+      male: união estável
+      female: união estável
+      other: união estável
     subscribe:
       male: inscrito
       female: inscrita
+      other: inscrito
     live:
       male: domiciliado
       female: domiciliada
+      other: domiciliado
+    represent:
+      male: Representado por
+      female: Representada por
+      male: Representado por
   activerecord:
     models:
       admin: Usuário

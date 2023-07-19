@@ -8,7 +8,6 @@ module Works
       @document = Document.find(document_id)
       @work = @document.work
       @customer = @work.profile_customers.first
-      @bank = @customer.bank_accounts.first
       @address = @customer.addresses.first
       @customer_email = @customer.emails.first
       @office = @work.office
@@ -28,15 +27,6 @@ module Works
     end
 
     private
-
-    def substitute_bank(text)
-      return if @bank.nil?
-
-      text.substitute('_proc_bank_name_', @bank.bank_name.downcase.titleize)
-      text.substitute('_proc_agency_', @bank.agency)
-      text.substitute('_proc_type_account_', @bank.type_account)
-      text.substitute('_proc_account_', @bank.account)
-    end
 
     def substitute_address(text)
       return if @address.nil?
@@ -60,24 +50,36 @@ module Works
     end
 
     def substitute_outorgante(text)
-      return if @customer.nil?
+      translated_text = [@customer.full_name.downcase.titleize, word_for_gender(@customer.nationality, @customer.gender),
+                         word_for_gender(@customer.civil_status, @customer.gender), ProfileCustomer.human_enum_name(:capacity, @customer.capacity).downcase,
+                         @customer.profession.downcase,
+                         "#{word_for_gender('owner', @customer.gender)} do RG n° #{@customer.rg} e #{word_for_gender('subscribe', @customer.gender)} no CPF sob o n° #{@customer.cpf}",
+                         @customer.last_email, "residente e #{word_for_gender('live', @customer.gender)}: #{@address.street.to_s.downcase.titleize}, n° #{@address.number}",
+                         @address.description.to_s.downcase.titleize, "#{@address.city} - #{@address.state}, CEP #{@address.zip_code} #{responsable}"].join(', ')
 
-      translated_text_one = [@customer.full_name.downcase.titleize, ProfileCustomer.human_enum_name(:nationality, @customer.nationality),
-                             ProfileCustomer.human_enum_name(:civil_status, @customer.civil_status), @customer.profession,
-                             "portador do RG n° #{@customer.rg} e inscrito no CPF sob o n° #{@customer.cpf}",
-                             @customer.last_email,
-                             "residente e domiciliado: #{@address.street.to_s.downcase.titleize}, n° #{@address.number}, #{@address.description.to_s.downcase.titleize}",
-                             "#{@address.city} - #{@address.state}, CEP #{@address.zip_code}"].join(', ')
-
-      text.substitute('_proc_outorgante_', translated_text_one)
+      text.substitute('_proc_outorgante_', translated_text)
     end
 
-    def word_for_gender(text); end
+    # translate word using gender
+    def word_for_gender(text, gender)
+      I18n.t("gender.#{text}.#{gender}")
+    end
+
+    def responsable
+      return nil unless @customer.unable? && @customer.represent.present?
+
+      represent = ProfileCustomer.find(@customer.represent.represented_id)
+      represent_address = represent.addresses.first
+      [",#{word_for_gender('represent', represent.gender)} #{represent.full_name.downcase.titleize}", word_for_gender(represent.civil_status, represent.gender),
+       "#{word_for_gender('owner', represent.gender)} do RG n° #{represent.rg} e #{word_for_gender('subscribe', represent.gender)} no CPF sob o n° #{represent.cpf}",
+       represent.last_email, "residente e #{word_for_gender('live', represent.gender)}: #{represent_address.street.to_s.downcase.titleize}, n° #{represent_address.number}",
+       represent_address.description.to_s.downcase.titleize,
+       "#{represent_address.city} - #{represent_address.state}, CEP #{represent_address.zip_code}"].join(', ')
+    end
 
     def substitute_word(text)
       proc_date = I18n.l(Time.now, format: '%d de %B de %Y')
       substitute_outorgante(text)
-      substitute_bank(text)
       substitute_address(text)
       substitute_office(text)
 
