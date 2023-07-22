@@ -9,6 +9,9 @@ class Work < ApplicationRecord
   has_many :customer_works, dependent: :destroy
   has_many :profile_customers, through: :customer_works
 
+  has_many :profile_admin_works, through: :profile_admin_works
+  has_many :profile_admins, dependent: :destroy
+
   has_many :checklist_document_works, dependent: :destroy
   has_many :checklist_documents, through: :checklist_document_works
 
@@ -24,6 +27,11 @@ class Work < ApplicationRecord
 
   has_many :jobs
 
-  accepts_nested_attributes_for :tributary, :perdlaunch, :documents, :customer_works,
-                                :checklists, :powers, reject_if: :all_blank, allow_destroy: true
+  enum procedure: {
+    administrative: 'administrative',
+    judicial: 'judicial',
+    extrajudicial: 'extrajudicial'
+  }
+  accepts_nested_attributes_for :tributary, :perdlaunch, :documents,
+                                :checklists, reject_if: :all_blank, allow_destroy: true
 end

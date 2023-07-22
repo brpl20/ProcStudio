@@ -31,6 +31,9 @@ class ProfileAdmin < ApplicationRecord
   has_many :admin_bank_accounts, dependent: :destroy
   has_many :bank_accounts, through: :admin_bank_accounts
 
+  has_many :profile_admin_works, dependent: :destroy
+  has_many :works, through: :profile_admin_works
+
   has_many :jobs
 
   accepts_nested_attributes_for :admin, :addresses, :phones, :emails, :bank_accounts, reject_if: :all_blank

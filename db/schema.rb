@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_18_224758) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_22_152759) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -323,6 +323,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_18_224758) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "profile_admin_works", force: :cascade do |t|
+    t.bigint "profile_admin_id", null: false
+    t.bigint "work_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["profile_admin_id"], name: "index_profile_admin_works_on_profile_admin_id"
+    t.index ["work_id"], name: "index_profile_admin_works_on_work_id"
+  end
+
   create_table "profile_admins", force: :cascade do |t|
     t.string "role"
     t.string "name"
@@ -465,6 +474,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_18_224758) do
   add_foreign_key "perdlaunches", "works"
   add_foreign_key "power_works", "powers"
   add_foreign_key "power_works", "works"
+  add_foreign_key "profile_admin_works", "profile_admins"
+  add_foreign_key "profile_admin_works", "works"
   add_foreign_key "profile_admins", "admins"
   add_foreign_key "profile_admins", "offices"
   add_foreign_key "profile_customers", "customers"

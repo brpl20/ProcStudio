@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :work do
-    procedure { Faker::Lorem.word }
+    procedure { 'administrative' }
     subject { Faker::Lorem.word }
     action { Faker::Lorem.word }
     number { 1 }

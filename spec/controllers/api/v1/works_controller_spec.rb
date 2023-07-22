@@ -69,7 +69,7 @@ RSpec.describe Api::V1::WorksController, type: :request do
       it 'returns :ok' do
         post '/api/v1/works', params: {
           work: {
-            procedure: Faker::Lorem.word,
+            procedure: 'administrative',
             subject: Faker::Lorem.word,
             action: Faker::Lorem.word,
             number: Faker::Number.number(digits: 2),
@@ -93,7 +93,7 @@ RSpec.describe Api::V1::WorksController, type: :request do
       it 'returns :unauthorized' do
         post '/api/v1/works', params: {
           work: {
-            procedure: Faker::Lorem.word,
+            procedure: 'administrative',
             subject: Faker::Lorem.word,
             action: Faker::Lorem.word
           }
@@ -105,12 +105,13 @@ RSpec.describe Api::V1::WorksController, type: :request do
     context 'nested attributes' do
       let!(:profile_customer_one) { create(:profile_customer) }
       let!(:profile_customer_two) { create(:profile_customer) }
+      let!(:power) { create(:power) }
 
       it 'creates perdlaunch' do
         expect do
           post '/api/v1/works', params: {
             work: {
-              procedure: Faker::Lorem.word,
+              procedure: 'administrative',
               subject: Faker::Lorem.word,
               action: Faker::Lorem.word,
               number: Faker::Number.number(digits: 2),
@@ -134,7 +135,7 @@ RSpec.describe Api::V1::WorksController, type: :request do
         expect do
           post '/api/v1/works', params: {
             work: {
-              procedure: Faker::Lorem.word,
+              procedure: 'administrative',
               subject: Faker::Lorem.word,
               action: Faker::Lorem.word,
               number: Faker::Number.number(digits: 2),
@@ -152,7 +153,7 @@ RSpec.describe Api::V1::WorksController, type: :request do
         expect do
           post '/api/v1/works', params: {
             work: {
-              procedure: Faker::Lorem.word,
+              procedure: 'administrative',
               subject: Faker::Lorem.word,
               action: Faker::Lorem.word,
               number: Faker::Number.number(digits: 2),
@@ -172,7 +173,7 @@ RSpec.describe Api::V1::WorksController, type: :request do
         expect do
           post '/api/v1/works', params: {
             work: {
-              procedure: Faker::Lorem.word,
+              procedure: 'administrative',
               subject: Faker::Lorem.word,
               action: Faker::Lorem.word,
               number: Faker::Number.number(digits: 2),
@@ -181,7 +182,7 @@ RSpec.describe Api::V1::WorksController, type: :request do
               rate_fixed: Faker::Number.number(digits: 2),
               rate_parceled_exfield: Faker::Number.number(digits: 2),
               office_id: office.id,
-              powers_attributes: [description: Faker::Lorem.word, category: 5]
+              power_ids: [power.id]
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         end.to change(PowerWork, :count).by(1)
@@ -190,7 +191,7 @@ RSpec.describe Api::V1::WorksController, type: :request do
         expect do
           post '/api/v1/works', params: {
             work: {
-              procedure: Faker::Lorem.word,
+              procedure: 'administrative',
               subject: Faker::Lorem.word,
               action: Faker::Lorem.word,
               number: Faker::Number.number(digits: 2),

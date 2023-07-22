@@ -72,8 +72,9 @@ module Api
           perdlaunch_attributes: %i[id compensation craft lawsuit projection perd_number
                                     shipping_date payment_date status value responsible perd_style],
           checklists_attributes: %i[id description],
-          powers_attributes: %i[id description category],
-          profile_customer_ids: []
+          power_ids: [],
+          profile_customer_ids: [],
+          profile_admin_ids: []
         )
       end
     end
