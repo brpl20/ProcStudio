@@ -50,8 +50,8 @@ module Api
       def show
         render json: WorkSerializer.new(
           @work,
-          include: %i[tributary perdlaunch recommendation profile_customers
-                      powers jobs checklists]
+          include: %i[profile_customers
+                      powers jobs]
         ), status: :ok
       end
 
@@ -68,10 +68,6 @@ module Api
           :procedure, :subject, :action, :number, :rate_percentage, :rate_percentage_exfield, :rate_fixed,
           :rate_parceled_exfield, :folder, :initial_atendee, :note, :checklist, :pending_document, :office_id,
           documents_attributes: %i[id document_type],
-          tributary_attributes: %i[id compensation craft lawsuit projection],
-          perdlaunch_attributes: %i[id compensation craft lawsuit projection perd_number
-                                    shipping_date payment_date status value responsible perd_style],
-          checklists_attributes: %i[id description],
           power_ids: [],
           profile_customer_ids: [],
           profile_admin_ids: []

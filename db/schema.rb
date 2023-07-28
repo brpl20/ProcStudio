@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_22_152759) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_28_163751) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -283,24 +283,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_22_152759) do
     t.index ["office_type_id"], name: "index_offices_on_office_type_id"
   end
 
-  create_table "perdlaunches", force: :cascade do |t|
-    t.integer "compensation"
-    t.integer "craft"
-    t.integer "lawsuit"
-    t.date "projection"
-    t.string "perd_number"
-    t.date "shipping_date"
-    t.date "payment_date"
-    t.integer "status"
-    t.string "value"
-    t.string "responsible"
-    t.string "perd_style"
-    t.bigint "work_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["work_id"], name: "index_perdlaunches_on_work_id"
-  end
-
   create_table "phones", force: :cascade do |t|
     t.string "phone_number"
     t.datetime "created_at", null: false
@@ -399,17 +381,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_22_152759) do
     t.index ["profile_customer_id"], name: "index_represents_on_profile_customer_id"
   end
 
-  create_table "tributaries", force: :cascade do |t|
-    t.integer "compensation"
-    t.integer "craft"
-    t.integer "lawsuit"
-    t.date "projection"
-    t.bigint "work_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["work_id"], name: "index_tributaries_on_work_id"
-  end
-
   create_table "work_updates", force: :cascade do |t|
     t.string "description"
     t.string "show_to"
@@ -471,7 +442,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_22_152759) do
   add_foreign_key "office_phones", "offices"
   add_foreign_key "office_phones", "phones"
   add_foreign_key "offices", "office_types"
-  add_foreign_key "perdlaunches", "works"
   add_foreign_key "power_works", "powers"
   add_foreign_key "power_works", "works"
   add_foreign_key "profile_admin_works", "profile_admins"
@@ -482,7 +452,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_22_152759) do
   add_foreign_key "recommendations", "profile_customers"
   add_foreign_key "recommendations", "works"
   add_foreign_key "represents", "profile_customers"
-  add_foreign_key "tributaries", "works"
   add_foreign_key "work_updates", "works"
   add_foreign_key "works", "offices"
 end
