@@ -51,7 +51,7 @@ module Api
       def show
         render json: ProfileCustomerSerializer.new(
           @profile_customer,
-          include: %i[phones]
+          { params: { action: 'show' } }
         ), status: :ok
       end
 
