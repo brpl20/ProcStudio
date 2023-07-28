@@ -41,12 +41,8 @@ RSpec.describe Api::V1::WorksController, type: :request do
             },
             'relationships' => {
               'jobs' => { 'data' => [] },
-              'perdlaunch' => { 'data' => nil },
               'powers' => { 'data' => [] },
-              'profile_customers' => { 'data' => [] },
-              'recommendation' => { 'data' => [] },
-              'tributary' => { 'data' => nil },
-              'checklists' => { 'data' => [] }
+              'profile_customers' => { 'data' => [] }
             }
           }],
           'meta' => {
@@ -107,68 +103,6 @@ RSpec.describe Api::V1::WorksController, type: :request do
       let!(:profile_customer_two) { create(:profile_customer) }
       let!(:power) { create(:power) }
 
-      it 'creates perdlaunch' do
-        expect do
-          post '/api/v1/works', params: {
-            work: {
-              procedure: 'administrative',
-              subject: Faker::Lorem.word,
-              action: Faker::Lorem.word,
-              number: Faker::Number.number(digits: 2),
-              rate_percentage: Faker::Number.number(digits: 2),
-              rate_percentage_exfield: Faker::Number.number(digits: 2),
-              rate_fixed: Faker::Number.number(digits: 2),
-              rate_parceled_exfield: Faker::Number.number(digits: 2),
-              office_id: office.id,
-              perdlaunch_attributes: { compensation: Faker::Lorem.word, craft: Faker::Lorem.word,
-                                       lawsuit: Faker::Lorem.word, projection: Faker::Lorem.word,
-                                       perd_number: Faker::Number.number(digits: 2),
-                                       shipping_date: Faker::Date.forward(days: 23),
-                                       payment_date: Faker::Date.forward(days: 23),
-                                       status: Faker::Lorem.word, value: Faker::Number.number(digits: 2),
-                                       responsible: Faker::Lorem.word, perd_style: Faker::Lorem.word }
-            }
-          }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
-        end.to change(Perdlaunch, :count).by(1)
-      end
-      it 'creates checklists' do
-        expect do
-          post '/api/v1/works', params: {
-            work: {
-              procedure: 'administrative',
-              subject: Faker::Lorem.word,
-              action: Faker::Lorem.word,
-              number: Faker::Number.number(digits: 2),
-              rate_percentage: Faker::Number.number(digits: 2),
-              rate_percentage_exfield: Faker::Number.number(digits: 2),
-              rate_fixed: Faker::Number.number(digits: 2),
-              rate_parceled_exfield: Faker::Number.number(digits: 2),
-              checklists_attributes: [description: Faker::Lorem.word],
-              office_id: office.id
-            }
-          }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
-        end.to change(ChecklistWork, :count).by(1)
-      end
-      it 'creates tributary' do
-        expect do
-          post '/api/v1/works', params: {
-            work: {
-              procedure: 'administrative',
-              subject: Faker::Lorem.word,
-              action: Faker::Lorem.word,
-              number: Faker::Number.number(digits: 2),
-              rate_percentage: Faker::Number.number(digits: 2),
-              rate_percentage_exfield: Faker::Number.number(digits: 2),
-              rate_fixed: Faker::Number.number(digits: 2),
-              rate_parceled_exfield: Faker::Number.number(digits: 2),
-              office_id: office.id,
-              tributary_attributes: { compensation: Faker::Lorem.word, craft: Faker::Lorem.word,
-                                      lawsuit: Faker::Lorem.word, projection: Faker::Lorem.word }
-
-            }
-          }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
-        end.to change(Tributary, :count).by(1)
-      end
       it 'creates powers' do
         expect do
           post '/api/v1/works', params: {
@@ -240,12 +174,8 @@ RSpec.describe Api::V1::WorksController, type: :request do
             },
             'relationships' => {
               'jobs' => { 'data' => [] },
-              'perdlaunch' => { 'data' => nil },
               'powers' => { 'data' => [] },
-              'profile_customers' => { 'data' => [] },
-              'recommendation' => { 'data' => [] },
-              'tributary' => { 'data' => nil },
-              'checklists' => { 'data' => [] }
+              'profile_customers' => { 'data' => [] }
             }
           }
         )
@@ -288,12 +218,8 @@ RSpec.describe Api::V1::WorksController, type: :request do
             },
             'relationships' => {
               'jobs' => { 'data' => [] },
-              'perdlaunch' => { 'data' => nil },
               'powers' => { 'data' => [] },
-              'profile_customers' => { 'data' => [] },
-              'recommendation' => { 'data' => [] },
-              'tributary' => { 'data' => nil },
-              'checklists' => { 'data' => [] }
+              'profile_customers' => { 'data' => [] }
             }
           },
           'included' => []
