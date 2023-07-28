@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_28_214110) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_28_223015) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -376,6 +376,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_28_214110) do
     t.string "extra_pending_document"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "civel_area", comment: "Civil aréas"
+    t.string "social_security_areas", comment: "Previdênciário aréas"
+    t.string "laborite_areas", comment: "Trabalhista aréas"
+    t.string "tributary_areas", comment: "Tributário aréas"
+    t.text "other_description", comment: "Descrição do outro tipo de assunto"
+    t.boolean "compensations_five_years", comment: "Compensações realizadas nos últimos 5 anos"
+    t.boolean "compensations_service", comment: "Compensações de oficio"
+    t.boolean "lawsuit", comment: "Possui ação Judicial"
+    t.string "gain_projection", comment: "Projeção de ganho"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

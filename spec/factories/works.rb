@@ -3,7 +3,7 @@
 FactoryBot.define do
   factory :work do
     procedure { 'administrative' }
-    subject { Faker::Lorem.word }
+    subject { 'criminal' }
     action { Faker::Lorem.word }
     number { 1 }
     rate_percentage { Faker::Lorem.word }

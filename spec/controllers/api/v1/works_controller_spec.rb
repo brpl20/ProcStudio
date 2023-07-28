@@ -66,7 +66,7 @@ RSpec.describe Api::V1::WorksController, type: :request do
         post '/api/v1/works', params: {
           work: {
             procedure: 'administrative',
-            subject: Faker::Lorem.word,
+            subject: 'criminal',
             action: Faker::Lorem.word,
             number: Faker::Number.number(digits: 2),
             rate_percentage: Faker::Number.number(digits: 2),
@@ -89,7 +89,7 @@ RSpec.describe Api::V1::WorksController, type: :request do
         post '/api/v1/works', params: {
           work: {
             procedure: 'administrative',
-            subject: Faker::Lorem.word,
+            subject: 'criminal',
             action: Faker::Lorem.word
           }
         }
@@ -107,7 +107,7 @@ RSpec.describe Api::V1::WorksController, type: :request do
           post '/api/v1/works', params: {
             work: {
               procedure: 'administrative',
-              subject: Faker::Lorem.word,
+              subject: 'criminal',
               action: Faker::Lorem.word,
               number: Faker::Number.number(digits: 2),
               rate_percentage: Faker::Number.number(digits: 2),
@@ -124,7 +124,7 @@ RSpec.describe Api::V1::WorksController, type: :request do
           post '/api/v1/works', params: {
             work: {
               procedure: 'administrative',
-              subject: Faker::Lorem.word,
+              subject: 'criminal',
               action: Faker::Lorem.word,
               number: Faker::Number.number(digits: 2),
               rate_percentage: Faker::Number.number(digits: 2),
@@ -141,7 +141,7 @@ RSpec.describe Api::V1::WorksController, type: :request do
           post '/api/v1/works', params: {
             work: {
               procedure: 'administrative',
-              subject: Faker::Lorem.word,
+              subject: 'criminal',
               action: Faker::Lorem.word,
               number: Faker::Number.number(digits: 2),
               rate_percentage: Faker::Number.number(digits: 2),
@@ -158,7 +158,7 @@ RSpec.describe Api::V1::WorksController, type: :request do
           post '/api/v1/works', params: {
             work: {
               procedure: 'administrative',
-              subject: Faker::Lorem.word,
+              subject: 'criminal',
               action: Faker::Lorem.word,
               number: Faker::Number.number(digits: 2),
               rate_percentage: Faker::Number.number(digits: 2),
@@ -175,7 +175,7 @@ RSpec.describe Api::V1::WorksController, type: :request do
           post '/api/v1/works', params: {
             work: {
               procedure: 'administrative',
-              subject: Faker::Lorem.word,
+              subject: 'criminal',
               action: Faker::Lorem.word,
               number: Faker::Number.number(digits: 2),
               rate_percentage: Faker::Number.number(digits: 2),
