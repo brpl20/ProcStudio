@@ -341,6 +341,17 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_28_214110) do
     t.index ["customer_id"], name: "index_profile_customers_on_customer_id"
   end
 
+  create_table "recommendations", force: :cascade do |t|
+    t.decimal "percentage"
+    t.decimal "commition"
+    t.bigint "profile_customer_id", null: false
+    t.bigint "work_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["profile_customer_id"], name: "index_recommendations_on_profile_customer_id"
+    t.index ["work_id"], name: "index_recommendations_on_work_id"
+  end
+
   create_table "represents", force: :cascade do |t|
     t.integer "represented_id"
     t.bigint "profile_customer_id", null: false
@@ -404,5 +415,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_28_214110) do
   add_foreign_key "profile_admins", "admins"
   add_foreign_key "profile_admins", "offices"
   add_foreign_key "profile_customers", "customers"
+  add_foreign_key "recommendations", "profile_customers"
+  add_foreign_key "recommendations", "works"
   add_foreign_key "represents", "profile_customers"
 end

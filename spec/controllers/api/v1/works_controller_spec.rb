@@ -170,6 +170,23 @@ RSpec.describe Api::V1::WorksController, type: :request do
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         end.to change(CustomerWork, :count).by(2)
       end
+      it 'creates recommendations' do
+        expect do
+          post '/api/v1/works', params: {
+            work: {
+              procedure: 'administrative',
+              subject: Faker::Lorem.word,
+              action: Faker::Lorem.word,
+              number: Faker::Number.number(digits: 2),
+              rate_percentage: Faker::Number.number(digits: 2),
+              rate_percentage_exfield: Faker::Number.number(digits: 2),
+              rate_fixed: Faker::Number.number(digits: 2),
+              rate_parceled_exfield: Faker::Number.number(digits: 2),
+              recommendations_attributes: [{ percentage: '30%', commition: '100', profile_customer_id: profile_customer_one.id }]
+            }
+          }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        end.to change(Recommendation, :count).by(1)
+      end
     end
   end
   describe 'update' do

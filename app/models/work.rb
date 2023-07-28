@@ -23,6 +23,8 @@ class Work < ApplicationRecord
   has_many :office_works, dependent: :destroy
   has_many :offices, through: :office_works
 
+  has_many :recommendations, dependent: :destroy
+
   has_many :jobs
 
   enum procedure: {
@@ -30,5 +32,5 @@ class Work < ApplicationRecord
     judicial: 'judicial',
     extrajudicial: 'extrajudicial'
   }
-  accepts_nested_attributes_for :documents, :pending_documents, reject_if: :all_blank, allow_destroy: true
+  accepts_nested_attributes_for :documents, :pending_documents, :recommendations, reject_if: :all_blank, allow_destroy: true
 end
