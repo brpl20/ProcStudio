@@ -215,6 +215,19 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_10_135358) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "job_works", force: :cascade do |t|
+    t.bigint "job_id", null: false
+    t.bigint "work_id", null: false
+    t.bigint "profile_admin_id", null: false
+    t.bigint "profile_customer_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["job_id"], name: "index_job_works_on_job_id"
+    t.index ["profile_admin_id"], name: "index_job_works_on_profile_admin_id"
+    t.index ["profile_customer_id"], name: "index_job_works_on_profile_customer_id"
+    t.index ["work_id"], name: "index_job_works_on_work_id"
+  end
+
   create_table "jobs", force: :cascade do |t|
     t.string "description"
     t.date "deadline"
@@ -455,6 +468,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_10_135358) do
   add_foreign_key "customer_works", "profile_customers"
   add_foreign_key "customer_works", "works"
   add_foreign_key "documents", "works"
+  add_foreign_key "job_works", "jobs"
+  add_foreign_key "job_works", "profile_admins"
+  add_foreign_key "job_works", "profile_customers"
+  add_foreign_key "job_works", "works"
   add_foreign_key "office_bank_accounts", "bank_accounts"
   add_foreign_key "office_bank_accounts", "offices"
   add_foreign_key "office_emails", "emails"

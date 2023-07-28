@@ -3,11 +3,12 @@
 class ProfileCustomerSerializer
   include JSONAPI::Serializer
   attributes :customer_id, :customer_type, :name, :last_name, :cpf, :cnpj,
-             :emails, :addresses, :phones, :emails
+             :emails
 
   attributes :status, :customer_id, :rg, :birth, :gender,
              :civil_status, :nationality, :capacity, :profession, :company,
-             :number_benefit, :nit, :mother_name, if: proc { |_, options| options[:action] == 'show' }
+             :number_benefit, :nit, :mother_name, :addresses, :phones, :emails,
+             :bank_accounts, if: proc { |_, options| options[:action] == 'show' }
 
   attribute :default_phone do |object|
     object.phones.first&.phone_number
