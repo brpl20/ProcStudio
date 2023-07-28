@@ -66,11 +66,13 @@ module Api
       def work_params
         params.require(:work).permit(
           :procedure, :subject, :action, :number, :rate_percentage, :rate_percentage_exfield, :rate_fixed,
-          :rate_parceled_exfield, :folder, :initial_atendee, :note, :checklist, :pending_document, :office_id,
+          :rate_parceled_exfield, :folder, :initial_atendee, :note, :checklist, :extra_pending_document,
           documents_attributes: %i[id document_type],
+          pending_documents_attributes: %i[id description],
           power_ids: [],
           profile_customer_ids: [],
-          profile_admin_ids: []
+          profile_admin_ids: [],
+          office_ids: []
         )
       end
     end

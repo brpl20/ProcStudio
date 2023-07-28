@@ -10,7 +10,7 @@ module Works
       @customer = @work.profile_customers.first
       @address = @customer.addresses.first
       @customer_email = @customer.emails.first
-      @office = @work.office
+      @office = @work.offices.first
       @gender = @customer.gender
     end
 

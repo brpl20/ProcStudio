@@ -14,7 +14,6 @@ FactoryBot.define do
     neighborhood { Faker::Address.street_address }
     city { Faker::Address.city }
     state { Faker::Address.state }
-    office_type { FactoryBot.create(:office_type) }
     transient do
       profile_admins { [build(:profile_admin)] }
     end

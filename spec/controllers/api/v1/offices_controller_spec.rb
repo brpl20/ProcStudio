@@ -34,13 +34,13 @@ RSpec.describe Api::V1::OfficesController, type: :request do
               'number' => office.number,
               'neighborhood' => office.neighborhood,
               'city' => office.city,
-              'state' => office.state,
-              'office_type_id' => office.office_type_id
+              'state' => office.state
             },
             'relationships' => {
               'office_phones' => { 'data' => [] },
               'office_emails' => { 'data' => [] },
-              'office_bank_accounts' => { 'data' => [] }
+              'office_bank_accounts' => { 'data' => [] },
+              'works' => { 'data' => [] }
             }
           }],
           'meta' => {
@@ -75,8 +75,7 @@ RSpec.describe Api::V1::OfficesController, type: :request do
             number: Faker::Number.number(digits: 3),
             neighborhood: 'centro',
             city: 'Nova Andradina',
-            state: 'MS',
-            office_type_id: FactoryBot.create(:office_type).id
+            state: 'MS'
           }
         }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 
@@ -97,8 +96,7 @@ RSpec.describe Api::V1::OfficesController, type: :request do
             number: Faker::Number.number(digits: 3),
             neighborhood: 'centro',
             city: 'Nova Andradina',
-            state: 'MS',
-            office_type_id: FactoryBot.create(:office_type).id
+            state: 'MS'
           }
         }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 
@@ -121,7 +119,6 @@ RSpec.describe Api::V1::OfficesController, type: :request do
               neighborhood: 'centro',
               city: 'Nova Andradina',
               state: 'MS',
-              office_type_id: FactoryBot.create(:office_type).id,
               logo: Rack::Test::UploadedFile.new(Rails.root.join('spec', 'factories', 'images', 'Ruby.jpg'), 'image/jpg')
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
@@ -145,7 +142,6 @@ RSpec.describe Api::V1::OfficesController, type: :request do
                 neighborhood: 'centro',
                 city: 'Nova Andradina',
                 state: 'MS',
-                office_type_id: FactoryBot.create(:office_type).id,
                 phones_attributes: [phone_number: '123456789']
               }
             }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
@@ -167,7 +163,6 @@ RSpec.describe Api::V1::OfficesController, type: :request do
                 neighborhood: 'centro',
                 city: 'Nova Andradina',
                 state: 'MS',
-                office_type_id: FactoryBot.create(:office_type).id,
                 emails_attributes: [email: Faker::Internet.email]
               }
             }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
@@ -189,7 +184,6 @@ RSpec.describe Api::V1::OfficesController, type: :request do
                 neighborhood: 'centro',
                 city: 'Nova Andradina',
                 state: 'MS',
-                office_type_id: FactoryBot.create(:office_type).id,
                 bank_accounts_attributes: [bank_name: 'BB', type_account: 'CC', agency: '35478', account: 254, operation: 0o02]
               }
             }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
@@ -232,13 +226,13 @@ RSpec.describe Api::V1::OfficesController, type: :request do
               'number' => office.number,
               'neighborhood' => office.neighborhood,
               'city' => office.city,
-              'state' => office.state,
-              'office_type_id' => office.office_type_id
+              'state' => office.state
             },
             'relationships' => {
               'office_phones' => { 'data' => [] },
               'office_emails' => { 'data' => [] },
-              'office_bank_accounts' => { 'data' => [] }
+              'office_bank_accounts' => { 'data' => [] },
+              'works' => { 'data' => [] }
             }
           }
         )
@@ -275,13 +269,13 @@ RSpec.describe Api::V1::OfficesController, type: :request do
               'number' => office.number,
               'neighborhood' => office.neighborhood,
               'city' => office.city,
-              'state' => office.state,
-              'office_type_id' => office.office_type_id
+              'state' => office.state
             },
             'relationships' => {
               'office_phones' => { 'data' => [] },
               'office_emails' => { 'data' => [] },
-              'office_bank_accounts' => { 'data' => [] }
+              'office_bank_accounts' => { 'data' => [] },
+              'works' => { 'data' => [] }
             }
           }, 'included' => []
         )

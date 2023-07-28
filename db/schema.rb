@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_28_163751) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_28_214110) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -110,36 +110,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_28_163751) do
     t.string "agency"
     t.string "account"
     t.string "operation"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "checklis_documents_works", force: :cascade do |t|
-    t.bigint "checklist_document_id", null: false
-    t.bigint "work_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["checklist_document_id"], name: "index_checklis_documents_works_on_checklist_document_id"
-    t.index ["work_id"], name: "index_checklis_documents_works_on_work_id"
-  end
-
-  create_table "checklist_documents", force: :cascade do |t|
-    t.string "description"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "checklist_works", force: :cascade do |t|
-    t.bigint "checklist_id", null: false
-    t.bigint "work_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["checklist_id"], name: "index_checklist_works_on_checklist_id"
-    t.index ["work_id"], name: "index_checklist_works_on_work_id"
-  end
-
-  create_table "checklists", force: :cascade do |t|
-    t.string "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -258,10 +228,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_28_163751) do
     t.index ["phone_id"], name: "index_office_phones_on_phone_id"
   end
 
-  create_table "office_types", force: :cascade do |t|
-    t.string "description"
+  create_table "office_works", force: :cascade do |t|
+    t.bigint "work_id", null: false
+    t.bigint "office_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["office_id"], name: "index_office_works_on_office_id"
+    t.index ["work_id"], name: "index_office_works_on_work_id"
   end
 
   create_table "offices", force: :cascade do |t|
@@ -277,10 +250,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_28_163751) do
     t.string "neighborhood"
     t.string "city"
     t.string "state"
-    t.bigint "office_type_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["office_type_id"], name: "index_offices_on_office_type_id"
+  end
+
+  create_table "pending_documents", force: :cascade do |t|
+    t.string "description"
+    t.bigint "work_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["work_id"], name: "index_pending_documents_on_work_id"
   end
 
   create_table "phones", force: :cascade do |t|
@@ -362,32 +341,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_28_163751) do
     t.index ["customer_id"], name: "index_profile_customers_on_customer_id"
   end
 
-  create_table "recommendations", force: :cascade do |t|
-    t.decimal "percentage"
-    t.decimal "commition"
-    t.bigint "profile_customer_id", null: false
-    t.bigint "work_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["profile_customer_id"], name: "index_recommendations_on_profile_customer_id"
-    t.index ["work_id"], name: "index_recommendations_on_work_id"
-  end
-
   create_table "represents", force: :cascade do |t|
     t.integer "represented_id"
     t.bigint "profile_customer_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["profile_customer_id"], name: "index_represents_on_profile_customer_id"
-  end
-
-  create_table "work_updates", force: :cascade do |t|
-    t.string "description"
-    t.string "show_to"
-    t.bigint "work_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["work_id"], name: "index_work_updates_on_work_id"
   end
 
   create_table "works", force: :cascade do |t|
@@ -403,11 +362,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_28_163751) do
     t.string "initial_atendee"
     t.string "note"
     t.string "checklist"
-    t.string "pending_document"
+    t.string "extra_pending_document"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "office_id", default: 1, null: false
-    t.index ["office_id"], name: "index_works_on_office_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -420,10 +377,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_28_163751) do
   add_foreign_key "admin_emails", "profile_admins"
   add_foreign_key "admin_phones", "phones"
   add_foreign_key "admin_phones", "profile_admins"
-  add_foreign_key "checklis_documents_works", "checklist_documents"
-  add_foreign_key "checklis_documents_works", "works"
-  add_foreign_key "checklist_works", "checklists"
-  add_foreign_key "checklist_works", "works"
   add_foreign_key "customer_addresses", "addresses"
   add_foreign_key "customer_addresses", "profile_customers"
   add_foreign_key "customer_bank_accounts", "bank_accounts"
@@ -441,7 +394,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_28_163751) do
   add_foreign_key "office_emails", "offices"
   add_foreign_key "office_phones", "offices"
   add_foreign_key "office_phones", "phones"
-  add_foreign_key "offices", "office_types"
+  add_foreign_key "office_works", "offices"
+  add_foreign_key "office_works", "works"
+  add_foreign_key "pending_documents", "works"
   add_foreign_key "power_works", "powers"
   add_foreign_key "power_works", "works"
   add_foreign_key "profile_admin_works", "profile_admins"
@@ -449,9 +404,5 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_28_163751) do
   add_foreign_key "profile_admins", "admins"
   add_foreign_key "profile_admins", "offices"
   add_foreign_key "profile_customers", "customers"
-  add_foreign_key "recommendations", "profile_customers"
-  add_foreign_key "recommendations", "works"
   add_foreign_key "represents", "profile_customers"
-  add_foreign_key "work_updates", "works"
-  add_foreign_key "works", "offices"
 end

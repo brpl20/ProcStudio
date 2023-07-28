@@ -36,7 +36,7 @@ namespace :cad do
         initial_atendee: Faker::Name.name,
         note: Faker::Lorem.paragraph,
         checklist: Checklist.last,
-        pending_document: ''
+        extra_pending_document: ''
       )
     end
   end

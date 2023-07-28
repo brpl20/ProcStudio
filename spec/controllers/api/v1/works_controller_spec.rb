@@ -36,13 +36,13 @@ RSpec.describe Api::V1::WorksController, type: :request do
               'initial_atendee' => work.initial_atendee,
               'note' => work.note,
               'checklist' => work.checklist,
-              'pending_document' => work.pending_document,
-              'office_id' => work.office_id
+              'extra_pending_document' => work.extra_pending_document
             },
             'relationships' => {
               'jobs' => { 'data' => [] },
               'powers' => { 'data' => [] },
-              'profile_customers' => { 'data' => [] }
+              'profile_customers' => { 'data' => [] },
+              'offices' => { 'data' => [] }
             }
           }],
           'meta' => {
@@ -77,8 +77,7 @@ RSpec.describe Api::V1::WorksController, type: :request do
             initial_atendee: Faker::Lorem.word,
             note: Faker::Lorem.word,
             checklist: Faker::Lorem.word,
-            pending_document: Faker::Lorem.word,
-            office_id: office.id
+            extra_pending_document: Faker::Lorem.word
           }
         }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 
@@ -103,6 +102,23 @@ RSpec.describe Api::V1::WorksController, type: :request do
       let!(:profile_customer_two) { create(:profile_customer) }
       let!(:power) { create(:power) }
 
+      it 'creates pending documents' do
+        expect do
+          post '/api/v1/works', params: {
+            work: {
+              procedure: 'administrative',
+              subject: Faker::Lorem.word,
+              action: Faker::Lorem.word,
+              number: Faker::Number.number(digits: 2),
+              rate_percentage: Faker::Number.number(digits: 2),
+              rate_percentage_exfield: Faker::Number.number(digits: 2),
+              rate_fixed: Faker::Number.number(digits: 2),
+              rate_parceled_exfield: Faker::Number.number(digits: 2),
+              pending_documents_attributes: [{ description: 'rg' }, { description: 'proof_of_address' }]
+            }
+          }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        end.to change(PendingDocument, :count).by(2)
+      end
       it 'creates powers' do
         expect do
           post '/api/v1/works', params: {
@@ -115,11 +131,27 @@ RSpec.describe Api::V1::WorksController, type: :request do
               rate_percentage_exfield: Faker::Number.number(digits: 2),
               rate_fixed: Faker::Number.number(digits: 2),
               rate_parceled_exfield: Faker::Number.number(digits: 2),
-              office_id: office.id,
               power_ids: [power.id]
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         end.to change(PowerWork, :count).by(1)
+      end
+      it 'creates office_works' do
+        expect do
+          post '/api/v1/works', params: {
+            work: {
+              procedure: 'administrative',
+              subject: Faker::Lorem.word,
+              action: Faker::Lorem.word,
+              number: Faker::Number.number(digits: 2),
+              rate_percentage: Faker::Number.number(digits: 2),
+              rate_percentage_exfield: Faker::Number.number(digits: 2),
+              rate_fixed: Faker::Number.number(digits: 2),
+              rate_parceled_exfield: Faker::Number.number(digits: 2),
+              office_ids: [office.id]
+            }
+          }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        end.to change(OfficeWork, :count).by(1)
       end
       it 'creates customer_works relationship' do
         expect do
@@ -133,7 +165,6 @@ RSpec.describe Api::V1::WorksController, type: :request do
               rate_percentage_exfield: Faker::Number.number(digits: 2),
               rate_fixed: Faker::Number.number(digits: 2),
               rate_parceled_exfield: Faker::Number.number(digits: 2),
-              office_id: office.id,
               profile_customer_ids: [profile_customer_one.id, profile_customer_two.id]
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
@@ -169,13 +200,13 @@ RSpec.describe Api::V1::WorksController, type: :request do
               'initial_atendee' => work.initial_atendee,
               'note' => 'New description',
               'checklist' => work.checklist,
-              'pending_document' => work.pending_document,
-              'office_id' => work.office_id
+              'extra_pending_document' => work.extra_pending_document
             },
             'relationships' => {
               'jobs' => { 'data' => [] },
               'powers' => { 'data' => [] },
-              'profile_customers' => { 'data' => [] }
+              'profile_customers' => { 'data' => [] },
+              'offices' => { 'data' => [] }
             }
           }
         )
@@ -213,13 +244,13 @@ RSpec.describe Api::V1::WorksController, type: :request do
               'initial_atendee' => work.initial_atendee,
               'note' => work.note,
               'checklist' => work.checklist,
-              'pending_document' => work.pending_document,
-              'office_id' => work.office_id
+              'extra_pending_document' => work.extra_pending_document
             },
             'relationships' => {
               'jobs' => { 'data' => [] },
               'powers' => { 'data' => [] },
-              'profile_customers' => { 'data' => [] }
+              'profile_customers' => { 'data' => [] },
+              'offices' => { 'data' => [] }
             }
           },
           'included' => []

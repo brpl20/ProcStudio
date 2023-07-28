@@ -1,11 +1,6 @@
 # frozen_string_literal: true
 
 class Work < ApplicationRecord
-  has_one :tributary, dependent: :destroy
-  has_one :perdlaunch, dependent: :destroy
-  has_many :work_updates, dependent: :destroy
-  has_many :recommendation, dependent: :destroy
-
   has_many :customer_works, dependent: :destroy
   has_many :profile_customers, through: :customer_works
 
@@ -23,7 +18,10 @@ class Work < ApplicationRecord
 
   has_many :documents, dependent: :destroy
 
-  belongs_to :office
+  has_many :pending_documents, dependent: :destroy
+
+  has_many :office_works, dependent: :destroy
+  has_many :offices, through: :office_works
 
   has_many :jobs
 
@@ -32,6 +30,5 @@ class Work < ApplicationRecord
     judicial: 'judicial',
     extrajudicial: 'extrajudicial'
   }
-  accepts_nested_attributes_for :tributary, :perdlaunch, :documents,
-                                :checklists, reject_if: :all_blank, allow_destroy: true
+  accepts_nested_attributes_for :documents, :pending_documents, reject_if: :all_blank, allow_destroy: true
 end

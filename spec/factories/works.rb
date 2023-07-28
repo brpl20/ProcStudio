@@ -14,7 +14,6 @@ FactoryBot.define do
     initial_atendee { 'MyString' }
     note { Faker::Lorem.word }
     checklist { 'MyString' }
-    pending_document { 'MyString' }
-    office
+    extra_pending_document { 'MyString' }
   end
 end

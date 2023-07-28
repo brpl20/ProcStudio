@@ -76,7 +76,7 @@ module Api
           :cep, :street,
           :number, :neighborhood,
           :city, :state,
-          :office_type_id, :logo,
+          :logo,
           phones_attributes: %i[id phone_number],
           emails_attributes: %i[id email],
           bank_accounts_attributes: %i[id bank_name type_account agency account operation]

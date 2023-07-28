@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
-  factory :work_update do
+  factory :pending_document do
     description { 'MyString' }
-    show_to { 'MyString' }
-    work { nil }
   end
 end
