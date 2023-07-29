@@ -21,5 +21,4 @@ class ProfileCustomerSerializer
   attribute :city do |object|
     object.addresses.first&.city
   end
-
 end
