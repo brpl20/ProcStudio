@@ -31,12 +31,6 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               'default_phone' => nil,
               'default_email' => nil,
               'city' => nil
-            },
-            'relationships' => {
-              'addresses' => { 'data' => [] },
-              'bank_accounts' => { 'data' => [] },
-              'emails' => { 'data' => [] },
-              'phones' => { 'data' => [] }
             }
           }],
           'meta' => {
@@ -219,12 +213,6 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               'default_phone' => nil,
               'default_email' => nil,
               'city' => nil
-            },
-            'relationships' => {
-              'addresses' => { 'data' => [] },
-              'bank_accounts' => { 'data' => [] },
-              'emails' => { 'data' => [] },
-              'phones' => { 'data' => [] }
             }
           }
         )
