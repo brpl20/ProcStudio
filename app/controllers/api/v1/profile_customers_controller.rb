@@ -37,9 +37,7 @@ module Api
 
       def update
         if @profile_customer.update(profile_customers_params)
-          render json: ProfileCustomerSerializer.new(
-            @profile_customer
-          ), status: :ok
+          head :ok
         else
           render(
             status: :bad_request,
