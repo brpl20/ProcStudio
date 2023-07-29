@@ -22,11 +22,4 @@ class ProfileCustomerSerializer
     object.addresses.first&.city
   end
 
-  has_many :addresses, serializer: AddressSerializer
-
-  has_many :phones, serializer: PhoneSerializer
-
-  has_many :emails, serializer: EmailSerializer
-
-  has_many :bank_accounts, serializer: BankAccountSerializer
 end
