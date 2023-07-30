@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_28_223015) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_30_142244) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -183,6 +183,18 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_28_223015) do
     t.string "email"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "honoraries", force: :cascade do |t|
+    t.string "fixed_honorary_value"
+    t.string "parcelling_value"
+    t.string "honorary_type"
+    t.string "percent_honorary_value"
+    t.boolean "parcelling"
+    t.bigint "work_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["work_id"], name: "index_honoraries_on_work_id"
   end
 
   create_table "jobs", force: :cascade do |t|
@@ -363,16 +375,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_28_223015) do
   create_table "works", force: :cascade do |t|
     t.string "procedure"
     t.string "subject"
-    t.string "action"
     t.integer "number"
-    t.string "rate_percentage"
-    t.string "rate_percentage_exfield"
-    t.string "rate_fixed"
     t.string "rate_parceled_exfield"
     t.string "folder"
     t.string "initial_atendee"
     t.string "note"
-    t.string "checklist"
     t.string "extra_pending_document"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -408,6 +415,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_28_223015) do
   add_foreign_key "customer_works", "profile_customers"
   add_foreign_key "customer_works", "works"
   add_foreign_key "documents", "works"
+  add_foreign_key "honoraries", "works"
   add_foreign_key "office_bank_accounts", "bank_accounts"
   add_foreign_key "office_bank_accounts", "offices"
   add_foreign_key "office_emails", "emails"

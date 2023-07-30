@@ -4,11 +4,11 @@ class PendingDocument < ApplicationRecord
   belongs_to :work
 
   enum description: {
-    rg: 'Documento de identidade',
-    proof_of_address: 'Comprovante de residência',
-    inss_password: 'Senha do meu Inss',
-    medical_documents: 'Documentos Médicos',
-    rural_documents: 'Documentos Rurais',
-    copy_of_requirements: 'Cópia de requerimentos'
+    rg: 'documento_identidade',
+    proof_of_address: 'comprovante_residência',
+    inss_password: 'senha_inss',
+    medical_documents: 'documentos_medicos',
+    rural_documents: 'documentos_rurais',
+    copy_of_requirements: 'copia_requerimentos'
   }
 end

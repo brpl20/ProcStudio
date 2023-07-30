@@ -26,16 +26,10 @@ RSpec.describe Api::V1::WorksController, type: :request do
             'attributes' => {
               'procedure' => work.procedure,
               'subject' => work.subject,
-              'action' => work.action,
               'number' => work.number,
-              'rate_percentage' => work.rate_percentage,
-              'rate_percentage_exfield' => work.rate_percentage_exfield,
-              'rate_fixed' => work.rate_fixed,
-              'rate_parceled_exfield' => work.rate_parceled_exfield,
               'folder' => work.folder,
               'initial_atendee' => work.initial_atendee,
               'note' => work.note,
-              'checklist' => work.checklist,
               'extra_pending_document' => work.extra_pending_document
             },
             'relationships' => {
@@ -67,16 +61,10 @@ RSpec.describe Api::V1::WorksController, type: :request do
           work: {
             procedure: 'administrative',
             subject: 'criminal',
-            action: Faker::Lorem.word,
             number: Faker::Number.number(digits: 2),
-            rate_percentage: Faker::Number.number(digits: 2),
-            rate_percentage_exfield: Faker::Number.number(digits: 2),
-            rate_fixed: Faker::Number.number(digits: 2),
-            rate_parceled_exfield: Faker::Number.number(digits: 2),
             folder: Faker::Lorem.word,
             initial_atendee: Faker::Lorem.word,
             note: Faker::Lorem.word,
-            checklist: Faker::Lorem.word,
             extra_pending_document: Faker::Lorem.word
           }
         }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
@@ -108,12 +96,7 @@ RSpec.describe Api::V1::WorksController, type: :request do
             work: {
               procedure: 'administrative',
               subject: 'criminal',
-              action: Faker::Lorem.word,
               number: Faker::Number.number(digits: 2),
-              rate_percentage: Faker::Number.number(digits: 2),
-              rate_percentage_exfield: Faker::Number.number(digits: 2),
-              rate_fixed: Faker::Number.number(digits: 2),
-              rate_parceled_exfield: Faker::Number.number(digits: 2),
               pending_documents_attributes: [{ description: 'rg' }, { description: 'proof_of_address' }]
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
@@ -125,12 +108,7 @@ RSpec.describe Api::V1::WorksController, type: :request do
             work: {
               procedure: 'administrative',
               subject: 'criminal',
-              action: Faker::Lorem.word,
               number: Faker::Number.number(digits: 2),
-              rate_percentage: Faker::Number.number(digits: 2),
-              rate_percentage_exfield: Faker::Number.number(digits: 2),
-              rate_fixed: Faker::Number.number(digits: 2),
-              rate_parceled_exfield: Faker::Number.number(digits: 2),
               power_ids: [power.id]
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
@@ -142,12 +120,7 @@ RSpec.describe Api::V1::WorksController, type: :request do
             work: {
               procedure: 'administrative',
               subject: 'criminal',
-              action: Faker::Lorem.word,
               number: Faker::Number.number(digits: 2),
-              rate_percentage: Faker::Number.number(digits: 2),
-              rate_percentage_exfield: Faker::Number.number(digits: 2),
-              rate_fixed: Faker::Number.number(digits: 2),
-              rate_parceled_exfield: Faker::Number.number(digits: 2),
               office_ids: [office.id]
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
@@ -159,12 +132,7 @@ RSpec.describe Api::V1::WorksController, type: :request do
             work: {
               procedure: 'administrative',
               subject: 'criminal',
-              action: Faker::Lorem.word,
               number: Faker::Number.number(digits: 2),
-              rate_percentage: Faker::Number.number(digits: 2),
-              rate_percentage_exfield: Faker::Number.number(digits: 2),
-              rate_fixed: Faker::Number.number(digits: 2),
-              rate_parceled_exfield: Faker::Number.number(digits: 2),
               profile_customer_ids: [profile_customer_one.id, profile_customer_two.id]
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
@@ -176,16 +144,24 @@ RSpec.describe Api::V1::WorksController, type: :request do
             work: {
               procedure: 'administrative',
               subject: 'criminal',
-              action: Faker::Lorem.word,
               number: Faker::Number.number(digits: 2),
-              rate_percentage: Faker::Number.number(digits: 2),
-              rate_percentage_exfield: Faker::Number.number(digits: 2),
-              rate_fixed: Faker::Number.number(digits: 2),
-              rate_parceled_exfield: Faker::Number.number(digits: 2),
               recommendations_attributes: [{ percentage: '30%', commition: '100', profile_customer_id: profile_customer_one.id }]
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         end.to change(Recommendation, :count).by(1)
+      end
+      it 'creates honorary' do
+        expect do
+          post '/api/v1/works', params: {
+            work: {
+              procedure: 'administrative',
+              subject: 'criminal',
+              number: Faker::Number.number(digits: 2),
+              honorary_attributes: { fixed_honorary_value: '200%', parcelling_value: '2', honorary_type: 'success',
+                                     percent_honorary_value: '10%', parcelling: true }
+            }
+          }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        end.to change(Honorary, :count).by(1)
       end
     end
   end
@@ -207,16 +183,10 @@ RSpec.describe Api::V1::WorksController, type: :request do
             'attributes' => {
               'procedure' => work.procedure,
               'subject' => work.subject,
-              'action' => work.action,
               'number' => work.number,
-              'rate_percentage' => work.rate_percentage,
-              'rate_percentage_exfield' => work.rate_percentage_exfield,
-              'rate_fixed' => work.rate_fixed,
-              'rate_parceled_exfield' => work.rate_parceled_exfield,
               'folder' => work.folder,
               'initial_atendee' => work.initial_atendee,
               'note' => 'New description',
-              'checklist' => work.checklist,
               'extra_pending_document' => work.extra_pending_document
             },
             'relationships' => {
@@ -251,16 +221,10 @@ RSpec.describe Api::V1::WorksController, type: :request do
             'attributes' => {
               'procedure' => work.procedure,
               'subject' => work.subject,
-              'action' => work.action,
               'number' => work.number,
-              'rate_percentage' => work.rate_percentage,
-              'rate_percentage_exfield' => work.rate_percentage_exfield,
-              'rate_fixed' => work.rate_fixed,
-              'rate_parceled_exfield' => work.rate_parceled_exfield,
               'folder' => work.folder,
               'initial_atendee' => work.initial_atendee,
               'note' => work.note,
-              'checklist' => work.checklist,
               'extra_pending_document' => work.extra_pending_document
             },
             'relationships' => {

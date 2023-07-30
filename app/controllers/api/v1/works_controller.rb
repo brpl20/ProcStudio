@@ -65,11 +65,13 @@ module Api
 
       def work_params
         params.require(:work).permit(
-          :procedure, :subject, :action, :number, :rate_percentage, :rate_percentage_exfield, :rate_fixed,
-          :rate_parceled_exfield, :folder, :initial_atendee, :note, :checklist, :extra_pending_document,
+          :procedure, :subject, :number, :folder, :initial_atendee, :note, :extra_pending_document,
+          :civel_area, :social_security_areas, :laborite_areas, :tributary_areas, :other_description,
+          :compensations_five_years, :compensations_service, :lawsuit, :gain_projection,
           documents_attributes: %i[id document_type],
           pending_documents_attributes: %i[id description],
           recommendations_attributes: %i[id percentage commition profile_customer_id],
+          honorary_attributes: %i[id fixed_honorary_value parcelling_value honorary_type percent_honorary_value parcelling],
           power_ids: [],
           profile_customer_ids: [],
           profile_admin_ids: [],

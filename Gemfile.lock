@@ -240,6 +240,8 @@ GEM
       parser (>= 3.2.1.0)
     ruby-progressbar (1.13.0)
     rubyzip (2.3.2)
+    shoulda-matchers (5.3.0)
+      activesupport (>= 5.2.0)
     thor (1.2.1)
     timeout (0.3.2)
     tzinfo (2.0.6)
@@ -277,6 +279,7 @@ DEPENDENCIES
   rails (~> 7.0.4, >= 7.0.4.2)
   rspec-rails (~> 6.0.0)
   rubocop (~> 1.48)
+  shoulda-matchers
   tzinfo-data
 
 BUNDLED WITH
