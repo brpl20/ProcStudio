@@ -34,7 +34,8 @@ RSpec.describe Api::V1::OfficesController, type: :request do
               'number' => office.number,
               'neighborhood' => office.neighborhood,
               'city' => office.city,
-              'state' => office.state
+              'state' => office.state,
+              'office_type_id' => office.office_type_id
             },
             'relationships' => {
               'office_phones' => { 'data' => [] },
@@ -232,7 +233,8 @@ RSpec.describe Api::V1::OfficesController, type: :request do
               'number' => office.number,
               'neighborhood' => office.neighborhood,
               'city' => office.city,
-              'state' => office.state
+              'state' => office.state,
+              'office_type_id' => office.office_type_id
             },
             'relationships' => {
               'office_phones' => { 'data' => [] },
@@ -275,7 +277,8 @@ RSpec.describe Api::V1::OfficesController, type: :request do
               'number' => office.number,
               'neighborhood' => office.neighborhood,
               'city' => office.city,
-              'state' => office.state
+              'state' => office.state,
+              'office_type_id' => office.office_type_id
             },
             'relationships' => {
               'office_phones' => { 'data' => [] },

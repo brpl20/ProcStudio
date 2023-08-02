@@ -3,7 +3,7 @@
 class OfficeSerializer
   include JSONAPI::Serializer
   attributes :name, :cnpj, :oab, :society, :foundation, :site, :cep, :street,
-             :number, :neighborhood, :city, :state
+             :number, :neighborhood, :city, :state, :office_type_id
 
   has_many :office_phones, serializer: OfficePhoneSerializer
 
