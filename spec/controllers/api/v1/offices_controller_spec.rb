@@ -75,7 +75,8 @@ RSpec.describe Api::V1::OfficesController, type: :request do
             number: Faker::Number.number(digits: 3),
             neighborhood: 'centro',
             city: 'Nova Andradina',
-            state: 'MS'
+            state: 'MS',
+            office_type_id: FactoryBot.create(:office_type).id
           }
         }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 
@@ -96,7 +97,8 @@ RSpec.describe Api::V1::OfficesController, type: :request do
             number: Faker::Number.number(digits: 3),
             neighborhood: 'centro',
             city: 'Nova Andradina',
-            state: 'MS'
+            state: 'MS',
+            office_type_id: FactoryBot.create(:office_type).id
           }
         }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 
@@ -119,6 +121,7 @@ RSpec.describe Api::V1::OfficesController, type: :request do
               neighborhood: 'centro',
               city: 'Nova Andradina',
               state: 'MS',
+              office_type_id: FactoryBot.create(:office_type).id,
               logo: Rack::Test::UploadedFile.new(Rails.root.join('spec', 'factories', 'images', 'Ruby.jpg'), 'image/jpg')
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
@@ -142,6 +145,7 @@ RSpec.describe Api::V1::OfficesController, type: :request do
                 neighborhood: 'centro',
                 city: 'Nova Andradina',
                 state: 'MS',
+                office_type_id: FactoryBot.create(:office_type).id,
                 phones_attributes: [phone_number: '123456789']
               }
             }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
@@ -163,6 +167,7 @@ RSpec.describe Api::V1::OfficesController, type: :request do
                 neighborhood: 'centro',
                 city: 'Nova Andradina',
                 state: 'MS',
+                office_type_id: FactoryBot.create(:office_type).id,
                 emails_attributes: [email: Faker::Internet.email]
               }
             }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
@@ -184,6 +189,7 @@ RSpec.describe Api::V1::OfficesController, type: :request do
                 neighborhood: 'centro',
                 city: 'Nova Andradina',
                 state: 'MS',
+                office_type_id: FactoryBot.create(:office_type).id,
                 bank_accounts_attributes: [bank_name: 'BB', type_account: 'CC', agency: '35478', account: 254, operation: 0o02]
               }
             }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }

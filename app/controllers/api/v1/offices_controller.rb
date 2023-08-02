@@ -77,6 +77,7 @@ module Api
           :number, :neighborhood,
           :city, :state,
           :logo,
+          :office_type_id,
           phones_attributes: %i[id phone_number],
           emails_attributes: %i[id email],
           bank_accounts_attributes: %i[id bank_name type_account agency account operation]
