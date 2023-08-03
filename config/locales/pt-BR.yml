@@ -1,4 +1,51 @@
 'pt-BR':
+  general:
+    without_email: sem endereço eletrônico
+  gender:
+    owner:
+      male: portador
+      female: portadora
+      other: portador(a)
+    brazilian:
+      male: brasileiro
+      female: brasileira
+      other: brasileiro(a)
+    foreigner:
+      male: estrangeiro
+      female: estrangeira
+      other: estrangeiro(a)
+    married:
+      male: casado
+      female: casada
+      other: casado(a)
+    single:
+      male: solteiro
+      female: solteira
+      other: solteiro(a)
+    divorced:
+      male: divorciado
+      female: divorciada
+      other: divorciado(a)
+    widower:
+      male: viúvo
+      female: viúva
+      other: viúvo(a)
+    union:
+      male: união estável
+      female: união estável
+      other: união estável
+    subscribe:
+      male: inscrito
+      female: inscrita
+      other: inscrito(a)
+    live:
+      male: domiciliado
+      female: domiciliada
+      other: domiciliado(a)
+    represent:
+      male: Representado por
+      female: Representada por
+      other: Representado(a) por
   activerecord:
     models:
       admin: Usuário

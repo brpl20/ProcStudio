@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_10_135358) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_30_142244) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -114,36 +114,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_10_135358) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "checklis_documents_works", force: :cascade do |t|
-    t.bigint "checklist_document_id", null: false
-    t.bigint "work_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["checklist_document_id"], name: "index_checklis_documents_works_on_checklist_document_id"
-    t.index ["work_id"], name: "index_checklis_documents_works_on_work_id"
-  end
-
-  create_table "checklist_documents", force: :cascade do |t|
-    t.string "description"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "checklist_works", force: :cascade do |t|
-    t.bigint "checklist_id", null: false
-    t.bigint "work_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["checklist_id"], name: "index_checklist_works_on_checklist_id"
-    t.index ["work_id"], name: "index_checklist_works_on_work_id"
-  end
-
-  create_table "checklists", force: :cascade do |t|
-    t.string "description"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "customer_addresses", force: :cascade do |t|
     t.bigint "profile_customer_id", null: false
     t.bigint "address_id", null: false
@@ -215,6 +185,31 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_10_135358) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "honoraries", force: :cascade do |t|
+    t.string "fixed_honorary_value"
+    t.string "parcelling_value"
+    t.string "honorary_type"
+    t.string "percent_honorary_value"
+    t.boolean "parcelling"
+    t.bigint "work_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["work_id"], name: "index_honoraries_on_work_id"
+  end
+
+  create_table "job_works", force: :cascade do |t|
+    t.bigint "job_id", null: false
+    t.bigint "work_id", null: false
+    t.bigint "profile_admin_id", null: false
+    t.bigint "profile_customer_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["job_id"], name: "index_job_works_on_job_id"
+    t.index ["profile_admin_id"], name: "index_job_works_on_profile_admin_id"
+    t.index ["profile_customer_id"], name: "index_job_works_on_profile_customer_id"
+    t.index ["work_id"], name: "index_job_works_on_work_id"
+  end
+
   create_table "jobs", force: :cascade do |t|
     t.string "description"
     t.date "deadline"
@@ -264,11 +259,20 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_10_135358) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "office_works", force: :cascade do |t|
+    t.bigint "work_id", null: false
+    t.bigint "office_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["office_id"], name: "index_office_works_on_office_id"
+    t.index ["work_id"], name: "index_office_works_on_work_id"
+  end
+
   create_table "offices", force: :cascade do |t|
     t.string "name"
     t.string "cnpj"
     t.string "oab"
-    t.integer "society"
+    t.string "society"
     t.date "foundation"
     t.string "site"
     t.string "cep"
@@ -283,22 +287,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_10_135358) do
     t.index ["office_type_id"], name: "index_offices_on_office_type_id"
   end
 
-  create_table "perdlaunches", force: :cascade do |t|
-    t.integer "compensation"
-    t.integer "craft"
-    t.integer "lawsuit"
-    t.date "projection"
-    t.string "perd_number"
-    t.date "shipping_date"
-    t.date "payment_date"
-    t.integer "status"
-    t.string "value"
-    t.string "responsible"
-    t.string "perd_style"
+  create_table "pending_documents", force: :cascade do |t|
+    t.string "description"
     t.bigint "work_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["work_id"], name: "index_perdlaunches_on_work_id"
+    t.index ["work_id"], name: "index_pending_documents_on_work_id"
   end
 
   create_table "phones", force: :cascade do |t|
@@ -323,19 +317,28 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_10_135358) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "profile_admin_works", force: :cascade do |t|
+    t.bigint "profile_admin_id", null: false
+    t.bigint "work_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["profile_admin_id"], name: "index_profile_admin_works_on_profile_admin_id"
+    t.index ["work_id"], name: "index_profile_admin_works_on_work_id"
+  end
+
   create_table "profile_admins", force: :cascade do |t|
-    t.integer "role"
+    t.string "role"
     t.string "name"
     t.string "last_name"
-    t.integer "gender"
+    t.string "gender"
     t.string "oab"
     t.string "rg"
     t.string "cpf"
     t.string "nationality"
-    t.integer "civil_status"
+    t.string "civil_status"
     t.date "birth"
     t.string "mother_name"
-    t.integer "status"
+    t.string "status"
     t.bigint "admin_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -348,13 +351,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_10_135358) do
     t.string "customer_type"
     t.string "name"
     t.string "last_name"
-    t.integer "gender"
+    t.string "gender"
     t.string "rg"
     t.string "cpf"
     t.string "cnpj"
     t.string "nationality"
-    t.integer "civil_status"
-    t.integer "capacity"
+    t.string "civil_status"
+    t.string "capacity"
     t.string "profession"
     t.string "company"
     t.date "birth"
@@ -390,44 +393,26 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_10_135358) do
     t.index ["profile_customer_id"], name: "index_represents_on_profile_customer_id"
   end
 
-  create_table "tributaries", force: :cascade do |t|
-    t.integer "compensation"
-    t.integer "craft"
-    t.integer "lawsuit"
-    t.date "projection"
-    t.bigint "work_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["work_id"], name: "index_tributaries_on_work_id"
-  end
-
-  create_table "work_updates", force: :cascade do |t|
-    t.string "description"
-    t.string "show_to"
-    t.bigint "work_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["work_id"], name: "index_work_updates_on_work_id"
-  end
-
   create_table "works", force: :cascade do |t|
     t.string "procedure"
     t.string "subject"
-    t.string "action"
     t.integer "number"
-    t.string "rate_percentage"
-    t.string "rate_percentage_exfield"
-    t.string "rate_fixed"
     t.string "rate_parceled_exfield"
     t.string "folder"
     t.string "initial_atendee"
     t.string "note"
-    t.string "checklist"
-    t.string "pending_document"
+    t.string "extra_pending_document"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "office_id", default: 1, null: false
-    t.index ["office_id"], name: "index_works_on_office_id"
+    t.string "civel_area", comment: "Civil aréas"
+    t.string "social_security_areas", comment: "Previdênciário aréas"
+    t.string "laborite_areas", comment: "Trabalhista aréas"
+    t.string "tributary_areas", comment: "Tributário aréas"
+    t.text "other_description", comment: "Descrição do outro tipo de assunto"
+    t.boolean "compensations_five_years", comment: "Compensações realizadas nos últimos 5 anos"
+    t.boolean "compensations_service", comment: "Compensações de oficio"
+    t.boolean "lawsuit", comment: "Possui ação Judicial"
+    t.string "gain_projection", comment: "Projeção de ganho"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -440,10 +425,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_10_135358) do
   add_foreign_key "admin_emails", "profile_admins"
   add_foreign_key "admin_phones", "phones"
   add_foreign_key "admin_phones", "profile_admins"
-  add_foreign_key "checklis_documents_works", "checklist_documents"
-  add_foreign_key "checklis_documents_works", "works"
-  add_foreign_key "checklist_works", "checklists"
-  add_foreign_key "checklist_works", "works"
   add_foreign_key "customer_addresses", "addresses"
   add_foreign_key "customer_addresses", "profile_customers"
   add_foreign_key "customer_bank_accounts", "bank_accounts"
@@ -455,23 +436,29 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_10_135358) do
   add_foreign_key "customer_works", "profile_customers"
   add_foreign_key "customer_works", "works"
   add_foreign_key "documents", "works"
+  add_foreign_key "honoraries", "works"
+  add_foreign_key "job_works", "jobs"
+  add_foreign_key "job_works", "profile_admins"
+  add_foreign_key "job_works", "profile_customers"
+  add_foreign_key "job_works", "works"
   add_foreign_key "office_bank_accounts", "bank_accounts"
   add_foreign_key "office_bank_accounts", "offices"
   add_foreign_key "office_emails", "emails"
   add_foreign_key "office_emails", "offices"
   add_foreign_key "office_phones", "offices"
   add_foreign_key "office_phones", "phones"
+  add_foreign_key "office_works", "offices"
+  add_foreign_key "office_works", "works"
   add_foreign_key "offices", "office_types"
-  add_foreign_key "perdlaunches", "works"
+  add_foreign_key "pending_documents", "works"
   add_foreign_key "power_works", "powers"
   add_foreign_key "power_works", "works"
+  add_foreign_key "profile_admin_works", "profile_admins"
+  add_foreign_key "profile_admin_works", "works"
   add_foreign_key "profile_admins", "admins"
   add_foreign_key "profile_admins", "offices"
   add_foreign_key "profile_customers", "customers"
   add_foreign_key "recommendations", "profile_customers"
   add_foreign_key "recommendations", "works"
   add_foreign_key "represents", "profile_customers"
-  add_foreign_key "tributaries", "works"
-  add_foreign_key "work_updates", "works"
-  add_foreign_key "works", "offices"
 end

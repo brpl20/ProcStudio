@@ -20,8 +20,7 @@ namespace :cad do
       number: Faker::Address.building_number,
       neighborhood: Faker::Address.community,
       city: Faker::Address.city,
-      state: Faker::Address.state_abbr,
-      office_type_id: 1
+      state: Faker::Address.state_abbr
     )
   end
 end

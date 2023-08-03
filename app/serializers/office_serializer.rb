@@ -10,4 +10,6 @@ class OfficeSerializer
   has_many :office_emails, serializer: OfficeEmailSerializer
 
   has_many :office_bank_accounts, serializer: OfficeBankAccountSerializer
+
+  has_many :works, serializer: WorkSerializer
 end

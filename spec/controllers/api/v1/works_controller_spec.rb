@@ -26,27 +26,17 @@ RSpec.describe Api::V1::WorksController, type: :request do
             'attributes' => {
               'procedure' => work.procedure,
               'subject' => work.subject,
-              'action' => work.action,
               'number' => work.number,
-              'rate_percentage' => work.rate_percentage,
-              'rate_percentage_exfield' => work.rate_percentage_exfield,
-              'rate_fixed' => work.rate_fixed,
-              'rate_parceled_exfield' => work.rate_parceled_exfield,
               'folder' => work.folder,
               'initial_atendee' => work.initial_atendee,
               'note' => work.note,
-              'checklist' => work.checklist,
-              'pending_document' => work.pending_document,
-              'office_id' => work.office_id
+              'extra_pending_document' => work.extra_pending_document
             },
             'relationships' => {
               'jobs' => { 'data' => [] },
-              'perdlaunch' => { 'data' => nil },
               'powers' => { 'data' => [] },
               'profile_customers' => { 'data' => [] },
-              'recommendation' => { 'data' => [] },
-              'tributary' => { 'data' => nil },
-              'checklists' => { 'data' => [] }
+              'offices' => { 'data' => [] }
             }
           }],
           'meta' => {
@@ -69,20 +59,13 @@ RSpec.describe Api::V1::WorksController, type: :request do
       it 'returns :ok' do
         post '/api/v1/works', params: {
           work: {
-            procedure: Faker::Lorem.word,
-            subject: Faker::Lorem.word,
-            action: Faker::Lorem.word,
+            procedure: 'administrative',
+            subject: 'criminal',
             number: Faker::Number.number(digits: 2),
-            rate_percentage: Faker::Number.number(digits: 2),
-            rate_percentage_exfield: Faker::Number.number(digits: 2),
-            rate_fixed: Faker::Number.number(digits: 2),
-            rate_parceled_exfield: Faker::Number.number(digits: 2),
             folder: Faker::Lorem.word,
             initial_atendee: Faker::Lorem.word,
             note: Faker::Lorem.word,
-            checklist: Faker::Lorem.word,
-            pending_document: Faker::Lorem.word,
-            office_id: office.id
+            extra_pending_document: Faker::Lorem.word
           }
         }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 
@@ -93,8 +76,8 @@ RSpec.describe Api::V1::WorksController, type: :request do
       it 'returns :unauthorized' do
         post '/api/v1/works', params: {
           work: {
-            procedure: Faker::Lorem.word,
-            subject: Faker::Lorem.word,
+            procedure: 'administrative',
+            subject: 'criminal',
             action: Faker::Lorem.word
           }
         }
@@ -105,104 +88,80 @@ RSpec.describe Api::V1::WorksController, type: :request do
     context 'nested attributes' do
       let!(:profile_customer_one) { create(:profile_customer) }
       let!(:profile_customer_two) { create(:profile_customer) }
+      let!(:power) { create(:power) }
 
-      it 'creates perdlaunch' do
+      it 'creates pending documents' do
         expect do
           post '/api/v1/works', params: {
             work: {
-              procedure: Faker::Lorem.word,
-              subject: Faker::Lorem.word,
-              action: Faker::Lorem.word,
+              procedure: 'administrative',
+              subject: 'criminal',
               number: Faker::Number.number(digits: 2),
-              rate_percentage: Faker::Number.number(digits: 2),
-              rate_percentage_exfield: Faker::Number.number(digits: 2),
-              rate_fixed: Faker::Number.number(digits: 2),
-              rate_parceled_exfield: Faker::Number.number(digits: 2),
-              office_id: office.id,
-              perdlaunch_attributes: { compensation: Faker::Lorem.word, craft: Faker::Lorem.word,
-                                       lawsuit: Faker::Lorem.word, projection: Faker::Lorem.word,
-                                       perd_number: Faker::Number.number(digits: 2),
-                                       shipping_date: Faker::Date.forward(days: 23),
-                                       payment_date: Faker::Date.forward(days: 23),
-                                       status: Faker::Lorem.word, value: Faker::Number.number(digits: 2),
-                                       responsible: Faker::Lorem.word, perd_style: Faker::Lorem.word }
+              pending_documents_attributes: [{ description: 'rg' }, { description: 'proof_of_address' }]
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
-        end.to change(Perdlaunch, :count).by(1)
-      end
-      it 'creates checklists' do
-        expect do
-          post '/api/v1/works', params: {
-            work: {
-              procedure: Faker::Lorem.word,
-              subject: Faker::Lorem.word,
-              action: Faker::Lorem.word,
-              number: Faker::Number.number(digits: 2),
-              rate_percentage: Faker::Number.number(digits: 2),
-              rate_percentage_exfield: Faker::Number.number(digits: 2),
-              rate_fixed: Faker::Number.number(digits: 2),
-              rate_parceled_exfield: Faker::Number.number(digits: 2),
-              checklists_attributes: [description: Faker::Lorem.word],
-              office_id: office.id
-            }
-          }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
-        end.to change(ChecklistWork, :count).by(1)
-      end
-      it 'creates tributary' do
-        expect do
-          post '/api/v1/works', params: {
-            work: {
-              procedure: Faker::Lorem.word,
-              subject: Faker::Lorem.word,
-              action: Faker::Lorem.word,
-              number: Faker::Number.number(digits: 2),
-              rate_percentage: Faker::Number.number(digits: 2),
-              rate_percentage_exfield: Faker::Number.number(digits: 2),
-              rate_fixed: Faker::Number.number(digits: 2),
-              rate_parceled_exfield: Faker::Number.number(digits: 2),
-              office_id: office.id,
-              tributary_attributes: { compensation: Faker::Lorem.word, craft: Faker::Lorem.word,
-                                      lawsuit: Faker::Lorem.word, projection: Faker::Lorem.word }
-
-            }
-          }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
-        end.to change(Tributary, :count).by(1)
+        end.to change(PendingDocument, :count).by(2)
       end
       it 'creates powers' do
         expect do
           post '/api/v1/works', params: {
             work: {
-              procedure: Faker::Lorem.word,
-              subject: Faker::Lorem.word,
-              action: Faker::Lorem.word,
+              procedure: 'administrative',
+              subject: 'criminal',
               number: Faker::Number.number(digits: 2),
-              rate_percentage: Faker::Number.number(digits: 2),
-              rate_percentage_exfield: Faker::Number.number(digits: 2),
-              rate_fixed: Faker::Number.number(digits: 2),
-              rate_parceled_exfield: Faker::Number.number(digits: 2),
-              office_id: office.id,
-              powers_attributes: [description: Faker::Lorem.word, category: 5]
+              power_ids: [power.id]
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         end.to change(PowerWork, :count).by(1)
+      end
+      it 'creates office_works' do
+        expect do
+          post '/api/v1/works', params: {
+            work: {
+              procedure: 'administrative',
+              subject: 'criminal',
+              number: Faker::Number.number(digits: 2),
+              office_ids: [office.id]
+            }
+          }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        end.to change(OfficeWork, :count).by(1)
       end
       it 'creates customer_works relationship' do
         expect do
           post '/api/v1/works', params: {
             work: {
-              procedure: Faker::Lorem.word,
-              subject: Faker::Lorem.word,
-              action: Faker::Lorem.word,
+              procedure: 'administrative',
+              subject: 'criminal',
               number: Faker::Number.number(digits: 2),
-              rate_percentage: Faker::Number.number(digits: 2),
-              rate_percentage_exfield: Faker::Number.number(digits: 2),
-              rate_fixed: Faker::Number.number(digits: 2),
-              rate_parceled_exfield: Faker::Number.number(digits: 2),
-              office_id: office.id,
               profile_customer_ids: [profile_customer_one.id, profile_customer_two.id]
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         end.to change(CustomerWork, :count).by(2)
+      end
+      it 'creates recommendations' do
+        expect do
+          post '/api/v1/works', params: {
+            work: {
+              procedure: 'administrative',
+              subject: 'criminal',
+              number: Faker::Number.number(digits: 2),
+              recommendations_attributes: [{ percentage: '30%', commition: '100', profile_customer_id: profile_customer_one.id }]
+            }
+          }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        end.to change(Recommendation, :count).by(1)
+      end
+      it 'creates honorary' do
+        expect do
+          post '/api/v1/works', params: {
+            work: {
+              procedure: 'administrative',
+              subject: 'criminal',
+              number: Faker::Number.number(digits: 2),
+              honorary_attributes: { fixed_honorary_value: '200%', parcelling_value: '2', honorary_type: 'success',
+                                     percent_honorary_value: '10%', parcelling: true }
+            }
+          }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        end.to change(Honorary, :count).by(1)
       end
     end
   end
@@ -224,27 +183,17 @@ RSpec.describe Api::V1::WorksController, type: :request do
             'attributes' => {
               'procedure' => work.procedure,
               'subject' => work.subject,
-              'action' => work.action,
               'number' => work.number,
-              'rate_percentage' => work.rate_percentage,
-              'rate_percentage_exfield' => work.rate_percentage_exfield,
-              'rate_fixed' => work.rate_fixed,
-              'rate_parceled_exfield' => work.rate_parceled_exfield,
               'folder' => work.folder,
               'initial_atendee' => work.initial_atendee,
               'note' => 'New description',
-              'checklist' => work.checklist,
-              'pending_document' => work.pending_document,
-              'office_id' => work.office_id
+              'extra_pending_document' => work.extra_pending_document
             },
             'relationships' => {
               'jobs' => { 'data' => [] },
-              'perdlaunch' => { 'data' => nil },
               'powers' => { 'data' => [] },
               'profile_customers' => { 'data' => [] },
-              'recommendation' => { 'data' => [] },
-              'tributary' => { 'data' => nil },
-              'checklists' => { 'data' => [] }
+              'offices' => { 'data' => [] }
             }
           }
         )
@@ -272,27 +221,17 @@ RSpec.describe Api::V1::WorksController, type: :request do
             'attributes' => {
               'procedure' => work.procedure,
               'subject' => work.subject,
-              'action' => work.action,
               'number' => work.number,
-              'rate_percentage' => work.rate_percentage,
-              'rate_percentage_exfield' => work.rate_percentage_exfield,
-              'rate_fixed' => work.rate_fixed,
-              'rate_parceled_exfield' => work.rate_parceled_exfield,
               'folder' => work.folder,
               'initial_atendee' => work.initial_atendee,
               'note' => work.note,
-              'checklist' => work.checklist,
-              'pending_document' => work.pending_document,
-              'office_id' => work.office_id
+              'extra_pending_document' => work.extra_pending_document
             },
             'relationships' => {
               'jobs' => { 'data' => [] },
-              'perdlaunch' => { 'data' => nil },
               'powers' => { 'data' => [] },
               'profile_customers' => { 'data' => [] },
-              'recommendation' => { 'data' => [] },
-              'tributary' => { 'data' => nil },
-              'checklists' => { 'data' => [] }
+              'offices' => { 'data' => [] }
             }
           },
           'included' => []
