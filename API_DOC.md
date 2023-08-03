@@ -24,6 +24,7 @@
 - pending_documents_attributes(Array): um array que possui os valores de vários tipos de documentos pendentes
 - note(String): Notas em geral sobre o caso
 - extra_pending_document(String): Outros documentos pendentes ou pendências
+- tributary_files(Array): array de documentos que deve ser enviados quando *subject* for `tributary`
 
 ## Honorary
 
