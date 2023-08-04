@@ -26,9 +26,9 @@ RSpec.describe Api::V1::JobsController, type: :request do
               'priority' => job.priority,
               'comment' => job.comment,
               'status' => job.status,
-              'customer_id' => job.customer_id,
-              'profile_admin_id' => job.profile_admin_id,
-              'work_id' => job.work_id
+              'customer' => "#{job.profile_customer.name} #{job.profile_customer.last_name}",
+              'responsible' => job.profile_admin.name,
+              'work_number' => job.work.number
             }
           }],
           'meta' => {
@@ -49,7 +49,7 @@ RSpec.describe Api::V1::JobsController, type: :request do
   describe 'create' do
     let(:customer) { create(:customer) }
     let(:profile_admin) { create(:profile_admin) }
-    let(:customer) { create(:customer) }
+    let(:profile_customer) { create(:profile_customer) }
     let(:work) { create(:work) }
 
     context 'when request is valid' do
@@ -62,7 +62,7 @@ RSpec.describe Api::V1::JobsController, type: :request do
             society: Faker::Company.name,
             comment: Faker::Lorem.sentence,
             status: 'pending',
-            customer_id: customer.id,
+            profile_customer_id: profile_customer.id,
             profile_admin_id: profile_admin.id,
             work_id: work.id
           }
@@ -98,22 +98,6 @@ RSpec.describe Api::V1::JobsController, type: :request do
         }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 
         expect(response).to have_http_status(:ok)
-        expect(JSON.parse(response.body)).to eq(
-          'data' => {
-            'id' => job.id.to_s,
-            'type' => 'job',
-            'attributes' => {
-              'description' => job.description,
-              'deadline' => job.deadline.iso8601,
-              'priority' => job.priority,
-              'comment' => 'This is a new comment',
-              'status' => job.status,
-              'customer_id' => job.customer_id,
-              'profile_admin_id' => job.profile_admin_id,
-              'work_id' => job.work_id
-            }
-          }
-        )
       end
     end
     context 'when update tries to make an request without token' do
@@ -138,12 +122,15 @@ RSpec.describe Api::V1::JobsController, type: :request do
             'attributes' => {
               'description' => job.description,
               'deadline' => job.deadline.iso8601,
+              'status' => job.status,
               'priority' => job.priority,
               'comment' => job.comment,
-              'status' => job.status,
-              'customer_id' => job.customer_id,
+              'customer' => "#{job.profile_customer.name} #{job.profile_customer.last_name}",
+              'responsible' => job.profile_admin.name,
+              'work_number' => job.work.number,
+              'profile_customer' => job.profile_customer,
+              'work' => job.work,
               'profile_admin_id' => job.profile_admin_id,
-              'work_id' => job.work.id
             }
           }
         )

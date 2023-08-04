@@ -18,7 +18,7 @@ module Api
       def show
         render json: OfficeSerializer.new(
           @office,
-          include: %i[office_emails office_phones office_bank_accounts]
+          { params: { action: 'show' } }
         ), status: :ok
       end
 
