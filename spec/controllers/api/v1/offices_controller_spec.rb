@@ -40,7 +40,8 @@ RSpec.describe Api::V1::OfficesController, type: :request do
             'relationships' => {
               'office_phones' => { 'data' => [] },
               'office_emails' => { 'data' => [] },
-              'office_bank_accounts' => { 'data' => [] }
+              'office_bank_accounts' => { 'data' => [] },
+              'works' => { 'data' => [] }
             }
           }],
           'meta' => {
@@ -238,7 +239,8 @@ RSpec.describe Api::V1::OfficesController, type: :request do
             'relationships' => {
               'office_phones' => { 'data' => [] },
               'office_emails' => { 'data' => [] },
-              'office_bank_accounts' => { 'data' => [] }
+              'office_bank_accounts' => { 'data' => [] },
+              'works' => { 'data' => [] }
             }
           }
         )
@@ -281,7 +283,8 @@ RSpec.describe Api::V1::OfficesController, type: :request do
             'relationships' => {
               'office_phones' => { 'data' => [] },
               'office_emails' => { 'data' => [] },
-              'office_bank_accounts' => { 'data' => [] }
+              'office_bank_accounts' => { 'data' => [] },
+              'works' => { 'data' => [] }
             }
           }, 'included' => []
         )

@@ -3,10 +3,30 @@
 class ProfileCustomer < ApplicationRecord
   belongs_to :customer
 
-  enum :gender, %i[male female other]
-  enum :civil_status, %i[single married divorced widower union]
-  enum :nationality, %i[brazilian foreigner]
-  enum :capacity, %i[able relatively unable]
+  enum gender: {
+    male: 'male',
+    female: 'female',
+    other: 'other'
+  }
+
+  enum nationality: {
+    brazilian: 'brazilian',
+    foreigner: 'foreigner'
+  }
+
+  enum capacity: {
+    able: 'able',
+    relatively: 'relatively',
+    unable: 'unable'
+  }
+
+  enum civil_status: {
+    single: 'single',
+    married: 'married',
+    divorced: 'divorced',
+    widower: 'widower',
+    union: 'union'
+  }
 
   has_many_attached :files
 
@@ -25,14 +45,26 @@ class ProfileCustomer < ApplicationRecord
   has_many :customer_works, dependent: :destroy
   has_many :works, through: :customer_works
 
+  has_one :represent
+
   attr_accessor :flag_access_data, :flag_generate_documents, :flag_signature
 
   accepts_nested_attributes_for :customer, :addresses, :phones, :emails, :bank_accounts, reject_if: :all_blank
   validates :name, presence: true
+  validates :gender, presence: true
 
-  # validate :file_type
   def full_name
     [name, last_name].join(' ')
+  end
+
+  def last_email
+    return I18n.t('general.without_email') unless emails.present?
+
+    emails.last.email
+  end
+
+  def unable?
+    capacity == 'unable'
   end
 
   protected

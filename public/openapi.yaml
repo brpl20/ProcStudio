@@ -221,8 +221,6 @@ components:
               type: string
             state:
               type: string
-            office_type_id:
-              type: integer
             profile_admin_id:
               type: integer
             emails_attributes:
@@ -267,7 +265,6 @@ components:
         - neighborhood
         - city
         - state
-        - office_type_id
         - profile_admin_id
       example:
         office:
@@ -283,7 +280,6 @@ components:
           neighborhood: Bela Vista
           city: Sao Paulo
           state: SP
-          office_type_id: 1
           profile_admin_id: 1
           emails_attributes:
             - email: contato@mylawoffice.com.br

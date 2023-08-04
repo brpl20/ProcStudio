@@ -50,8 +50,8 @@ module Api
       def show
         render json: WorkSerializer.new(
           @work,
-          include: %i[tributary perdlaunch recommendation profile_customers
-                      powers jobs checklists]
+          include: %i[profile_customers
+                      powers jobs]
         ), status: :ok
       end
 
@@ -65,15 +65,17 @@ module Api
 
       def work_params
         params.require(:work).permit(
-          :procedure, :subject, :action, :number, :rate_percentage, :rate_percentage_exfield, :rate_fixed,
-          :rate_parceled_exfield, :folder, :initial_atendee, :note, :checklist, :pending_document, :office_id,
+          :procedure, :subject, :number, :folder, :initial_atendee, :note, :extra_pending_document,
+          :civel_area, :social_security_areas, :laborite_areas, :tributary_areas, :other_description,
+          :compensations_five_years, :compensations_service, :lawsuit, :gain_projection,
           documents_attributes: %i[id document_type],
-          tributary_attributes: %i[id compensation craft lawsuit projection],
-          perdlaunch_attributes: %i[id compensation craft lawsuit projection perd_number
-                                    shipping_date payment_date status value responsible perd_style],
-          checklists_attributes: %i[id description],
-          powers_attributes: %i[id description category],
-          profile_customer_ids: []
+          pending_documents_attributes: %i[id description],
+          recommendations_attributes: %i[id percentage commition profile_customer_id],
+          honorary_attributes: %i[id fixed_honorary_value parcelling_value honorary_type percent_honorary_value parcelling],
+          power_ids: [],
+          profile_customer_ids: [],
+          profile_admin_ids: [],
+          office_ids: []
         )
       end
     end

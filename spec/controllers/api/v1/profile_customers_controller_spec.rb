@@ -58,7 +58,8 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
             last_name: Faker::Name.last_name,
             cpf: Faker::IDNumber.brazilian_citizen_number(formatted: true),
             rg: Faker::IDNumber.brazilian_id(formatted: true),
-            birth: Faker::Date.birthday(min_age: 18, max_age: 65)
+            birth: Faker::Date.birthday(min_age: 18, max_age: 65),
+            gender: 'male'
           }
         }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 
@@ -76,6 +77,7 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               cpf: Faker::IDNumber.brazilian_citizen_number(formatted: true),
               rg: Faker::IDNumber.brazilian_id(formatted: true),
               birth: Faker::Date.birthday(min_age: 18, max_age: 65),
+              gender: 'male',
               addresses_attributes: [description: Faker::Address.street_name, zip_code: Faker::Address.zip_code,
                                      street: Faker::Address.street_name, number: Faker::Address.building_number,
                                      neighborhood: Faker::Address.community, city: Faker::Address.city]
@@ -93,6 +95,7 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               cpf: Faker::IDNumber.brazilian_citizen_number(formatted: true),
               rg: Faker::IDNumber.brazilian_id(formatted: true),
               birth: Faker::Date.birthday(min_age: 18, max_age: 65),
+              gender: 'male',
               bank_accounts_attributes: [bank_name: 'BB', type_account: 'CC', agency: '35478',
                                          account: 254, operation: 0o02]
             }
@@ -110,6 +113,7 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               cpf: Faker::IDNumber.brazilian_citizen_number(formatted: true),
               rg: Faker::IDNumber.brazilian_id(formatted: true),
               birth: Faker::Date.birthday(min_age: 18, max_age: 65),
+              gender: 'male',
               phones_attributes: [phone_number: Faker::PhoneNumber.cell_phone]
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
@@ -126,6 +130,7 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               cpf: Faker::IDNumber.brazilian_citizen_number(formatted: true),
               rg: Faker::IDNumber.brazilian_id(formatted: true),
               birth: Faker::Date.birthday(min_age: 18, max_age: 65),
+              gender: 'male',
               emails_attributes: [email: Faker::Internet.email]
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
@@ -141,6 +146,7 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               cpf: Faker::IDNumber.brazilian_citizen_number(formatted: true),
               rg: Faker::IDNumber.brazilian_id(formatted: true),
               birth: Faker::Date.birthday(min_age: 18, max_age: 65),
+              gender: 'male',
               customer_attributes: [email: Faker::Internet.email, password: 123_456, password_confirmation: 123_456]
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }

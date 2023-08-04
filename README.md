@@ -25,3 +25,6 @@ Este projeto contém a migração do procstudio para gems mais atualizadas.
 ## Contribuindo
 - Para abrir PRs e criar branches assim como outras informações dê uma olhada em [Contributing](CONTRIBUTING.md) 
 - Cards com tasks a serem feitas [Trello](https://trello.com/b/mq2BG9nY/procstudiov2)
+
+## Documentação da API
+- Para consultar os campos [API DOC](API_DOC.md) 

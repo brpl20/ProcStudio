@@ -4,8 +4,20 @@ class ProfileAdmin < ApplicationRecord
   belongs_to :admin
   belongs_to :office
 
-  enum :role, %i[lawyer paralegal trainee secretary counter excounter]
-  enum :status, %i[active inactive pending]
+  enum role: {
+    lawyer: 'lawyer',
+    paralegal: 'paralegal',
+    trainee: 'trainee',
+    secretary: 'secretary',
+    counter: 'counter',
+    excounter: 'excounter'
+  }
+
+  enum status: {
+    active: 'active',
+    inactive: 'inactive',
+    pending: 'pending'
+  }
 
   has_many :admin_addresses, dependent: :destroy
   has_many :addresses, through: :admin_addresses
@@ -18,6 +30,9 @@ class ProfileAdmin < ApplicationRecord
 
   has_many :admin_bank_accounts, dependent: :destroy
   has_many :bank_accounts, through: :admin_bank_accounts
+
+  has_many :profile_admin_works, dependent: :destroy
+  has_many :works, through: :profile_admin_works
 
   has_many :jobs
 
