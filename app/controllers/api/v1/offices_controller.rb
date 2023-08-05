@@ -41,9 +41,7 @@ module Api
 
       def update
         if @office.update(offices_params)
-          render json: OfficeSerializer.new(
-            @office
-          ), status: :ok
+          head :ok
         else
           render(
             status: :bad_request,
