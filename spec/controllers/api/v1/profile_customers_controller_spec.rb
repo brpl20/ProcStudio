@@ -97,7 +97,7 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               birth: Faker::Date.birthday(min_age: 18, max_age: 65),
               gender: 'male',
               bank_accounts_attributes: [bank_name: 'BB', type_account: 'CC', agency: '35478',
-                                         account: 254, operation: 0o02]
+                                         account: '254', operation: '0002', pix: '12435687968']
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         end.to change(CustomerBankAccount, :count).by(1)
