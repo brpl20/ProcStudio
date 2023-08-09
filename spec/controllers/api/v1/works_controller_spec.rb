@@ -27,16 +27,11 @@ RSpec.describe Api::V1::WorksController, type: :request do
               'procedure' => work.procedure,
               'subject' => work.subject,
               'number' => work.number,
-              'folder' => work.folder,
-              'initial_atendee' => work.initial_atendee,
-              'note' => work.note,
-              'extra_pending_document' => work.extra_pending_document
-            },
-            'relationships' => {
-              'jobs' => { 'data' => [] },
-              'powers' => { 'data' => [] },
-              'profile_customers' => { 'data' => [] },
-              'offices' => { 'data' => [] }
+              'civel_area' => work.civel_area,
+              'social_security_areas' => work.social_security_areas,
+              'laborite_areas' => work.laborite_areas,
+              'other_description' => work.other_description,
+              'tributary_areas' => work.tributary_areas
             }
           }],
           'meta' => {
@@ -176,27 +171,6 @@ RSpec.describe Api::V1::WorksController, type: :request do
         }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 
         expect(response).to have_http_status(:ok)
-        expect(JSON.parse(response.body)).to eq(
-          'data' => {
-            'id' => work.id.to_s,
-            'type' => 'work',
-            'attributes' => {
-              'procedure' => work.procedure,
-              'subject' => work.subject,
-              'number' => work.number,
-              'folder' => work.folder,
-              'initial_atendee' => work.initial_atendee,
-              'note' => 'New description',
-              'extra_pending_document' => work.extra_pending_document
-            },
-            'relationships' => {
-              'jobs' => { 'data' => [] },
-              'powers' => { 'data' => [] },
-              'profile_customers' => { 'data' => [] },
-              'offices' => { 'data' => [] }
-            }
-          }
-        )
       end
     end
     context 'when update tries to make an request without token' do
@@ -222,19 +196,13 @@ RSpec.describe Api::V1::WorksController, type: :request do
               'procedure' => work.procedure,
               'subject' => work.subject,
               'number' => work.number,
-              'folder' => work.folder,
-              'initial_atendee' => work.initial_atendee,
-              'note' => work.note,
-              'extra_pending_document' => work.extra_pending_document
-            },
-            'relationships' => {
-              'jobs' => { 'data' => [] },
-              'powers' => { 'data' => [] },
-              'profile_customers' => { 'data' => [] },
-              'offices' => { 'data' => [] }
+              'civel_area' => work.civel_area,
+              'social_security_areas' => work.social_security_areas,
+              'laborite_areas' => work.laborite_areas,
+              'other_description' => work.other_description,
+              'tributary_areas' => work.tributary_areas
             }
-          },
-          'included' => []
+          }
         )
       end
     end

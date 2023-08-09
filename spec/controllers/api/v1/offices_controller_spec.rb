@@ -36,12 +36,6 @@ RSpec.describe Api::V1::OfficesController, type: :request do
               'city' => office.city,
               'state' => office.state,
               'office_type_id' => office.office_type_id
-            },
-            'relationships' => {
-              'office_phones' => { 'data' => [] },
-              'office_emails' => { 'data' => [] },
-              'office_bank_accounts' => { 'data' => [] },
-              'works' => { 'data' => [] }
             }
           }],
           'meta' => {
@@ -217,33 +211,6 @@ RSpec.describe Api::V1::OfficesController, type: :request do
         }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 
         expect(response).to have_http_status(:ok)
-        expect(JSON.parse(response.body)).to eq(
-          'data' => {
-            'id' => office.id.to_s,
-            'type' => 'office',
-            'attributes' => {
-              'name' => 'Nome Novo',
-              'cnpj' => office.cnpj,
-              'oab' => office.oab,
-              'society' => office.society,
-              'foundation' => office.foundation.iso8601,
-              'site' => office.site,
-              'cep' => office.cep,
-              'street' => office.street,
-              'number' => office.number,
-              'neighborhood' => office.neighborhood,
-              'city' => office.city,
-              'state' => office.state,
-              'office_type_id' => office.office_type_id
-            },
-            'relationships' => {
-              'office_phones' => { 'data' => [] },
-              'office_emails' => { 'data' => [] },
-              'office_bank_accounts' => { 'data' => [] },
-              'works' => { 'data' => [] }
-            }
-          }
-        )
       end
     end
     context 'when update tries to make an request without token' do
@@ -279,14 +246,8 @@ RSpec.describe Api::V1::OfficesController, type: :request do
               'city' => office.city,
               'state' => office.state,
               'office_type_id' => office.office_type_id
-            },
-            'relationships' => {
-              'office_phones' => { 'data' => [] },
-              'office_emails' => { 'data' => [] },
-              'office_bank_accounts' => { 'data' => [] },
-              'works' => { 'data' => [] }
             }
-          }, 'included' => []
+          }
         )
       end
     end

@@ -23,30 +23,14 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
             'id' => profile_customer.id.to_s,
             'type' => 'profile_customer',
             'attributes' => {
+              'customer_type' => profile_customer.customer_type,
               'name' => profile_customer.name,
               'last_name' => profile_customer.last_name,
               'cpf' => profile_customer.cpf,
               'cnpj' => profile_customer.cnpj,
-              'customer_type' => profile_customer.customer_type,
-              'gender' => profile_customer.gender,
-              'rg' => profile_customer.rg,
-              'nationality' => profile_customer.nationality,
-              'civil_status' => profile_customer.civil_status,
-              'capacity' => profile_customer.capacity,
-              'profession' => profile_customer.profession,
-              'company' => profile_customer.company,
-              'birth' => profile_customer.birth.iso8601,
-              'mother_name' => profile_customer.mother_name,
-              'number_benefit' => profile_customer.number_benefit,
-              'status' => profile_customer.status,
-              'nit' => profile_customer.nit,
-              'customer_id' => profile_customer.customer_id
-            },
-            'relationships' => {
-              'addresses' => { 'data' => [] },
-              'bank_accounts' => { 'data' => [] },
-              'emails' => { 'data' => [] },
-              'phones' => { 'data' => [] }
+              'default_phone' => nil,
+              'default_email' => nil,
+              'city' => nil
             }
           }],
           'meta' => {
@@ -113,7 +97,7 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               birth: Faker::Date.birthday(min_age: 18, max_age: 65),
               gender: 'male',
               bank_accounts_attributes: [bank_name: 'BB', type_account: 'CC', agency: '35478',
-                                         account: 254, operation: 0o02]
+                                         account: '254', operation: '0002', pix: '12435687968']
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         end.to change(CustomerBankAccount, :count).by(1)
@@ -188,38 +172,6 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
         }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 
         expect(response).to have_http_status(:ok)
-        expect(JSON.parse(response.body)).to eq(
-          'data' => {
-            'id' => profile_customer.id.to_s,
-            'type' => 'profile_customer',
-            'attributes' => {
-              'name' => 'Nome Novo',
-              'last_name' => profile_customer.last_name,
-              'cpf' => profile_customer.cpf,
-              'cnpj' => profile_customer.cnpj,
-              'customer_type' => profile_customer.customer_type,
-              'gender' => profile_customer.gender,
-              'rg' => profile_customer.rg,
-              'nationality' => profile_customer.nationality,
-              'civil_status' => profile_customer.civil_status,
-              'capacity' => profile_customer.capacity,
-              'profession' => profile_customer.profession,
-              'company' => profile_customer.company,
-              'birth' => profile_customer.birth.iso8601,
-              'mother_name' => profile_customer.mother_name,
-              'number_benefit' => profile_customer.number_benefit,
-              'status' => profile_customer.status,
-              'nit' => profile_customer.nit,
-              'customer_id' => profile_customer.customer_id
-            },
-            'relationships' => {
-              'addresses' => { 'data' => [] },
-              'bank_accounts' => { 'data' => [] },
-              'emails' => { 'data' => [] },
-              'phones' => { 'data' => [] }
-            }
-          }
-        )
       end
     end
     context 'when update tries to make an request without token' do
@@ -259,16 +211,16 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               'number_benefit' => profile_customer.number_benefit,
               'status' => profile_customer.status,
               'nit' => profile_customer.nit,
-              'customer_id' => profile_customer.customer_id
-            },
-            'relationships' => {
-              'addresses' => { 'data' => [] },
-              'bank_accounts' => { 'data' => [] },
-              'emails' => { 'data' => [] },
-              'phones' => { 'data' => [] }
+              'customer_id' => profile_customer.customer_id,
+              'emails' => [],
+              'addresses' => [],
+              'phones' => [],
+              'bank_accounts' => [],
+              'default_phone' => nil,
+              'default_email' => nil,
+              'city' => nil
             }
-          },
-          'included' => []
+          }
         )
       end
     end

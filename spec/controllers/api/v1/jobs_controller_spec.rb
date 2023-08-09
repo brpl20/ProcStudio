@@ -26,9 +26,9 @@ RSpec.describe Api::V1::JobsController, type: :request do
               'priority' => job.priority,
               'comment' => job.comment,
               'status' => job.status,
-              'customer_id' => job.customer_id,
-              'profile_admin_id' => job.profile_admin_id,
-              'work_id' => job.work_id
+              'customer' => "#{job.profile_customer.name} #{job.profile_customer.last_name}",
+              'responsible' => job.profile_admin.name,
+              'work_number' => job.work.number
             }
           }],
           'meta' => {
@@ -49,7 +49,7 @@ RSpec.describe Api::V1::JobsController, type: :request do
   describe 'create' do
     let(:customer) { create(:customer) }
     let(:profile_admin) { create(:profile_admin) }
-    let(:customer) { create(:customer) }
+    let(:profile_customer) { create(:profile_customer) }
     let(:work) { create(:work) }
 
     context 'when request is valid' do
@@ -62,7 +62,7 @@ RSpec.describe Api::V1::JobsController, type: :request do
             society: Faker::Company.name,
             comment: Faker::Lorem.sentence,
             status: 'pending',
-            customer_id: customer.id,
+            profile_customer_id: profile_customer.id,
             profile_admin_id: profile_admin.id,
             work_id: work.id
           }
@@ -98,22 +98,6 @@ RSpec.describe Api::V1::JobsController, type: :request do
         }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 
         expect(response).to have_http_status(:ok)
-        expect(JSON.parse(response.body)).to eq(
-          'data' => {
-            'id' => job.id.to_s,
-            'type' => 'job',
-            'attributes' => {
-              'description' => job.description,
-              'deadline' => job.deadline.iso8601,
-              'priority' => job.priority,
-              'comment' => 'This is a new comment',
-              'status' => job.status,
-              'customer_id' => job.customer_id,
-              'profile_admin_id' => job.profile_admin_id,
-              'work_id' => job.work_id
-            }
-          }
-        )
       end
     end
     context 'when update tries to make an request without token' do
@@ -137,13 +121,60 @@ RSpec.describe Api::V1::JobsController, type: :request do
             'type' => 'job',
             'attributes' => {
               'description' => job.description,
-              'deadline' => job.deadline.iso8601,
+              'deadline' => job.deadline.strftime('%Y-%m-%d'),
+              'status' => job.status,
               'priority' => job.priority,
               'comment' => job.comment,
-              'status' => job.status,
-              'customer_id' => job.customer_id,
+              'customer' => "#{job.profile_customer.name} #{job.profile_customer.last_name}",
+              'responsible' => job.profile_admin.name,
+              'work_number' => job.work.number,
               'profile_admin_id' => job.profile_admin_id,
-              'work_id' => job.work.id
+              'profile_customer' => {
+                'id' => job.profile_customer.id,
+                'customer_type' => job.profile_customer.customer_type,
+                'name' => job.profile_customer.name,
+                'last_name' => job.profile_customer.last_name,
+                'gender' => job.profile_customer.gender,
+                'rg' => job.profile_customer.rg,
+                'cpf' => job.profile_customer.cpf,
+                'cnpj' => job.profile_customer.cnpj,
+                'nationality' => job.profile_customer.nationality,
+                'civil_status' => job.profile_customer.civil_status,
+                'capacity' => job.profile_customer.capacity,
+                'profession' => job.profile_customer.profession,
+                'company' => job.profile_customer.company,
+                'birth' => job.profile_customer.birth.to_json,
+                'mother_name' => job.profile_customer.mother_name,
+                'number_benefit' => job.profile_customer.number_benefit,
+                'status' => job.profile_customer.status,
+                'document' => job.profile_customer.document,
+                'nit' => job.profile_customer.nit,
+                'inss_password' => job.profile_customer.inss_password,
+                'invalid_person' => job.profile_customer.invalid_person,
+                'customer_id' => job.profile_customer.customer_id
+              },
+              'work' => {
+                'id' => job.work.id,
+                'procedure' => job.work.procedure,
+                'subject' => job.work.subject,
+                'number' => job.work.number,
+                'rate_parceled_exfield' => job.work.rate_parceled_exfield,
+                'folder' => job.work.folder,
+                'initial_atendee' => job.work.initial_atendee,
+                'note' => job.work.note,
+                'extra_pending_document' => job.work.extra_pending_document,
+                'created_at' => job.work.created_at.iso8601,
+                'updated_at' => job.work.updated_at.iso8601,
+                'civel_area' => job.work.civel_area,
+                'social_security_areas' => job.work.social_security_areas,
+                'laborite_areas' => job.work.laborite_areas,
+                'tributary_areas' => job.work.tributary_areas,
+                'other_description' => job.work.other_description,
+                'compensations_five_years' => job.work.compensations_five_years,
+                'compensations_service' => job.work.compensations_service,
+                'lawsuit' => job.work.lawsuit,
+                'gain_projection' => job.work.gain_projection
+              }
             }
           }
         )

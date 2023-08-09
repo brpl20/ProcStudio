@@ -7,5 +7,6 @@ FactoryBot.define do
     agency { Faker::Bank.account_number }
     account { Faker::Bank.routing_number }
     operation { Faker::Number.number(digits: 3) }
+    pix { Faker::Number.number(digits: 11) }
   end
 end

@@ -28,6 +28,13 @@ class ProfileCustomer < ApplicationRecord
     union: 'union'
   }
 
+  enum customer_type: {
+    physical_person: 'physical_person',
+    legal_person: 'legal_person',
+    representative: 'representative',
+    counter: 'conter'
+  }
+
   has_many_attached :files
 
   has_many :customer_addresses, dependent: :destroy

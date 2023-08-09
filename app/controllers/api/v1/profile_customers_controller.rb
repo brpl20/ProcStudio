@@ -37,9 +37,7 @@ module Api
 
       def update
         if @profile_customer.update(profile_customers_params)
-          render json: ProfileCustomerSerializer.new(
-            @profile_customer
-          ), status: :ok
+          head :ok
         else
           render(
             status: :bad_request,
@@ -51,7 +49,7 @@ module Api
       def show
         render json: ProfileCustomerSerializer.new(
           @profile_customer,
-          include: %i[phones]
+          { params: { action: 'show' } }
         ), status: :ok
       end
 
@@ -74,7 +72,7 @@ module Api
           :nit, :mother_name,
           :inss_password,
           addresses_attributes: %i[id description zip_code street number neighborhood city state],
-          bank_accounts_attributes: %i[id bank_name type_account agency account operation],
+          bank_accounts_attributes: %i[id bank_name type_account agency account operation pix],
           customer_attributes: %i[id email password password_confirmation],
           phones_attributes: %i[id phone_number],
           emails_attributes: %i[id email]

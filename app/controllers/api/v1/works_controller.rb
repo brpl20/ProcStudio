@@ -50,8 +50,7 @@ module Api
       def show
         render json: WorkSerializer.new(
           @work,
-          include: %i[profile_customers
-                      powers jobs]
+          { params: { action: 'show' } }
         ), status: :ok
       end
 

@@ -9,8 +9,8 @@ namespace :staging do
     p "CRIANDO BD... #{%x(rake db:create)}"
     p "MIGRANDO TABELAS... #{%x(rake db:migrate)}"
 
-    p 'Cadastrando office_type'
-    p %x(rake cad:office_type)
+    # p 'Cadastrando office_type'
+    # p %x(rake cad:office_type)
 
     p 'Cadastrando office'
     p %x(rake cad:office)
@@ -21,8 +21,8 @@ namespace :staging do
     p 'Cadastrando customer'
     p %x(rake cad:customer)
 
-    p 'Cadastrando work'
-    p %x(rake cad:work)
+    # p 'Cadastrando work'
+    # p %x(rake cad:work)
 
     p 'Setup finalizado com sucesso!'
   end

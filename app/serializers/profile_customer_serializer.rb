@@ -2,15 +2,23 @@
 
 class ProfileCustomerSerializer
   include JSONAPI::Serializer
-  attributes :name, :customer_type, :status, :customer_id,
-             :last_name, :cpf, :rg, :birth, :gender, :cnpj, :civil_status,
-             :nationality, :capacity, :profession, :company, :number_benefit, :nit, :mother_name
+  attributes :customer_id, :customer_type, :name, :last_name, :cpf, :cnpj,
+             :emails
 
-  has_many :addresses, serializer: AddressSerializer
+  attributes :status, :customer_id, :rg, :birth, :gender,
+             :civil_status, :nationality, :capacity, :profession, :company,
+             :number_benefit, :nit, :mother_name, :addresses, :phones, :emails,
+             :bank_accounts, if: proc { |_, options| options[:action] == 'show' }
 
-  has_many :phones, serializer: PhoneSerializer
+  attribute :default_phone do |object|
+    object.phones.first&.phone_number
+  end
 
-  has_many :emails, serializer: EmailSerializer
+  attribute :default_email do |object|
+    object.emails.first&.email
+  end
 
-  has_many :bank_accounts, serializer: BankAccountSerializer
+  attribute :city do |object|
+    object.addresses.first&.city
+  end
 end
