@@ -5,7 +5,7 @@
 - profile_customer_ids(Array): Um array de ids de vários tipos de customers
 - procedure(String):  administrative, judicial, extrajudicial 
 - number(Integer): Número do Processo
-- subject(String):  administrative, civil, criminal,  social_security, laborite, tributary, tributary_pis, others
+- subject(String):  administrative_subject, civil, criminal,  social_security, laborite, tributary, tributary_pis, others
 - civel_area(String): family, consumer, moral_damages, só deve possuir valor se *subject* for `civil`
 - social_security_areas(String): retirement_by_time, retirement_by_age, retirement_by_rural, disablement, benefit_review, administrative_services, só deve possuir valor se *subject* for `social_security`
 - laborite_areas(String): labor_claim, só deve possuir valor se *subject* for `laborite`
