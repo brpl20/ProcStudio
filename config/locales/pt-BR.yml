@@ -1,6 +1,7 @@
 'pt-BR':
   general:
     without_email: sem endereço eletrônico
+    lawyers: Advogados
   gender:
     owner:
       male: portador
@@ -66,6 +67,7 @@
         other: Poderes
       profile_admin: Perfil de usuário
       profile_customer: Perfil de cliente
+      work: Trabalho
     attributes:
       admin:
         email: E-mail
@@ -180,8 +182,21 @@
         telephone: Telefone
         zip: CEP
       work:
-        procedure_ids: Procedimento
-        subject: Assunto
+        procedure: Procedimento
+        procedures:
+          administrative: administrativo
+          judicial: judicial
+          extrajudicial: extrajudicial
+        subject: Objetivo
+        subjects:
+          administrative_subject: administrativo
+          civil: cível
+          criminal: criminal
+          social_security: previdenciário
+          laborite: trabalhista
+          tributary: tributário
+          tributary_pis: tributário pis/confins insumos
+          others: outros
         rate_work: Honorários De Trabalho ou Êxito
         rate_parceled: Parcelamento
         rate_parceled_exfield: Parcelamento

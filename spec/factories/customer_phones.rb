@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :customer_phone do
-    profile_customer { nil }
-    phones { nil }
+    profile_customer
+    phone
   end
 end
