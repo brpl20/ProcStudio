@@ -13,7 +13,7 @@ class JobSerializer
   end
 
   attribute :work_number do |object|
-    object.work.number
+    object.work.number if object.work.present?
   end
 
   attributes :profile_admin_id, if: proc { |_, options| options[:action] == 'show' }
