@@ -6,7 +6,7 @@ namespace :cad do
     types = %w[Advocacia Contabilidade Outro]
 
     types.each do |t|
-      OfficeType.find_or_create_by(
+      OfficeType.create!(
         description: t.to_s
       )
     end

@@ -16,16 +16,16 @@ namespace :cad do
 
     10.times.each_with_index do |_, index|
       ProfileCustomer.create(
-        customer_type: [0,2,3].sample,
+        customer_type: 'physical_person',
         name: Faker::Name.name,
         last_name: Faker::Name.last_name,
-        gender: [0,1].sample,
+        gender: ['male', 'female'].sample,
         rg: Faker::Number.number(digits: 6),
         cpf: Faker::Number.number(digits: 11),
         cnpj: '',
         nationality: ['brazilian','foreigner'].sample,
-        civil_status: (0..4).to_a.sample,
-        capacity: (0..2).to_a.sample,
+        civil_status: 'single',
+        capacity: ['able', 'unable'].sample,
         profession: Faker::Job.title,
         company: Faker::Company.name,
         birth: Faker::Date.birthday(min_age: 18, max_age: 65),
@@ -41,16 +41,16 @@ namespace :cad do
 
     10.times.each_with_index do |_, index|
       ProfileCustomer.create(
-        customer_type: 1,
+        customer_type: 'legal_person',
         name: Faker::Name.name,
         last_name: Faker::Name.last_name,
-        gender: [0,1].sample,
+        gender: ['male', 'female'].sample,
         rg: Faker::Number.number(digits: 6),
         cpf: '',
         cnpj: Faker::Company.brazilian_company_number,
-        nationality: [0,1].sample,
-        civil_status: [0,1].sample,
-        capacity: (0..2).to_a.sample,
+        nationality: ['brazilian','foreigner'].sample,
+        civil_status: 'single',
+        capacity: ['able', 'unable'].sample,
         profession: Faker::Job.title,
         company: Faker::Company.name,
         birth: Faker::Date.birthday(min_age: 18, max_age: 65),
