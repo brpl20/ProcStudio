@@ -13,6 +13,7 @@ module Works
       @office = @work.offices.first
       @gender = @customer.gender
       @lawyers = @work.profile_admins.lawyer
+      @lawyer_address = @lawyers.first.addresses.first
     end
 
     def call
@@ -24,12 +25,13 @@ module Works
       end
       doc.save("tmp/procuracao_#{@work.id}.docx")
       @document.document_docx.attach(io: File.open("tmp/procuracao_#{@work.id}.docx"), filename: "procuracao_#{@work.id}.docx")
-      # FileUtils.remove_file("tmp/procuracao_#{@work.id}.docx", true)
+      FileUtils.remove_file("tmp/procuracao_#{@work.id}.docx", true)
     end
 
     private
 
-    def substitute_outorgante(text)
+    # outorgante paragraph
+    def substitute_client_info(text)
       translated_text = [@customer.full_name.downcase.titleize, word_for_gender(@customer.nationality, @customer.gender),
                          word_for_gender(@customer.civil_status, @customer.gender), ProfileCustomer.human_enum_name(:capacity, @customer.capacity).downcase,
                          @customer.profession.downcase,
@@ -40,18 +42,21 @@ module Works
       text.substitute('_proc_outorgante_', translated_text)
     end
 
-    def substitute_outorgados(text)
-      translated_text = nil
-      if @office.present?
-
-        translated_text = ["#{I18n.t('general.lawyers')}: #{lawyers_text}", "integrante da #{@office.name} inscrita sob o cnpj #{@office.cnpj}",
-                           "todos brasileiros, com endereço profissional à Rua #{@office.street.to_s.downcase.titleize}", @office.number.to_s, @office.neighborhood.downcase.titleize,
+    # outorgados paragraph
+    def substitute_justice_agents(text)
+      translated_text = if @office.present?
+                          ["#{I18n.t('general.lawyers')}: #{lawyers_text}", "integrante da #{@office.name} inscrita sob o cnpj #{@office.cnpj}",
+                           "com endereço profissional à Rua #{@office.street.to_s.downcase.titleize}", @office.number.to_s, @office.neighborhood.downcase.titleize,
                            "#{@office.city}-#{@office.state}", "e endereço eletrônico #{@office.site}"]
-                          .join(', ')
-
-      else
-        translated_text = 'Sem nada'
-      end
+                            .join(', ')
+                        elsif @lawyers.size > 1
+                          ["#{I18n.t('general.lawyers')}: #{lawyers_text_without_office}"].join(', ')
+                        else
+                          ["#{I18n.t('general.lawyer')}: #{lawyers_text}",
+                           "com endereço: #{@lawyer_address.street.to_s.downcase.titleize}, n° #{@lawyer_address.number}",
+                           @lawyer_address.description.to_s.downcase.titleize, "#{@lawyer_address.city} - #{@lawyer_address.state}, CEP #{@lawyer_address.zip_code}"]
+                            .join(', ')
+                        end
 
       text.substitute('_proc_outorgado_', translated_text)
     end
@@ -61,13 +66,30 @@ module Works
       text.substitute('_proc_job_', translated_text)
     end
 
-    # tranlate lawyers informations
+    # tranlate lawyers informations without office
+    def lawyers_text_without_office
+      text = []
+      @lawyers.each do |lawyer|
+        address = lawyer.addresses.first
+        text.push(lawyer.full_name)
+        text.push(word_for_gender(lawyer.civil_status, lawyer.gender))
+        text.push("OAB n° #{lawyer.oab}")
+        text.push(word_for_gender(lawyer.nationality, lawyer.gender))
+        text.push("com endereço: #{address.street.to_s.downcase.titleize}, n° #{address.number}")
+        text.push(address.description.to_s.downcase.titleize)
+        text.push("#{address.city} - #{address.state}, CEP #{address.zip_code}")
+      end
+      text.join(', ')
+    end
+
+    # tranlate lawyers informations with office
     def lawyers_text
       text = []
       @lawyers.each do |lawyer|
         text.push(lawyer.full_name)
         text.push(word_for_gender(lawyer.civil_status, lawyer.gender))
         text.push("OAB n° #{lawyer.oab}")
+        text.push(word_for_gender(lawyer.nationality, lawyer.gender))
       end
       text.join(', ')
     end
@@ -77,6 +99,7 @@ module Works
       I18n.t("gender.#{text}.#{gender}")
     end
 
+    # when profile_custome is not able
     def responsable
       return nil unless @customer.unable? && @customer.represent.present?
 
@@ -89,10 +112,11 @@ module Works
        "#{represent_address.city} - #{represent_address.state}, CEP #{represent_address.zip_code}"].join(', ')
     end
 
+    # main function
     def substitute_word(text)
       proc_date = I18n.l(Time.now, format: '%d de %B de %Y')
-      substitute_outorgante(text)
-      substitute_outorgados(text)
+      substitute_client_info(text)
+      substitute_justice_agents(text)
       substitute_job(text)
 
       text.substitute('_proc_today_', "#{@address.city}, #{@address.state}, #{proc_date}")

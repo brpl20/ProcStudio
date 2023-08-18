@@ -19,6 +19,24 @@ class ProfileAdmin < ApplicationRecord
     pending: 'pending'
   }
 
+  enum civil_status: {
+    single: 'single',
+    married: 'married',
+    divorced: 'divorced',
+    widower: 'widower',
+    union: 'union'
+  }
+
+  enum gender: {
+    male: 'male',
+    female: 'female',
+    other: 'other'
+  }
+
+  enum nationality: {
+    brazilian: 'brazilian',
+    foreigner: 'foreigner'
+  }
   scope :lawyer, -> { where(role: 'lawyer') }
   scope :paralegal, -> { where(role: 'paralegal') }
   scope :trainee, -> { where(role: 'trainee') }
