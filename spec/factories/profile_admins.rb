@@ -9,7 +9,7 @@ FactoryBot.define do
     oab { Faker::Number.number(digits: 6) }
     rg { Faker::Number.number(digits: 6) }
     cpf { Faker::Number.number(digits: 11) }
-    nationality { 'Brazilian' }
+    nationality { 'brazilian' }
     civil_status { 'single' }
     birth { Faker::Date.birthday(min_age: 18, max_age: 65) }
     mother_name { Faker::Name.name }
