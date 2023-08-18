@@ -7,7 +7,7 @@ class ProfileCustomerFilter
     end
 
     def retrieve_customers
-      ProfileCustomer.includes(:customer).all
+      ProfileCustomer.includes(:customer, :phones, :addresses, :emails, :bank_accounts).all
     end
   end
 end

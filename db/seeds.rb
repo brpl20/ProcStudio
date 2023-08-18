@@ -9,7 +9,7 @@ Admin.create!(
 )
 
 ProfileAdmin.create!(
-  role: 1,
+  role: 'lawyer',
   name: 'Administrador padrão',
   last_name: 'Sobrenome',
   gender: 1,
@@ -20,7 +20,7 @@ ProfileAdmin.create!(
   civil_status: 1,
   birth: '12-01-2000',
   mother_name: 'Joana Martinez Rodriguez',
-  status: 1,
+  status: 'active',
   admin: Admin.last,
   office: Office.last
 )

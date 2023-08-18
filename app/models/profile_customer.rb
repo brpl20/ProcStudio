@@ -54,8 +54,6 @@ class ProfileCustomer < ApplicationRecord
 
   has_one :represent
 
-  attr_accessor :flag_access_data, :flag_generate_documents, :flag_signature
-
   accepts_nested_attributes_for :customer, :addresses, :phones, :emails, :bank_accounts, reject_if: :all_blank
   validates :name, presence: true
   validates :gender, presence: true

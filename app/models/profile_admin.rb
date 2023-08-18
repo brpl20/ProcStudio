@@ -2,7 +2,7 @@
 
 class ProfileAdmin < ApplicationRecord
   belongs_to :admin
-  belongs_to :office
+  belongs_to :office, optional: true
 
   enum role: {
     lawyer: 'lawyer',
@@ -18,6 +18,31 @@ class ProfileAdmin < ApplicationRecord
     inactive: 'inactive',
     pending: 'pending'
   }
+
+  enum civil_status: {
+    single: 'single',
+    married: 'married',
+    divorced: 'divorced',
+    widower: 'widower',
+    union: 'union'
+  }
+
+  enum gender: {
+    male: 'male',
+    female: 'female',
+    other: 'other'
+  }
+
+  enum nationality: {
+    brazilian: 'brazilian',
+    foreigner: 'foreigner'
+  }
+  scope :lawyer, -> { where(role: 'lawyer') }
+  scope :paralegal, -> { where(role: 'paralegal') }
+  scope :trainee, -> { where(role: 'trainee') }
+  scope :secretary, -> { where(role: 'secretary') }
+  scope :counter, -> { where(role: 'counter') }
+  scope :excounter, -> { where(role: 'excounter') }
 
   has_many :admin_addresses, dependent: :destroy
   has_many :addresses, through: :admin_addresses
@@ -37,4 +62,8 @@ class ProfileAdmin < ApplicationRecord
   has_many :jobs
 
   accepts_nested_attributes_for :admin, :addresses, :phones, :emails, :bank_accounts, reject_if: :all_blank
+
+  def full_name
+    [name, last_name].join(' ')
+  end
 end
