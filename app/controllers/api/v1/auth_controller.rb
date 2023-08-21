@@ -35,7 +35,17 @@ module Api
         end
       end
 
+      def authenticate_with_token
+        update_token
+      end
+
       private
+
+      def update_token
+        customer = Customer.find_by(email: params['email'])
+      rescue ActiveRecord::RecordNotFound
+        head :not_found
+      end
 
       def auth_params
         params.require(:auth).permit(:email, :password)
