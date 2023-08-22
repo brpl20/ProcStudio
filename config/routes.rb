@@ -13,7 +13,6 @@ Rails.application.routes.draw do
       resources :admins
       resources :works
       resources :jobs
-      put '/external/login', to: 'auth#authenticate_with_token'
       post '/login', to: 'auth#authenticate'
       delete '/logout', to: 'auth#destroy'
     end

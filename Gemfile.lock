@@ -66,6 +66,8 @@ GEM
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
       tzinfo (~> 2.0)
+    addressable (2.8.5)
+      public_suffix (>= 2.0.2, < 6.0)
     ast (2.4.2)
     aws-eventstream (1.2.0)
     aws-partitions (1.760.0)
@@ -88,6 +90,8 @@ GEM
       msgpack (~> 1.2)
     builder (3.2.4)
     concurrent-ruby (1.2.2)
+    crack (0.4.5)
+      rexml
     crass (1.0.6)
     database_cleaner (2.0.2)
       database_cleaner-active_record (>= 2, < 3)
@@ -119,6 +123,7 @@ GEM
       i18n (>= 1.8.11, < 2)
     globalid (1.1.0)
       activesupport (>= 5.0)
+    hashdiff (1.0.1)
     i18n (1.13.0)
       concurrent-ruby (~> 1.0)
     io-console (0.6.0)
@@ -166,6 +171,7 @@ GEM
       ast (~> 2.4.1)
     pg (1.5.3)
     pg (1.5.3-x64-mingw32)
+    public_suffix (5.0.3)
     puma (5.6.5)
       nio4r (~> 2.0)
     racc (1.6.2)
@@ -251,6 +257,10 @@ GEM
     unicode-display_width (2.4.2)
     warden (1.2.9)
       rack (>= 2.0.9)
+    webmock (3.18.1)
+      addressable (>= 2.8.0)
+      crack (>= 0.3.2)
+      hashdiff (>= 0.4.0, < 2.0.0)
     websocket-driver (0.7.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
@@ -281,6 +291,7 @@ DEPENDENCIES
   rubocop (~> 1.48)
   shoulda-matchers
   tzinfo-data
+  webmock
 
 BUNDLED WITH
    2.4.6
