@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
+require 'webmock/rspec'
 
 RSpec.describe Api::V1::AuthController, type: :request do
   let!(:admin) { create(:admin) }
@@ -120,6 +121,56 @@ RSpec.describe Api::V1::AuthController, type: :request do
         response_body = JSON.parse(response.body)
         expect(response_body['success']).to eq(false)
         expect(response_body['message']).to eq('Usuário não autorizado')
+      end
+    end
+  end
+
+  describe '#authenticate' do
+    context 'when authenticating with Google' do
+      let(:access_token) { 'valid_access_token' }
+      let(:email) { 'user@example.com' }
+      let(:admin) { create(:admin, email: email) }
+
+      before do
+        allow(controller).to receive(:params).and_return({ provider: 'google', accessToken: access_token })
+
+        stub_request(:get, "https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=#{access_token}")
+          .to_return(status: 200, body: { 'email' => email }.to_json, headers: {})
+
+        allow(Admin).to receive(:find_for_authentication).with(email: email).and_return(admin)
+        allow(controller).to receive(:update_user_token).with(admin).and_return('fake_token')
+      end
+
+      it 'finds the admin and returns a token' do
+        post '/api/v1/login', params: {
+          provider: 'google',
+          accessToken: access_token
+        }
+
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context 'when authenticating with Google' do
+      let(:access_token) { 'valid_access_token' }
+      let(:email) { 'user@example.com' }
+
+      before do
+        allow(controller).to receive(:auth_params).and_return({ provider: 'google', accessToken: access_token })
+
+        stub_request(:get, "https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=#{access_token}")
+          .to_return(status: 200, body: { 'email' => email }.to_json, headers: {})
+      end
+
+      it 'returns not found if admin with email is not found' do
+        allow(Admin).to receive(:find_for_authentication).with(email: email).and_return(nil)
+
+        post '/api/v1/login', params: {
+          provider: 'google',
+          accessToken: access_token
+        }
+
+        expect(response).to have_http_status(:not_found)
       end
     end
   end

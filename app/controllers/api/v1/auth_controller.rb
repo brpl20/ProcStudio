@@ -6,14 +6,10 @@ module Api
       include JwtAuth
 
       def authenticate
-        admin = Admin.find_for_authentication(email: auth_params[:email])
-        if admin&.valid_password?(auth_params[:password])
-          exp = Time.now.to_i + (24 * 3600)
-          token = JWT.encode({ admin_id: admin.id, exp: exp }, Rails.application.secret_key_base)
-          admin.update(jwt_token: token)
-          render json: { token: token }
+        if params[:provider] == 'google'
+          authenticate_with_google
         else
-          head :unauthorized
+          authenticate_with_email_and_password
         end
       end
 
@@ -36,6 +32,59 @@ module Api
       end
 
       private
+
+      def authenticate_with_email_and_password
+        admin = Admin.find_for_authentication(email: auth_params[:email])
+
+        if admin&.valid_password?(auth_params[:password])
+          token = update_user_token(admin)
+          render json: { token: token }
+        else
+          head :unauthorized
+        end
+      end
+
+      def authenticate_with_google
+        access_token = params[:accessToken]
+        return head :unauthorized if access_token.blank?
+
+        user_info = fetch_google_user_info(access_token)
+        return head :unauthorized if user_info.nil?
+
+        email = user_info['email']
+        return head :unauthorized if email.blank?
+
+        admin = Admin.find_for_authentication(email: email)
+
+        if admin
+          token = update_user_token(admin)
+          render json: { token: token }
+        else
+          head :not_found
+        end
+      end
+
+      def fetch_google_user_info(access_token)
+        uri = URI('https://www.googleapis.com/oauth2/v3/tokeninfo')
+        params = { access_token: access_token }
+        uri.query = URI.encode_www_form(params)
+
+        response = Net::HTTP.get_response(uri)
+
+        return nil unless response.is_a?(Net::HTTPSuccess)
+
+        JSON.parse(response.body)
+      rescue StandardError => e
+        Rails.logger.error("Error fetching Google user info: #{e.message}")
+        nil
+      end
+
+      def update_user_token(admin)
+        exp = Time.now.to_i + (24 * 3600)
+        token = JWT.encode({ admin_id: admin.id, exp: exp }, Rails.application.secret_key_base)
+        admin.update(jwt_token: token)
+        token
+      end
 
       def auth_params
         params.require(:auth).permit(:email, :password)
