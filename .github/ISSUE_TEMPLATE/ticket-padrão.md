@@ -16,6 +16,6 @@ Tasks
  - [ ] coisas a serem feitas de modo detalhado;
  - [ ] outra coisa a ser feita de modo detalhado.
 
-Notas técnica
+Notas técnicas
 ===
  - Anotação necessária.
