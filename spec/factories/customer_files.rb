@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :customer_file do
     file_description { 'simple_procuration' }
