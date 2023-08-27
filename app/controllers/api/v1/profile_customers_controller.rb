@@ -75,7 +75,8 @@ module Api
           bank_accounts_attributes: %i[id bank_name type_account agency account operation pix],
           customer_attributes: %i[id email password password_confirmation],
           phones_attributes: %i[id phone_number],
-          emails_attributes: %i[id email]
+          emails_attributes: %i[id email],
+          customer_files_attributes: %i[id file_description]
         )
       end
     end

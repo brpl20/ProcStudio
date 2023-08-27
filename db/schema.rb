@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_08_185211) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_27_182143) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -140,6 +140,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_08_185211) do
     t.datetime "updated_at", null: false
     t.index ["email_id"], name: "index_customer_emails_on_email_id"
     t.index ["profile_customer_id"], name: "index_customer_emails_on_profile_customer_id"
+  end
+
+  create_table "customer_files", force: :cascade do |t|
+    t.string "file_description"
+    t.bigint "profile_customer_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["profile_customer_id"], name: "index_customer_files_on_profile_customer_id"
   end
 
   create_table "customer_phones", force: :cascade do |t|
@@ -432,6 +440,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_08_185211) do
   add_foreign_key "customer_bank_accounts", "profile_customers"
   add_foreign_key "customer_emails", "emails"
   add_foreign_key "customer_emails", "profile_customers"
+  add_foreign_key "customer_files", "profile_customers"
   add_foreign_key "customer_phones", "phones"
   add_foreign_key "customer_phones", "profile_customers"
   add_foreign_key "customer_works", "profile_customers"

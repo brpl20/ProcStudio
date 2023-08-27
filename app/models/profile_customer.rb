@@ -52,9 +52,11 @@ class ProfileCustomer < ApplicationRecord
   has_many :customer_works, dependent: :destroy
   has_many :works, through: :customer_works
 
+  has_many :customer_files, dependent: :destroy
+
   has_one :represent
 
-  accepts_nested_attributes_for :customer, :addresses, :phones, :emails, :bank_accounts, reject_if: :all_blank
+  accepts_nested_attributes_for :customer_files, :customer, :addresses, :phones, :emails, :bank_accounts, reject_if: :all_blank
   validates :name, presence: true
   validates :gender, presence: true
 
