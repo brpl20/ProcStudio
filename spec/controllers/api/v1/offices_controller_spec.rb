@@ -281,7 +281,7 @@ RSpec.describe Api::V1::OfficesController, type: :request do
 
       it 'returns lawyer attributes' do
         lawyers = JSON.parse(response.body)['data'][0]['attributes']['lawyers']
-        lawyers.each_with_index do |lawyer, index|
+        lawyers.each do |lawyer|
           expect(lawyer['id']).to eq(profile_admin.id)
           expect(lawyer['name']).to eq(profile_admin.name)
         end
