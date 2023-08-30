@@ -23,4 +23,10 @@ FactoryBot.define do
   trait :office_with_logo do
     logo { Rack::Test::UploadedFile.new(Rails.root.join('spec', 'factories', 'images', 'Ruby.jpg'), 'image/jpg') }
   end
+
+  factory :office_with_lawyers do
+    after(:create) do |office|
+      create_list(:profile_admin, 2, office: office)
+    end
+  end
 end

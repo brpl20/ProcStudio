@@ -5,6 +5,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
+      get '/offices/with_lawyers', to: 'offices#with_lawyers'
       resources :profile_customers
       resources :offices
       resources :customers

@@ -24,26 +24,10 @@ RSpec.describe Api::V1::ProfileAdminsController, type: :request do
             'id' => profile_admin.id.to_s,
             'type' => 'profile_admin',
             'attributes' => {
+              'email' => profile_admin.admin.email,
               'role' => profile_admin.role,
-              'status' => profile_admin.status,
-              'admin_id' => profile_admin.admin_id,
               'name' => profile_admin.name,
-              'last_name' => profile_admin.last_name,
-              'gender' => profile_admin.gender,
-              'oab' => profile_admin.oab,
-              'rg' => profile_admin.rg,
-              'cpf' => profile_admin.cpf,
-              'nationality' => profile_admin.nationality,
-              'civil_status' => profile_admin.civil_status,
-              'birth' => profile_admin.birth.iso8601,
-              'mother_name' => profile_admin.mother_name,
-              'office_id' => profile_admin.office_id
-            },
-            'relationships' => {
-              'addresses' => { 'data' => [] },
-              'bank_accounts' => { 'data' => [] },
-              'emails' => { 'data' => [] },
-              'phones' => { 'data' => [] }
+              'last_name' => profile_admin.last_name
             }
           }],
           'meta' => {
