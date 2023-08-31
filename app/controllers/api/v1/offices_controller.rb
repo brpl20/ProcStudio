@@ -58,6 +58,13 @@ module Api
         end
       end
 
+      def with_lawyers
+        offices = OfficeFilter.retrieve_offices_with_lawyers
+        render json: OfficeWithLawyersSerializer.new(
+          offices
+        ), status: :ok
+      end
+
       private
 
       def retrieve_office

@@ -2,14 +2,12 @@
 
 class ProfileAdminSerializer
   include JSONAPI::Serializer
-  attributes :role, :status, :admin_id, :office_id, :name, :last_name, :gender, :oab,
-             :rg, :cpf, :nationality, :civil_status, :birth, :mother_name, :office_id
+  attributes :role, :name, :last_name
 
-  has_many :addresses, serializer: AddressSerializer
+  attribute :email do |object|
+    object.admin.email
+  end
 
-  has_many :phones, serializer: PhoneSerializer
-
-  has_many :emails, serializer: EmailSerializer
-
-  has_many :bank_accounts, serializer: BankAccountSerializer
+  attributes :status, :admin_id, :office_id, :gender, :oab,
+             :rg, :cpf, :nationality, :civil_status, :birth, :mother_name, :office_id, :addresses, :phones, :emails, :bank_accounts, if: proc { |_, options| options[:action] == 'show' }
 end
