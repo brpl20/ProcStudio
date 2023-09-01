@@ -25,17 +25,9 @@ RSpec.describe Api::V1::OfficesController, type: :request do
             'attributes' => {
               'name' => office.name,
               'cnpj' => office.cnpj,
-              'oab' => office.oab,
-              'society' => office.society,
-              'foundation' => office.foundation.iso8601,
-              'site' => office.site,
-              'cep' => office.cep,
-              'street' => office.street,
-              'number' => office.number,
-              'neighborhood' => office.neighborhood,
               'city' => office.city,
-              'state' => office.state,
-              'office_type_id' => office.office_type_id
+              'site' => office.site,
+              'office_type_description' => office.office_type.description
             }
           }],
           'meta' => {
@@ -200,6 +192,7 @@ RSpec.describe Api::V1::OfficesController, type: :request do
       end
     end
   end
+
   describe 'update' do
     let!(:office) { create(:office, id: 5) }
     context 'when request is valid' do
@@ -221,6 +214,7 @@ RSpec.describe Api::V1::OfficesController, type: :request do
       end
     end
   end
+
   describe 'show' do
     let!(:office) { create(:office, id: 5) }
     context 'when request is valid' do
@@ -232,21 +226,27 @@ RSpec.describe Api::V1::OfficesController, type: :request do
           'data' => {
             'id' => office.id.to_s,
             'type' => 'office',
-            'attributes' => {
-              'name' => office.name,
-              'cnpj' => office.cnpj,
-              'oab' => office.oab,
-              'society' => office.society,
-              'foundation' => office.foundation.iso8601,
-              'site' => office.site,
-              'cep' => office.cep,
-              'street' => office.street,
-              'number' => office.number,
-              'neighborhood' => office.neighborhood,
-              'city' => office.city,
-              'state' => office.state,
-              'office_type_id' => office.office_type_id
-            }
+            'attributes' =>
+              {
+                'name' => office.name,
+                'cnpj' => office.cnpj,
+                'city' => office.city,
+                'site' => office.site,
+                'oab' => office.oab,
+                'society' => office.society,
+                'foundation' => office.foundation.iso8601,
+                'cep' => office.cep,
+                'street' => office.street,
+                'number' => office.number,
+                'neighborhood' => office.neighborhood,
+                'state' => office.state,
+                'profile_admins' => [],
+                'phones' => [],
+                'emails' => [],
+                'bank_accounts' => [],
+                'works' => [],
+                'office_type_description' => office.office_type.description
+              }
           }
         )
       end
@@ -263,6 +263,28 @@ RSpec.describe Api::V1::OfficesController, type: :request do
         get '/api/v1/offices/35',
             headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
+
+  describe 'GET /api/v1/offices/with_lawyers' do
+    let!(:office) { create(:office) }
+    let!(:profile_admin) { create(:profile_admin, office: office) }
+    context 'when the request is successful' do
+      before do
+        get '/api/v1/offices/with_lawyers', headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+      end
+
+      it 'returns a successful response' do
+        expect(response).to have_http_status(200)
+      end
+
+      it 'returns lawyer attributes' do
+        lawyers = JSON.parse(response.body)['data'][0]['attributes']['lawyers']
+        lawyers.each do |lawyer|
+          expect(lawyer['id']).to eq(profile_admin.id)
+          expect(lawyer['name']).to eq(profile_admin.name)
+        end
       end
     end
   end
