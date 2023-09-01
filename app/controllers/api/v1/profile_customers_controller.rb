@@ -20,6 +20,13 @@ module Api
 
       def create
         @profile_customer = ProfileCustomer.new(profile_customers_params)
+
+        # criação para fins de testes
+        email = params['profile_customer']['emails_attributes'].first
+        @profile_customer.customer = Customer.create(email: email['email'], password: 'Cliente123#')
+
+        p @profile_customer.customer
+
         if @profile_customer.save
           render json: @profile_customer, status: :created
         else
