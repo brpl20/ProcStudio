@@ -60,10 +60,10 @@ RSpec.describe Api::V1::WorksController, type: :request do
             folder: Faker::Lorem.word,
             initial_atendee: Faker::Lorem.word,
             note: Faker::Lorem.word,
-            extra_pending_document: Faker::Lorem.word
+            extra_pending_document: Faker::Lorem.word,
+            lawyers: { 'Pellizzetti Advocacia': ['Bruno Pellizzetti', 'Marcos Souza'] }
           }
         }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
-
         expect(response).to have_http_status(:created)
       end
     end
