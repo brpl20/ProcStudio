@@ -24,7 +24,7 @@ module ProfileCustomers
       end
       doc.save("tmp/procuracao_simples_#{@document.id}.docx")
       @document.document_docx.attach(io: File.open("tmp/procuracao_simples_#{@document.id}.docx"), filename: "procuracao_simples_#{@document.id}.docx")
-      # FileUtils.remove_file("tmp/procuracao_simples_#{@document.id}.docx", true)
+      FileUtils.remove_file("tmp/procuracao_simples_#{@document.id}.docx", true)
     end
 
     # main function
