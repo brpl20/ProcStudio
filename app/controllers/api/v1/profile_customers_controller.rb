@@ -19,20 +19,14 @@ module Api
       end
 
       def create
-        @profile_customer = ProfileCustomer.new(profile_customers_params)
-
-        # criação para fins de testes
-        email = params['profile_customer']['emails_attributes'].first
-        @profile_customer.customer = Customer.create(email: email['email'], password: 'Cliente123#')
-
-        p @profile_customer.customer
-
-        if @profile_customer.save
-          render json: @profile_customer, status: :created
+        profile_customer = ProfileCustomer.new(profile_customers_params)
+        if profile_customer.save
+          ProfileCustomers::CreateDocumentService.call(profile_customer, @current_admin)
+          render json: profile_customer, status: :created
         else
           render(
             status: :bad_request,
-            json: { errors: [{ code: @profile_customer.errors.full_messages }] }
+            json: { errors: [{ code: profile_customer.errors.full_messages }] }
           )
         end
       rescue StandardError => e

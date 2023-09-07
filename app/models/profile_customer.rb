@@ -73,14 +73,4 @@ class ProfileCustomer < ApplicationRecord
   def unable?
     capacity == 'unable'
   end
-
-  protected
-
-  def file_type
-    files.each do |file|
-      unless file.content_type.in?('image/jpeg image/png application/pdf')
-        errors.add(:files, 'apenas são permtidos nos formatos JPG, PNG ou PDF.')
-      end
-    end
-  end
 end

@@ -10,4 +10,6 @@ class CustomerFile < ApplicationRecord
     cpf: 'cpf',
     proof_of_address: 'proof of address' # comprovante de endereco
   }
+
+  scope :simple_procuration, -> { where(file_description: 'simple_procuration') }
 end

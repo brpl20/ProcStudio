@@ -25,4 +25,12 @@ RSpec.describe CustomerFile do
       expect(customer_file.document_docx).to be_attached
     end
   end
+
+  describe 'scope' do
+    it 'simple_procuration' do
+      create(:customer_file, file_description: 'simple_procuration')
+      create(:customer_file, file_description: 'proof_of_address')
+      expect(CustomerFile.simple_procuration.size).to eq(1)
+    end
+  end
 end
