@@ -9,9 +9,7 @@ module Works
       @work = @document.work
       @customer = @work.profile_customers.first
       @address = @customer.addresses.first
-      @customer_email = @customer.emails.first
       @office = @work.offices.first
-      @gender = @customer.gender
       @lawyers = @work.profile_admins.lawyer
       @lawyer_address = @lawyers.first.addresses.first
     end
@@ -49,13 +47,8 @@ module Works
                            "com endereço profissional à Rua #{@office.street.to_s.downcase.titleize}", @office.number.to_s, @office.neighborhood.downcase.titleize,
                            "#{@office.city}-#{@office.state}", "e endereço eletrônico #{@office.site}"]
                             .join(', ')
-                        elsif @lawyers.size > 1
-                          ["#{I18n.t('general.lawyers')}: #{lawyers_text_without_office}"].join(', ')
                         else
-                          ["#{I18n.t('general.lawyer')}: #{lawyers_text}",
-                           "com endereço: #{@lawyer_address.street.to_s.downcase.titleize}, n° #{@lawyer_address.number}",
-                           @lawyer_address.description.to_s.downcase.titleize, "#{@lawyer_address.city} - #{@lawyer_address.state}, CEP #{@lawyer_address.zip_code}"]
-                            .join(', ')
+                          ["#{I18n.t('general.lawyers')}: #{lawyers_text_without_office}"].join(', ')
                         end
 
       text.substitute('_proc_outorgado_', translated_text)

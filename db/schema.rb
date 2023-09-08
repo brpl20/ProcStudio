@@ -142,6 +142,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_07_165500) do
     t.index ["profile_customer_id"], name: "index_customer_emails_on_profile_customer_id"
   end
 
+  create_table "customer_files", force: :cascade do |t|
+    t.string "file_description"
+    t.bigint "profile_customer_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["profile_customer_id"], name: "index_customer_files_on_profile_customer_id"
+  end
+
   create_table "customer_phones", force: :cascade do |t|
     t.bigint "profile_customer_id", null: false
     t.bigint "phone_id", null: false
@@ -433,6 +441,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_07_165500) do
   add_foreign_key "customer_bank_accounts", "profile_customers"
   add_foreign_key "customer_emails", "emails"
   add_foreign_key "customer_emails", "profile_customers"
+  add_foreign_key "customer_files", "profile_customers"
   add_foreign_key "customer_phones", "phones"
   add_foreign_key "customer_phones", "profile_customers"
   add_foreign_key "customer_works", "profile_customers"

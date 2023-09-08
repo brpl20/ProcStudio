@@ -52,9 +52,11 @@ class ProfileCustomer < ApplicationRecord
   has_many :customer_works, dependent: :destroy
   has_many :works, through: :customer_works
 
+  has_many :customer_files, dependent: :destroy
+
   has_one :represent
 
-  accepts_nested_attributes_for :customer, :addresses, :phones, :emails, :bank_accounts, reject_if: :all_blank
+  accepts_nested_attributes_for :customer_files, :customer, :addresses, :phones, :emails, :bank_accounts, reject_if: :all_blank
   validates :name, presence: true
   validates :gender, presence: true
 
@@ -70,15 +72,5 @@ class ProfileCustomer < ApplicationRecord
 
   def unable?
     capacity == 'unable'
-  end
-
-  protected
-
-  def file_type
-    files.each do |file|
-      unless file.content_type.in?('image/jpeg image/png application/pdf')
-        errors.add(:files, 'apenas são permtidos nos formatos JPG, PNG ou PDF.')
-      end
-    end
   end
 end

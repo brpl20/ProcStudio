@@ -152,6 +152,23 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         end.to change(Customer, :count).by(1)
       end
+      it 'creates customer file' do
+        expect do
+          post '/api/v1/profile_customers', params: {
+            profile_customer: {
+              customer_id: customer.id,
+              name: Faker::Name.first_name,
+              last_name: Faker::Name.last_name,
+              cpf: Faker::IDNumber.brazilian_citizen_number(formatted: true),
+              rg: Faker::IDNumber.brazilian_id(formatted: true),
+              birth: Faker::Date.birthday(min_age: 18, max_age: 65),
+              gender: 'male',
+              customer_files_attributes: [file_description: 'simple_procuration',
+                                          document_docx: Rack::Test::UploadedFile.new(Rails.root.join('spec', 'factories', 'images', 'Ruby.jpg'), 'image/jpg')]
+            }
+          }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        end.to change(CustomerFile, :count).by(1)
+      end
     end
     context 'when create tries to make an request without token' do
       it 'returns :unauthorized' do
