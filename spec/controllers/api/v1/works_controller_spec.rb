@@ -140,7 +140,7 @@ RSpec.describe Api::V1::WorksController, type: :request do
               procedure: 'administrative',
               subject: 'criminal',
               number: Faker::Number.number(digits: 2),
-              recommendations_attributes: [{ percentage: '30%', commition: '100', profile_customer_id: profile_customer_one.id }]
+              recommendations_attributes: [{ percentage: '30%', commission: '100', profile_customer_id: profile_customer_one.id }]
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         end.to change(Recommendation, :count).by(1)

@@ -2,5 +2,5 @@
 
 class RecommendationSerializer
   include JSONAPI::Serializer
-  attributes :percentage, :commition, :profile_customer_id, :work_id
+  attributes :percentage, :commission, :profile_customer_id, :work_id
 end

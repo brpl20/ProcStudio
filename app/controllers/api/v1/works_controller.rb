@@ -69,7 +69,7 @@ module Api
           :compensations_five_years, :compensations_service, :lawsuit, :gain_projection,
           documents_attributes: %i[id document_type],
           pending_documents_attributes: %i[id description],
-          recommendations_attributes: %i[id percentage commition profile_customer_id],
+          recommendations_attributes: %i[id percentage commission profile_customer_id],
           honorary_attributes: %i[id fixed_honorary_value parcelling_value honorary_type percent_honorary_value parcelling],
           power_ids: [],
           profile_customer_ids: [],

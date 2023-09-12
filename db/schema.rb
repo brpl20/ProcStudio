@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_07_165500) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_12_154322) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -385,7 +385,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_07_165500) do
 
   create_table "recommendations", force: :cascade do |t|
     t.decimal "percentage"
-    t.decimal "commition"
+    t.decimal "commission"
     t.bigint "profile_customer_id", null: false
     t.bigint "work_id", null: false
     t.datetime "created_at", null: false

@@ -38,7 +38,7 @@
 ## Recommendations
 
 - percentage(Float): Porcentagem 
-- commition(Float): Comissão 
+- commission(Float): Comissão 
 - profile_customer_id(Integer): id de customer
 - work_id(Integer): id de trabalho
 
