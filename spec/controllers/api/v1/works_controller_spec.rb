@@ -31,7 +31,15 @@ RSpec.describe Api::V1::WorksController, type: :request do
               'social_security_areas' => work.social_security_areas,
               'laborite_areas' => work.laborite_areas,
               'other_description' => work.other_description,
-              'tributary_areas' => work.tributary_areas
+              'tributary_areas' => work.tributary_areas,
+              'partner_lawyer' => work.partner_lawyer,
+              'physical_lawyer' => work.physical_lawyer,
+              'responsible_lawyer' => work.responsible_lawyer,
+              'initial_atendee' => work.initial_atendee,
+              'bachelor' => work.bachelor,
+              'intern' => work.intern,
+              'note' => work.note,
+              'folder' => work.folder
             }
           }],
           'meta' => {
@@ -200,7 +208,15 @@ RSpec.describe Api::V1::WorksController, type: :request do
               'social_security_areas' => work.social_security_areas,
               'laborite_areas' => work.laborite_areas,
               'other_description' => work.other_description,
-              'tributary_areas' => work.tributary_areas
+              'tributary_areas' => work.tributary_areas,
+              'partner_lawyer' => work.partner_lawyer,
+              'physical_lawyer' => work.physical_lawyer,
+              'responsible_lawyer' => work.responsible_lawyer,
+              'initial_atendee' => work.initial_atendee,
+              'bachelor' => work.bachelor,
+              'intern' => work.intern,
+              'note' => work.note,
+              'folder' => work.folder
             }
           }
         )
