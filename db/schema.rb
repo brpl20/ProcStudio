@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_12_154322) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_12_234247) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -408,7 +408,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_12_154322) do
     t.integer "number"
     t.string "rate_parceled_exfield"
     t.string "folder"
-    t.string "initial_atendee"
     t.string "note"
     t.string "extra_pending_document"
     t.datetime "created_at", null: false
@@ -422,7 +421,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_12_154322) do
     t.boolean "compensations_service", comment: "Compensações de oficio"
     t.boolean "lawsuit", comment: "Possui ação Judicial"
     t.string "gain_projection", comment: "Projeção de ganho"
-    t.json "lawyers"
+    t.integer "physical_lawyer"
+    t.integer "responsible_lawyer"
+    t.integer "partner_lawyer"
+    t.integer "intern"
+    t.integer "bachelor"
+    t.integer "initial_atendee"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

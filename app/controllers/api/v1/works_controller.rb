@@ -66,7 +66,8 @@ module Api
         params.require(:work).permit(
           :procedure, :subject, :number, :folder, :initial_atendee, :note, :extra_pending_document,
           :civel_area, :social_security_areas, :laborite_areas, :tributary_areas, :other_description,
-          :compensations_five_years, :compensations_service, :lawsuit, :gain_projection,
+          :compensations_five_years, :compensations_service, :lawsuit, :gain_projection, :physical_lawyer,
+          :responsible_lawyer, :partner_lawyer, :intern, :bachelor,
           documents_attributes: %i[id document_type],
           pending_documents_attributes: %i[id description],
           recommendations_attributes: %i[id percentage commission profile_customer_id],
@@ -74,8 +75,7 @@ module Api
           power_ids: [],
           profile_customer_ids: [],
           profile_admin_ids: [],
-          office_ids: [],
-          lawyers: {}
+          office_ids: []
         )
       end
     end
