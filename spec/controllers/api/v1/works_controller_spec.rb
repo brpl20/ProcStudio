@@ -39,7 +39,8 @@ RSpec.describe Api::V1::WorksController, type: :request do
               'bachelor' => work.bachelor,
               'intern' => work.intern,
               'note' => work.note,
-              'folder' => work.folder
+              'folder' => work.folder,
+              'procurations_urls' => work.documents.procurations
             }
           }],
           'meta' => {
@@ -216,7 +217,8 @@ RSpec.describe Api::V1::WorksController, type: :request do
               'bachelor' => work.bachelor,
               'intern' => work.intern,
               'note' => work.note,
-              'folder' => work.folder
+              'folder' => work.folder,
+              'procurations_urls' => work.documents.procurations
             }
           }
         )
