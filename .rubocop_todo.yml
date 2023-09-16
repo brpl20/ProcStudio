@@ -35,6 +35,7 @@ Layout/MultilineOperationIndentation:
 Layout/SpaceInsideArrayLiteralBrackets:
   Exclude:
     - 'config/environments/production.rb'
+    - 'config/environments/staging.rb'
 
 # Offense count: 1
 # Configuration parameters: AllowedMethods, AllowedPatterns, CountRepeatedAttributes.
@@ -101,6 +102,7 @@ Style/FrozenStringLiteralComment:
 Style/GlobalStdStream:
   Exclude:
     - 'config/environments/production.rb'
+    - 'config/environments/staging.rb'
 
 # Offense count: 3
 # This cop supports safe autocorrection (--autocorrect).
@@ -153,6 +155,7 @@ Style/StringLiterals:
     - 'config/environments/development.rb'
     - 'config/environments/production.rb'
     - 'config/environments/test.rb'
+    - 'config/environments/staging.rb'
     - 'config/importmap.rb'
     - 'config/puma.rb'
     - 'db/migrate/20230308161133_devise_create_customers.rb'
