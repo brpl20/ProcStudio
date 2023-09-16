@@ -40,7 +40,7 @@ RSpec.describe Api::V1::WorksController, type: :request do
               'intern' => work.intern,
               'note' => work.note,
               'folder' => work.folder,
-              'procurations_urls' => work.documents.procurations
+              'procurations_created' => work.documents.procurations.size
             }
           }],
           'meta' => {
@@ -218,7 +218,7 @@ RSpec.describe Api::V1::WorksController, type: :request do
               'intern' => work.intern,
               'note' => work.note,
               'folder' => work.folder,
-              'procurations_urls' => work.documents.procurations
+              'procurations_created' => work.documents.procurations.size
             }
           }
         )

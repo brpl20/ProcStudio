@@ -6,9 +6,7 @@ class WorkSerializer
              :other_description, :laborite_areas, :tributary_areas, :physical_lawyer, :responsible_lawyer,
              :partner_lawyer, :intern, :bachelor, :initial_atendee, :note, :folder
 
-  attribute :procurations_urls do |object|
-    object.documents.procurations.map do |procuration|
-      Rails.application.routes.url_helpers.rails_blob_url(procuration.document_docx, disposition: 'attachment')
-    end
+  attribute :procurations_created do |object|
+    object.documents.procurations.size
   end
 end
