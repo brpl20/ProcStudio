@@ -17,20 +17,21 @@ namespace :cad do
 
       # Administrative General Powers
       create_powers([
-        "representar,
-        peticionar,
-        solicitar,
-        assinar,
-        dar ciência e retirar,
-        cópias de processos administrativos"],
-        0)
+        "representar",
+        "peticionar",
+        "solicitar",
+        "assinar",
+        "dar ciência e retirar",
+        "cópias de processos administrativos"],0)
 
       # Administrative Specific Powers
       # Not necessary in this stage
       # category => 1
 
+
+
       # Administrative Specific Prev Powers
-      create_powers = ([
+      create_powers([
         "acessar documentos resguardados pelo sigilo médico independente do seu teor",
         "representar administrativamente - assinar, protocolar requerimentos, desistir de pedidos ou de benefícios, fazer carga de processos, ter vistas e acessar documentos bem como acesso digital, gerar, cadastrar e-mail, telefone e senhas nos portais Gov.br e Meu INSS",
         "buscar informações de titularidade de seus familiares falecidos para informação e instrução de seus pedidos pessoais",
@@ -39,11 +40,10 @@ namespace :cad do
         "firmar e Declarar Imposto de Renda e Isenções",
         "RPPS - Regime Próprio de Previdência Municipal e Estadual ao qual o outorgante esteja vinculado",
         "acessar autos em segredo de justiça e relativos a direitos sucessórios e para obtenção de pensão por morte",
-        "renunciar valores superiores à Requisições de Pequeno Valor (RPV) em Precatórios"]
-        2)
+        "renunciar valores superiores à Requisições de Pequeno Valor (RPV) em Precatórios"],2)
 
       # Administrative Specific Powers Tributary
-      create_powers = ([
+      create_powers([
         "representar, solicitar, assinar, dar ciência e retirar, cópias de processos administrativos",
         "cópia de processos administrativos de inscrição em dívida ativa",
         "negativas, protocolos, extratos de débitos, extrato de situação fiscal",
@@ -62,11 +62,11 @@ namespace :cad do
         "pedido de revisão de débito confessado em GFIP (DCG/LDCG)",
         "retificações de DARF, DCTFs e Speds",
         "acessar autos em segredo de justiça",
-        "ajuste de GPS, DBE"]
+        "ajuste de GPS, DBE"],
         3)
 
       # Administrative Specific Powers Tributary ECAC
-      create_powers = ([
+      create_powers([
         "acesso caixa postal",
         "downloads speds (contábil/contribuições/icms ipi)",
         "pagamentos e parcelamentos (consulta comprovantes) ",
@@ -78,23 +78,20 @@ namespace :cad do
         "PGFN - Consulta débitos inscritos a partir de 01/11/2012",
         "Sief Cobrança - intimações DCTF",
         "acessar Per/Dcomp Web",
-        "comunicação para compensação de ofício"]
-        4)
+        "comunicação para compensação de ofício"],4)
 
       # Law Specific Crime
-      create_powers = ([
+      create_powers([
         "Acompanhamento em Inquérito Policial",
         "Defesa Criminal",
         "Acessar autos criminais",
         "Realizar Queixa Crime",
-        "Acessar Autos em Segredo de Justiça"
-        "comunicação para compensação de ofício"]
-        8)
+        "Acessar Autos em Segredo de Justiça",
+        "comunicação para compensação de ofício"],8)
 
       # Substabelecer
-      create_powers = ([
-        "Substabelecer, com ou sem reserva de poderes"]
-        10)
+      create_powers([
+        "Substabelecer, com ou sem reserva de poderes"],10)
 
 
     end
