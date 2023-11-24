@@ -3,27 +3,34 @@ namespace :staging do
   desc 'Setup Development'
   task setup: :environment do
 
-    p 'Executando o setup para desenvolvimento/staging...'
+    p 'Running setup for development/staging...'
 
-    p "APAGANDO BD... #{%x(rake db:drop)}"
-    p "CRIANDO BD... #{%x(rake db:create)}"
-    p "MIGRANDO TABELAS... #{%x(rake db:migrate)}"
+    p "Dropping database... #{%x(rails db:drop)}"
+    p "Creating database... #{%x(rails db:create)}"
+    p "Migrating tables...  #{%x(rails db:migrate)}"
 
-    p 'Cadastrando office_type'
-    p %x(rake cad:office_type)
+    p "Creating office_type #{%x(rake cad:office_type)}"
 
-    p 'Cadastrando office'
+    p 'Creating office'
     p %x(rake cad:office)
 
-    p 'Carregando seeds'
+    p 'Loading seeds Offices + AdminUsers'
     p %x(rake db:seed)
 
-    p 'Cadastrando customer'
+    p 'Creating customer'
     p %x(rake cad:customer)
 
-    # p 'Cadastrando work'
+    p 'Creating powers'
+    p %x(rake cad:power)
+
+    # FIX WORK
+    # p 'Creating work'
     # p %x(rake cad:work)
 
-    p 'Setup finalizado com sucesso!'
+    # FIX JOBS
+
+
+    p 'Setup completed successfully!'
+
   end
 end

@@ -8,7 +8,7 @@ namespace :cad do
     require 'faker'
     Faker::Config.locale = 'pt-BR'
 
-    10.times do
+    3.times do
       Office.create!(
         name: Faker::Company.name,
         cnpj: Faker::Company.brazilian_company_number,
@@ -23,7 +23,7 @@ namespace :cad do
         city: Faker::Address.city,
         state: Faker::Address.state_abbr,
         office_type: OfficeType.all.sample
-      )
+        )
     end
   end
 end
