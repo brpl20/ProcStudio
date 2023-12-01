@@ -1,6 +1,3 @@
---- acordo com OAB para pegar as informações dos escritório 
-
-
 # ProcStudio API
 - [![Ruby Style Guide](https://img.shields.io/badge/code_style-rubocop-brightgreen.svg)](https://github.com/rubocop/rubocop)
 - API Reference [API DOC](API_DOC.md) and ```public\openapi.yaml```
