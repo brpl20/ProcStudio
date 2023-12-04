@@ -217,6 +217,7 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               'cnpj' => profile_customer.cnpj,
               'customer_type' => profile_customer.customer_type,
               'gender' => profile_customer.gender,
+              'inss_password' => profile_customer.inss_password,
               'rg' => profile_customer.rg,
               'nationality' => profile_customer.nationality,
               'civil_status' => profile_customer.civil_status,
