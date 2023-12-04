@@ -49,7 +49,7 @@ RSpec.describe Api::V1::PowersController, type: :request do
         post '/api/v1/powers', params: {
           power: {
             description: 'texto',
-            category: 5
+            category: :lawgeneral
           }
         }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 

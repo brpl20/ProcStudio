@@ -22,8 +22,8 @@ RSpec.describe Power, type: :model do
       end
 
       it 'altera categoria' do
-        power.update(category: 2)
-        expect(power.category).to eq(2)
+        power.update(category: 'admspecificprev')
+        expect(power.category).to eq('admspecificprev')
       end
     end
   end
