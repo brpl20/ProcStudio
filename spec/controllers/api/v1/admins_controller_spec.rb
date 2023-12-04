@@ -28,6 +28,7 @@ RSpec.describe Api::V1::AdminsController, type: :request do
               'profile_admin' => { 'data' => nil }
             }
           }],
+          'included' => [],
           'meta' => {
             'total_count' => 1
           }
