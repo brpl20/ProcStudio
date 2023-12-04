@@ -6,13 +6,14 @@ module Api
       before_action :retrieve_admin, only: %i[update show]
 
       def index
-        admins = Admin.all
+        admins = Admin.includes(:profile_admin).all
 
         render json: AdminSerializer.new(
           admins,
           meta: {
             total_count: admins.offset(nil).limit(nil).count
-          }
+          },
+          include: %i[profile_admin]
         ), status: :ok
       end
 
