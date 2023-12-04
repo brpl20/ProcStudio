@@ -5,10 +5,10 @@ class ProfileCustomerSerializer
   attributes :customer_id, :customer_type, :name, :last_name, :cpf, :cnpj,
              :emails
 
-  attributes :status, :customer_id, :rg, :birth, :gender,
-             :civil_status, :nationality, :capacity, :profession, :company,
-             :number_benefit, :nit, :mother_name, :addresses, :phones, :emails,
-             :bank_accounts, if: proc { |_, options| options[:action] == 'show' }
+  attributes :addresses, :bank_accounts, :birth, :capacity, :civil_status,
+             :company, :customer_id, :emails, :gender, :inss_password,
+             :mother_name, :nationality, :nit, :number_benefit, :phones,
+             :profession, :rg, :status, if: proc { |_, options| options[:action] == 'show' }
 
   attribute :default_phone do |object|
     object.phones.first&.phone_number
