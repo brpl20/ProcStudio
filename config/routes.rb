@@ -6,14 +6,15 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       get '/offices/with_lawyers', to: 'offices#with_lawyers'
-      resources :profile_customers
-      resources :offices
-      resources :customers
-      resources :powers
-      resources :profile_admins
       resources :admins
-      resources :works
+      resources :customers
       resources :jobs
+      resources :offices
+      resources :office_types
+      resources :powers
+      resources :profile_customers
+      resources :profile_admins
+      resources :works
       post '/login', to: 'auth#authenticate'
       delete '/logout', to: 'auth#destroy'
     end
