@@ -19,32 +19,38 @@ RSpec.describe Api::V1::WorksController, type: :request do
       end
 
       it 'returns all works' do
-        expect(JSON.parse(response.body)).to eq(
-          'data' => [{
-            'id' => work.id.to_s,
-            'type' => 'work',
-            'attributes' => {
-              'procedure' => work.procedure,
-              'subject' => work.subject,
-              'number' => work.number,
-              'civel_area' => work.civel_area,
-              'social_security_areas' => work.social_security_areas,
-              'laborite_areas' => work.laborite_areas,
-              'other_description' => work.other_description,
-              'tributary_areas' => work.tributary_areas,
-              'partner_lawyer' => work.partner_lawyer,
-              'physical_lawyer' => work.physical_lawyer,
-              'responsible_lawyer' => work.responsible_lawyer,
-              'initial_atendee' => work.initial_atendee,
-              'bachelor' => work.bachelor,
-              'intern' => work.intern,
-              'note' => work.note,
-              'folder' => work.folder,
-              'procurations_created' => work.documents.procurations.size
+        expect(JSON.parse(response.body, symbolize_names: true)).to eq(
+          data: [{
+            id: work.id.to_s,
+            type: 'work',
+            attributes: {
+              procedure: work.procedure,
+              subject: work.subject,
+              number: work.number,
+              civel_area: work.civel_area,
+              social_security_areas: work.social_security_areas,
+              laborite_areas: work.laborite_areas,
+              other_description: work.other_description,
+              tributary_areas: work.tributary_areas,
+              partner_lawyer: work.partner_lawyer,
+              physical_lawyer: work.physical_lawyer,
+              responsible_lawyer: work.responsible_lawyer,
+              initial_atendee: work.initial_atendee,
+              bachelor: work.bachelor,
+              intern: work.intern,
+              note: work.note,
+              folder: work.folder,
+              rate_parceled_exfield: work.rate_parceled_exfield,
+              extra_pending_document: work.extra_pending_document,
+              compensations_five_years: work.compensations_five_years,
+              compensations_service: work.compensations_service,
+              lawsuit: work.lawsuit,
+              gain_projection: work.gain_projection,
+              procurations_created: work.documents.procurations.size
             }
           }],
-          'meta' => {
-            'total_count' => 1
+          meta: {
+            total_count: 1
           }
         )
       end
@@ -197,28 +203,34 @@ RSpec.describe Api::V1::WorksController, type: :request do
         get '/api/v1/works/5',
             headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         expect(response).to have_http_status(:ok)
-        expect(JSON.parse(response.body)).to eq(
-          'data' => {
-            'id' => work.id.to_s,
-            'type' => 'work',
-            'attributes' => {
-              'procedure' => work.procedure,
-              'subject' => work.subject,
-              'number' => work.number,
-              'civel_area' => work.civel_area,
-              'social_security_areas' => work.social_security_areas,
-              'laborite_areas' => work.laborite_areas,
-              'other_description' => work.other_description,
-              'tributary_areas' => work.tributary_areas,
-              'partner_lawyer' => work.partner_lawyer,
-              'physical_lawyer' => work.physical_lawyer,
-              'responsible_lawyer' => work.responsible_lawyer,
-              'initial_atendee' => work.initial_atendee,
-              'bachelor' => work.bachelor,
-              'intern' => work.intern,
-              'note' => work.note,
-              'folder' => work.folder,
-              'procurations_created' => work.documents.procurations.size
+        expect(JSON.parse(response.body, symbolize_names: true)).to eq(
+          data: {
+            id: work.id.to_s,
+            type: 'work',
+            attributes: {
+              procedure: work.procedure,
+              subject: work.subject,
+              number: work.number,
+              civel_area: work.civel_area,
+              social_security_areas: work.social_security_areas,
+              laborite_areas: work.laborite_areas,
+              other_description: work.other_description,
+              tributary_areas: work.tributary_areas,
+              partner_lawyer: work.partner_lawyer,
+              physical_lawyer: work.physical_lawyer,
+              responsible_lawyer: work.responsible_lawyer,
+              initial_atendee: work.initial_atendee,
+              bachelor: work.bachelor,
+              intern: work.intern,
+              note: work.note,
+              folder: work.folder,
+              rate_parceled_exfield: work.rate_parceled_exfield,
+              extra_pending_document: work.extra_pending_document,
+              compensations_five_years: work.compensations_five_years,
+              compensations_service: work.compensations_service,
+              lawsuit: work.lawsuit,
+              gain_projection: work.gain_projection,
+              procurations_created: work.documents.procurations.size
             }
           }
         )
