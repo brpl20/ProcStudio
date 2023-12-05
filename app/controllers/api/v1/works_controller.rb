@@ -67,7 +67,7 @@ module Api
           :procedure, :subject, :number, :folder, :initial_atendee, :note, :extra_pending_document,
           :civel_area, :social_security_areas, :laborite_areas, :tributary_areas, :other_description,
           :compensations_five_years, :compensations_service, :lawsuit, :gain_projection, :physical_lawyer,
-          :responsible_lawyer, :partner_lawyer, :intern, :bachelor,
+          :responsible_lawyer, :partner_lawyer, :intern, :bachelor, :rate_parceled_exfield,
           documents_attributes: %i[id document_type],
           pending_documents_attributes: %i[id description],
           recommendations_attributes: %i[id percentage commission profile_customer_id],
