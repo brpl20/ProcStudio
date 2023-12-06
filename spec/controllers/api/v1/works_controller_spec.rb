@@ -32,12 +32,12 @@ RSpec.describe Api::V1::WorksController, type: :request do
               laborite_areas: work.laborite_areas,
               other_description: work.other_description,
               tributary_areas: work.tributary_areas,
-              partner_lawyer: work.partner_lawyer,
               physical_lawyer: work.physical_lawyer,
               responsible_lawyer: work.responsible_lawyer,
-              initial_atendee: work.initial_atendee,
-              bachelor: work.bachelor,
+              partner_lawyer: work.partner_lawyer,
               intern: work.intern,
+              bachelor: work.bachelor,
+              initial_atendee: work.initial_atendee,
               note: work.note,
               folder: work.folder,
               rate_parceled_exfield: work.rate_parceled_exfield,
@@ -46,7 +46,16 @@ RSpec.describe Api::V1::WorksController, type: :request do
               compensations_service: work.compensations_service,
               lawsuit: work.lawsuit,
               gain_projection: work.gain_projection,
-              procurations_created: work.documents.procurations.size
+              honorary_id: work.honorary_id,
+              procurations_created: work.documents.procurations.size,
+              offices: [],
+              profile_customers: [],
+              profile_admins: [],
+              powers: [],
+              recommendations: [],
+              jobs: [],
+              pending_documents: [],
+              documents: []
             }
           }],
           meta: {
@@ -216,12 +225,12 @@ RSpec.describe Api::V1::WorksController, type: :request do
               laborite_areas: work.laborite_areas,
               other_description: work.other_description,
               tributary_areas: work.tributary_areas,
-              partner_lawyer: work.partner_lawyer,
               physical_lawyer: work.physical_lawyer,
               responsible_lawyer: work.responsible_lawyer,
-              initial_atendee: work.initial_atendee,
-              bachelor: work.bachelor,
+              partner_lawyer: work.partner_lawyer,
               intern: work.intern,
+              bachelor: work.bachelor,
+              initial_atendee: work.initial_atendee,
               note: work.note,
               folder: work.folder,
               rate_parceled_exfield: work.rate_parceled_exfield,
@@ -230,7 +239,16 @@ RSpec.describe Api::V1::WorksController, type: :request do
               compensations_service: work.compensations_service,
               lawsuit: work.lawsuit,
               gain_projection: work.gain_projection,
-              procurations_created: work.documents.procurations.size
+              honorary_id: work.honorary_id,
+              procurations_created: work.documents.procurations.size,
+              offices: [],
+              profile_customers: [],
+              profile_admins: [],
+              powers: [],
+              recommendations: [],
+              jobs: [],
+              pending_documents: [],
+              documents: []
             }
           }
         )

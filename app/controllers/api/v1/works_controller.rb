@@ -50,7 +50,7 @@ module Api
       def show
         render json: WorkSerializer.new(
           @work,
-          { params: { action: 'show' } }
+          params: { action: 'show' }
         ), status: :ok
       end
 
