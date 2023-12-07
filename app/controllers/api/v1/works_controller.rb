@@ -6,7 +6,15 @@ module Api
       before_action :set_work, only: %i[show update destroy]
 
       def index
-        works = Work.all
+        works = Work.includes(
+          :profile_customers,
+          :profile_admins,
+          :powers,
+          :recommendations,
+          :jobs,
+          :documents,
+          :pending_documents
+        ).all
 
         render json: WorkSerializer.new(
           works,
