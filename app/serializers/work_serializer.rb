@@ -65,8 +65,12 @@ class WorkSerializer
     object.recommendations.map do |recommendation|
       {
         id: recommendation.id,
-        percentage: recommendation.percentage,
-        commission: recommendation.commission
+        profile_customer_id: recommendation.profile_customer_id,
+        profile_customer: {
+          id: recommendation.profile_customer.id,
+          name: recommendation.profile_customer.name,
+          email: recommendation.profile_customer.customer.email
+        }
       }
     end
   end
@@ -75,10 +79,7 @@ class WorkSerializer
     object.jobs.map do |job|
       {
         id: job.id,
-        description: job.description,
-        deadline: job.deadline,
-        status: job.status,
-        priority: job.priority
+        description: job.description
       }
     end
   end
