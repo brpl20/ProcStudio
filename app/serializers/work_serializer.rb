@@ -93,14 +93,12 @@ class WorkSerializer
     end
   end
 
-  ActiveStorage::Current.url_options = Rails.application.routes.default_url_options
-
   attribute :documents do |object|
     object.documents.map do |document|
       {
         id: document.id,
         document_type: document.document_type,
-        url: Rails.application.routes.url_helpers.rails_blob_url(document.document_docx)
+        url: 'pending'
       }
     end
   end
