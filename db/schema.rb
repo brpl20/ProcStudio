@@ -395,10 +395,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_12_234247) do
   end
 
   create_table "represents", force: :cascade do |t|
-    t.integer "represented_id"
     t.bigint "profile_customer_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "represented_id"
     t.index ["profile_customer_id"], name: "index_represents_on_profile_customer_id"
   end
 
