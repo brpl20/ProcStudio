@@ -56,7 +56,10 @@ class ProfileCustomer < ApplicationRecord
 
   has_one :represent
 
-  accepts_nested_attributes_for :customer_files, :customer, :addresses, :phones, :emails, :bank_accounts, reject_if: :all_blank
+  accepts_nested_attributes_for :customer_files, :customer, :addresses,
+                                :phones, :emails, :bank_accounts, :represent,
+                                reject_if: :all_blank
+
   validates :name, presence: true
   validates :gender, presence: true
 

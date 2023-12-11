@@ -236,7 +236,8 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               'bank_accounts' => [],
               'default_phone' => nil,
               'default_email' => nil,
-              'city' => nil
+              'city' => nil,
+              'represent' => nil
             }
           }
         )
