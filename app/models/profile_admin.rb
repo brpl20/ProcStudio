@@ -10,7 +10,8 @@ class ProfileAdmin < ApplicationRecord
     trainee: 'trainee',
     secretary: 'secretary',
     counter: 'counter',
-    excounter: 'excounter'
+    excounter: 'excounter',
+    representant: 'representant'
   }
 
   enum status: {
