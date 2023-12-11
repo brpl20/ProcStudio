@@ -1,0 +1,93 @@
+# frozen_string_literal: true
+
+require 'rails_helper'
+
+RSpec.describe ProfileCustomer, type: :model do
+  context 'Attributes' do
+    it {
+      is_expected.to have_attributes(
+        id: nil,
+        customer_type: nil,
+        name: nil,
+        last_name: nil,
+        gender: nil,
+        rg: nil,
+        cpf: nil,
+        cnpj: nil,
+        nationality: nil,
+        civil_status: nil,
+        capacity: nil,
+        profession: nil,
+        company: nil,
+        birth: nil,
+        mother_name: nil,
+        number_benefit: nil,
+        status: nil,
+        document: nil,
+        nit: nil,
+        inss_password: nil,
+        invalid_person: nil,
+        customer_id: nil,
+        created_at: nil,
+        updated_at: nil
+      )
+    }
+  end
+
+  context 'Relations' do
+    it { is_expected.to have_many(:customer_addresses).dependent(:destroy) }
+    it { is_expected.to have_many(:addresses).through(:customer_addresses) }
+
+    it { is_expected.to have_many(:customer_phones).dependent(:destroy) }
+    it { is_expected.to have_many(:phones).through(:customer_phones) }
+
+    it { is_expected.to have_many(:customer_emails).dependent(:destroy) }
+    it { is_expected.to have_many(:emails).through(:customer_emails) }
+
+    it { is_expected.to have_many(:customer_bank_accounts).dependent(:destroy) }
+    it { is_expected.to have_many(:bank_accounts).through(:customer_bank_accounts) }
+
+    it { is_expected.to have_many(:customer_works).dependent(:destroy) }
+    it { is_expected.to have_many(:works).through(:customer_works) }
+
+    it { is_expected.to have_many(:customer_files).dependent(:destroy) }
+
+    it { is_expected.to have_one(:represent) }
+  end
+
+  context 'Nested Attributes' do
+    it { is_expected.to accept_nested_attributes_for(:customer_files) }
+    it { is_expected.to accept_nested_attributes_for(:customer) }
+    it { is_expected.to accept_nested_attributes_for(:addresses) }
+    it { is_expected.to accept_nested_attributes_for(:phones) }
+    it { is_expected.to accept_nested_attributes_for(:emails) }
+    it { is_expected.to accept_nested_attributes_for(:bank_accounts) }
+    it { is_expected.to accept_nested_attributes_for(:represent) }
+  end
+
+  context 'Validations' do
+    it { is_expected.to validate_presence_of(:name) }
+    it { is_expected.to validate_presence_of(:gender) }
+  end
+
+  context 'Instance Methods' do
+    it '#full_name, returns a string with first and last_name' do
+      profile = build(:profile_customer)
+      expect(profile.full_name).to eq("#{profile.name} #{profile.last_name}")
+    end
+
+    context '#last_email' do
+      let(:profile) { create(:profile_customer) }
+
+      it 'returns the I18n general.without email when there is no email' do
+        expect(profile.last_email).to eq(I18n.t('general.without_email'))
+      end
+
+      it 'returns the last email when applicable' do
+        email = Faker::Internet.email
+        profile.emails << build(:email, email: email)
+        expect(profile.last_email).to eq(email)
+      end
+    end
+  end
+end
