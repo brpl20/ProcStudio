@@ -96,7 +96,7 @@ module Works
     def responsable
       return nil unless @customer.unable? && @customer.represent.present?
 
-      represent = ProfileCustomer.find(@customer.represent.represented_id)
+      represent = @customer.represent.profile_admin
       represent_address = represent.addresses.first
       [",#{word_for_gender('represent', represent.gender)} #{represent.full_name.downcase.titleize}", word_for_gender(represent.civil_status, represent.gender),
        "#{word_for_gender('owner', represent.gender)} do RG n° #{represent.rg} e #{word_for_gender('subscribe', represent.gender)} no CPF sob o n° #{represent.cpf}",
