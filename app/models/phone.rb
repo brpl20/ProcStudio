@@ -1,5 +1,14 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: phones
+#
+#  id           :bigint(8)        not null, primary key
+#  phone_number :string
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#
 class Phone < ApplicationRecord
   has_many :admin_phones, dependent: :destroy
   has_many :profile_admins, through: :admin_phones

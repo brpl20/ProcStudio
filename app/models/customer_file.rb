@@ -1,5 +1,15 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: customer_files
+#
+#  id                  :bigint(8)        not null, primary key
+#  file_description    :string
+#  profile_customer_id :bigint(8)        not null
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
+#
 class CustomerFile < ApplicationRecord
   belongs_to :profile_customer
   has_one_attached :document_docx

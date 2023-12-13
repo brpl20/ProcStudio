@@ -1,5 +1,34 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: profile_customers
+#
+#  id             :bigint(8)        not null, primary key
+#  customer_type  :string
+#  name           :string
+#  last_name      :string
+#  gender         :string
+#  rg             :string
+#  cpf            :string
+#  cnpj           :string
+#  nationality    :string
+#  civil_status   :string
+#  capacity       :string
+#  profession     :string
+#  company        :string
+#  birth          :date
+#  mother_name    :string
+#  number_benefit :string
+#  status         :integer
+#  document       :json
+#  nit            :string
+#  inss_password  :string
+#  invalid_person :integer
+#  customer_id    :bigint(8)        not null
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#
 class ProfileCustomer < ApplicationRecord
   belongs_to :customer
 

@@ -1,5 +1,15 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: pending_documents
+#
+#  id          :bigint(8)        not null, primary key
+#  description :string
+#  work_id     :bigint(8)        not null
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#
 class PendingDocument < ApplicationRecord
   belongs_to :work
 
