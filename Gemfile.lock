@@ -68,6 +68,9 @@ GEM
       tzinfo (~> 2.0)
     addressable (2.8.5)
       public_suffix (>= 2.0.2, < 6.0)
+    annotate (3.2.0)
+      activerecord (>= 3.2, < 8.0)
+      rake (>= 10.4, < 14.0)
     ast (2.4.2)
     aws-eventstream (1.2.0)
     aws-partitions (1.760.0)
@@ -110,6 +113,7 @@ GEM
       responders
       warden (~> 1.2.3)
     diff-lcs (1.5.0)
+    docile (1.4.0)
     docx (0.7.0)
       nokogiri (~> 1.13, >= 1.13.0)
       rubyzip (~> 2.0)
@@ -250,6 +254,12 @@ GEM
     rubyzip (2.3.2)
     shoulda-matchers (5.3.0)
       activesupport (>= 5.2.0)
+    simplecov (0.22.0)
+      docile (~> 1.1)
+      simplecov-html (~> 0.11)
+      simplecov_json_formatter (~> 0.1)
+    simplecov-html (0.12.3)
+    simplecov_json_formatter (0.1.4)
     thor (1.2.1)
     timeout (0.3.2)
     tzinfo (2.0.6)
@@ -274,6 +284,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  annotate (~> 3.2)
   aws-sdk-s3
   bootsnap
   database_cleaner
@@ -293,6 +304,7 @@ DEPENDENCIES
   rspec-rails (~> 6.0.0)
   rubocop (~> 1.48)
   shoulda-matchers
+  simplecov (~> 0.22.0)
   tzinfo-data
   webmock
 
