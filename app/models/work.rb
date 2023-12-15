@@ -1,5 +1,36 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: works
+#
+#  id                       :bigint(8)        not null, primary key
+#  procedure                :string
+#  subject                  :string
+#  number                   :integer
+#  rate_parceled_exfield    :string
+#  folder                   :string
+#  note                     :string
+#  extra_pending_document   :string
+#  created_at               :datetime         not null
+#  updated_at               :datetime         not null
+#  civel_area               :string
+#  social_security_areas    :string
+#  laborite_areas           :string
+#  tributary_areas          :string
+#  other_description        :text
+#  compensations_five_years :boolean
+#  compensations_service    :boolean
+#  lawsuit                  :boolean
+#  gain_projection          :string
+#  physical_lawyer          :integer
+#  responsible_lawyer       :integer
+#  partner_lawyer           :integer
+#  intern                   :integer
+#  bachelor                 :integer
+#  initial_atendee          :integer
+#  procedures               :text             default([]), is an Array
+#
 class Work < ApplicationRecord
   has_many :customer_works, dependent: :destroy
   has_many :profile_customers, through: :customer_works

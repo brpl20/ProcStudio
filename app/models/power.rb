@@ -1,5 +1,15 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: powers
+#
+#  id          :bigint(8)        not null, primary key
+#  description :string           not null
+#  category    :integer          not null
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#
 class Power < ApplicationRecord
   enum category: {
     # Poderes em Geral Administrativo

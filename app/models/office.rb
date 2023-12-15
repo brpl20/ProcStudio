@@ -1,5 +1,26 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: offices
+#
+#  id             :bigint(8)        not null, primary key
+#  name           :string
+#  cnpj           :string
+#  oab            :string
+#  society        :string
+#  foundation     :date
+#  site           :string
+#  cep            :string
+#  street         :string
+#  number         :integer
+#  neighborhood   :string
+#  city           :string
+#  state          :string
+#  office_type_id :bigint(8)        not null
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#
 class Office < ApplicationRecord
   belongs_to :office_type
   has_many :profile_admins
