@@ -55,7 +55,8 @@ RSpec.describe Api::V1::WorksController, type: :request do
               recommendations: [],
               jobs: [],
               pending_documents: [],
-              documents: []
+              documents: [],
+              procedures: []
             }
           }],
           meta: {
@@ -248,7 +249,8 @@ RSpec.describe Api::V1::WorksController, type: :request do
               recommendations: [],
               jobs: [],
               pending_documents: [],
-              documents: []
+              documents: [],
+              procedures: []
             }
           }
         )

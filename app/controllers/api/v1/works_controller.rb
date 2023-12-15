@@ -83,7 +83,8 @@ module Api
           power_ids: [],
           profile_customer_ids: [],
           profile_admin_ids: [],
-          office_ids: []
+          office_ids: [],
+          procedures: []
         )
       end
     end

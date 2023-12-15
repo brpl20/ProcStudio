@@ -3,9 +3,42 @@
 require 'rails_helper'
 
 RSpec.describe Work do
-  subject(:work) { build(:work) }
+  describe 'Attributes' do
+    it do
+      is_expected.to have_attributes(
+        id: nil,
+        procedure: nil,
+        subject: nil,
+        number: nil,
+        rate_parceled_exfield: nil,
+        folder: nil,
+        note: nil,
+        extra_pending_document: nil,
+        created_at: nil,
+        updated_at: nil,
+        civel_area: nil,
+        social_security_areas: nil,
+        laborite_areas: nil,
+        tributary_areas: nil,
+        other_description: nil,
+        compensations_five_years: nil,
+        compensations_service: nil,
+        lawsuit: nil,
+        gain_projection: nil,
+        physical_lawyer: nil,
+        responsible_lawyer: nil,
+        partner_lawyer: nil,
+        intern: nil,
+        bachelor: nil,
+        initial_atendee: nil,
+        procedures: []
+      )
+    end
+  end
 
   describe 'Associations' do
+    subject(:work) { build(:work) }
+
     it { is_expected.to have_one(:honorary) }
     it { is_expected.to have_many_attached(:tributary_files) }
     it { is_expected.to have_many(:profile_customers) }
@@ -15,5 +48,72 @@ RSpec.describe Work do
     it { is_expected.to have_many(:offices) }
     it { is_expected.to have_many(:recommendations) }
     it { is_expected.to have_many(:jobs) }
+  end
+
+  describe 'Enums' do
+    it do
+      is_expected.to define_enum_for(:procedure)
+        .with_values(
+          administrative: 'administrativo',
+          judicial: 'judicial',
+          extrajudicial: 'extrajudicial'
+        ).backed_by_column_of_type(:string)
+    end
+
+    it do
+      is_expected.to define_enum_for(:subject)
+        .with_values(
+          administrative_subject: 'administrativo',
+          civil: 'civel',
+          criminal: 'criminal',
+          social_security: 'previdenciario',
+          laborite: 'trabalhista',
+          tributary: 'tributario',
+          tributary_pis: 'tributario_pis_confins',
+          others: 'outros'
+        ).backed_by_column_of_type(:string)
+    end
+
+    it do
+      is_expected.to define_enum_for(:civel_area)
+        .with_values(
+          family: 'familia',
+          consumer: 'consumidor',
+          moral_damages: 'danos morais'
+        ).backed_by_column_of_type(:string)
+    end
+
+    it do
+      is_expected.to define_enum_for(:tributary_areas)
+        .with_values(
+          asphalt: 'asfalto',
+          license: 'alvara',
+          others_tributary: 'outros'
+        ).backed_by_column_of_type(:string)
+    end
+
+    it do
+      is_expected.to define_enum_for(:social_security_areas)
+        .with_values(
+          retirement_by_time: 'aposentadoria_contribuicao',
+          retirement_by_age: 'aposentadoria_idade',
+          retirement_by_rural: 'aposentadoria_rural',
+          disablement: 'invalidez',
+          benefit_review: 'revisão_beneficio',
+          administrative_services: 'servicos_administrativos'
+        ).backed_by_column_of_type(:string)
+    end
+
+    it do
+      is_expected.to define_enum_for(:laborite_areas)
+        .with_values(labor_claim: 'reclamatoria_trabalhista')
+        .backed_by_column_of_type(:string)
+    end
+  end
+
+  describe 'Nested Attributes' do
+    %i[documents pending_documents honorary recommendations].each do |association|
+      it { is_expected.to accept_nested_attributes_for(association).allow_destroy(true) }
+    end
   end
 end
