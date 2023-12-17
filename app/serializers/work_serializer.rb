@@ -97,7 +97,7 @@ class WorkSerializer
       {
         id: document.id,
         document_type: document.document_type,
-        url: 'pending'
+        url: document.document_docx&.url
       }
     end
   end

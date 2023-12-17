@@ -3,7 +3,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-gem 'aws-sdk-s3'
+gem 'aws-sdk-s3', require: false
 gem 'bootsnap', require: false
 gem 'devise'
 gem 'docx'
