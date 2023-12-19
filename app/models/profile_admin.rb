@@ -89,4 +89,10 @@ class ProfileAdmin < ApplicationRecord
   def full_name
     [name, last_name].join(' ')
   end
+
+  def last_email
+    return I18n.t('general.without_email') unless emails.present?
+
+    emails.last.email
+  end
 end

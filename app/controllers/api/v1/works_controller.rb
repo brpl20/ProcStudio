@@ -28,7 +28,7 @@ module Api
         work = Work.new(work_params)
         if work.save
           Works::CreateDocumentService.call(work)
-          render json: work, status: :created
+          render json: WorkSerializer.new(@work), status: :created
         else
           render(
             status: :bad_request,
