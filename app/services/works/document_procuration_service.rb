@@ -15,14 +15,14 @@ module Works
     end
 
     def call
-      doc = Docx::Document.open('app/template_documents/procuracao.docx')
+      doc = Docx::Document.open('app/template_documents/procuracao.docx') 
       doc.paragraphs.each do |paragraph|
         paragraph.each_text_run do |text|
           substitute_word(text)
         end
       end
       doc.save("tmp/procuracao_#{@work.id}.docx")
-      @document.document_docx.attach(io: File.open("tmp/procuracao_#{@work.id}.docx"), filename: "procuracao_#{@work.id}.docx")
+      @document.document_docx.attach(ActiveStorage::Blob.create_and_upload!(io: File.open("tmp/procuracao_#{@work.id}.docx"), filename: "procuracao_#{@work.id}.docx"))
       FileUtils.remove_file("tmp/procuracao_#{@work.id}.docx", true)
     end
 
