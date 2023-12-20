@@ -29,7 +29,8 @@ RSpec.describe ProfileCustomer, type: :model do
         invalid_person: nil,
         customer_id: nil,
         created_at: nil,
-        updated_at: nil
+        updated_at: nil,
+        accountant_id: nil
       )
     }
   end
@@ -53,6 +54,9 @@ RSpec.describe ProfileCustomer, type: :model do
     it { is_expected.to have_many(:customer_files).dependent(:destroy) }
 
     it { is_expected.to have_one(:represent) }
+
+    it { is_expected.to belong_to(:customer) }
+    it { is_expected.to belong_to(:accountant).class_name('ProfileCustomer').optional(true) }
   end
 
   context 'Nested Attributes' do
@@ -68,6 +72,7 @@ RSpec.describe ProfileCustomer, type: :model do
   context 'Validations' do
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_presence_of(:gender) }
+    it { is_expected.to_not validate_presence_of(:accountant) }
   end
 
   context 'Instance Methods' do
@@ -87,6 +92,18 @@ RSpec.describe ProfileCustomer, type: :model do
         email = Faker::Internet.email
         profile.emails << build(:email, email: email)
         expect(profile.last_email).to eq(email)
+      end
+    end
+
+    context '#unable?' do
+      let(:profile) { build(:profile_customer) }
+
+      it 'returns false if capacity is not equal to "unable"' do
+        expect(profile.unable?).to eq(false)
+      end
+
+      it 'returns false if capacity is not equal to "unable"' do
+        expect(profile.unable?).to eq(false)
       end
     end
   end
