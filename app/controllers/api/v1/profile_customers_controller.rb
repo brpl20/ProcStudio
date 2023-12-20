@@ -72,6 +72,7 @@ module Api
           :number_benefit,
           :nit, :mother_name,
           :inss_password,
+          :accountant_id,
           addresses_attributes: %i[id description zip_code street number neighborhood city state],
           bank_accounts_attributes: %i[id bank_name type_account agency account operation pix],
           customer_attributes: %i[id email password password_confirmation],
