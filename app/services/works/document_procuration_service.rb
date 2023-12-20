@@ -3,7 +3,7 @@
 require 'docx'
 
 module Works
-  class DocumentProcurationService < ApplicationService
+  class DocumentProcurationService < ApplicationService # rubocop:disable Metrics/ClassLength
     def initialize(document_id)
       @document = Document.find(document_id)
       @work = @document.work
@@ -22,11 +22,18 @@ module Works
         end
       end
       doc.save("tmp/procuracao_#{@work.id}.docx")
-      @document.document_docx.attach(ActiveStorage::Blob.create_and_upload!(io: File.open("tmp/procuracao_#{@work.id}.docx"), filename: "procuracao_#{@work.id}.docx"))
+      @document.document_docx.attach(ActiveStorage::Blob.create_and_upload!(io: File.open("tmp/procuracao_#{@work.id}.docx"), filename: "procuracao_#{@work.id}.docx", service_name: service_name))
       FileUtils.remove_file("tmp/procuracao_#{@work.id}.docx", true)
     end
 
     private
+
+    def service_name
+      return :local if Rails.env.development?
+      return :test  if Rails.env.test?
+
+      :amazon
+    end
 
     # outorgante paragraph
     def substitute_client_info(text)

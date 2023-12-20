@@ -20,11 +20,18 @@ module Works
       end
       doc.save("tmp/renuncia_#{@work.id}.docx")
 
-      @document.document_docx.attach(ActiveStorage::Blob.create_and_upload!(io: File.open("tmp/renuncia_#{@work.id}.docx"), filename: "renuncia_#{@work.id}.docx"))
+      @document.document_docx.attach(ActiveStorage::Blob.create_and_upload!(io: File.open("tmp/renuncia_#{@work.id}.docx"), filename: "renuncia_#{@work.id}.docx", service_name: service_name))
       FileUtils.remove_file("tmp/renuncia_#{@work.id}.docx", true)
     end
 
     private
+
+    def service_name
+      return :local if Rails.env.development?
+      return :test  if Rails.env.test?
+
+      :amazon
+    end
 
     def substitute_client_info(text)
       translated_text = [
