@@ -28,9 +28,11 @@
 #  customer_id    :bigint(8)        not null
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
+#  accountant_id  :integer
 #
 class ProfileCustomer < ApplicationRecord
   belongs_to :customer
+  belongs_to :accountant, class_name: 'ProfileCustomer', optional: true
 
   enum gender: {
     male: 'male',
@@ -61,7 +63,7 @@ class ProfileCustomer < ApplicationRecord
     physical_person: 'physical_person',
     legal_person: 'legal_person',
     representative: 'representative',
-    counter: 'conter'
+    counter: 'counter'
   }
 
   has_many_attached :files
