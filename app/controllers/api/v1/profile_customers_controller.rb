@@ -22,7 +22,10 @@ module Api
         profile_customer = ProfileCustomer.new(profile_customers_params)
         if profile_customer.save
           ProfileCustomers::CreateDocumentService.call(profile_customer, @current_admin)
-          render json: profile_customer, status: :created
+          render json: ProfileCustomerSerializer.new(
+            profile_customer,
+            params: { action: 'show' }
+          ), status: :created
         else
           render(
             status: :bad_request,

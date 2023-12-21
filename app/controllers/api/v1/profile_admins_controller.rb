@@ -19,7 +19,8 @@ module Api
         profile_admin = ProfileAdmin.new(profile_admins_params)
         if profile_admin.save
           render json: ProfileAdminSerializer.new(
-            profile_admin
+            profile_admin,
+            params: { action: 'show' }
           ), status: :created
         else
           render(
