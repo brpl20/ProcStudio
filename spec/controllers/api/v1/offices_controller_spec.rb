@@ -27,7 +27,8 @@ RSpec.describe Api::V1::OfficesController, type: :request do
               'cnpj' => office.cnpj,
               'city' => office.city,
               'site' => office.site,
-              'office_type_description' => office.office_type.description
+              'office_type_description' => office.office_type.description,
+              'responsible_lawyer_id' => office.responsible_lawyer_id
             }
           }],
           'meta' => {
@@ -245,7 +246,9 @@ RSpec.describe Api::V1::OfficesController, type: :request do
                 'emails' => [],
                 'bank_accounts' => [],
                 'works' => [],
-                'office_type_description' => office.office_type.description
+                'office_type_description' => office.office_type.description,
+                'responsible_lawyer_id' => office.responsible_lawyer_id,
+                'responsible_lawyer' => nil
               }
           }
         )
