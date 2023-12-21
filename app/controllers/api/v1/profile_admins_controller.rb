@@ -50,7 +50,8 @@ module Api
 
       def show
         render json: ProfileAdminSerializer.new(
-          @profile_admin
+          @profile_admin,
+          params: { action: 'show' }
         ), status: :ok
       end
 
