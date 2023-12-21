@@ -382,6 +382,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_21_091203) do
     t.bigint "customer_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "accountant_id"
+    t.index ["accountant_id"], name: "index_profile_customers_on_accountant_id"
     t.index ["customer_id"], name: "index_profile_customers_on_customer_id"
   end
 
