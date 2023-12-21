@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_12_20_103401) do
+ActiveRecord::Schema[7.0].define(version: 2023_12_21_091203) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -293,7 +293,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_20_103401) do
     t.bigint "office_type_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "responsible_lawyer_id"
     t.index ["office_type_id"], name: "index_offices_on_office_type_id"
+    t.index ["responsible_lawyer_id"], name: "index_offices_on_responsible_lawyer_id"
   end
 
   create_table "pending_documents", force: :cascade do |t|
