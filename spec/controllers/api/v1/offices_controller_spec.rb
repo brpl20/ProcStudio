@@ -247,7 +247,7 @@ RSpec.describe Api::V1::OfficesController, type: :request do
                 'bank_accounts' => [],
                 'works' => [],
                 'office_type_description' => office.office_type.description,
-                'responsible_lawyer_id' => office.responsible_lawyer_id,
+                'responsible_lawyer_id' => office.responsible_lawyer_id
               }
           }
         )
