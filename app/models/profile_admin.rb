@@ -60,12 +60,6 @@ class ProfileAdmin < ApplicationRecord
     brazilian: 'brazilian',
     foreigner: 'foreigner'
   }
-  scope :lawyer, -> { where(role: 'lawyer') }
-  scope :paralegal, -> { where(role: 'paralegal') }
-  scope :trainee, -> { where(role: 'trainee') }
-  scope :secretary, -> { where(role: 'secretary') }
-  scope :counter, -> { where(role: 'counter') }
-  scope :excounter, -> { where(role: 'excounter') }
 
   has_many :admin_addresses, dependent: :destroy
   has_many :addresses, through: :admin_addresses
@@ -85,6 +79,16 @@ class ProfileAdmin < ApplicationRecord
   has_many :jobs
 
   accepts_nested_attributes_for :admin, :addresses, :phones, :emails, :bank_accounts, reject_if: :all_blank
+
+  with_options presence: true do
+    validates :civil_status
+    validates :cpf
+    validates :gender
+    validates :name
+    validates :nationality
+    validates :oab, if: :lawyer?
+    validates :rg
+  end
 
   def full_name
     [name, last_name].join(' ')

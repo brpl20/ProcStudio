@@ -57,7 +57,11 @@ RSpec.describe Api::V1::ProfileAdminsController, type: :request do
             last_name: 'Doe',
             cpf: Faker::IDNumber.brazilian_citizen_number(formatted: true),
             rg: Faker::IDNumber.brazilian_id(formatted: true),
-            birth: Faker::Date.birthday(min_age: 18, max_age: 65)
+            birth: Faker::Date.birthday(min_age: 18, max_age: 65),
+            oab: Faker::Number.number(digits: 6),
+            civil_status: 'single',
+            gender: 'male',
+            nationality: 'brazilian'
           }
         }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 
@@ -97,6 +101,10 @@ RSpec.describe Api::V1::ProfileAdminsController, type: :request do
               cpf: Faker::IDNumber.brazilian_citizen_number(formatted: true),
               rg: Faker::IDNumber.brazilian_id(formatted: true),
               birth: Faker::Date.birthday(min_age: 18, max_age: 65),
+              oab: Faker::Number.number(digits: 6),
+              civil_status: 'single',
+              gender: 'male',
+              nationality: 'brazilian',
               phones_attributes: [phone_number: Faker::PhoneNumber.cell_phone]
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
