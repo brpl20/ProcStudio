@@ -70,8 +70,15 @@ RSpec.describe ProfileCustomer, type: :model do
   end
 
   context 'Validations' do
-    it { is_expected.to validate_presence_of(:name) }
+    it { is_expected.to validate_presence_of(:capacity) }
+    it { is_expected.to validate_presence_of(:civil_status) }
+    it { is_expected.to validate_presence_of(:cpf) }
     it { is_expected.to validate_presence_of(:gender) }
+    it { is_expected.to validate_presence_of(:name) }
+    it { is_expected.to validate_presence_of(:nationality) }
+    it { is_expected.to validate_presence_of(:profession) }
+    it { is_expected.to validate_presence_of(:rg) }
+
     it { is_expected.to_not validate_presence_of(:accountant) }
   end
 

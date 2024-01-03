@@ -59,7 +59,11 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
             cpf: Faker::IDNumber.brazilian_citizen_number(formatted: true),
             rg: Faker::IDNumber.brazilian_id(formatted: true),
             birth: Faker::Date.birthday(min_age: 18, max_age: 65),
-            gender: 'male'
+            gender: 'male',
+            capacity: 'able',
+            civil_status: 'single',
+            nationality: 'brazilian',
+            profession: Faker::Job.title
           }
         }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 
@@ -78,9 +82,19 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               rg: Faker::IDNumber.brazilian_id(formatted: true),
               birth: Faker::Date.birthday(min_age: 18, max_age: 65),
               gender: 'male',
-              addresses_attributes: [description: Faker::Address.street_name, zip_code: Faker::Address.zip_code,
-                                     street: Faker::Address.street_name, number: Faker::Address.building_number,
-                                     neighborhood: Faker::Address.community, city: Faker::Address.city]
+              capacity: 'able',
+              civil_status: 'single',
+              nationality: 'brazilian',
+              profession: Faker::Job.title,
+              addresses_attributes: [{
+                description: Faker::Address.street_name,
+                zip_code: Faker::Address.zip_code,
+                street: Faker::Address.street_name,
+                number: Faker::Address.building_number,
+                neighborhood: Faker::Address.community,
+                city: Faker::Address.city,
+                state: Faker::Address.state
+              }]
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         end.to change(CustomerAddress, :count).by(1)
@@ -96,6 +110,10 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               rg: Faker::IDNumber.brazilian_id(formatted: true),
               birth: Faker::Date.birthday(min_age: 18, max_age: 65),
               gender: 'male',
+              capacity: 'able',
+              civil_status: 'single',
+              nationality: 'brazilian',
+              profession: Faker::Job.title,
               bank_accounts_attributes: [bank_name: 'BB', type_account: 'CC', agency: '35478',
                                          account: '254', operation: '0002', pix: '12435687968']
             }
@@ -114,6 +132,10 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               rg: Faker::IDNumber.brazilian_id(formatted: true),
               birth: Faker::Date.birthday(min_age: 18, max_age: 65),
               gender: 'male',
+              capacity: 'able',
+              civil_status: 'single',
+              nationality: 'brazilian',
+              profession: Faker::Job.title,
               phones_attributes: [phone_number: Faker::PhoneNumber.cell_phone]
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
@@ -131,6 +153,10 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               rg: Faker::IDNumber.brazilian_id(formatted: true),
               birth: Faker::Date.birthday(min_age: 18, max_age: 65),
               gender: 'male',
+              capacity: 'able',
+              civil_status: 'single',
+              nationality: 'brazilian',
+              profession: Faker::Job.title,
               emails_attributes: [email: Faker::Internet.email]
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
@@ -147,6 +173,10 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               rg: Faker::IDNumber.brazilian_id(formatted: true),
               birth: Faker::Date.birthday(min_age: 18, max_age: 65),
               gender: 'male',
+              capacity: 'able',
+              civil_status: 'single',
+              nationality: 'brazilian',
+              profession: Faker::Job.title,
               customer_attributes: [email: Faker::Internet.email, password: 123_456, password_confirmation: 123_456]
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
@@ -163,6 +193,10 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               rg: Faker::IDNumber.brazilian_id(formatted: true),
               birth: Faker::Date.birthday(min_age: 18, max_age: 65),
               gender: 'male',
+              capacity: 'able',
+              civil_status: 'single',
+              nationality: 'brazilian',
+              profession: Faker::Job.title,
               customer_files_attributes: [file_description: 'simple_procuration',
                                           document_docx: Rack::Test::UploadedFile.new(Rails.root.join('spec', 'factories', 'images', 'Ruby.jpg'), 'image/jpg')]
             }

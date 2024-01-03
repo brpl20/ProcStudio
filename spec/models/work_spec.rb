@@ -111,6 +111,10 @@ RSpec.describe Work do
     end
   end
 
+  describe 'Validations' do
+    it { is_expected.to validate_presence_of(:subject) }
+  end
+
   describe 'Nested Attributes' do
     %i[documents pending_documents honorary recommendations].each do |association|
       it { is_expected.to accept_nested_attributes_for(association).allow_destroy(true) }

@@ -98,5 +98,7 @@ class Work < ApplicationRecord
     labor_claim: 'reclamatoria_trabalhista'
   }
 
+  validates :subject, presence: true
+
   accepts_nested_attributes_for :documents, :pending_documents, :recommendations, :honorary, reject_if: :all_blank, allow_destroy: true
 end

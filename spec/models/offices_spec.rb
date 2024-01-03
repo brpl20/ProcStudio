@@ -51,4 +51,15 @@ RSpec.describe Office, type: :model do
     it { is_expected.to accept_nested_attributes_for(:emails) }
     it { is_expected.to accept_nested_attributes_for(:bank_accounts) }
   end
+
+  context 'Validations' do
+    it { is_expected.to validate_presence_of(:name) }
+    it { is_expected.to validate_presence_of(:cnpj) }
+    it { is_expected.to validate_presence_of(:city) }
+    it { is_expected.to validate_presence_of(:cep) }
+    it { is_expected.to validate_presence_of(:street) }
+    it { is_expected.to validate_presence_of(:number) }
+    it { is_expected.to validate_presence_of(:neighborhood) }
+    it { is_expected.to validate_presence_of(:state) }
+  end
 end
