@@ -47,4 +47,15 @@ class Office < ApplicationRecord
   has_many :works, through: :office_works
 
   accepts_nested_attributes_for :phones, :emails, :bank_accounts, reject_if: :all_blank
+
+  with_options presence: true do
+    validates :name
+    validates :cnpj
+    validates :city
+    validates :cep
+    validates :street
+    validates :number
+    validates :neighborhood
+    validates :state
+  end
 end
