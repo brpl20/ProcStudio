@@ -18,4 +18,13 @@
 class Address < ApplicationRecord
   has_many :admin_addresses, dependent: :destroy
   has_many :profile_admins, through: :admin_addresses
+
+  with_options presence: true do
+    validates :zip_code
+    validates :street
+    validates :number
+    validates :neighborhood
+    validates :city
+    validates :state
+  end
 end
