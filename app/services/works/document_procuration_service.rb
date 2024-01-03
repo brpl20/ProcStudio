@@ -66,7 +66,15 @@ module Works
     end
 
     def substitute_job(text)
-      translated_text = "Procedimento #{Work.human_enum_name(:procedure, @work.procedure).downcase.titleize}: #{Work.human_enum_name(:subject, @work.subject).downcase.titleize}"
+      translated_text =
+        if @work.procedure.present?
+          "Procedimento #{Work.human_enum_name(:procedure, @work.procedure).downcase.titleize}: #{Work.human_enum_name(:subject, @work.subject).downcase.titleize}"
+        else
+          @work.procedures.map do |procedure|
+            "Procedimento #{Work.human_enum_name(:procedure, procedure.downcase).downcase.titleize}: #{Work.human_enum_name(:subject, @work.subject).downcase.titleize}"
+          end.join(', ')
+        end
+
       text.substitute('_proc_job_', translated_text)
     end
 
