@@ -91,8 +91,16 @@ class ProfileCustomer < ApplicationRecord
                                 :phones, :emails, :bank_accounts, :represent,
                                 reject_if: :all_blank
 
-  validates :name, presence: true
-  validates :gender, presence: true
+  with_options presence: true do
+    validates :capacity
+    validates :civil_status
+    validates :cpf
+    validates :gender
+    validates :name
+    validates :nationality
+    validates :profession
+    validates :rg
+  end
 
   def full_name
     [name, last_name].join(' ')
