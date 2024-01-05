@@ -6,4 +6,10 @@ class ApplicationController < ActionController::API
   def not_found
     head :not_found
   end
+
+  protected
+
+  def truthy_param?(key)
+    ActiveModel::Type::Boolean.new.cast(params[key])
+  end
 end
