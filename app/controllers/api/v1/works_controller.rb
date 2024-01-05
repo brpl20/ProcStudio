@@ -44,6 +44,7 @@ module Api
 
       def update
         if @work.update(work_params)
+          Works::CreateDocumentService.call(@work) if truthy_param?(:regenerate_documents)
           render json: WorkSerializer.new(
             @work
           ), status: :ok
