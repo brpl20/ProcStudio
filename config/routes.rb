@@ -17,6 +17,10 @@ Rails.application.routes.draw do
       resources :works
       post '/login', to: 'auth#authenticate'
       delete '/logout', to: 'auth#destroy'
+
+      namespace :draft do
+        resources :works
+      end
     end
   end
 end

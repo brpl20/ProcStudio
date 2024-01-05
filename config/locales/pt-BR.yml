@@ -69,6 +69,7 @@
       profile_admin: Perfil de usuário
       profile_customer: Perfil de cliente
       work: Trabalho
+      draft/work: Rascunho de Trabalho
     attributes:
       admin:
         email: E-mail
@@ -202,12 +203,20 @@
         rate_parceled: Parcelamento
         rate_parceled_exfield: Parcelamento
         power_ids: Poderes
+      draft/work:
+        name: Nome
+        work: Trabalho
     errors:
       messages:
         record_invalid: 'A validação falhou: %{errors}'
         restrict_dependent_destroy:
           has_one: Não é possível excluir o registro pois existe um %{record} dependente
           has_many: Não é possível excluir o registro pois existem %{record} dependentes
+      models:
+        draft/work:
+          attributes:
+            name:
+              taken: "'%{value}' já está em uso"
   date:
     abbr_day_names:
     - dom
