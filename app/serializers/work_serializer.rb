@@ -3,26 +3,15 @@
 class WorkSerializer
   include JSONAPI::Serializer
 
-  attributes :procedure, :subject, :number, :civel_area, :social_security_areas, :laborite_areas,
+  attributes :procedure, :subject, :number, :civel_area, :social_security_areas,
              :other_description, :laborite_areas, :tributary_areas, :physical_lawyer, :responsible_lawyer,
              :partner_lawyer, :intern, :bachelor, :initial_atendee, :note, :folder, :rate_parceled_exfield,
              :extra_pending_document, :compensations_five_years, :compensations_service, :lawsuit,
-             :gain_projection, :physical_lawyer, :procedures
+             :gain_projection, :procedures, :honorary
 
   attribute :procurations_created do |object|
     object.documents.procurations.size
   end
-
-  # has_many :profile_customers, serializer: ProfileCustomerSerializer
-  # has_many :profile_admins,    serializer: ProfileAdminSerializer
-  # has_many :powers,            serializer: PowerSerializer
-  # has_many :documents,         serializer: DocumentSerializer
-  # has_many :pending_documents, serializer: PendingDocumentSerializer
-  # has_many :recommendations,   serializer: RecommendationSerializer
-  # has_many :jobs,              serializer: JobSerializer
-  # has_many :offices,           serializer: OfficeSerializer
-
-  attributes :honorary
 
   attribute :offices do |object|
     object.offices.map do |office|

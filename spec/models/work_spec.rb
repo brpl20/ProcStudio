@@ -40,6 +40,7 @@ RSpec.describe Work do
     subject(:work) { build(:work) }
 
     it { is_expected.to have_one(:honorary) }
+    it { is_expected.to have_one(:draft_work) }
     it { is_expected.to have_many_attached(:tributary_files) }
     it { is_expected.to have_many(:profile_customers) }
     it { is_expected.to have_many(:profile_admins) }
