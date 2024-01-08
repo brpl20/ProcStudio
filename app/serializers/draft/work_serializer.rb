@@ -1,17 +1,30 @@
+# frozen_string_literal: true
+
 class Draft::WorkSerializer
+  include JSONAPI::Serializer
+
+  attributes :name, :work_id
+
   attributes :procedure, :subject, :number, :civel_area, :social_security_areas,
-             :other_description, :laborite_areas, :tributary_areas, :physical_lawyer, :responsible_lawyer,
-             :partner_lawyer, :intern, :bachelor, :initial_atendee, :note, :folder, :rate_parceled_exfield,
-             :extra_pending_document, :compensations_five_years, :compensations_service, :lawsuit,
-             :gain_projection, :procedures, :office_ids, :profile_customer_ids, :profile_admin_ids
+             :other_description, :laborite_areas, :tributary_areas, :physical_lawyer,
+             :responsible_lawyer, :partner_lawyer, :intern, :bachelor, :initial_atendee,
+             :note, :folder, :rate_parceled_exfield, :extra_pending_document,
+             :compensations_five_years, :compensations_service, :lawsuit, :gain_projection,
+             :procedures, :offices, :honorary, :profile_customers, :profile_admins,
+             :powers, :recommendations, :jobs, :pending_documents, :documents,
+             if: proc { |_, options| options[:action] == 'show' }
 
   attribute :honorary do |object|
+    honorary = object.honorary
+
+    next if honorary.blank?
+
     {
-      fixed_honorary_value: object.honorary.fixed_honorary_value,
-      parcelling_value: object.honorary.parcelling_value,
-      honorary_type: object.honorary.honorary_type,
-      percent_honorary_value: object.honorary.percent_honorary_value,
-      parcelling: object.honorary.parcelling
+      fixed_honorary_value: honorary&.fixed_honorary_value,
+      parcelling_value: honorary&.parcelling_value,
+      honorary_type: honorary&.honorary_type,
+      percent_honorary_value: honorary&.percent_honorary_value,
+      parcelling: honorary&.parcelling
     }
   end
 
@@ -66,7 +79,13 @@ class Draft::WorkSerializer
   attribute :jobs do |object|
     object.jobs.map do |job|
       {
-        description: job.description
+        description: job.description,
+        deadline: job.deadline,
+        status: job.status,
+        priority: job.priority,
+        comment: job.comment,
+        profile_admin_id: job.profile_admin_id,
+        profile_customer_id: job.profile_customer_id
       }
     end
   end

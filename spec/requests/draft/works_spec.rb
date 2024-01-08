@@ -54,6 +54,7 @@ RSpec.describe '/draft/works', type: :request do
              params: { draft_work: invalid_attributes }, headers: valid_headers, as: :json
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.content_type).to match(a_string_including('application/json'))
+        expect(JSON.parse(response.body)['name']).to include('não pode ficar em branco')
       end
     end
   end
@@ -86,6 +87,7 @@ RSpec.describe '/draft/works', type: :request do
               params: { draft_work: invalid_attributes }, headers: valid_headers, as: :json
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.content_type).to match(a_string_including('application/json'))
+        expect(JSON.parse(response.body)['name']).to include('não pode ficar em branco')
       end
     end
   end
