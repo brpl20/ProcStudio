@@ -1,24 +1,25 @@
-# frozen_string_literal: true
-
-class WorkSerializer
-  include JSONAPI::Serializer
-
+class Draft::WorkSerializer
   attributes :procedure, :subject, :number, :civel_area, :social_security_areas,
              :other_description, :laborite_areas, :tributary_areas, :physical_lawyer, :responsible_lawyer,
              :partner_lawyer, :intern, :bachelor, :initial_atendee, :note, :folder, :rate_parceled_exfield,
              :extra_pending_document, :compensations_five_years, :compensations_service, :lawsuit,
-             :gain_projection, :procedures, :honorary
+             :gain_projection, :procedures, :office_ids, :profile_customer_ids, :profile_admin_ids
 
-  attribute :procurations_created do |object|
-    object.documents.procurations.size
+  attribute :honorary do |object|
+    {
+      fixed_honorary_value: object.honorary.fixed_honorary_value,
+      parcelling_value: object.honorary.parcelling_value,
+      honorary_type: object.honorary.honorary_type,
+      percent_honorary_value: object.honorary.percent_honorary_value,
+      parcelling: object.honorary.parcelling
+    }
   end
 
   attribute :offices do |object|
     object.offices.map do |office|
       {
         id: office.id,
-        name: office.name,
-        cnpj: office.cnpj
+        name: office.name
       }
     end
   end
@@ -27,7 +28,7 @@ class WorkSerializer
     object.profile_customers.map do |profile|
       {
         id: profile.id,
-        name: profile.name,
+        name: profile.full_name,
         email: profile.customer.email
       }
     end
@@ -37,7 +38,7 @@ class WorkSerializer
     object.profile_admins.map do |profile|
       {
         id: profile.id,
-        name: profile.name,
+        name: profile.full_name,
         email: profile.admin.email
       }
     end
@@ -55,7 +56,6 @@ class WorkSerializer
   attribute :recommendations do |object|
     object.recommendations.map do |recommendation|
       {
-        id: recommendation.id,
         commission: recommendation.commission,
         percentage: recommendation.percentage,
         profile_customer_id: recommendation.profile_customer_id
@@ -66,7 +66,6 @@ class WorkSerializer
   attribute :jobs do |object|
     object.jobs.map do |job|
       {
-        id: job.id,
         description: job.description
       }
     end
@@ -75,7 +74,6 @@ class WorkSerializer
   attribute :pending_documents do |object|
     object.pending_documents.map do |document|
       {
-        id: document.id,
         description: document.description
       }
     end
@@ -84,9 +82,7 @@ class WorkSerializer
   attribute :documents do |object|
     object.documents.map do |document|
       {
-        id: document.id,
-        document_type: document.document_type,
-        url: document.document_docx&.url
+        document_type: document.document_type
       }
     end
   end
