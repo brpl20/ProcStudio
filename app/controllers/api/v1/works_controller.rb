@@ -14,12 +14,18 @@ module Api
           :jobs,
           :documents,
           :pending_documents
-        ).all
+        ).all.order(id: :desc).limit(params[:limit])
+
+        filtering_params.each do |key, value|
+          next unless value.present?
+
+          works = works.public_send("filter_by_#{key}", value)
+        end
 
         render json: WorkSerializer.new(
           works,
           meta: {
-            total_count: works.offset(nil).limit(nil).count
+            total_count: works.size
           }
         ), status: :ok
       end
@@ -87,6 +93,10 @@ module Api
           office_ids: [],
           procedures: []
         )
+      end
+
+      def filtering_params
+        params.permit(:customer_id)
       end
     end
   end
