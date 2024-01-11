@@ -102,4 +102,6 @@ class Work < ApplicationRecord
   validates :subject, presence: true
 
   accepts_nested_attributes_for :documents, :pending_documents, :recommendations, :honorary, reject_if: :all_blank, allow_destroy: true
+
+  scope :filter_by_customer_id, ->(customer_id) { joins(:profile_customers).where(profile_customers: { id: customer_id }) }
 end

@@ -121,4 +121,16 @@ RSpec.describe Work do
       it { is_expected.to accept_nested_attributes_for(association).allow_destroy(true) }
     end
   end
+
+  describe 'Class Methods' do
+    it '.filter_by_customer_id' do
+      profile_customer = create(:profile_customer)
+      works = create_list(:work, 3)
+      works.first(2).each do |work|
+        create(:customer_work, profile_customer: profile_customer, work: work)
+      end
+
+      expect(described_class.filter_by_customer_id(profile_customer.id).count).to eq(2)
+    end
+  end
 end
