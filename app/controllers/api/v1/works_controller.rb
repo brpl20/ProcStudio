@@ -14,7 +14,7 @@ module Api
           :jobs,
           :documents,
           :pending_documents
-        ).all.limit(params[:limit])
+        ).all.order(id: :desc).limit(params[:limit])
 
         filtering_params.each do |key, value|
           next unless value.present?
