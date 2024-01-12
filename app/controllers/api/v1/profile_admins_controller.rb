@@ -60,7 +60,7 @@ module Api
       def profile_admins_params
         params.require(:profile_admin).permit(
           :role, :status, :admin_id, :office_id, :name, :last_name, :gender, :oab,
-          :rg, :cpf, :nationality, :civil_status, :birth, :mother_name,
+          :rg, :cpf, :nationality, :civil_status, :birth, :mother_name, :origin,
           admin_attributes: %i[id email password password_confirmation],
           office_attributes: %i[name cnpj],
           addresses_attributes: %i[id description zip_code street number neighborhood city state],

@@ -8,6 +8,8 @@ class ProfileAdminSerializer
     object.admin.email
   end
 
-  attributes :status, :admin_id, :office_id, :gender, :oab,
-             :rg, :cpf, :nationality, :civil_status, :birth, :mother_name, :office_id, :addresses, :phones, :emails, :bank_accounts, if: proc { |_, options| options[:action] == 'show' }
+  attributes :status, :admin_id, :office_id, :gender, :oab, :rg, :cpf,
+             :nationality, :origin, :civil_status, :birth, :mother_name,
+             :office_id, :addresses, :phones, :emails, :bank_accounts,
+             if: proc { |_, options| options[:action] == 'show' }
 end

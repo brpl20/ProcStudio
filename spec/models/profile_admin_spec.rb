@@ -22,7 +22,8 @@ RSpec.describe ProfileAdmin, type: :model do
         admin_id: nil,
         created_at: nil,
         updated_at: nil,
-        office_id: 1
+        office_id: 1,
+        origin: nil
       )
     }
   end
