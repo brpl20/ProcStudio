@@ -14,6 +14,7 @@ FactoryBot.define do
     birth { Faker::Date.birthday(min_age: 18, max_age: 65) }
     mother_name { Faker::Name.name }
     status { 'active' }
+    origin { 'something' }
     admin
     office
   end
