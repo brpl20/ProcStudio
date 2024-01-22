@@ -30,7 +30,8 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               'cnpj' => profile_customer.cnpj,
               'default_phone' => nil,
               'default_email' => nil,
-              'city' => nil
+              'city' => nil,
+              'customer_files' => []
             }
           }],
           'meta' => {
@@ -272,7 +273,8 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               'default_email' => nil,
               'city' => nil,
               'represent' => nil,
-              'accountant_id' => nil
+              'accountant_id' => nil,
+              'customer_files' => []
             }
           }
         )
