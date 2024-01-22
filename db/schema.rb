@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_01_12_103624) do
+ActiveRecord::Schema[7.0].define(version: 2024_01_22_112408) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -411,9 +411,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_12_103624) do
     t.bigint "profile_customer_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "profile_admin_id", null: false
-    t.index ["profile_admin_id"], name: "index_represents_on_profile_admin_id"
+    t.bigint "representor_id"
     t.index ["profile_customer_id"], name: "index_represents_on_profile_customer_id"
+    t.index ["representor_id"], name: "index_represents_on_representor_id"
   end
 
   create_table "works", force: :cascade do |t|
@@ -491,6 +491,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_12_103624) do
   add_foreign_key "profile_customers", "customers"
   add_foreign_key "recommendations", "profile_customers"
   add_foreign_key "recommendations", "works"
-  add_foreign_key "represents", "profile_admins"
   add_foreign_key "represents", "profile_customers"
+  add_foreign_key "represents", "profile_customers", column: "representor_id"
 end
