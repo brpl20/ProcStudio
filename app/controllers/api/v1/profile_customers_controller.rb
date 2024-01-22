@@ -81,7 +81,7 @@ module Api
           customer_attributes: %i[id email password password_confirmation],
           phones_attributes: %i[id phone_number],
           emails_attributes: %i[id email],
-          represent_attributes: %i[id profile_admin_id],
+          represent_attributes: %i[id representor_id],
           customer_files_attributes: %i[id file_description]
         )
       end
