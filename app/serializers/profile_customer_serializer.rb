@@ -21,4 +21,17 @@ class ProfileCustomerSerializer
   attribute :city do |object|
     object.addresses.first&.city
   end
+
+  attribute :customer_files do |object|
+    object.customer_files.map do |document|
+      {
+        id: document.id,
+        file_description: document.file_description,
+        profile_customer_id: document.profile_customer_id,
+        created_at: document.created_at,
+        updated_at: document.updated_at,
+        url: document.document_docx&.url
+      }
+    end
+  end
 end

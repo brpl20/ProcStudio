@@ -23,7 +23,12 @@ module ProfileCustomers
         end
       end
       doc.save("tmp/procuracao_simples_#{@document.id}.docx")
-      @document.document_docx.attach(io: File.open("tmp/procuracao_simples_#{@document.id}.docx"), filename: "procuracao_simples_#{@document.id}.docx")
+      blob = ActiveStorage::Blob.create_and_upload!(
+        io: File.open("tmp/procuracao_simples_#{@document.id}.docx"),
+        filename: "procuracao_simples_#{@document.id}.docx",
+        service_name: service_name
+      )
+      @document.document_docx.attach(blob)
       FileUtils.remove_file("tmp/procuracao_simples_#{@document.id}.docx", true)
     end
 
@@ -85,6 +90,15 @@ module ProfileCustomers
     # translate word using gender
     def word_for_gender(text, gender)
       I18n.t("gender.#{text}.#{gender}")
+    end
+
+    private
+
+    def service_name
+      return :local if Rails.env.development?
+      return :test  if Rails.env.test?
+
+      :amazon
     end
   end
 end
