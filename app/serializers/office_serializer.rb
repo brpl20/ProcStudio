@@ -6,7 +6,7 @@ class OfficeSerializer
 
   attributes :oab, :society, :foundation, :cep, :street, :number, :neighborhood,
              :state, :profile_admins, :phones, :emails, :bank_accounts, :works,
-             if: proc { |_, options| options[:action] == 'show' }
+             :accounting_type, if: proc { |_, options| options[:action] == 'show' }
 
   attribute :office_type_description do |object|
     object.office_type.description
