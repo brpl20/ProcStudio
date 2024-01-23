@@ -82,6 +82,7 @@ module Api
           :number, :neighborhood,
           :city, :state,
           :logo,
+          :accounting_type,
           :office_type_id,
           :responsible_lawyer_id,
           phones_attributes: %i[id phone_number],
