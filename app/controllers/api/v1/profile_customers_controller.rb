@@ -41,7 +41,11 @@ module Api
 
       def update
         if @profile_customer.update(profile_customers_params)
-          head :ok
+          ProfileCustomers::CreateDocumentService.call(@profile_customer, @current_admin) if truthy_param?(:regenerate_documents)
+          render json: ProfileCustomerSerializer.new(
+            @profile_customer,
+            params: { action: 'show' }
+          ), status: :ok
         else
           render(
             status: :bad_request,
