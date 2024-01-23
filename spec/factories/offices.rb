@@ -6,6 +6,7 @@ FactoryBot.define do
     cnpj { Faker::Number.number(digits: 14) }
     oab { Faker::Number.number(digits: 6) }
     society { 'company' }
+    accounting_type { 'simple' }
     foundation { Faker::Date.birthday(min_age: 18, max_age: 65) }
     site { Faker::Internet.url }
     cep { Faker::Address.postcode }
