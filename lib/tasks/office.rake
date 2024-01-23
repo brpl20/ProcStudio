@@ -14,6 +14,7 @@ namespace :cad do
         cnpj: Faker::Company.brazilian_company_number,
         oab: Faker::Number.number(digits: 5),
         society: 'individual',
+        accounting_type: 'simple',
         foundation: Faker::Date.backward(days: 14),
         site: Faker::Internet.domain_name,
         cep: Faker::Number.number(digits: 5),
