@@ -22,7 +22,8 @@ RSpec.describe Office, type: :model do
         office_type_id: nil,
         created_at: nil,
         updated_at: nil,
-        responsible_lawyer_id: nil
+        responsible_lawyer_id: nil,
+        accounting_type: nil
       )
     }
   end
@@ -61,5 +62,25 @@ RSpec.describe Office, type: :model do
     it { is_expected.to validate_presence_of(:number) }
     it { is_expected.to validate_presence_of(:neighborhood) }
     it { is_expected.to validate_presence_of(:state) }
+  end
+
+  describe 'Enums' do
+    it do
+      is_expected.to define_enum_for(:society)
+        .with_values(
+          sole_proprietorship: 'sole_proprietorship',
+          company: 'company',
+          individual: 'individual'
+        ).backed_by_column_of_type(:string)
+    end
+
+    it do
+      is_expected.to define_enum_for(:accounting_type)
+        .with_values(
+          simple: 'simple',
+          real_profit: 'real_profit',
+          presumed_profit: 'presumed_profit'
+        ).backed_by_column_of_type(:string)
+    end
   end
 end

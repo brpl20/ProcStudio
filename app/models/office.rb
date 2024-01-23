@@ -21,6 +21,7 @@
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
 #  responsible_lawyer_id :integer
+#  accounting_type       :string
 #
 class Office < ApplicationRecord
   belongs_to :office_type
@@ -34,6 +35,13 @@ class Office < ApplicationRecord
     company: 'company',
     individual: 'individual'
   }
+
+  enum accounting_type: {              # enquadramento contabil
+    simple: 'simple',                  # simples
+    real_profit: 'real_profit',        # lucro real
+    presumed_profit: 'presumed_profit' # lucro presumido
+  }
+
   has_many :office_phones, dependent: :destroy
   has_many :phones, through: :office_phones
 
