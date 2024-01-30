@@ -2,19 +2,19 @@
 
 class Admin::CustomerPolicy < Admin::BasePolicy
   def index?
-    lawyer?
+    lawyer? || paralegal?
   end
 
   def show?
-    lawyer?
+    lawyer? || paralegal?
   end
 
   def create?
-    lawyer?
+    lawyer? || paralegal?
   end
 
   def update?
-    lawyer?
+    lawyer? || paralegal?
   end
 
   def destroy?

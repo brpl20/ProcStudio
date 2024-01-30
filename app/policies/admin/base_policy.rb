@@ -2,7 +2,7 @@
 
 class Admin::BasePolicy < ApplicationPolicy
   def role
-    @role ||= user.profile_admin.role
+    @role ||= user&.profile_admin&.role
   end
 
   ProfileAdmin.roles.each_key do |role|
