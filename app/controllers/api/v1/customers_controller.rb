@@ -4,6 +4,9 @@ module Api
   module V1
     class CustomersController < BackofficeController
       before_action :retrieve_customer, only: %i[update show]
+      before_action :perform_authorization
+
+      after_action :verify_authorized
 
       def index
         customers = Customer.all
@@ -65,6 +68,10 @@ module Api
         @customer = Customer.find(params[:id])
       rescue ActiveRecord::RecordNotFound
         head :not_found
+      end
+
+      def perform_authorization
+        authorize [:admin, :customer], "#{action_name}?".to_sym
       end
     end
   end
