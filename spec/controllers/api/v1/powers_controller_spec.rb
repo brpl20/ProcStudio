@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::PowersController, type: :request do
-  let!(:admin) { create(:admin) }
+  let!(:admin) { create(:profile_admin).admin }
 
   describe '#index' do
     let!(:power) { create(:power) }

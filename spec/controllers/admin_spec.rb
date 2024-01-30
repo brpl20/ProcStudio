@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Admins', type: :request do
-  let(:admin) { create(:admin) } # cria o usuário de teste com o token JWT válido
+  let(:admin) { create(:profile_admin).admin } # cria o usuário de teste com o token JWT válido
 
   describe 'GET /api/v1/admins' do
     context 'Quando autenticado' do

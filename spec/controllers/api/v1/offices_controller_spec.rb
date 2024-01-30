@@ -3,10 +3,10 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::OfficesController, type: :request do
-  let!(:admin) { create(:admin) }
+  let!(:admin) { create(:profile_admin).admin }
 
   describe '#index' do
-    let!(:office) { create(:office) }
+    let(:office) { admin.profile_admin.office }
 
     context 'when request is valid' do
       before do
@@ -271,8 +271,7 @@ RSpec.describe Api::V1::OfficesController, type: :request do
   end
 
   describe 'GET /api/v1/offices/with_lawyers' do
-    let!(:office) { create(:office) }
-    let!(:profile_admin) { create(:profile_admin, office: office) }
+    let(:profile_admin) { admin.profile_admin }
     context 'when the request is successful' do
       before do
         get '/api/v1/offices/with_lawyers', headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }

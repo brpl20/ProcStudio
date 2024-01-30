@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe '/draft/works', type: :request do
-  let!(:admin) { create(:admin) }
+  let!(:admin) { create(:profile_admin).admin }
 
   let(:valid_attributes) { { name: 'Procuração Cliente XYZ', work_id: create(:work).id } }
   let(:invalid_attributes) { attributes_for(:draft_work, name: nil) }
@@ -20,7 +20,7 @@ RSpec.describe '/draft/works', type: :request do
   describe 'GET /show' do
     it 'renders a successful response' do
       work = Draft::Work.create! valid_attributes
-      get api_v1_draft_work_url(work), as: :json
+      get api_v1_draft_work_url(work), headers: valid_headers, as: :json
       expect(response).to be_successful
     end
   end

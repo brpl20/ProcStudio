@@ -3,12 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::ProfileAdminsController, type: :request do
-  let!(:admin) { create(:admin) }
-  let!(:office) { create(:office) }
+  let!(:profile_admin) { create(:profile_admin) }
+  let(:admin) { profile_admin.admin }
+  let(:office) { profile_admin.office }
 
   describe '#index' do
-    let!(:profile_admin) { create(:profile_admin, admin: admin, office: office) }
-
     context 'when request is valid' do
       before do
         get '/api/v1/profile_admins', headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }

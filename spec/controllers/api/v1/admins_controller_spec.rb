@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::AdminsController, type: :request do
-  let!(:admin) { create(:admin) }
+  let!(:admin) { create(:profile_admin).admin }
   let!(:office) { create(:office) }
 
   describe '#index' do
@@ -25,10 +25,24 @@ RSpec.describe Api::V1::AdminsController, type: :request do
               'email' => admin.email
             },
             'relationships' => {
-              'profile_admin' => { 'data' => nil }
+              'profile_admin' => {
+                'data' => {
+                  'id' => admin.profile_admin.id.to_s,
+                  'type' => 'profile_admin'
+                }
+              }
             }
           }],
-          'included' => [],
+          'included' => [
+            'id' => admin.profile_admin.id.to_s,
+            'type' => 'profile_admin',
+            'attributes' => {
+              'role' => admin.profile_admin.role,
+              'name' => admin.profile_admin.name,
+              'last_name' => admin.profile_admin.last_name,
+              'email' => admin.email
+            }
+          ],
           'meta' => {
             'total_count' => 1
           }
@@ -44,7 +58,7 @@ RSpec.describe Api::V1::AdminsController, type: :request do
     end
   end
   describe 'create' do
-    let(:admin) { create(:admin) }
+    let(:admin) { create(:profile_admin).admin }
     context 'when request is valid' do
       it 'returns :ok' do
         post '/api/v1/admins', params: {
@@ -95,10 +109,10 @@ RSpec.describe Api::V1::AdminsController, type: :request do
     end
   end
   describe 'update' do
-    let!(:admin) { create(:admin, id: 5) }
+    let!(:admin) { create(:profile_admin).admin }
     context 'when request is valid' do
       it 'returns :ok' do
-        put '/api/v1/admins/5', params: {
+        put "/api/v1/admins/#{admin.id}", params: {
           admin: {
             email: 'emailnovo@gmail.com'
           }
@@ -113,7 +127,12 @@ RSpec.describe Api::V1::AdminsController, type: :request do
               'email' => 'emailnovo@gmail.com'
             },
             'relationships' => {
-              'profile_admin' => { 'data' => nil }
+              'profile_admin' => {
+                'data' => {
+                  'id' => admin.profile_admin.id.to_s,
+                  'type' => 'profile_admin'
+                }
+              }
             }
           }
         )
@@ -121,18 +140,19 @@ RSpec.describe Api::V1::AdminsController, type: :request do
     end
     context 'when update tries to make an request without token' do
       it 'returns :unauthorized' do
-        put '/api/v1/admins/5', params: {}
+        put "/api/v1/admins/#{admin.id}", params: {}
 
         expect(response).to have_http_status(:unauthorized)
       end
     end
   end
   describe 'show' do
-    let!(:admin) { create(:admin, id: 5) }
+    let!(:admin) { create(:profile_admin).admin }
     context 'when request is valid' do
       it 'returns :ok' do
-        get '/api/v1/admins/5',
-            headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        get "/api/v1/admins/#{admin.id}", headers: {
+          Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json'
+        }
         expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body)).to eq(
           'data' => {
@@ -142,16 +162,30 @@ RSpec.describe Api::V1::AdminsController, type: :request do
               'email' => admin.email
             },
             'relationships' => {
-              'profile_admin' => { 'data' => nil }
+              'profile_admin' => {
+                'data' => {
+                  'id' => admin.profile_admin.id.to_s,
+                  'type' => 'profile_admin'
+                }
+              }
             }
           },
-          'included' => []
+          'included' => [
+            'id' => admin.profile_admin.id.to_s,
+            'type' => 'profile_admin',
+            'attributes' => {
+              'role' => admin.profile_admin.role,
+              'name' => admin.profile_admin.name,
+              'last_name' => admin.profile_admin.last_name,
+              'email' => admin.email
+            }
+          ]
         )
       end
     end
     context 'when show tries to make an request without token' do
       it 'returns :unauthorized' do
-        get '/api/v1/admins/5', params: {}
+        get "/api/v1/admins/#{admin.id}", params: {}
 
         expect(response).to have_http_status(:unauthorized)
       end

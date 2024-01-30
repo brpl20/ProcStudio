@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::CustomersController, type: :request do
-  let!(:admin) { create(:admin) }
+  let!(:admin) { create(:profile_admin).admin }
 
   describe '#index' do
     let!(:customer) { create(:customer) }

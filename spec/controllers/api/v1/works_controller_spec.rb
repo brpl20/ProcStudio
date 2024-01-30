@@ -3,8 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::WorksController, type: :request do
-  let!(:admin) { create(:admin) }
-  let!(:office) { create(:office) }
+  let!(:admin) { create(:profile_admin).admin }
+  let(:office) { admin.profile_admin.office }
 
   describe '#index' do
     let!(:work) { create(:work) }
