@@ -4,6 +4,9 @@ module Api
   module V1
     class PowersController < BackofficeController
       before_action :retrieve_power, only: %i[update show]
+      before_action :perform_authorization
+
+      after_action :verify_authorized
 
       def index
         powers = Power.all
@@ -63,6 +66,10 @@ module Api
         @power = Power.find(params[:id])
       rescue ActiveRecord::RecordNotFound
         head :not_found
+      end
+
+      def perform_authorization
+        authorize [:admin, :power], "#{action_name}?".to_sym
       end
     end
   end
