@@ -4,6 +4,9 @@ module Api
   module V1
     class AdminsController < BackofficeController
       before_action :retrieve_admin, only: %i[update show]
+      before_action :perform_authorization
+
+      after_action :verify_authorized
 
       def index
         admins = Admin.includes(:profile_admin).all
@@ -70,6 +73,10 @@ module Api
 
       def retrieve_admin
         @admin = Admin.find(params[:id])
+      end
+
+      def perform_authorization
+        authorize [:admin, :admin], "#{action_name}?".to_sym
       end
     end
   end
