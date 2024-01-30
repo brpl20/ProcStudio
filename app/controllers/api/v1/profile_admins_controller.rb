@@ -4,6 +4,9 @@ module Api
   module V1
     class ProfileAdminsController < BackofficeController
       before_action :retrieve_profile_admin, only: %i[update show]
+      before_action :perform_authorization
+
+      after_action :verify_authorized
 
       def index
         profile_admins = ProfileAdmin.all
@@ -72,6 +75,10 @@ module Api
 
       def retrieve_profile_admin
         @profile_admin = ProfileAdmin.find(params[:id])
+      end
+
+      def perform_authorization
+        authorize [:admin, :work], "#{action_name}?".to_sym
       end
     end
   end
