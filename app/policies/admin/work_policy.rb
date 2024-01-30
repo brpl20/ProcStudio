@@ -2,19 +2,19 @@
 
 class Admin::WorkPolicy < Admin::BasePolicy
   def index?
-    lawyer? || paralegal?
+    lawyer? || paralegal? || trainee? || secretary? || excounter?
   end
 
   def show?
-    lawyer? || paralegal?
+    lawyer? || paralegal? || trainee? || secretary? || excounter?
   end
 
   def create?
-    lawyer? || paralegal?
+    lawyer? || paralegal? || trainee? || secretary?
   end
 
   def update?
-    lawyer? || paralegal?
+    lawyer? || paralegal? || trainee? || secretary?
   end
 
   def destroy?
