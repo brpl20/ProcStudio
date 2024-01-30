@@ -17,8 +17,9 @@
 # See https://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
 require 'simplecov'
-
 SimpleCov.start 'rails'
+
+require 'pundit/rspec'
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
