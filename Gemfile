@@ -12,6 +12,7 @@ gem 'jsonapi-serializer'
 gem 'jwt'
 gem 'pg'
 gem 'puma', '~> 5.0'
+gem 'pundit'
 gem 'rack-cors'
 gem 'rails', '~> 7.0.4', '>= 7.0.4.2'
 gem 'rubocop', '~> 1.48', require: false
