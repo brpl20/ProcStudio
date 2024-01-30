@@ -6,6 +6,9 @@ module Api
   module V1
     class ProfileCustomersController < BackofficeController
       before_action :retrieve_customer, only: %i[update show]
+      before_action :perform_authorization
+
+      after_action :verify_authorized
 
       def index
         profile_customers = ProfileCustomerFilter.retrieve_customers
@@ -88,6 +91,10 @@ module Api
           represent_attributes: %i[id representor_id],
           customer_files_attributes: %i[id file_description]
         )
+      end
+
+      def perform_authorization
+        authorize [:admin, :work], "#{action_name}?".to_sym
       end
     end
   end
