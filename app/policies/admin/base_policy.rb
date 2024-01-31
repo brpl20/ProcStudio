@@ -5,9 +5,14 @@ class Admin::BasePolicy < ApplicationPolicy
     @role ||= user&.profile_admin&.role
   end
 
+  # Define methods for each role
+  #
+  # def lawyer?
+  #  self.role == 'lawyer'
+  # end
   ProfileAdmin.roles.each_key do |role|
-    define_method("#{role}?") do # def lawyer?
-      self.role == role          #  self.role == 'lawyer'
+    define_method("#{role}?") do
+      self.role == role
     end
   end
 end
