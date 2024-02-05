@@ -194,22 +194,22 @@ RSpec.describe Api::V1::JobsController, type: :request do
         expect(response).to have_http_status(:not_found)
       end
     end
+  end
 
-    describe 'destroy' do
-      let!(:job) { create(:job, :job_complete, id: 5) }
-      context 'when request is valid' do
-        it 'returns :no_content' do
-          delete '/api/v1/jobs/5',
-                 headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
-          expect(response).to have_http_status(:no_content)
-        end
+  describe 'destroy' do
+    let!(:job) { create(:job, :job_complete, id: 5) }
+    context 'when request is valid' do
+      it 'returns :no_content' do
+        delete '/api/v1/jobs/5',
+               headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        expect(response).to have_http_status(:no_content)
       end
-      context 'when destroy tries to make an request without token' do
-        it 'returns :unauthorized' do
-          delete '/api/v1/jobs/5', params: {}
+    end
+    context 'when destroy tries to make an request without token' do
+      it 'returns :unauthorized' do
+        delete '/api/v1/jobs/5', params: {}
 
-          expect(response).to have_http_status(:unauthorized)
-        end
+        expect(response).to have_http_status(:unauthorized)
       end
     end
   end
