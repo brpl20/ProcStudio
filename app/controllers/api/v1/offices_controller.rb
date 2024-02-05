@@ -54,11 +54,7 @@ module Api
       end
 
       def destroy
-        if @office.destroy
-          render head :not_found
-        else
-          render json: { errors: office.errors.full_messages }, status: :unprocessable_entity
-        end
+        @office.destroy
       end
 
       def with_lawyers
