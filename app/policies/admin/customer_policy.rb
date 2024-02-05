@@ -18,6 +18,6 @@ class Admin::CustomerPolicy < Admin::BasePolicy
   end
 
   def destroy?
-    lawyer?
+    lawyer? || paralegal? || secretary?
   end
 end

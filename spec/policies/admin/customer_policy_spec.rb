@@ -48,7 +48,7 @@ RSpec.describe Admin::CustomerPolicy, type: :policy do
     end
 
     permissions :destroy? do
-      it { is_expected.not_to permit(admin, nil) }
+      it { is_expected.to permit(admin, nil) }
     end
   end
 
@@ -96,7 +96,7 @@ RSpec.describe Admin::CustomerPolicy, type: :policy do
     end
 
     permissions :destroy? do
-      it { is_expected.not_to permit(admin, nil) }
+      it { is_expected.to permit(admin, nil) }
     end
   end
 

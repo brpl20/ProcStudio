@@ -18,6 +18,6 @@ class Admin::WorkPolicy < Admin::BasePolicy
   end
 
   def destroy?
-    lawyer? || paralegal?
+    lawyer? || paralegal? || secretary?
   end
 end

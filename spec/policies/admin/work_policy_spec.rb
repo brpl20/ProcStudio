@@ -96,7 +96,7 @@ RSpec.describe Admin::WorkPolicy, type: :policy do
     end
 
     permissions :destroy? do
-      it { is_expected.not_to permit(admin, nil) }
+      it { is_expected.to permit(admin, nil) }
     end
   end
 
