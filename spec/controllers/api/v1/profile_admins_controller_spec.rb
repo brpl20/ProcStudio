@@ -111,4 +111,21 @@ RSpec.describe Api::V1::ProfileAdminsController, type: :request do
       end
     end
   end
+
+  describe 'destroy' do
+    context 'when request is valid' do
+      it 'returns :no_content' do
+        delete "/api/v1/profile_admins/#{profile_admin.id}", headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+
+        expect(response).to have_http_status(:no_content)
+      end
+    end
+    context 'when request is invalid' do
+      it 'returns :unauthorized' do
+        delete "/api/v1/profile_admins/#{profile_admin.id}", params: {}
+
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+  end
 end

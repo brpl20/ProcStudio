@@ -3,7 +3,7 @@
 module Api
   module V1
     class ProfileAdminsController < BackofficeController
-      before_action :retrieve_profile_admin, only: %i[update show]
+      before_action :retrieve_profile_admin, only: %i[update show destroy]
       before_action :perform_authorization
 
       after_action :verify_authorized
@@ -56,6 +56,10 @@ module Api
           @profile_admin,
           params: { action: 'show' }
         ), status: :ok
+      end
+
+      def destroy
+        @profile_admin.destroy
       end
 
       private
