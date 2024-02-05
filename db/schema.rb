@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_01_23_102814) do
+ActiveRecord::Schema[7.0].define(version: 2024_02_05_122542) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -176,6 +176,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_23_102814) do
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_customers_on_deleted_at"
     t.index ["email"], name: "index_customers_on_email", unique: true
     t.index ["reset_password_token"], name: "index_customers_on_reset_password_token", unique: true
   end
@@ -394,8 +396,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_23_102814) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "accountant_id"
+    t.datetime "deleted_at"
     t.index ["accountant_id"], name: "index_profile_customers_on_accountant_id"
     t.index ["customer_id"], name: "index_profile_customers_on_customer_id"
+    t.index ["deleted_at"], name: "index_profile_customers_on_deleted_at"
   end
 
   create_table "recommendations", force: :cascade do |t|
