@@ -3,7 +3,7 @@
 module Api
   module V1
     class PowersController < BackofficeController
-      before_action :retrieve_power, only: %i[update show]
+      before_action :retrieve_power, only: %i[update show destroy]
       before_action :perform_authorization
 
       after_action :verify_authorized
@@ -54,6 +54,10 @@ module Api
         render json: PowerSerializer.new(
           @power
         ), status: :ok
+      end
+
+      def destroy
+        @power.destroy
       end
 
       private
