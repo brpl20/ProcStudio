@@ -5,7 +5,7 @@ require 'tempfile'
 module Api
   module V1
     class ProfileCustomersController < BackofficeController
-      before_action :retrieve_customer, only: %i[update show]
+      before_action :retrieve_customer, only: %i[update show destroy]
       before_action :perform_authorization
 
       after_action :verify_authorized
@@ -62,6 +62,10 @@ module Api
           @profile_customer,
           { params: { action: 'show' } }
         ), status: :ok
+      end
+
+      def destroy
+        @profile_customer.destroy
       end
 
       private
