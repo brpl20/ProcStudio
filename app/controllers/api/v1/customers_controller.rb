@@ -3,7 +3,7 @@
 module Api
   module V1
     class CustomersController < BackofficeController
-      before_action :retrieve_customer, only: %i[update show]
+      before_action :retrieve_customer, only: %i[update show destroy]
       before_action :perform_authorization
 
       after_action :verify_authorized
@@ -54,6 +54,10 @@ module Api
         render json: CustomerSerializer.new(
           @customer
         ), status: :ok
+      end
+
+      def destroy
+        @customer.destroy
       end
 
       private
