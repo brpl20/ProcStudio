@@ -72,6 +72,10 @@ module Api
         ), status: :ok
       end
 
+      def destroy
+        @work.destroy
+      end
+
       private
 
       def set_work
