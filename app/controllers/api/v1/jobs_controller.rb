@@ -56,11 +56,7 @@ module Api
       end
 
       def destroy
-        if @job.destroy
-          render head :not_found
-        else
-          render json: { errors: job.errors.full_messages }, status: :unprocessable_entity
-        end
+        @job.destroy
       end
 
       private
