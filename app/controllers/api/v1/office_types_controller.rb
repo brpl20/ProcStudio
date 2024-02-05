@@ -59,11 +59,7 @@ module Api
 
       # DELETE api/v1/office_types/:id
       def destroy
-        if @office_type.destroy
-          head :not_found
-        else
-          render json: { errors: @office_type.errors.full_messages }, status: :unprocessable_entity
-        end
+        @office_type.destroy
       end
 
       private

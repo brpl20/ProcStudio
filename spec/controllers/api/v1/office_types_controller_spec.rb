@@ -139,16 +139,19 @@ RSpec.describe Api::V1::OfficeTypesController, type: :request do
   end
 
   describe '#destroy (DELETE api/v1/office_types/:id)' do
-    let!(:office_type) { create(:office_type) }
-
-    context 'when a request is valid' do
-      before do
-        delete "/api/v1/office_types/#{office_type.id}", params: {}, headers: valid_header
+    let(:office_type) { create(:office_type) }
+    context 'when request is valid' do
+      it 'returns :no_content' do
+        delete "/api/v1/office_types/#{office_type.id}",
+               headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        expect(response).to have_http_status(:no_content)
       end
+    end
+    context 'when destroy tries to make an request without token' do
+      it 'returns :unauthorized' do
+        delete "/api/v1/office_types/#{office_type.id}", params: {}
 
-      it 'returns status code 404 (not_found)' do
-        expect(response).to have_http_status(:not_found)
-        expect(OfficeType.exists?(office_type.id)).to eq(false)
+        expect(response).to have_http_status(:unauthorized)
       end
     end
   end
