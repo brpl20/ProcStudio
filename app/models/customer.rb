@@ -22,6 +22,6 @@ class Customer < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
-  has_one :profile_customer
+  has_one :profile_customer, dependent: :destroy
   has_many :jobs
 end

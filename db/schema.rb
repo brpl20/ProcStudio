@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_02_05_122542) do
+ActiveRecord::Schema[7.0].define(version: 2024_02_06_094947) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -120,7 +120,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_05_122542) do
     t.bigint "address_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
     t.index ["address_id"], name: "index_customer_addresses_on_address_id"
+    t.index ["deleted_at"], name: "index_customer_addresses_on_deleted_at"
     t.index ["profile_customer_id"], name: "index_customer_addresses_on_profile_customer_id"
   end
 
@@ -129,7 +131,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_05_122542) do
     t.bigint "bank_account_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
     t.index ["bank_account_id"], name: "index_customer_bank_accounts_on_bank_account_id"
+    t.index ["deleted_at"], name: "index_customer_bank_accounts_on_deleted_at"
     t.index ["profile_customer_id"], name: "index_customer_bank_accounts_on_profile_customer_id"
   end
 
@@ -138,6 +142,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_05_122542) do
     t.bigint "email_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_customer_emails_on_deleted_at"
     t.index ["email_id"], name: "index_customer_emails_on_email_id"
     t.index ["profile_customer_id"], name: "index_customer_emails_on_profile_customer_id"
   end
@@ -147,6 +153,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_05_122542) do
     t.bigint "profile_customer_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_customer_files_on_deleted_at"
     t.index ["profile_customer_id"], name: "index_customer_files_on_profile_customer_id"
   end
 
@@ -155,6 +163,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_05_122542) do
     t.bigint "phone_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_customer_phones_on_deleted_at"
     t.index ["phone_id"], name: "index_customer_phones_on_phone_id"
     t.index ["profile_customer_id"], name: "index_customer_phones_on_profile_customer_id"
   end
@@ -164,6 +174,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_05_122542) do
     t.bigint "work_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_customer_works_on_deleted_at"
     t.index ["profile_customer_id"], name: "index_customer_works_on_profile_customer_id"
     t.index ["work_id"], name: "index_customer_works_on_work_id"
   end
