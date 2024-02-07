@@ -24,4 +24,6 @@ class Customer < ApplicationRecord
 
   has_one :profile_customer, dependent: :destroy
   has_many :jobs
+
+  delegate :full_name, to: :profile_customer, prefix: true, allow_nil: true
 end
