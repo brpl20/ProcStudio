@@ -13,6 +13,7 @@
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #  deleted_at             :datetime
+#  jwt_token              :string
 #
 class Customer < ApplicationRecord
   acts_as_paranoid
