@@ -12,6 +12,17 @@ module JwtAuth
     head :unauthorized
   end
 
+  def authenticate_customer
+    token = request.headers['Authorization']&.split(' ')&.last
+    payload, _header = decode_token(token)
+
+    @current_customer ||= customer.find(payload['customer_id'])
+    head :unauthorized unless @current_customer&.jwt_token == token
+    head :unauthorized unless valid_token?(token)
+  rescue JWT::DecodeError
+    head :unauthorized
+  end
+
   private
 
   def decode_token(token)
