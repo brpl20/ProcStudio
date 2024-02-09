@@ -9,7 +9,7 @@ module Api
       after_action :verify_authorized
 
       def index
-        customers = Customer.all
+        customers = ::Customer.all
         render json: CustomerSerializer.new(
           customers,
           meta: {
@@ -19,7 +19,7 @@ module Api
       end
 
       def create
-        customer = Customer.new(customers_params)
+        customer = ::Customer.new(customers_params)
         if customer.save
           Customers::Mail::WelcomeService.call(customer)
 
@@ -71,7 +71,7 @@ module Api
       end
 
       def retrieve_customer
-        @customer = Customer.find(params[:id])
+        @customer = ::Customer.find(params[:id])
       rescue ActiveRecord::RecordNotFound
         head :not_found
       end
