@@ -21,6 +21,8 @@ module Api
       def create
         customer = Customer.new(customers_params)
         if customer.save
+          Customers::Mail::WelcomeService.call(customer)
+
           render json: CustomerSerializer.new(
             customer
           ), status: :created
