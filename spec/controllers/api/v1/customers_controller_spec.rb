@@ -43,6 +43,7 @@ RSpec.describe Api::V1::CustomersController, type: :request do
   describe 'create' do
     let(:customer) { create(:customer) }
     context 'when request is valid' do
+      before { allow(Customers::Mail::WelcomeService).to receive(:call).and_return(true) }
       it 'returns :ok' do
         post '/api/v1/customers', params: {
           customer: {
