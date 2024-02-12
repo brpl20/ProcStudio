@@ -22,8 +22,9 @@ Rails.application.routes.draw do
         post   :login,  to: 'auth#authenticate'
         delete :logout, to: 'auth#destroy'
 
-        resources :works, only: %i[index show]
         resources :customers, only: %i[update show]
+        resources :profile_customers, only: %i[update show]
+        resources :works, only: %i[index show]
       end
 
       namespace :draft do
