@@ -30,6 +30,8 @@ module Api
         profile_customer = ProfileCustomer.new(profile_customers_params)
         if profile_customer.save
           ProfileCustomers::CreateDocumentService.call(profile_customer, @current_admin)
+          Customers::Mail::WelcomeService.call(profile_customer.customer)
+
           render json: ProfileCustomerSerializer.new(
             profile_customer,
             params: { action: 'show' }

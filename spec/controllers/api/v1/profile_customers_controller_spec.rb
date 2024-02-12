@@ -50,6 +50,7 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
   end
   describe 'create' do
     let(:customer) { create(:customer) }
+    before { allow(Customers::Mail::WelcomeService).to receive(:call).and_return(true) }
     context 'when request is valid' do
       it 'returns :ok' do
         post '/api/v1/profile_customers', params: {
