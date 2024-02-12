@@ -3,7 +3,15 @@
 module Api
   module V1
     class WorksController < BackofficeController
+      unless Rails.env.production?
+        before_action do
+          ActiveStorage::Current.url_options = { host: request.base_url }
+        end
+      end
       before_action :set_work, only: %i[show update destroy]
+      before_action :perform_authorization
+
+      after_action :verify_authorized
 
       def index
         works = Work.includes(
@@ -69,6 +77,10 @@ module Api
         ), status: :ok
       end
 
+      def destroy
+        @work.destroy
+      end
+
       private
 
       def set_work
@@ -97,6 +109,10 @@ module Api
 
       def filtering_params
         params.permit(:customer_id)
+      end
+
+      def perform_authorization
+        authorize [:admin, :work], "#{action_name}?".to_sym
       end
     end
   end

@@ -3,8 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::WorksController, type: :request do
-  let!(:admin) { create(:admin) }
-  let!(:office) { create(:office) }
+  let!(:admin) { create(:profile_admin).admin }
+  let(:office) { admin.profile_admin.office }
 
   describe '#index' do
     let!(:work) { create(:work) }
@@ -268,6 +268,24 @@ RSpec.describe Api::V1::WorksController, type: :request do
         get '/api/v1/works/35',
             headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
+
+  describe 'destroy' do
+    let!(:work) { create(:work) }
+    context 'when request is valid' do
+      it 'returns :no_content' do
+        delete "/api/v1/works/#{work.id}",
+               headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        expect(response).to have_http_status(:no_content)
+      end
+    end
+    context 'when destroy tries to make an request without token' do
+      it 'returns :unauthorized' do
+        delete "/api/v1/works/#{work.id}", params: {}
+
+        expect(response).to have_http_status(:unauthorized)
       end
     end
   end

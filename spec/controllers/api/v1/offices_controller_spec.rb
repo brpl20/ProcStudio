@@ -3,10 +3,10 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::OfficesController, type: :request do
-  let!(:admin) { create(:admin) }
+  let!(:admin) { create(:profile_admin).admin }
 
   describe '#index' do
-    let!(:office) { create(:office) }
+    let(:office) { admin.profile_admin.office }
 
     context 'when request is valid' do
       before do
@@ -271,8 +271,7 @@ RSpec.describe Api::V1::OfficesController, type: :request do
   end
 
   describe 'GET /api/v1/offices/with_lawyers' do
-    let!(:office) { create(:office) }
-    let!(:profile_admin) { create(:profile_admin, office: office) }
+    let(:profile_admin) { admin.profile_admin }
     context 'when the request is successful' do
       before do
         get '/api/v1/offices/with_lawyers', headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
@@ -288,6 +287,24 @@ RSpec.describe Api::V1::OfficesController, type: :request do
           expect(lawyer['id']).to eq(profile_admin.id)
           expect(lawyer['name']).to eq(profile_admin.name)
         end
+      end
+    end
+  end
+
+  describe 'destroy' do
+    let!(:office) { create(:office, id: 5) }
+    context 'when request is valid' do
+      it 'returns :no_content' do
+        delete '/api/v1/offices/5', headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+
+        expect(response).to have_http_status(:no_content)
+      end
+    end
+    context 'when destroy tries to make an request without token' do
+      it 'returns :unauthorized' do
+        delete '/api/v1/offices/5', params: {}
+
+        expect(response).to have_http_status(:unauthorized)
       end
     end
   end

@@ -5,8 +5,7 @@ require 'rails_helper'
 RSpec.describe Api::V1::OfficeTypesController, type: :request do
   let(:valid_header) { { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' } }
 
-  let(:admin) { create(:admin) }
-  let!(:office_type) { create(:office_type) }
+  let(:admin) { create(:profile_admin).admin }
 
   describe '#index (GET api/v1/office_types)' do
     context 'when a request is valid' do
@@ -34,6 +33,8 @@ RSpec.describe Api::V1::OfficeTypesController, type: :request do
   end
 
   describe '#show (GET api/v1/office_types/:id)' do
+    let!(:office_type) { create(:office_type) }
+
     context 'when a request is valid' do
       before do
         get "/api/v1/office_types/#{office_type.id}", params: {}, headers: valid_header
@@ -60,6 +61,7 @@ RSpec.describe Api::V1::OfficeTypesController, type: :request do
   end
 
   describe '#create (POST api/v1/office_types)' do
+    let!(:office_type) { create(:office_type) }
     let(:params) { { office_type: { description: 'Escritório' } } }
 
     context 'when a request is valid' do
@@ -101,6 +103,7 @@ RSpec.describe Api::V1::OfficeTypesController, type: :request do
   end
 
   describe '#update (PUT api/v1/office_types/:id)' do
+    let!(:office_type) { create(:office_type) }
     let(:params) { { office_type: { description: 'Escritório' } } }
 
     context 'when a request is valid' do
@@ -136,14 +139,19 @@ RSpec.describe Api::V1::OfficeTypesController, type: :request do
   end
 
   describe '#destroy (DELETE api/v1/office_types/:id)' do
-    context 'when a request is valid' do
-      before do
-        delete "/api/v1/office_types/#{office_type.id}", params: {}, headers: valid_header
+    let(:office_type) { create(:office_type) }
+    context 'when request is valid' do
+      it 'returns :no_content' do
+        delete "/api/v1/office_types/#{office_type.id}",
+               headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        expect(response).to have_http_status(:no_content)
       end
+    end
+    context 'when destroy tries to make an request without token' do
+      it 'returns :unauthorized' do
+        delete "/api/v1/office_types/#{office_type.id}", params: {}
 
-      it 'returns status code 404 (not_found)' do
-        expect(response).to have_http_status(:not_found)
-        expect(OfficeType.exists?(office_type.id)).to eq(false)
+        expect(response).to have_http_status(:unauthorized)
       end
     end
   end

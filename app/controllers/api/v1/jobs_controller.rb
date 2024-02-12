@@ -4,6 +4,9 @@ module Api
   module V1
     class JobsController < BackofficeController
       before_action :retrieve_job, only: %i[show update destroy]
+      before_action :perform_authorization
+
+      after_action :verify_authorized
 
       def index
         jobs = JobFilter.retrieve_jobs
@@ -53,11 +56,7 @@ module Api
       end
 
       def destroy
-        if @job.destroy
-          render head :not_found
-        else
-          render json: { errors: job.errors.full_messages }, status: :unprocessable_entity
-        end
+        @job.destroy
       end
 
       private
@@ -77,6 +76,10 @@ module Api
           :profile_admin_id,
           :work_id
         )
+      end
+
+      def perform_authorization
+        authorize [:admin, :job], "#{action_name}?".to_sym
       end
     end
   end

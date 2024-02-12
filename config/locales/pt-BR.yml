@@ -434,3 +434,17 @@
       short: "%d de %B, %H:%M"
       updating: "Atualizado em: %A, %d de %B de %Y"
     pm: ''
+  pundit:
+    default: 'Não autorizado.'
+    admin:
+      index?: 'Não autorizado a listar registros'
+      show?: 'Não autorizado a listar registros'
+      create?: 'Não autorizado a criar registros'
+      update?: 'Não autorizado a atualizar registros'
+      destroy?: 'Não autorizado a remover registros'
+    customer:
+      index?: 'Não autorizado a listar registros'
+      show?: 'Não autorizado a listar registros'
+      create?: 'Não autorizado a criar registros'
+      update?: 'Não autorizado a atualizar registros'
+      destroy?: 'Não autorizado a remover registros'

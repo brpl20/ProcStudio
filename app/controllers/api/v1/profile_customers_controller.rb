@@ -5,7 +5,15 @@ require 'tempfile'
 module Api
   module V1
     class ProfileCustomersController < BackofficeController
-      before_action :retrieve_customer, only: %i[update show]
+      unless Rails.env.production?
+        before_action do
+          ActiveStorage::Current.url_options = { host: request.base_url }
+        end
+      end
+      before_action :retrieve_customer, only: %i[update show destroy]
+      before_action :perform_authorization
+
+      after_action :verify_authorized
 
       def index
         profile_customers = ProfileCustomerFilter.retrieve_customers
@@ -22,6 +30,8 @@ module Api
         profile_customer = ProfileCustomer.new(profile_customers_params)
         if profile_customer.save
           ProfileCustomers::CreateDocumentService.call(profile_customer, @current_admin)
+          Customers::Mail::WelcomeService.call(profile_customer.customer)
+
           render json: ProfileCustomerSerializer.new(
             profile_customer,
             params: { action: 'show' }
@@ -61,6 +71,10 @@ module Api
         ), status: :ok
       end
 
+      def destroy
+        @profile_customer.destroy
+      end
+
       private
 
       def retrieve_customer
@@ -88,6 +102,10 @@ module Api
           represent_attributes: %i[id representor_id],
           customer_files_attributes: %i[id file_description]
         )
+      end
+
+      def perform_authorization
+        authorize [:admin, :work], "#{action_name}?".to_sym
       end
     end
   end

@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::PowersController, type: :request do
-  let!(:admin) { create(:admin) }
+  let!(:admin) { create(:profile_admin).admin }
 
   describe '#index' do
     let!(:power) { create(:power) }
@@ -128,6 +128,25 @@ RSpec.describe Api::V1::PowersController, type: :request do
         get '/api/v1/powers/35',
             headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
+
+  describe 'destroy' do
+    let!(:power) { create(:power) }
+    context 'when request is valid' do
+      it 'returns :no_content' do
+        delete "/api/v1/powers/#{power.id}", headers: {
+          Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json'
+        }
+        expect(response).to have_http_status(:no_content)
+      end
+    end
+    context 'when destroy tries to make an request without token' do
+      it 'returns :unauthorized' do
+        delete "/api/v1/powers/#{power.id}", params: {}
+
+        expect(response).to have_http_status(:unauthorized)
       end
     end
   end

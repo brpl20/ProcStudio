@@ -3,10 +3,13 @@
 module Api
   module V1
     class CustomersController < BackofficeController
-      before_action :retrieve_customer, only: %i[update show]
+      before_action :retrieve_customer, only: %i[update show destroy]
+      before_action :perform_authorization
+
+      after_action :verify_authorized
 
       def index
-        customers = Customer.all
+        customers = ::Customer.all
         render json: CustomerSerializer.new(
           customers,
           meta: {
@@ -16,8 +19,9 @@ module Api
       end
 
       def create
-        customer = Customer.new(customers_params)
+        customer = ::Customer.new(customers_params)
         if customer.save
+
           render json: CustomerSerializer.new(
             customer
           ), status: :created
@@ -53,6 +57,10 @@ module Api
         ), status: :ok
       end
 
+      def destroy
+        @customer.destroy
+      end
+
       private
 
       def customers_params
@@ -62,9 +70,13 @@ module Api
       end
 
       def retrieve_customer
-        @customer = Customer.find(params[:id])
+        @customer = ::Customer.find(params[:id])
       rescue ActiveRecord::RecordNotFound
         head :not_found
+      end
+
+      def perform_authorization
+        authorize [:admin, :customer], "#{action_name}?".to_sym
       end
     end
   end

@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::ProfileCustomersController, type: :request do
-  let!(:admin) { create(:admin) }
+  let!(:admin) { create(:profile_admin).admin }
 
   describe '#index' do
     let!(:profile_customer) { create(:profile_customer) }
@@ -50,6 +50,7 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
   end
   describe 'create' do
     let(:customer) { create(:customer) }
+    before { allow(Customers::Mail::WelcomeService).to receive(:call).and_return(true) }
     context 'when request is valid' do
       it 'returns :ok' do
         post '/api/v1/profile_customers', params: {
@@ -291,6 +292,31 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
       it 'returns :not_found' do
         get '/api/v1/profile_customers/35',
             headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
+
+  describe 'destroy' do
+    let!(:profile_customer) { create(:profile_customer, id: 5) }
+    context 'when request is valid' do
+      it 'returns :no_content' do
+        delete '/api/v1/profile_customers/5',
+               headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        expect(response).to have_http_status(:no_content)
+      end
+    end
+    context 'when destroy tries to make an request without token' do
+      it 'returns :unauthorized' do
+        delete '/api/v1/profile_customers/5', params: {}
+
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+    context 'when profile_customer dont exists' do
+      it 'returns :not_found' do
+        delete '/api/v1/profile_customers/35',
+               headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         expect(response).to have_http_status(:not_found)
       end
     end

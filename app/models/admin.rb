@@ -20,7 +20,7 @@ class Admin < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
-  has_one :profile_admin
+  has_one :profile_admin, dependent: :destroy
 
   validates :email, presence: true
   accepts_nested_attributes_for :profile_admin, reject_if: :all_blank

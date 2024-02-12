@@ -3,12 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::ProfileAdminsController, type: :request do
-  let!(:admin) { create(:admin) }
-  let!(:office) { create(:office) }
+  let!(:profile_admin) { create(:profile_admin) }
+  let(:admin) { profile_admin.admin }
+  let(:office) { profile_admin.office }
 
   describe '#index' do
-    let!(:profile_admin) { create(:profile_admin, admin: admin, office: office) }
-
     context 'when request is valid' do
       before do
         get '/api/v1/profile_admins', headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
@@ -109,6 +108,23 @@ RSpec.describe Api::V1::ProfileAdminsController, type: :request do
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         end.to change(AdminPhone, :count).by(1)
+      end
+    end
+  end
+
+  describe 'destroy' do
+    context 'when request is valid' do
+      it 'returns :no_content' do
+        delete "/api/v1/profile_admins/#{profile_admin.id}", headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+
+        expect(response).to have_http_status(:no_content)
+      end
+    end
+    context 'when request is invalid' do
+      it 'returns :unauthorized' do
+        delete "/api/v1/profile_admins/#{profile_admin.id}", params: {}
+
+        expect(response).to have_http_status(:unauthorized)
       end
     end
   end

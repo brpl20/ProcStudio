@@ -4,6 +4,9 @@ module Api
   module V1
     class OfficesController < BackofficeController
       before_action :retrieve_office, only: %i[show update destroy]
+      before_action :perform_authorization, except: %i[with_lawyers]
+
+      after_action :verify_authorized
 
       def index
         @offices = OfficeFilter.retrieve_offices
@@ -51,14 +54,12 @@ module Api
       end
 
       def destroy
-        if @office.destroy
-          render head :not_found
-        else
-          render json: { errors: office.errors.full_messages }, status: :unprocessable_entity
-        end
+        @office.destroy
       end
 
       def with_lawyers
+        authorize [:admin, :office], :index?
+
         offices = OfficeFilter.retrieve_offices_with_lawyers
         render json: OfficeWithLawyersSerializer.new(
           offices
@@ -89,6 +90,10 @@ module Api
           emails_attributes: %i[id email],
           bank_accounts_attributes: %i[id bank_name type_account agency account operation]
         )
+      end
+
+      def perform_authorization
+        authorize [:admin, :office], "#{action_name}?".to_sym
       end
     end
   end

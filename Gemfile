@@ -3,6 +3,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
+gem 'acts_as_paranoid'
 gem 'aws-sdk-s3', require: false
 gem 'bootsnap', require: false
 gem 'devise'
@@ -10,8 +11,10 @@ gem 'docx'
 gem 'i18n'
 gem 'jsonapi-serializer'
 gem 'jwt'
+gem 'mailjet'
 gem 'pg'
 gem 'puma', '~> 5.0'
+gem 'pundit'
 gem 'rack-cors'
 gem 'rails', '~> 7.0.4', '>= 7.0.4.2'
 gem 'rubocop', '~> 1.48', require: false

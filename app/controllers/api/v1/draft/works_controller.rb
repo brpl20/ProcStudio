@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
-class Api::V1::Draft::WorksController < ApplicationController
+class Api::V1::Draft::WorksController < BackofficeController
   before_action :set_draft_work, only: %i[show update destroy]
+  before_action :perform_authorization
+
+  after_action :verify_authorized
 
   # GET /draft/works
   def index
@@ -65,5 +68,9 @@ class Api::V1::Draft::WorksController < ApplicationController
 
   def draft_work_params
     params.require(:draft_work).permit(:name, :work_id)
+  end
+
+  def perform_authorization
+    authorize [:admin, :work], "#{action_name}?".to_sym
   end
 end

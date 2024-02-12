@@ -2,6 +2,6 @@
 
 FactoryBot.define do
   factory :office_type do
-    description { 'Advocacia' }
+    description { Faker::Company.name }
   end
 end

@@ -29,8 +29,11 @@
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #  accountant_id  :integer
+#  deleted_at     :datetime
 #
 class ProfileCustomer < ApplicationRecord
+  acts_as_paranoid
+
   belongs_to :customer
   belongs_to :accountant, class_name: 'ProfileCustomer', optional: true
 

@@ -12,13 +12,19 @@
 #  remember_created_at    :datetime
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
+#  deleted_at             :datetime
+#  jwt_token              :string
 #
 class Customer < ApplicationRecord
+  acts_as_paranoid
+
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
-  has_one :profile_customer
+  has_one :profile_customer, dependent: :destroy
   has_many :jobs
+
+  delegate :full_name, to: :profile_customer, prefix: true, allow_nil: true
 end

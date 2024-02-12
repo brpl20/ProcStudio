@@ -4,6 +4,9 @@ module Api
   module V1
     class OfficeTypesController < BackofficeController
       before_action :retrieve_office_type, only: %i[update show destroy]
+      before_action :perform_authorization
+
+      after_action :verify_authorized
 
       # GET api/v1/office_types
       def index
@@ -56,11 +59,7 @@ module Api
 
       # DELETE api/v1/office_types/:id
       def destroy
-        if @office_type.destroy
-          head :not_found
-        else
-          render json: { errors: @office_type.errors.full_messages }, status: :unprocessable_entity
-        end
+        @office_type.destroy
       end
 
       private
@@ -71,6 +70,10 @@ module Api
 
       def retrieve_office_type
         @office_type = OfficeType.find(params[:id])
+      end
+
+      def perform_authorization
+        authorize [:admin, :office], "#{action_name}?".to_sym
       end
     end
   end

@@ -9,8 +9,11 @@
 #  address_id          :bigint(8)        not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
+#  deleted_at          :datetime
 #
 class CustomerAddress < ApplicationRecord
+  acts_as_paranoid
+
   belongs_to :profile_customer
   belongs_to :address
 end
