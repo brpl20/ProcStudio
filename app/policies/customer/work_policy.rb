@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class Customer::WorkPolicy < ApplicationPolicy
   def index?
-    user&.profile_customer
+    user&.profile_customer&.present?
   end
 
   def show?

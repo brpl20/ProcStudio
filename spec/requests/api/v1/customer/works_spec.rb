@@ -7,7 +7,14 @@ RSpec.describe '/api/v1/customer/works', type: :request do
   let(:valid_headers) { { Authorization: "Bearer #{customer.jwt_token}", Accept: 'application/json' } }
 
   describe 'GET /index' do
-    it 'renders a successful response' do
+    it 'renders a non authorized response for customers without profile' do
+      get api_v1_customer_works_url, headers: valid_headers, as: :json
+      expect(response).to_not be_successful
+    end
+
+    it 'renders a successful response for customers with profile' do
+      create(:profile_customer, customer: customer)
+
       get api_v1_customer_works_url, headers: valid_headers, as: :json
       expect(response).to be_successful
     end
