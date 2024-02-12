@@ -6,18 +6,18 @@ class Admin::JobPolicy < Admin::BasePolicy
   end
 
   def show?
-    lawyer? || paralegal? || trainee? || secretary? || counter?
+    index?
   end
 
   def create?
-    lawyer? || paralegal? || trainee? || secretary? || counter?
+    index?
   end
 
   def update?
-    lawyer? || paralegal? || trainee? || secretary? || counter?
+    index?
   end
 
   def destroy?
-    lawyer? || paralegal? || trainee? || secretary? || counter?
+    index?
   end
 end

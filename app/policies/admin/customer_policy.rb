@@ -6,7 +6,7 @@ class Admin::CustomerPolicy < Admin::BasePolicy
   end
 
   def show?
-    lawyer? || paralegal? || trainee? || secretary? || counter? || excounter?
+    index?
   end
 
   def create?
@@ -14,7 +14,7 @@ class Admin::CustomerPolicy < Admin::BasePolicy
   end
 
   def update?
-    lawyer? || paralegal? || trainee? || secretary? || counter?
+    create?
   end
 
   def destroy?
