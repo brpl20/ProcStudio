@@ -23,6 +23,7 @@ Rails.application.routes.draw do
         delete :logout, to: 'auth#destroy'
 
         resources :works, only: %i[index show]
+        resources :customers, only: %i[update show]
       end
 
       namespace :draft do
