@@ -21,6 +21,8 @@ Rails.application.routes.draw do
       namespace :customer do
         post   :login,  to: 'auth#authenticate'
         delete :logout, to: 'auth#destroy'
+
+        resources :works, only: %i[index show]
       end
 
       namespace :draft do
