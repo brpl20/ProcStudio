@@ -38,7 +38,7 @@ module Api
 
         if admin&.valid_password?(auth_params[:password])
           token = update_user_token(admin)
-          render json: { token: token }
+          render json: { token: token, role: admin.role }
         else
           head :unauthorized
         end
@@ -58,7 +58,7 @@ module Api
 
         if admin
           token = update_user_token(admin)
-          render json: { token: token }
+          render json: { token: token, role: admin.role }
         else
           head :not_found
         end
