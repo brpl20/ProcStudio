@@ -53,7 +53,7 @@ module Works
     end
 
     def responsable
-      return nil unless @customer.unable? && @customer.represent.present?
+      return nil unless @customer.unable? && @customer&.represent&.representor&.present?
 
       represent = @customer.represent.profile_admin
       represent_address = represent.addresses.first

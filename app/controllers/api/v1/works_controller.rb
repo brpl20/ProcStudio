@@ -3,11 +3,8 @@
 module Api
   module V1
     class WorksController < BackofficeController
-      unless Rails.env.production?
-        before_action do
-          ActiveStorage::Current.url_options = { host: request.base_url }
-        end
-      end
+      before_action :load_active_storage_url_options unless Rails.env.production?
+
       before_action :set_work, only: %i[show update destroy]
       before_action :perform_authorization
 

@@ -24,4 +24,6 @@ class Admin < ApplicationRecord
 
   validates :email, presence: true
   accepts_nested_attributes_for :profile_admin, reject_if: :all_blank
+
+  delegate :role, to: :profile_admin, allow_nil: true
 end

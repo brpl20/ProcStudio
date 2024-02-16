@@ -1,11 +1,8 @@
 # frozen_string_literal: true
 
 class Api::V1::Customer::ProfileCustomersController < FrontofficeController
-  unless Rails.env.production?
-    before_action do
-      ActiveStorage::Current.url_options = { host: request.base_url }
-    end
-  end
+  before_action :load_active_storage_url_options unless Rails.env.production?
+
   before_action :retrieve_customer
 
   # GET /api/v1/customer/profile_customers/1
