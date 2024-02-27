@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_02_09_125336) do
+ActiveRecord::Schema[7.0].define(version: 2024_02_27_104250) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -200,6 +200,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_09_125336) do
     t.bigint "work_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "profile_customer_id"
+    t.index ["profile_customer_id"], name: "index_documents_on_profile_customer_id"
     t.index ["work_id"], name: "index_documents_on_work_id"
   end
 
@@ -484,6 +486,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_09_125336) do
   add_foreign_key "customer_phones", "profile_customers"
   add_foreign_key "customer_works", "profile_customers"
   add_foreign_key "customer_works", "works"
+  add_foreign_key "documents", "profile_customers"
   add_foreign_key "documents", "works"
   add_foreign_key "draft_works", "works"
   add_foreign_key "honoraries", "works"
