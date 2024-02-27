@@ -7,6 +7,7 @@ RSpec.describe Document, type: :model do
 
   describe 'Associations' do
     it { is_expected.to belong_to(:work) }
+    it { is_expected.to belong_to(:profile_customer) }
   end
 
   describe 'CRUD' do
