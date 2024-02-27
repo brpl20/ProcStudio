@@ -2,10 +2,11 @@
 
 module Api
   module V1
-    class WorksController < BackofficeController
+    class WorksController < BackofficeController # rubocop:disable Metrics/ClassLength
       before_action :load_active_storage_url_options unless Rails.env.production?
 
       before_action :set_work, only: %i[show update destroy]
+      before_action :set_document_attributes, only: [:create, :update]
       before_action :perform_authorization
 
       after_action :verify_authorized
@@ -92,7 +93,7 @@ module Api
           :civel_area, :social_security_areas, :laborite_areas, :tributary_areas, :other_description,
           :compensations_five_years, :compensations_service, :lawsuit, :gain_projection, :physical_lawyer,
           :responsible_lawyer, :partner_lawyer, :intern, :bachelor, :rate_parceled_exfield,
-          documents_attributes: %i[id document_type],
+          documents_attributes: %i[id document_type profile_customer_id],
           pending_documents_attributes: %i[id description],
           recommendations_attributes: %i[id percentage commission profile_customer_id],
           honorary_attributes: %i[id fixed_honorary_value parcelling_value honorary_type percent_honorary_value parcelling],
@@ -110,6 +111,20 @@ module Api
 
       def perform_authorization
         authorize [:admin, :work], "#{action_name}?".to_sym
+      end
+
+      def set_document_attributes
+        document_attributes  = params.fetch(:work, {}).delete(:documents_attributes) || []
+        profile_customer_ids = params.fetch(:work, {}).fetch(:profile_customer_ids, [])
+        documents_attributes = []
+
+        document_attributes.each do |document_attribute|
+          profile_customer_ids.each do |profile_customer_id|
+            documents_attributes << document_attribute.merge(profile_customer_id: profile_customer_id)
+          end
+        end
+
+        params[:work][:documents_attributes] = documents_attributes
       end
     end
   end
