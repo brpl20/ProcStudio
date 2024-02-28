@@ -100,6 +100,7 @@ class Work < ApplicationRecord
   }
 
   validates :subject, presence: true
+  validates_with WorkAddressesValidator
 
   accepts_nested_attributes_for :documents, :pending_documents, :recommendations, :honorary, reject_if: :all_blank, allow_destroy: true
 
