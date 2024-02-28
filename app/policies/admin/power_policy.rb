@@ -2,11 +2,11 @@
 
 class Admin::PowerPolicy < Admin::BasePolicy
   def index?
-    lawyer?
+    lawyer? || paralegal? || trainee? || secretary? || counter? || excounter?
   end
 
   def show?
-    lawyer?
+    lawyer? || paralegal? || trainee? || secretary? || counter? || excounter?
   end
 
   def create?
