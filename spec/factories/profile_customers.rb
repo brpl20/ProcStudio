@@ -23,5 +23,6 @@ FactoryBot.define do
     inss_password { Faker::Number.number(digits: 5) }
     invalid_person { 1 }
     customer
+    addresses { [build(:address)] }
   end
 end

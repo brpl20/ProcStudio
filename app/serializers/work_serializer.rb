@@ -87,6 +87,7 @@ class WorkSerializer
         id: document.id,
         document_type: document.document_type,
         work_id: document.work_id,
+        profile_customer_id: document.profile_customer_id,
         created_at: document.created_at,
         updated_at: document.updated_at,
         url: document.document_docx&.url
