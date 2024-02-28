@@ -7,7 +7,7 @@ module Works
     def initialize(document_id)
       @document = Document.find(document_id)
       @work = @document.work
-      @customer = @work.profile_customers.first
+      @customer = @document.profile_customer
       @address = @customer.addresses.first
     end
 
@@ -18,10 +18,12 @@ module Works
           substitute_word(text)
         end
       end
-      doc.save("tmp/renuncia_#{@work.id}.docx")
-
-      @document.document_docx.attach(ActiveStorage::Blob.create_and_upload!(io: File.open("tmp/renuncia_#{@work.id}.docx"), filename: "renuncia_#{@work.id}.docx", service_name: service_name))
-      FileUtils.remove_file("tmp/renuncia_#{@work.id}.docx", true)
+      filename = "tmp/renuncia_#{@work.id}_#{@customer.id}.docx"
+      doc.save(filename)
+      @document.document_docx.attach(
+        ActiveStorage::Blob.create_and_upload!(io: File.open(filename), filename: "renuncia_#{@work.id}_#{@customer.id}.docx", service_name: service_name)
+      )
+      FileUtils.remove_file(filename, true)
     end
 
     private

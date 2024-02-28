@@ -7,11 +7,11 @@ module Works
     def initialize(document_id)
       @document = Document.find(document_id)
       @work = @document.work
-      @customer = @work.profile_customers.first
-      @address = @customer.addresses.first
       @office = @work.offices.first
       @lawyers = @work.profile_admins.lawyer
       @lawyer_address = @lawyers.first.addresses.first
+      @customer = @document.profile_customer
+      @address = @customer.addresses.first
     end
 
     def call
@@ -21,9 +21,10 @@ module Works
           substitute_word(text)
         end
       end
-      doc.save("tmp/procuracao_#{@work.id}.docx")
-      @document.document_docx.attach(ActiveStorage::Blob.create_and_upload!(io: File.open("tmp/procuracao_#{@work.id}.docx"), filename: "procuracao_#{@work.id}.docx", service_name: service_name))
-      FileUtils.remove_file("tmp/procuracao_#{@work.id}.docx", true)
+      filename = "tmp/procuracao_#{@work.id}_#{@customer.id}.docx"
+      doc.save(filename)
+      @document.document_docx.attach(ActiveStorage::Blob.create_and_upload!(io: File.open(filename), filename: "procuracao_#{@work.id}_#{@customer.id}.docx", service_name: service_name))
+      FileUtils.remove_file(filename, true)
     end
 
     private
