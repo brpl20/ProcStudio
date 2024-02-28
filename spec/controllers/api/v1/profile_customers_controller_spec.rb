@@ -30,7 +30,7 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               'cnpj' => profile_customer.cnpj,
               'default_phone' => nil,
               'default_email' => nil,
-              'city' => nil,
+              'city' => profile_customer.addresses.first.city,
               'customer_files' => []
             }
           }],
@@ -237,6 +237,7 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
   end
   describe 'show' do
     let!(:profile_customer) { create(:profile_customer, id: 5) }
+    before { profile_customer.addresses.delete_all }
     context 'when request is valid' do
       it 'returns :ok' do
         get '/api/v1/profile_customers/5',
@@ -268,8 +269,8 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               'customer_id' => profile_customer.customer_id,
               'emails' => [],
               'addresses' => [],
-              'phones' => [],
               'bank_accounts' => [],
+              'phones' => [],
               'default_phone' => nil,
               'default_email' => nil,
               'city' => nil,

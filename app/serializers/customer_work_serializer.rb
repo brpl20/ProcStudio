@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class WorkSerializer
+class CustomerWorkSerializer
   include JSONAPI::Serializer
 
   attributes :procedure, :subject, :number, :civel_area, :social_security_areas,
@@ -23,14 +23,12 @@ class WorkSerializer
     end
   end
 
-  attribute :profile_customers do |object|
-    object.profile_customers.map do |profile|
-      {
-        id: profile.id,
-        name: profile.name,
-        email: profile.customer.email
-      }
-    end
+  attribute :profile_customers do |_, params|
+    {
+      id: params[:current_user].profile_customer.id,
+      name: params[:current_user].profile_customer.name,
+      email: params[:current_user].profile_customer.customer.email
+    }
   end
 
   attribute :profile_admins do |object|
@@ -81,8 +79,8 @@ class WorkSerializer
     end
   end
 
-  attribute :documents do |object|
-    object.documents.map do |document|
+  attribute :documents do |object, params|
+    object.documents.select { _1.profile_customer == params[:current_user].profile_customer }.map do |document|
       {
         id: document.id,
         document_type: document.document_type,
