@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class WorkAddressesValidator < ActiveModel::Validator
   def validate(record)
     @work = record
