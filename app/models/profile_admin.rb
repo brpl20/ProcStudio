@@ -20,7 +20,7 @@
 #  admin_id     :bigint(8)        not null
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
-#  office_id    :bigint(8)        not null
+#  office_id    :bigint(8)
 #  origin       :string
 #
 class ProfileAdmin < ApplicationRecord
