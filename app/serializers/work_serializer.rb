@@ -76,7 +76,8 @@ class WorkSerializer
     object.pending_documents.map do |document|
       {
         id: document.id,
-        description: document.description
+        description: document.description,
+        profile_customer_id: document.profile_customer_id
       }
     end
   end
