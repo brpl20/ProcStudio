@@ -55,7 +55,7 @@ module Works
     def responsable
       return nil unless @customer.unable? && @customer&.represent&.representor&.present?
 
-      represent = @customer.represent.profile_admin
+      represent = @customer.represent.representor
       represent_address = represent.addresses.first
       [
         ", #{word_for_gender('represent', represent.gender)} #{represent.full_name.downcase.titleize}",
