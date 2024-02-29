@@ -4,14 +4,16 @@
 #
 # Table name: pending_documents
 #
-#  id          :bigint(8)        not null, primary key
-#  description :string
-#  work_id     :bigint(8)        not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
+#  id                  :bigint(8)        not null, primary key
+#  description         :string
+#  work_id             :bigint(8)        not null
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
+#  profile_customer_id :bigint(8)
 #
 class PendingDocument < ApplicationRecord
   belongs_to :work
+  belongs_to :profile_customer
 
   enum description: {
     rg: 'documento_identidade',
