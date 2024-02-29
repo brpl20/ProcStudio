@@ -330,6 +330,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_29_103930) do
     t.bigint "work_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "profile_customer_id"
+    t.index ["profile_customer_id"], name: "index_pending_documents_on_profile_customer_id"
     t.index ["work_id"], name: "index_pending_documents_on_work_id"
   end
 
@@ -503,6 +505,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_29_103930) do
   add_foreign_key "office_works", "offices"
   add_foreign_key "office_works", "works"
   add_foreign_key "offices", "office_types"
+  add_foreign_key "pending_documents", "profile_customers"
   add_foreign_key "pending_documents", "works"
   add_foreign_key "power_works", "powers"
   add_foreign_key "power_works", "works"

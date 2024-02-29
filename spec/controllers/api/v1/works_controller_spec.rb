@@ -117,7 +117,10 @@ RSpec.describe Api::V1::WorksController, type: :request do
               procedure: 'administrative',
               subject: 'criminal',
               number: Faker::Number.number(digits: 2),
-              pending_documents_attributes: [{ description: 'rg' }, { description: 'proof_of_address' }]
+              pending_documents_attributes: [
+                { description: 'rg', profile_customer_id: profile_customer_one.id },
+                { description: 'proof_of_address', profile_customer_id: profile_customer_two.id }
+              ]
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         end.to change(PendingDocument, :count).by(2)

@@ -12,20 +12,20 @@ RSpec.describe Draft::Work, type: :model do
       updated_at: nil
     )
   end
-end
 
-context 'On record' do
-  subject(:work) { build(:draft_work) }
+  context 'On record' do
+    subject(:work) { build(:draft_work) }
 
-  describe 'Associations' do
-    it { is_expected.to belong_to(:work) }
-  end
+    describe 'Associations' do
+      it { is_expected.to belong_to(:work) }
+    end
 
-  describe 'Validations' do
-    it { is_expected.to validate_presence_of(:name) }
-    it do
-      subject.work = create(:work)
-      is_expected.to validate_uniqueness_of(:name).case_insensitive
+    describe 'Validations' do
+      it { is_expected.to validate_presence_of(:name) }
+      it do
+        subject.work = create(:work)
+        is_expected.to validate_uniqueness_of(:name).case_insensitive
+      end
     end
   end
 end

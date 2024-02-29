@@ -2,6 +2,6 @@
 
 FactoryBot.define do
   factory :pending_document do
-    description { 'MyString' }
+    description { 'rg' }
   end
 end
