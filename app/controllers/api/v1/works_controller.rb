@@ -2,7 +2,7 @@
 
 module Api
   module V1
-    class WorksController < BackofficeController # rubocop:disable Metrics/ClassLength
+    class WorksController < BackofficeController
       before_action :load_active_storage_url_options unless Rails.env.production?
 
       before_action :set_work, only: %i[show update destroy]
