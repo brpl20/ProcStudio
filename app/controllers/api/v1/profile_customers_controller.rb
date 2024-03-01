@@ -25,8 +25,9 @@ module Api
 
       def create
         profile_customer = ProfileCustomer.new(profile_customers_params)
+        profile_customer.created_by_id = current_user.id
         if profile_customer.save
-          ProfileCustomers::CreateDocumentService.call(profile_customer, @current_admin)
+          ProfileCustomers::CreateDocumentService.call(profile_customer, current_user)
           Customers::Mail::WelcomeService.call(profile_customer.customer)
 
           render json: ProfileCustomerSerializer.new(

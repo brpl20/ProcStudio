@@ -20,6 +20,7 @@ module Api
 
       def create
         customer = ::Customer.new(customers_params)
+        customer.created_by_id = current_user.id
         if customer.save
 
           render json: CustomerSerializer.new(

@@ -27,6 +27,7 @@ module Api
 
       def create
         job = Job.new(jobs_params)
+        job.created_by_id = current_user.id
         if job.save
           render json: job, status: :created
         else

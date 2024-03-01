@@ -37,6 +37,7 @@ module Api
 
       def create
         work = Work.new(work_params)
+        work.created_by_id = current_user.id
         if work.save
           Works::CreateDocumentService.call(work)
           render json: WorkSerializer.new(work), status: :created
