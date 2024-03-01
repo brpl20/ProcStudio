@@ -28,7 +28,8 @@ RSpec.describe Api::V1::JobsController, type: :request do
               'status' => job.status,
               'customer' => "#{job.profile_customer.name} #{job.profile_customer.last_name}",
               'responsible' => job.profile_admin.name,
-              'work_number' => job.work.number
+              'work_number' => job.work.number,
+              'created_by_id' => job.created_by_id
             }
           }],
           'meta' => {
@@ -129,6 +130,7 @@ RSpec.describe Api::V1::JobsController, type: :request do
               'responsible' => job.profile_admin.name,
               'work_number' => job.work.number,
               'profile_admin_id' => job.profile_admin_id,
+              'created_by_id' => job.created_by_id,
               'profile_customer' => {
                 'id' => job.profile_customer.id,
                 'customer_type' => job.profile_customer.customer_type,
