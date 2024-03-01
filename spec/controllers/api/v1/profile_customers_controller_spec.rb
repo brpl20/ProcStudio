@@ -276,7 +276,8 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               'city' => nil,
               'represent' => nil,
               'accountant_id' => nil,
-              'customer_files' => []
+              'customer_files' => [],
+              'created_by_id' => profile_customer.created_by_id
             }
           }
         )

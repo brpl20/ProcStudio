@@ -6,7 +6,7 @@ module Api
       before_action :load_active_storage_url_options unless Rails.env.production?
 
       before_action :set_work, only: %i[show update destroy]
-      before_action :perform_authorization
+      before_action :perform_authorization, except: %i[update]
 
       after_action :verify_authorized
 
@@ -37,6 +37,7 @@ module Api
 
       def create
         work = Work.new(work_params)
+        work.created_by_id = current_user.id
         if work.save
           Works::CreateDocumentService.call(work)
           render json: WorkSerializer.new(work), status: :created
@@ -54,6 +55,8 @@ module Api
       end
 
       def update
+        authorize @work, :update?, policy_class: Admin::WorkPolicy
+
         if @work.update(work_params)
           Works::CreateDocumentService.call(@work) if truthy_param?(:regenerate_documents)
           render json: WorkSerializer.new(

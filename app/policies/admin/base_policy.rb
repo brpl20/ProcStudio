@@ -5,6 +5,10 @@ class Admin::BasePolicy < ApplicationPolicy
     @role ||= user&.profile_admin&.role
   end
 
+  def owner?
+    record.created_by_id == user.id
+  end
+
   # Define methods for each role
   #
   # def lawyer?

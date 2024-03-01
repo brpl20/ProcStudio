@@ -68,7 +68,19 @@ RSpec.describe Admin::WorkPolicy, type: :policy do
     end
 
     permissions :update? do
-      it { is_expected.to permit(admin, nil) }
+      before { admin.save }
+
+      context 'when admin is owner' do
+        let(:work) { create(:work, created_by_id: admin.id) }
+
+        it { is_expected.to permit(admin, work) }
+      end
+
+      context 'when admin is not owner' do
+        let(:work) { create(:work) }
+
+        it { is_expected.not_to permit(admin, work) }
+      end
     end
 
     permissions :destroy? do
@@ -92,7 +104,19 @@ RSpec.describe Admin::WorkPolicy, type: :policy do
     end
 
     permissions :update? do
-      it { is_expected.to permit(admin, nil) }
+      before { admin.save }
+
+      context 'when admin is owner' do
+        let(:work) { create(:work, created_by_id: admin.id) }
+
+        it { is_expected.to permit(admin, work) }
+      end
+
+      context 'when admin is not owner' do
+        let(:work) { create(:work) }
+
+        it { is_expected.not_to permit(admin, work) }
+      end
     end
 
     permissions :destroy? do

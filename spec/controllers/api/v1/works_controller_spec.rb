@@ -56,7 +56,8 @@ RSpec.describe Api::V1::WorksController, type: :request do
               jobs: [],
               pending_documents: [],
               documents: [],
-              procedures: []
+              procedures: [],
+              created_by_id: work.created_by_id
             }
           }],
           meta: {
@@ -253,7 +254,8 @@ RSpec.describe Api::V1::WorksController, type: :request do
               jobs: [],
               pending_documents: [],
               documents: [],
-              procedures: []
+              procedures: [],
+              created_by_id: work.created_by_id
             }
           }
         )

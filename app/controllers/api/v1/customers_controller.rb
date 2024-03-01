@@ -4,7 +4,7 @@ module Api
   module V1
     class CustomersController < BackofficeController
       before_action :retrieve_customer, only: %i[update show destroy]
-      before_action :perform_authorization
+      before_action :perform_authorization, except: %i[update]
 
       after_action :verify_authorized
 
@@ -20,6 +20,7 @@ module Api
 
       def create
         customer = ::Customer.new(customers_params)
+        customer.created_by_id = current_user.id
         if customer.save
 
           render json: CustomerSerializer.new(
@@ -39,6 +40,8 @@ module Api
       end
 
       def update
+        authorize @customer, :update?, policy_class: Admin::CustomerPolicy
+
         if @customer.update(customers_params)
           render json: CustomerSerializer.new(
             @customer

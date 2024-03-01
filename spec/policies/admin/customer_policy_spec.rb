@@ -53,7 +53,10 @@ RSpec.describe Admin::CustomerPolicy, type: :policy do
   end
 
   describe 'when admin is trainee' do
-    before { admin.profile_admin.role = :trainee }
+    before do
+      admin.save
+      admin.profile_admin.role = :trainee
+    end
 
     permissions :index? do
       it { is_expected.to permit(admin, nil) }
@@ -68,7 +71,17 @@ RSpec.describe Admin::CustomerPolicy, type: :policy do
     end
 
     permissions :update? do
-      it { is_expected.to permit(admin, nil) }
+      context 'when admin is owner' do
+        let(:customer) { create(:customer, created_by_id: admin.id) }
+
+        it { is_expected.to permit(admin, customer) }
+      end
+
+      context 'when admin is not owner' do
+        let(:customer) { create(:customer) }
+
+        it { is_expected.not_to permit(admin, customer) }
+      end
     end
 
     permissions :destroy? do
@@ -77,7 +90,10 @@ RSpec.describe Admin::CustomerPolicy, type: :policy do
   end
 
   describe 'when admin is secretary' do
-    before { admin.profile_admin.role = :secretary }
+    before do
+      admin.save
+      admin.profile_admin.role = :secretary
+    end
 
     permissions :index? do
       it { is_expected.to permit(admin, nil) }
@@ -92,7 +108,17 @@ RSpec.describe Admin::CustomerPolicy, type: :policy do
     end
 
     permissions :update? do
-      it { is_expected.to permit(admin, nil) }
+      context 'when admin is owner' do
+        let(:customer) { create(:customer, created_by_id: admin.id) }
+
+        it { is_expected.to permit(admin, customer) }
+      end
+
+      context 'when admin is not owner' do
+        let(:customer) { create(:customer) }
+
+        it { is_expected.not_to permit(admin, customer) }
+      end
     end
 
     permissions :destroy? do
@@ -112,11 +138,11 @@ RSpec.describe Admin::CustomerPolicy, type: :policy do
     end
 
     permissions :create? do
-      it { is_expected.to permit(admin, nil) }
+      it { is_expected.to_not permit(admin, nil) }
     end
 
     permissions :update? do
-      it { is_expected.to permit(admin, nil) }
+      it { is_expected.to_not permit(admin, nil) }
     end
 
     permissions :destroy? do

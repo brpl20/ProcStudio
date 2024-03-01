@@ -2,5 +2,5 @@
 
 class CustomerSerializer
   include JSONAPI::Serializer
-  attributes :email
+  attributes :email, :created_by_id
 end

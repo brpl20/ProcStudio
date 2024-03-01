@@ -30,6 +30,7 @@
 #  updated_at     :datetime         not null
 #  accountant_id  :integer
 #  deleted_at     :datetime
+#  created_by_id  :bigint(8)
 #
 class ProfileCustomer < ApplicationRecord
   acts_as_paranoid

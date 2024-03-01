@@ -4,7 +4,7 @@ module Api
   module V1
     class JobsController < BackofficeController
       before_action :retrieve_job, only: %i[show update destroy]
-      before_action :perform_authorization
+      before_action :perform_authorization, except: %i[update]
 
       after_action :verify_authorized
 
@@ -27,6 +27,7 @@ module Api
 
       def create
         job = Job.new(jobs_params)
+        job.created_by_id = current_user.id
         if job.save
           render json: job, status: :created
         else
@@ -43,6 +44,8 @@ module Api
       end
 
       def update
+        authorize @job, :update?, policy_class: Admin::WorkPolicy
+
         if @job.update(jobs_params)
           render json: JobSerializer.new(
             @job
