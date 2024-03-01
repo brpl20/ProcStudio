@@ -2,7 +2,7 @@
 
 class JobSerializer
   include JSONAPI::Serializer
-  attributes :description, :deadline, :status, :priority, :comment
+  attributes :description, :deadline, :status, :priority, :comment, :created_by_id
 
   attribute :customer do |object|
     "#{object.profile_customer.name} #{object.profile_customer.last_name}"

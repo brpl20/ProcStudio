@@ -8,7 +8,8 @@ class ProfileCustomerSerializer
   attributes :addresses, :bank_accounts, :birth, :capacity, :civil_status,
              :company, :customer_id, :emails, :gender, :inss_password,
              :mother_name, :nationality, :nit, :number_benefit, :phones,
-             :profession, :rg, :status, :represent, :accountant_id, if: proc { |_, options| options[:action] == 'show' }
+             :profession, :rg, :status, :represent, :accountant_id, 
+             :created_by_id, if: proc { |_, options| options[:action] == 'show' }
 
   attribute :default_phone do |object|
     object.phones.first&.phone_number
