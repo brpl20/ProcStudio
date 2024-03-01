@@ -15,6 +15,7 @@
 #  profile_admin_id    :bigint(8)
 #  work_id             :bigint(8)
 #  profile_customer_id :bigint(8)
+#  created_by_id       :bigint(8)
 #
 class Job < ApplicationRecord
   belongs_to :work, optional: true

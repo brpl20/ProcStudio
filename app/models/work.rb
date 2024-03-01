@@ -30,6 +30,7 @@
 #  bachelor                 :integer
 #  initial_atendee          :integer
 #  procedures               :text             default([]), is an Array
+#  created_by_id            :bigint(8)
 #
 class Work < ApplicationRecord
   has_many :customer_works, dependent: :destroy
