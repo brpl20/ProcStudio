@@ -14,7 +14,7 @@ class Admin::WorkPolicy < Admin::BasePolicy
   end
 
   def update?
-    create?
+    lawyer? || paralegal? || counter? || (trainee? && owner?) || (secretary? && owner?)
   end
 
   def destroy?
