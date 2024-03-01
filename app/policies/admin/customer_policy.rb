@@ -20,8 +20,4 @@ class Admin::CustomerPolicy < Admin::BasePolicy
   def destroy?
     lawyer? || paralegal? || secretary?
   end
-
-  def owner?
-    record.created_by_id == user.id
-  end
 end
