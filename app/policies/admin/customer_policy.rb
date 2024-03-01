@@ -10,14 +10,18 @@ class Admin::CustomerPolicy < Admin::BasePolicy
   end
 
   def create?
-    lawyer? || paralegal? || trainee? || secretary? || counter?
+    lawyer? || paralegal? || trainee? || secretary?
   end
 
   def update?
-    create?
+    lawyer? || paralegal? || (trainee? && owner?) || (secretary? && owner?)
   end
 
   def destroy?
     lawyer? || paralegal? || secretary?
+  end
+
+  def owner?
+    record.created_by_id == user.id
   end
 end

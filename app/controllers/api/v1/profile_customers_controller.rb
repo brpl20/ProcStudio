@@ -8,7 +8,7 @@ module Api
       before_action :load_active_storage_url_options unless Rails.env.production?
 
       before_action :retrieve_customer, only: %i[update show destroy]
-      before_action :perform_authorization
+      before_action :perform_authorization, except: %i[update]
 
       after_action :verify_authorized
 
@@ -48,6 +48,8 @@ module Api
       end
 
       def update
+        authorize @profile_customer, :update?, policy_class: Admin::CustomerPolicy
+
         if @profile_customer.update(profile_customers_params)
           ProfileCustomers::CreateDocumentService.call(@profile_customer, @current_admin) if truthy_param?(:regenerate_documents)
           render json: ProfileCustomerSerializer.new(
