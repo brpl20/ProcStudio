@@ -3,7 +3,7 @@
 require 'docx'
 
 module Works
-  class DocumentProcurationService < ApplicationService # rubocop:disable Metrics/ClassLength
+  class DocumentProcurationService < ApplicationService
     def initialize(document_id)
       @document = Document.find(document_id)
       @work = @document.work
