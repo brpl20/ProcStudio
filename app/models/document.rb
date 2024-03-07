@@ -18,9 +18,10 @@ class Document < ApplicationRecord
   has_one_attached :document_docx
 
   enum document_type: {
-    procuration: 'procuration', # procuracao
-    waiver: 'waiver', # termo de renuncia
-    deficiency_statement: 'deficiency statement' # declaracao de carencia
+    procuration: 'procuration',
+    waiver: 'waiver',
+    deficiency_statement: 'deficiency statement',
+    honorary: 'honorary'
   }
 
   scope :procurations, -> { where(document_type: 'procuration') }
