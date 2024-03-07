@@ -24,6 +24,8 @@ module Works
           Works::DocumentWaiverService.call(document.id)
         when 'deficiency_statement'
           Works::DocumentDeficiencyStatementService.call(document.id)
+        when 'honorary'
+          Works::DocumentHonoraryService.call(document.id)
         end
       end
     end
