@@ -49,7 +49,7 @@ module Works
         address.description.to_s.downcase.titleize, "#{address.city} - #{address.state}, CEP #{address.zip_code} #{responsable}"
       ].join(', ')
 
-      text.substitute('_renuncia_qualify_', translated_text)
+      text.substitute('_proc_outorgante_', translated_text)
     end
 
     def word_for_gender(text, gender)
@@ -77,8 +77,8 @@ module Works
       proc_date = I18n.l(Time.now, format: '%d de %B de %Y')
       substitute_client_info(text)
 
-      text.substitute('_renuncia_today_', "#{address.city}, #{address.state}, #{proc_date}")
-      text.substitute('_renuncia_full_name_', customer.full_name.downcase.titleize)
+      text.substitute('_proc_today_', "#{address.city}, #{address.state}, #{proc_date}")
+      text.substitute('_proc_full_name_', customer.full_name.downcase.titleize)
     end
   end
 end
