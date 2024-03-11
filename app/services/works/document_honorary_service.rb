@@ -116,10 +116,12 @@ module Works
     def substitute_job(text)
       translated_text =
         @work.procedures.map do |procedure|
-          "Procedimento #{Work.human_enum_name(:procedure, procedure.downcase).downcase.titleize}: #{Work.human_enum_name(:subject, @work.subject).downcase.titleize}"
-        end.join(', ')
+          Work.human_enum_name(:procedure, procedure.downcase).downcase.titleize
+        end
 
-      text.substitute('_proc_job_', translated_text)
+      translated_text[0] = "#{'Procedimento'.pluralize(translated_text.size)} #{translated_text.first}"
+
+      text.substitute('_proc_job_', translated_text.to_sentence)
     end
 
     def substitute_subject(text)
