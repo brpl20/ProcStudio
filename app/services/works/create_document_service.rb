@@ -17,14 +17,9 @@ module Works
 
     def create_document
       @documents.each do |document|
-        case document.document_type
-        when 'procuration'
-          Works::DocumentProcurationService.call(document.id)
-        when 'waiver'
-          Works::DocumentWaiverService.call(document.id)
-        when 'deficiency_statement'
-          Works::DocumentDeficiencyStatementService.call(document.id)
-        end
+        class_name = document.document_type.classify
+        klass = "Works::Document#{class_name}Service".safe_constantize
+        klass.call(document.id)
       end
     end
   end

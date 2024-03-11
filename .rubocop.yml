@@ -17,3 +17,6 @@ Style/Documentation:
 
 Style/ClassAndModuleChildren:
   Enabled: false
+
+Metrics/ClassLength:
+  Enabled: false
