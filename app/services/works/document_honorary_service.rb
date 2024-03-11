@@ -19,18 +19,14 @@ module Works
     end
 
     def call
-      doc = Docx::Document.open('app/template_documents/honorario.docx')
       doc.paragraphs.each do |paragraph|
         paragraph.each_text_run do |text|
           substitute_word(text)
         end
       end
-      filename = "tmp/honorario_#{work.id}_#{customer.id}.docx"
       doc.save(filename)
-      document.document_docx.attach(
-        ActiveStorage::Blob.create_and_upload!(io: File.open(filename), filename: "honorario_#{work.id}_#{customer.id}.docx", service_name: service_name)
-      )
-      FileUtils.remove_file(filename, true)
+
+      save
     end
 
     private
@@ -83,6 +79,31 @@ module Works
       when 'bonus'
         'Nada a ser pago'
       end
+    end
+
+    def save
+      document.document_docx.attach(blob)
+      FileUtils.remove_file(filename, true)
+    rescue StandardError => e
+      Rails.logger.error("[Document Error]: #{e.message}")
+      false
+    end
+
+    def doc
+      @doc ||= Docx::Document.open('app/template_documents/honorario.docx')
+    end
+
+    def filename
+      @filename ||= "tmp/honorario_#{work.id}_#{customer.id}.docx"
+    end
+
+    def blob
+      @blob ||=
+        ActiveStorage::Blob.create_and_upload!(
+          io: File.open(filename),
+          filename: "honorario_#{work.id}_#{customer.id}.docx",
+          service_name: service_name
+        )
     end
 
     def substitute_word(text)
