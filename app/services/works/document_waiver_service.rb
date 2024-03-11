@@ -6,9 +6,9 @@ module Works
   class DocumentWaiverService < ApplicationService
     def initialize(document_id)
       @document = Document.find(document_id)
-      @work = @document.work
-      @customer = @document.profile_customer
-      @address = @customer.addresses.first
+      @customer = document.profile_customer
+      @address  = customer.addresses.first
+      @work     = document.work
     end
 
     def call
@@ -18,15 +18,17 @@ module Works
           substitute_word(text)
         end
       end
-      filename = "tmp/renuncia_#{@work.id}_#{@customer.id}.docx"
+      filename = "tmp/renuncia_#{work.id}_#{customer.id}.docx"
       doc.save(filename)
-      @document.document_docx.attach(
-        ActiveStorage::Blob.create_and_upload!(io: File.open(filename), filename: "renuncia_#{@work.id}_#{@customer.id}.docx", service_name: service_name)
+      document.document_docx.attach(
+        ActiveStorage::Blob.create_and_upload!(io: File.open(filename), filename: "renuncia_#{work.id}_#{customer.id}.docx", service_name: service_name)
       )
       FileUtils.remove_file(filename, true)
     end
 
     private
+
+    attr_reader :document, :work, :customer, :address
 
     def service_name
       return :local if Rails.env.development?
@@ -37,14 +39,14 @@ module Works
 
     def substitute_client_info(text)
       translated_text = [
-        @customer.full_name.downcase.titleize,
-        word_for_gender(@customer.nationality, @customer.gender),
-        word_for_gender(@customer.civil_status, @customer.gender),
-        ProfileCustomer.human_enum_name(:capacity, @customer.capacity).downcase,
-        @customer.profession.downcase,
-        "#{word_for_gender('owner', @customer.gender)} do RG n° #{@customer.rg} e #{word_for_gender('subscribe', @customer.gender)} no CPF sob o n° #{@customer.cpf}",
-        @customer.last_email, "residente e #{word_for_gender('live', @customer.gender)}: #{@address.street.to_s.downcase.titleize}, n° #{@address.number}",
-        @address.description.to_s.downcase.titleize, "#{@address.city} - #{@address.state}, CEP #{@address.zip_code} #{responsable}"
+        customer.full_name.downcase.titleize,
+        word_for_gender(customer.nationality, customer.gender),
+        word_for_gender(customer.civil_status, customer.gender),
+        ProfileCustomer.human_enum_name(:capacity, customer.capacity).downcase,
+        customer.profession.downcase,
+        "#{word_for_gender('owner', customer.gender)} do RG n° #{customer.rg} e #{word_for_gender('subscribe', customer.gender)} no CPF sob o n° #{customer.cpf}",
+        customer.last_email, "residente e #{word_for_gender('live', customer.gender)}: #{address.street.to_s.downcase.titleize}, n° #{address.number}",
+        address.description.to_s.downcase.titleize, "#{address.city} - #{address.state}, CEP #{address.zip_code} #{responsable}"
       ].join(', ')
 
       text.substitute('_renuncia_qualify_', translated_text)
@@ -55,9 +57,9 @@ module Works
     end
 
     def responsable
-      return nil unless @customer.unable? && @customer&.represent&.representor&.present?
+      return nil unless customer.unable? && customer&.represent&.representor&.present?
 
-      represent = @customer.represent.representor
+      represent = customer.represent.representor
       represent_address = represent.addresses.first
       [
         ", #{word_for_gender('represent', represent.gender)} #{represent.full_name.downcase.titleize}",
@@ -75,8 +77,8 @@ module Works
       proc_date = I18n.l(Time.now, format: '%d de %B de %Y')
       substitute_client_info(text)
 
-      text.substitute('_renuncia_today_', "#{@address.city}, #{@address.state}, #{proc_date}")
-      text.substitute('_renuncia_full_name_', @customer.full_name.downcase.titleize)
+      text.substitute('_renuncia_today_', "#{address.city}, #{address.state}, #{proc_date}")
+      text.substitute('_renuncia_full_name_', customer.full_name.downcase.titleize)
     end
   end
 end
