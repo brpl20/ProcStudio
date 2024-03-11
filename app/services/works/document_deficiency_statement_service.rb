@@ -4,6 +4,8 @@ require 'docx'
 
 module Works
   class DocumentDeficiencyStatementService < ApplicationService
+    include Works::Base
+
     def initialize(document_id)
       @document = Document.find(document_id)
       @work     = document.work
@@ -27,47 +29,6 @@ module Works
     private
 
     attr_reader :document, :work, :customer, :address
-
-    def service_name
-      return :local if Rails.env.development?
-      return :test  if Rails.env.test?
-
-      :amazon
-    end
-
-    def substitute_client_info(text)
-      translated_text = [
-        customer.full_name.downcase.titleize,
-        word_for_gender(customer.nationality, customer.gender),
-        word_for_gender(customer.civil_status, customer.gender),
-        ProfileCustomer.human_enum_name(:capacity, customer.capacity).downcase,
-        customer.profession.downcase,
-        "#{word_for_gender('owner', customer.gender)} do RG n° #{customer.rg} e #{word_for_gender('subscribe', customer.gender)} no CPF sob o n° #{customer.cpf}",
-        customer.last_email, "residente e #{word_for_gender('live', customer.gender)}: #{address.street.to_s.downcase.titleize}, n° #{address.number}",
-        address.description.to_s.downcase.titleize, "#{address.city} - #{address.state}, CEP #{address.zip_code} #{responsable}"
-      ].join(', ')
-
-      text.substitute('_proc_outorgante_', translated_text)
-    end
-
-    def word_for_gender(text, gender)
-      I18n.t("gender.#{text}.#{gender}")
-    end
-
-    def responsable
-      return nil unless customer.unable? && customer&.represent&.representor&.present?
-
-      represent = customer.represent.representor
-      represent_address = represent.addresses.first
-      [
-        ", #{word_for_gender('represent', represent.gender)} #{represent.full_name.downcase.titleize}",
-        word_for_gender(represent.civil_status, represent.gender),
-        "#{word_for_gender('owner', represent.gender)} do RG n° #{represent.rg} e #{word_for_gender('subscribe', represent.gender)} no CPF sob o n° #{represent.cpf}",
-        represent.last_email, "residente e #{word_for_gender('live', represent.gender)}: #{represent_address.street.to_s.downcase.titleize}, n° #{represent_address.number}",
-        represent_address.description.to_s.downcase.titleize,
-        "#{represent_address.city} - #{represent_address.state}, CEP #{represent_address.zip_code}"
-      ].join(', ')
-    end
 
     def substitute_word(text)
       proc_date = I18n.l(Time.now, format: '%d de %B de %Y')
