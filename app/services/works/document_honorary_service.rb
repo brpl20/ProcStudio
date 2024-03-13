@@ -69,7 +69,7 @@ module Works
         "o(a) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)}"
       when 'success'
         "o(a) advogado(a) receberá o valor de #{number_to_percentage(honorary&.percent_honorary_value, precision: 2)} dos benefícios recebidos pelo cliente"
-      when 'ambos'
+      when 'both'
         [
           'o(a) advogado(a) receberá uma parcela fixa de',
           "#{number_to_currency(honorary&.parcelling_value)} mais",
