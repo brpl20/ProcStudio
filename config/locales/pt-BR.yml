@@ -160,7 +160,7 @@
         capacity: Capacidade
         capacities:
           able: Capaz
-          relatively: Parcialmente incapaz
+          relatively: Relativamente incapaz
           unable: Absolutamente incapaz
         gender: Sexo
         genders:
