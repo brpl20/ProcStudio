@@ -46,14 +46,22 @@ module ProfileCustomers
 
     # outorgante paragraph
     def substitute_client_info(text)
-      translated_text = [@customer.full_name.downcase.titleize, word_for_gender(@customer.nationality, @customer.gender),
-                         word_for_gender(@customer.civil_status, @customer.gender), ProfileCustomer.human_enum_name(:capacity, @customer.capacity).downcase,
-                         @customer.profession.downcase,
-                         "#{word_for_gender('owner', @customer.gender)} do RG n° #{@customer.rg} e #{word_for_gender('subscribe', @customer.gender)} no CPF sob o n° #{@customer.cpf}",
-                         @customer.last_email, "residente e #{word_for_gender('live', @customer.gender)}: #{@address.street.to_s.downcase.titleize}, n° #{@address.number}",
-                         @address.description.to_s.downcase.titleize, "#{@address.city} - #{@address.state}, CEP #{@address.zip_code}"].join(', ')
+      translated_text = [
+        @customer.full_name.downcase.titleize,
+        word_for_gender(@customer.nationality, @customer.gender),
+        word_for_gender(@customer.civil_status, @customer.gender),
+        capacity,
+        @customer.profession.downcase,
+        "#{word_for_gender('owner', @customer.gender)} do RG n° #{@customer.rg} e #{word_for_gender('subscribe', @customer.gender)} no CPF sob o n° #{@customer.cpf}",
+        @customer.last_email, "residente e #{word_for_gender('live', @customer.gender)} à #{@address.street.to_s.downcase.titleize}, n° #{@address.number}",
+        @address.description.to_s.downcase.titleize, "#{@address.city} - #{@address.state}, CEP #{@address.zip_code}"
+      ].compact.join(', ')
 
       text.substitute('_proc_outorgante_', translated_text)
+    end
+
+    def capacity
+      ProfileCustomer.human_enum_name(:capacity, @customer.capacity).downcase unless @customer.capacity == 'able'
     end
 
     # outorgados paragraph
@@ -72,7 +80,7 @@ module ProfileCustomers
 
     # servico paragraph
     def substitute_job(text)
-      translated_text = 'Consulta, protocolo, carga, cópia e acesso à informação de benefícios previdenciários em geral.'
+      translated_text = 'Consulta, protocolo, carga, cópia e acesso à informação de benefícios previdenciários em geral'
       text.substitute('_proc_job_', translated_text)
     end
 
