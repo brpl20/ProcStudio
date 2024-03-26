@@ -48,6 +48,10 @@
       male: Representado por
       female: Representada por
       other: Representado(a) por
+    assisted:
+      male: Assistido por
+      female: Assistida por
+      other: Assistido(a) por
   activerecord:
     models:
       admin: Usuário
@@ -160,7 +164,7 @@
         capacity: Capacidade
         capacities:
           able: Capaz
-          relatively: Parcialmente incapaz
+          relatively: Relativamente incapaz
           unable: Absolutamente incapaz
         gender: Sexo
         genders:

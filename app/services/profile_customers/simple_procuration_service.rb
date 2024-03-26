@@ -13,16 +13,23 @@ module ProfileCustomers
       @office = @current_user.office
       @lawyers = @office.profile_admins.lawyer
       @lawyer_address = @lawyers.first.addresses.first
+      @represent = @customer&.represent
     end
 
     def call
-      doc = Docx::Document.open('app/template_documents/procuracao.docx')
+      doc = if @customer.able?
+              Docx::Document.open('app/template_documents/procuracao.docx')
+            else
+              Docx::Document.open('app/template_documents/procuracao_incapaz.docx')
+            end
+
       doc.paragraphs.each do |paragraph|
         paragraph.each_text_run do |text|
           substitute_word(text)
         end
       end
       doc.save("tmp/procuracao_simples_#{@document.id}.docx")
+
       blob = ActiveStorage::Blob.create_and_upload!(
         io: File.open("tmp/procuracao_simples_#{@document.id}.docx"),
         filename: "procuracao_simples_#{@document.id}.docx",
@@ -42,18 +49,28 @@ module ProfileCustomers
       text.substitute('_proc_today_', "#{@address.city} - #{@address.state}, #{proc_date}")
       text.substitute('_proc_date_', proc_date)
       text.substitute('_proc_full_name_', @customer.full_name.downcase.titleize)
+      text.substitute('_proc_represent_full_name_', @represent.representor.full_name) if @represent&.representor&.present?
     end
 
     # outorgante paragraph
     def substitute_client_info(text)
-      translated_text = [@customer.full_name.downcase.titleize, word_for_gender(@customer.nationality, @customer.gender),
-                         word_for_gender(@customer.civil_status, @customer.gender), ProfileCustomer.human_enum_name(:capacity, @customer.capacity).downcase,
-                         @customer.profession.downcase,
-                         "#{word_for_gender('owner', @customer.gender)} do RG n° #{@customer.rg} e #{word_for_gender('subscribe', @customer.gender)} no CPF sob o n° #{@customer.cpf}",
-                         @customer.last_email, "residente e #{word_for_gender('live', @customer.gender)}: #{@address.street.to_s.downcase.titleize}, n° #{@address.number}",
-                         @address.description.to_s.downcase.titleize, "#{@address.city} - #{@address.state}, CEP #{@address.zip_code}"].join(', ')
+      translated_text = [
+        @customer.full_name.downcase.titleize,
+        word_for_gender(@customer.nationality, @customer.gender),
+        word_for_gender(@customer.civil_status, @customer.gender),
+        capacity,
+        @customer.profession.downcase,
+        "#{word_for_gender('owner', @customer.gender)} do RG n° #{@customer.rg} e #{word_for_gender('subscribe', @customer.gender)} no CPF sob o n° #{@customer.cpf}",
+        @customer.last_email, "residente e #{word_for_gender('live', @customer.gender)} à #{@address.street.to_s.downcase.titleize}, n° #{@address.number}",
+        @address.description.to_s.downcase.titleize, "#{@address.city} - #{@address.state}, CEP #{@address.zip_code}",
+        responsable
+      ].compact.join(', ')
 
       text.substitute('_proc_outorgante_', translated_text)
+    end
+
+    def capacity
+      ProfileCustomer.human_enum_name(:capacity, @customer.capacity).downcase unless @customer.capacity == 'able'
     end
 
     # outorgados paragraph
@@ -72,8 +89,32 @@ module ProfileCustomers
 
     # servico paragraph
     def substitute_job(text)
-      translated_text = 'Consulta, protocolo, carga, cópia e acesso à informação de benefícios previdenciários em geral.'
+      translated_text = 'Consulta, protocolo, carga, cópia e acesso à informação de benefícios previdenciários em geral'
       text.substitute('_proc_job_', translated_text)
+    end
+
+    def responsable
+      return nil if @customer.able?
+      return nil unless @represent&.representor&.present?
+
+      representor = @customer.represent.representor
+      representor_address = representor.addresses.first
+      representor_text =
+        if @customer.unable?
+          "Neste ato #{word_for_gender('represent', representor.gender).downcase}"
+        else
+          "Neste ato #{word_for_gender('assisted', representor.gender).downcase}"
+        end
+
+      [
+        "#{representor_text} #{representor.full_name.downcase.titleize}",
+        word_for_gender(representor.civil_status, representor.gender),
+        "#{word_for_gender('owner', representor.gender)} do RG n° #{representor.rg} e #{word_for_gender('subscribe', representor.gender)} no CPF sob o n° #{representor.cpf}",
+        representor.last_email,
+        "residente e #{word_for_gender('live', representor.gender)} à #{representor_address.street.to_s.downcase.titleize}, n° #{representor_address.number}",
+        representor_address.description.to_s.downcase.titleize,
+        "#{representor_address.city} - #{representor_address.state}, CEP #{representor_address.zip_code}"
+      ].join(', ')
     end
 
     # tranlate lawyers informations with office
