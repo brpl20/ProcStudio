@@ -19,8 +19,10 @@ module ProfileCustomers
     def call
       doc = if @customer.able?
               Docx::Document.open('app/template_documents/procuracao.docx')
-            else
+            elsif @customer.unable?
               Docx::Document.open('app/template_documents/procuracao_incapaz.docx')
+            else
+              Docx::Document.open('app/template_documents/procuracao_parcialmente_incapaz.docx')
             end
 
       doc.paragraphs.each do |paragraph|
@@ -48,7 +50,7 @@ module ProfileCustomers
 
       text.substitute('_proc_today_', "#{@address.city} - #{@address.state}, #{proc_date}")
       text.substitute('_proc_date_', proc_date)
-      text.substitute('_proc_full_name_', @customer.full_name.downcase.titleize)
+      text.substitute('_proc_full_name_', @customer.full_name.downcase.titleize) unless @customer.unable?
       text.substitute('_proc_represent_full_name_', @represent.representor.full_name) if @represent&.representor&.present?
     end
 
