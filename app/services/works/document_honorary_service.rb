@@ -47,10 +47,6 @@ module Works
       ].join(', ')
     end
 
-    def substitute_subject(text)
-      text.substitute('_proc_subject_', Work.human_enum_name(:subject, work.subject).downcase.titleize)
-    end
-
     def substitute_action(text)
       text.substitute('_proc_action_', work.number.to_s)
     end
@@ -112,7 +108,6 @@ module Works
       substitute_client_info(text)
       substitute_justice_agents(text)
       substitute_job(text)
-      substitute_subject(text)
       substitute_action(text)
       substitute_rates(text)
       substitute_office_bank(text)
