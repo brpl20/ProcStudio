@@ -74,7 +74,7 @@ module Works
         else
           "O(A) advogado(a) receberá o valor de #{number_to_percentage(honorary&.percent_honorary_value, precision: 2)} dos benefícios brutos advindos deste processo"
         end
-      else 
+      else
         "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)} a vista"
       end
     end

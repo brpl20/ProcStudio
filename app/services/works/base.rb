@@ -110,11 +110,11 @@ module Works
       translated_text[0] = "#{'Procedimento'.pluralize(translated_text.size)} #{translated_text.first}"
       translated_text[-1] = "#{translated_text[-1]}: "
       translated_text = translated_text.join(', ')
-      translated_text << if work.social_security_areas.present? 
-        "#{Work.human_enum_name(:subject, work.subject).downcase.titleize} - #{Work.human_enum_name(:social_security_areas, work.social_security_areas).downcase.titleize}"
-      else
-        Work.human_enum_name(:subject, work.subject).downcase.titleize
-      end
+      translated_text << if work.social_security_areas.present?
+                           "#{Work.human_enum_name(:subject, work.subject).downcase.titleize} - #{Work.human_enum_name(:social_security_areas, work.social_security_areas).downcase.titleize}"
+                         else
+                           Work.human_enum_name(:subject, work.subject).downcase.titleize
+                         end
 
       text.substitute('_proc_job_', translated_text)
     end
