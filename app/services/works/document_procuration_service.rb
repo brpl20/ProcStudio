@@ -56,11 +56,16 @@ module Works
         )
     end
 
+    def substitute_powers(text)
+      text.substitute('_proc_powers_', work.powers.map { _1.description.titleize }.join(','))
+    end
+
     def substitute_word(text)
       proc_date = I18n.l(Time.now, format: '%d de %B de %Y')
       substitute_client_info(text)
       substitute_justice_agents(text)
       substitute_job(text)
+      substitute_powers(text)
 
       text.substitute('_proc_today_', "#{address.city&.strip}, #{address.state&.strip}, #{proc_date}")
       text.substitute('_proc_date_', proc_date)
