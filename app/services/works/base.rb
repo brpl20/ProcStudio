@@ -16,29 +16,41 @@ module Works
         customer.full_name.downcase.titleize,
         word_for_gender(customer.nationality, customer.gender),
         word_for_gender(customer.civil_status, customer.gender),
-        ProfileCustomer.human_enum_name(:capacity, customer.capacity).downcase,
+        capacity,
         customer.profession.downcase&.strip,
         "#{word_for_gender('owner', customer.gender)} do RG n° #{customer.rg} e #{word_for_gender('subscribe', customer.gender)} no CPF sob o n° #{customer.cpf}",
         customer.last_email&.strip, "residente e #{word_for_gender('live', customer.gender)}: #{address.street.to_s.downcase.titleize&.strip}, n° #{address.number}",
         address.description.to_s.downcase.titleize&.strip, "#{address.city&.strip} - #{address.state&.strip}, CEP #{address.zip_code&.strip} #{responsable}"
-      ].join(', ')
+      ].compact.join(', ')
 
       text.substitute('_proc_outorgante_', translated_text)
     end
 
-    def responsable
-      return nil unless customer.unable? && customer&.represent&.representor&.present?
+    def capacity
+      ProfileCustomer.human_enum_name(:capacity, @customer.capacity).downcase unless @customer.capacity == 'able'
+    end
 
-      represent = customer.represent.representor
-      represent_address = represent.addresses.first
+    def responsable
+      return nil if @customer.able?
+      return nil unless @represent&.representor&.present?
+
+      representor = @customer.represent.representor
+      representor_address = representor.addresses.first
+      representor_text =
+        if @customer.unable?
+          "Neste ato #{word_for_gender('represent', representor.gender).downcase}"
+        else
+          "Neste ato #{word_for_gender('assisted', representor.gender).downcase}"
+        end
+
       [
-        ", #{word_for_gender('represent', represent.gender)} #{represent.full_name.downcase.titleize&.strip}",
-        word_for_gender(represent.civil_status, represent.gender),
-        "#{word_for_gender('owner', represent.gender)} do RG n° #{represent.rg} e #{word_for_gender('subscribe', represent.gender)} no CPF sob o n° #{represent.cpf}",
-        represent.last_email&.strip,
-        "residente e #{word_for_gender('live', represent.gender)}: #{represent_address.street.to_s.downcase.titleize&.strip}, n° #{represent_address.number}",
-        represent_address.description.to_s.downcase.titleize&.strip,
-        "#{represent_address.city&.strip} - #{represent_address.state&.strip}, CEP #{represent_address.zip_code&.strip}"
+        "#{representor_text} #{representor.full_name.downcase.titleize}",
+        word_for_gender(representor.civil_status, representor.gender),
+        "#{word_for_gender('owner', representor.gender)} do RG n° #{representor.rg} e #{word_for_gender('subscribe', representor.gender)} no CPF sob o n° #{representor.cpf}",
+        representor.last_email,
+        "residente e #{word_for_gender('live', representor.gender)} à #{representor_address.street.to_s.downcase.titleize}, n° #{representor_address.number}",
+        representor_address.description.to_s.downcase.titleize,
+        "#{representor_address.city} - #{representor_address.state}, CEP #{representor_address.zip_code}"
       ].join(', ')
     end
 
