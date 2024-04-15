@@ -38,12 +38,12 @@ module Works
 
       bank = record.bank_accounts.first
       [
-        "Banco: #{bank&.bank_name}",
-        "Tipo de Conta: #{bank&.type_account}",
-        "Agência: #{bank&.agency}",
-        "Conta: #{bank&.account}",
-        "Operação: #{bank&.operation}",
-        "Pix: #{bank&.pix || 'Não informado'}"
+        "Banco: #{bank&.bank_name&.strip}",
+        "Tipo de Conta: #{bank&.type_account&.strip}",
+        "Agência: #{bank&.agency&.strip}",
+        "Conta: #{bank&.account&.strip}",
+        "Operação: #{bank&.operation&.strip}",
+        "Pix: #{bank&.pix&.strip || 'Não informado'}"
       ].join(', ')
     end
 
@@ -117,9 +117,9 @@ module Works
       substitute_rates(text)
       substitute_office_bank(text)
 
-      text.substitute('_proc_today_', "#{address.city}, #{address.state}, #{proc_date}")
-      text.substitute('_proc_full_name_', customer.full_name.downcase.titleize)
-      text.substitute('_proc_lawyer_full_name_', lawyers.first.full_name.downcase.titleize)
+      text.substitute('_proc_today_', "#{address.city&.strip}, #{address.state&.strip}, #{proc_date}")
+      text.substitute('_proc_full_name_', customer.full_name.downcase.titleize&.strip)
+      text.substitute('_proc_lawyer_full_name_', lawyers.first.full_name.downcase.titleize&.strip)
     end
   end
 end

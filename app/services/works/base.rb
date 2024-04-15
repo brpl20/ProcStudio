@@ -17,10 +17,10 @@ module Works
         word_for_gender(customer.nationality, customer.gender),
         word_for_gender(customer.civil_status, customer.gender),
         ProfileCustomer.human_enum_name(:capacity, customer.capacity).downcase,
-        customer.profession.downcase,
+        customer.profession.downcase&.strip,
         "#{word_for_gender('owner', customer.gender)} do RG n° #{customer.rg} e #{word_for_gender('subscribe', customer.gender)} no CPF sob o n° #{customer.cpf}",
-        customer.last_email, "residente e #{word_for_gender('live', customer.gender)}: #{address.street.to_s.downcase.titleize}, n° #{address.number}",
-        address.description.to_s.downcase.titleize, "#{address.city} - #{address.state}, CEP #{address.zip_code} #{responsable}"
+        customer.last_email&.strip, "residente e #{word_for_gender('live', customer.gender)}: #{address.street.to_s.downcase.titleize&.strip}, n° #{address.number}",
+        address.description.to_s.downcase.titleize&.strip, "#{address.city&.strip} - #{address.state&.strip}, CEP #{address.zip_code&.strip} #{responsable}"
       ].join(', ')
 
       text.substitute('_proc_outorgante_', translated_text)
@@ -32,13 +32,13 @@ module Works
       represent = customer.represent.representor
       represent_address = represent.addresses.first
       [
-        ", #{word_for_gender('represent', represent.gender)} #{represent.full_name.downcase.titleize}",
+        ", #{word_for_gender('represent', represent.gender)} #{represent.full_name.downcase.titleize&.strip}",
         word_for_gender(represent.civil_status, represent.gender),
         "#{word_for_gender('owner', represent.gender)} do RG n° #{represent.rg} e #{word_for_gender('subscribe', represent.gender)} no CPF sob o n° #{represent.cpf}",
-        represent.last_email,
-        "residente e #{word_for_gender('live', represent.gender)}: #{represent_address.street.to_s.downcase.titleize}, n° #{represent_address.number}",
-        represent_address.description.to_s.downcase.titleize,
-        "#{represent_address.city} - #{represent_address.state}, CEP #{represent_address.zip_code}"
+        represent.last_email&.strip,
+        "residente e #{word_for_gender('live', represent.gender)}: #{represent_address.street.to_s.downcase.titleize&.strip}, n° #{represent_address.number}",
+        represent_address.description.to_s.downcase.titleize&.strip,
+        "#{represent_address.city&.strip} - #{represent_address.state&.strip}, CEP #{represent_address.zip_code&.strip}"
       ].join(', ')
     end
 
@@ -50,9 +50,9 @@ module Works
     def lawyers_text
       text = []
       lawyers.each do |lawyer|
-        text.push(lawyer.full_name)
+        text.push(lawyer.full_name&.strip)
         text.push(word_for_gender(lawyer.civil_status, lawyer.gender))
-        text.push("OAB n° #{lawyer.oab}")
+        text.push("OAB n° #{lawyer.oab&.strip}")
         text.push(word_for_gender(lawyer.nationality, lawyer.gender))
       end
       text.join(', ')
@@ -63,13 +63,13 @@ module Works
       text = []
       lawyers.each do |lawyer|
         address = lawyer.addresses.first
-        text.push(lawyer.full_name)
+        text.push(lawyer.full_name&.strip)
         text.push(word_for_gender(lawyer.civil_status, lawyer.gender))
-        text.push("OAB n° #{lawyer.oab}")
+        text.push("OAB n° #{lawyer.oab&.strip}")
         text.push(word_for_gender(lawyer.nationality, lawyer.gender))
-        text.push("com endereço: #{address.street.to_s.downcase.titleize}, n° #{address.number}")
-        text.push(address.description.to_s.downcase.titleize)
-        text.push("#{address.city} - #{address.state}, CEP #{address.zip_code}")
+        text.push("com endereço: #{address.street.to_s.downcase.titleize&.strip}, n° #{address.number}")
+        text.push(address.description.to_s.downcase.titleize&.strip)
+        text.push("#{address.city&.strip} - #{address.state&.strip}, CEP #{address.zip_code&.strip}")
       end
       text.join(', ')
     end
@@ -78,9 +78,9 @@ module Works
     def substitute_justice_agents(text)
       translated_text = if office.present?
                           [
-                            "#{I18n.t('general.lawyers')}: #{lawyers_text}", "integrante da #{office.name} inscrita sob o cnpj #{office.cnpj}",
-                            "com endereço profissional à Rua #{office.street.to_s.downcase.titleize}", office.number.to_s, office.neighborhood.downcase.titleize,
-                            "#{office.city}-#{office.state}", "e endereço eletrônico #{office.site}"
+                            "#{I18n.t('general.lawyers')}: #{lawyers_text}", "integrante da #{office.name&.strip} inscrita sob o cnpj #{office.cnpj}",
+                            "com endereço profissional à Rua #{office.street.to_s.downcase.titleize&.strip}", office.number.to_s, office.neighborhood.downcase.titleize&.strip,
+                            "#{office.city&.strip}-#{office.state&.strip}", "e endereço eletrônico #{office.site&.strip}"
                           ].join(', ')
                         else
                           ["#{I18n.t('general.lawyers')}: #{lawyers_text_without_office}"].join(', ')
