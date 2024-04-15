@@ -60,20 +60,22 @@ module Works
     end
 
     def rate_text
-      case honorary.honorary_type
-      when 'work'
-        "o(a) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)}"
-      when 'success'
-        "o(a) advogado(a) receberá o valor de #{number_to_percentage(honorary&.percent_honorary_value, precision: 2)} dos benefícios recebidos pelo cliente"
-      when 'both'
-        [
-          'o(a) advogado(a) receberá uma parcela fixa de',
-          "#{number_to_currency(honorary&.parcelling_value)} mais",
-          number_to_percentage(honorary&.percent_honorary_value, precision: 2),
-          'dos benefícios recebidos pelo cliente'
-        ].join(' ')
-      when 'bonus'
-        'Nada a ser pago'
+      return 'Nada a ser pago' if honorary.honorary_type == 'bonus'
+
+      if honorary.parcelling_value.present? && honorary.honorary_type != 'both'
+        "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)} em #{honorary&.parcelling_value&.to_i} parcelas de igual valor e com mesmo vencimento a partir da assinatura deste documento"
+      elsif honorary.honorary_type == 'both'
+        if honorary.parcelling_value.present?
+          [
+            "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)}",
+            "em #{honorary&.parcelling_value&.to_i} parcelas de igual valor e com mesmo vencimento a partir da assinatura deste documento,",
+            "mais um valor variável de #{number_to_percentage(honorary&.percent_honorary_value, precision: 2)} dos benefícios brutos advindos deste processo"
+          ].join(' ')
+        else
+          "O(A) advogado(a) receberá o valor de #{number_to_percentage(honorary&.percent_honorary_value, precision: 2)} dos benefícios brutos advindos deste processo"
+        end
+      else 
+        "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)} a vista"
       end
     end
 
