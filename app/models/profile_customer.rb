@@ -107,7 +107,7 @@ class ProfileCustomer < ApplicationRecord
   end
 
   def full_name
-    [name, last_name].join(' ')
+    [name&.strip, last_name&.strip].join(' ')
   end
 
   def last_email

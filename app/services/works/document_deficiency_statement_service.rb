@@ -57,8 +57,8 @@ module Works
       proc_date = I18n.l(Time.now, format: '%d de %B de %Y')
       substitute_client_info(text)
 
-      text.substitute('_proc_today_', "#{address.city}, #{address.state}, #{proc_date}")
-      text.substitute('_proc_full_name_', customer.full_name.downcase.titleize)
+      text.substitute('_proc_today_', "#{address.city&.strip}, #{address.state&.strip}, #{proc_date}")
+      text.substitute('_proc_full_name_', customer.full_name.downcase.titleize&.strip)
     end
   end
 end

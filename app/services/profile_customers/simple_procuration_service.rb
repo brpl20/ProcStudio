@@ -48,23 +48,23 @@ module ProfileCustomers
       substitute_justice_agents(text)
       substitute_job(text)
 
-      text.substitute('_proc_today_', "#{@address.city} - #{@address.state}, #{proc_date}")
+      text.substitute('_proc_today_', "#{@address.city&.strip} - #{@address.state&.strip}, #{proc_date}")
       text.substitute('_proc_date_', proc_date)
-      text.substitute('_proc_full_name_', @customer.full_name.downcase.titleize) unless @customer.unable?
-      text.substitute('_proc_represent_full_name_', @represent.representor.full_name) if @represent&.representor&.present?
+      text.substitute('_proc_full_name_', @customer.full_name.downcase.titleize&.strip) unless @customer.unable?
+      text.substitute('_proc_represent_full_name_', @represent.representor.full_name&.strip) if @represent&.representor&.present?
     end
 
     # outorgante paragraph
     def substitute_client_info(text)
       translated_text = [
-        @customer.full_name.downcase.titleize,
+        @customer.full_name.downcase.titleize&.strip,
         word_for_gender(@customer.nationality, @customer.gender),
         word_for_gender(@customer.civil_status, @customer.gender),
         capacity,
-        @customer.profession.downcase,
-        "#{word_for_gender('owner', @customer.gender)} do RG n° #{@customer.rg} e #{word_for_gender('subscribe', @customer.gender)} no CPF sob o n° #{@customer.cpf}",
-        @customer.last_email, "residente e #{word_for_gender('live', @customer.gender)} à #{@address.street.to_s.downcase.titleize}, n° #{@address.number}",
-        @address.description.to_s.downcase.titleize, "#{@address.city} - #{@address.state}, CEP #{@address.zip_code}",
+        @customer.profession.downcase&.strip,
+        "#{word_for_gender('owner', @customer.gender)} do RG n° #{@customer.rg&.strip} e #{word_for_gender('subscribe', @customer.gender)} no CPF sob o n° #{@customer.cpf&.strip}",
+        @customer.last_email&.strip, "residente e #{word_for_gender('live', @customer.gender)} à #{@address.street.to_s.downcase.titleize&.strip}, n° #{@address.number}",
+        @address.description.to_s.downcase.titleize&.strip, "#{@address.city&.strip} - #{@address.state}, CEP #{@address.zip_code&.strip}",
         responsable
       ].compact.join(', ')
 
@@ -78,9 +78,9 @@ module ProfileCustomers
     # outorgados paragraph
     def substitute_justice_agents(text)
       translated_text = if @office.present?
-                          ["#{I18n.t('general.lawyers')}: #{lawyers_text}", "integrante(s) da #{@office.name} inscrita sob o cnpj #{@office.cnpj}",
-                           "com endereço profissional à Rua #{@office.street.to_s.downcase.titleize}", @office.number.to_s, @office.neighborhood.downcase.titleize,
-                           "#{@office.city}-#{@office.state}", "e endereço eletrônico #{@office.site}"]
+                          ["#{I18n.t('general.lawyers')}: #{lawyers_text}", "integrante(s) da #{@office.name&.strip} inscrita sob o cnpj #{@office.cnpj}",
+                           "com endereço profissional à Rua #{@office.street.to_s.downcase.titleize&.strip}", @office.number.to_s, @office.neighborhood.downcase.titleize&.strip,
+                           "#{@office.city&.strip}-#{@office.state&.strip}", "e endereço eletrônico #{@office.site&.strip}"]
                             .join(', ')
                         else
                           ["#{I18n.t('general.lawyers')}: #{lawyers_text_without_office}"].join(', ')
@@ -109,13 +109,13 @@ module ProfileCustomers
         end
 
       [
-        "#{representor_text} #{representor.full_name.downcase.titleize}",
+        "#{representor_text} #{representor.full_name.downcase.titleize&.strip}",
         word_for_gender(representor.civil_status, representor.gender),
         "#{word_for_gender('owner', representor.gender)} do RG n° #{representor.rg} e #{word_for_gender('subscribe', representor.gender)} no CPF sob o n° #{representor.cpf}",
         representor.last_email,
-        "residente e #{word_for_gender('live', representor.gender)} à #{representor_address.street.to_s.downcase.titleize}, n° #{representor_address.number}",
-        representor_address.description.to_s.downcase.titleize,
-        "#{representor_address.city} - #{representor_address.state}, CEP #{representor_address.zip_code}"
+        "residente e #{word_for_gender('live', representor.gender)} à #{representor_address.street.to_s.downcase.titleize&.strip}, n° #{representor_address.number}",
+        representor_address.description.to_s.downcase.titleize&.strip,
+        "#{representor_address.city&.strip} - #{representor_address.state&.strip}, CEP #{representor_address.zip_code&.strip}"
       ].join(', ')
     end
 
