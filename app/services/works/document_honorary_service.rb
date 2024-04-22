@@ -33,10 +33,10 @@ module Works
 
     attr_reader :document, :work, :honorary, :office, :lawyers, :lawyer_address, :customer, :address
 
-    def bank_information(record)
-      return 'Dados Bancários Não Informados' unless record.bank_accounts.present?
+    def bank_information(resource)
+      return 'Dados Bancários Não Informados' unless resource&.bank_accounts&.present?
 
-      bank = record.bank_accounts.first
+      bank = resource.bank_accounts.first
       [
         "Banco: #{bank&.bank_name&.strip}",
         "Tipo de Conta: #{bank&.type_account&.strip}",
