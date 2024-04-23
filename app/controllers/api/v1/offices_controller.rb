@@ -88,7 +88,7 @@ module Api
           :responsible_lawyer_id,
           phones_attributes: %i[id phone_number],
           emails_attributes: %i[id email],
-          bank_accounts_attributes: %i[id bank_name type_account agency account operation]
+          bank_accounts_attributes: %i[id bank_name type_account agency account operatio pix]
         )
       end
 
