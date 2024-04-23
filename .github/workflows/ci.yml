@@ -65,9 +65,13 @@ jobs:
     name: Deploy to staging
     needs: [rubocop, rspec]
     runs-on: ubuntu-latest
+
     if: github.ref == 'refs/heads/master' && success()
 
     steps:
+      - name: Work around permission issue
+        run: git config --global --add safe.directory /home/production/procstudio_api/scm
+
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -81,9 +85,12 @@ jobs:
           gem install bundler
           bundle install
 
+      - name: setup ssh-agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.STAGING_KEY }}
+
       - name: Deploy to staging
         run: |
           gem install mina
           bundle exec mina deploy staging
-        env:
-          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
