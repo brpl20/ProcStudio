@@ -69,11 +69,15 @@ jobs:
     if: github.ref == 'refs/heads/master' && success()
 
     steps:
-      - name: Work around permission issue
-        run: git config --global --add safe.directory /home/production/procstudio_api/scm
-
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: setup ssh-agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: |
+            ${{ secrets.GIT_KEY }}
+            ${{ secrets.STAGING_KEY }}
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -85,12 +89,7 @@ jobs:
           gem install bundler
           bundle install
 
-      - name: setup ssh-agent
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.STAGING_KEY }}
-
       - name: Deploy to staging
         run: |
           gem install mina
-          bundle exec mina deploy staging
+          bundle exec mina staging deploy
