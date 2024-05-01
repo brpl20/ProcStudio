@@ -36,7 +36,7 @@ class Api::V1::Customer::AuthController < ApplicationController
 
     if customer&.valid_password?(auth_params[:password])
       token = update_user_token(customer)
-      render json: { token: token }
+      render json: { token: token, full_name: customer.profile_customer_full_name }
     else
       head :unauthorized
     end
