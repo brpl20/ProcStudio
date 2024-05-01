@@ -56,7 +56,7 @@ class Api::V1::Customer::AuthController < ApplicationController
 
     if customer
       token = update_user_token(customer)
-      render json: { token: token }
+      render json: { token: token, full_name: customer.profile_customer_full_name }
     else
       head :not_found
     end
