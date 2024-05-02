@@ -48,6 +48,7 @@ module ProfileCustomers
       substitute_justice_agents(text)
       substitute_job(text)
 
+      text.substitute('_proc_powers_', '')
       text.substitute('_proc_today_', "#{@address.city&.strip} - #{@address.state&.strip}, #{proc_date}")
       text.substitute('_proc_date_', proc_date)
       text.substitute('_proc_full_name_', @customer.full_name.downcase.titleize&.strip) unless @customer.unable?
