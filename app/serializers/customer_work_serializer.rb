@@ -24,10 +24,16 @@ class CustomerWorkSerializer
   end
 
   attribute :profile_customers do |_, params|
+    profile_customer = params[:current_user].profile_customer
     {
-      id: params[:current_user].profile_customer.id,
-      name: params[:current_user].profile_customer.name,
-      email: params[:current_user].profile_customer.customer.email
+      id: profile_customer.id,
+      name: profile_customer.name,
+      email: profile_customer.customer.email,
+      represent: {
+        id: profile_customer&.represent&.id,
+        representor_id: profile_customer&.represent&.representor_id,
+        representor_name: profile_customer&.represent&.representor&.full_name
+      }
     }
   end
 
@@ -91,5 +97,27 @@ class CustomerWorkSerializer
         url: document.document_docx&.url
       }
     end
+  end
+
+  attribute :initial_atendee do |object|
+    atendee = ProfileAdmin.find(object.initial_atendee)
+
+    {
+      id: atendee.id,
+      full_name: atendee.full_name
+    }
+  rescue ActiveRecord::RecordNotFound
+    {}
+  end
+
+  attribute :responsible_lawyer do |object|
+    lawyer = ProfileAdmin.find(object.responsible_lawyer)
+
+    {
+      id: lawyer.id,
+      full_name: lawyer.full_name
+    }
+  rescue ActiveRecord::RecordNotFound
+    {}
   end
 end

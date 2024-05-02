@@ -32,7 +32,7 @@ module Works
 
     def responsable
       return nil if @customer.able?
-      return nil unless @customer&.representor&.present?
+      return nil unless @customer&.represent&.representor&.present?
 
       representor = @customer.represent.representor
       representor_address = representor.addresses.first
