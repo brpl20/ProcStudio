@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ProcStudio::DeviseMailer < Devise::Mailer
   include ProcStudio::UrlHelper
 

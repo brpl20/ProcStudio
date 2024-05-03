@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ProcStudio::UrlHelper
   def base_url
     if Rails.env.development? || Rails.env.test?
