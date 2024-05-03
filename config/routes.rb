@@ -7,7 +7,11 @@ Rails.application.routes.draw do
     namespace :v1 do
       get '/offices/with_lawyers', to: 'offices#with_lawyers'
       resources :admins
-      resources :customers
+      resources :customers do
+        member do
+          post :resend_confirmation
+        end
+      end
       resources :jobs
       resources :offices
       resources :office_types
@@ -19,7 +23,8 @@ Rails.application.routes.draw do
       delete '/logout', to: 'auth#destroy'
 
       namespace :customer do
-        post   :login,  to: 'auth#authenticate'
+        post :login, to: 'auth#authenticate'
+        get :confirm, to: 'auth#confirm'
         delete :logout, to: 'auth#destroy'
 
         resources :customers, only: %i[update show]

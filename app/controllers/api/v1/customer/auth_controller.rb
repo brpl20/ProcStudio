@@ -29,6 +29,21 @@ class Api::V1::Customer::AuthController < ApplicationController
     end
   end
 
+  # GET /api/v1/customer/confirm?confirmation_token=abcde
+  def confirm
+    customer = Customer.confirm_by_token(params[:confirmation_token])
+
+    if customer.errors.empty?
+      token = update_user_token(customer)
+      render json: { token: token, full_name: customer.profile_customer_full_name }
+    else
+      render json: {
+        success: false,
+        message: customer.errors.full_messages.join(', ')
+      }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def authenticate_with_email_and_password

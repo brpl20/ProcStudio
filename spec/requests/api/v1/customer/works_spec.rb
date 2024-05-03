@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe '/api/v1/customer/works', type: :request do
-  let!(:customer) { create(:customer) }
+  let!(:customer) { create(:customer, :confirmed) }
   let(:valid_headers) { { Authorization: "Bearer #{customer.jwt_token}", Accept: 'application/json' } }
 
   describe 'GET /index' do

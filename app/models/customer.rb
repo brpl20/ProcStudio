@@ -15,6 +15,10 @@
 #  deleted_at             :datetime
 #  jwt_token              :string
 #  created_by_id          :bigint(8)
+#  confirmation_token     :string
+#  confirmed_at           :datetime
+#  confirmation_sent_at   :datetime
+#  unconfirmed_email      :datetime
 #
 class Customer < ApplicationRecord
   acts_as_paranoid
@@ -22,7 +26,7 @@ class Customer < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+         :recoverable, :rememberable, :validatable, :confirmable
 
   has_one :profile_customer, dependent: :destroy
   has_many :jobs

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_03_01_110019) do
+ActiveRecord::Schema[7.0].define(version: 2024_05_02_113500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -191,6 +191,11 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_01_110019) do
     t.datetime "deleted_at"
     t.string "jwt_token"
     t.bigint "created_by_id"
+    t.string "confirmation_token"
+    t.datetime "confirmed_at"
+    t.datetime "confirmation_sent_at"
+    t.datetime "unconfirmed_email"
+    t.index ["confirmation_token"], name: "index_customers_on_confirmation_token", unique: true
     t.index ["created_by_id"], name: "index_customers_on_created_by_id"
     t.index ["deleted_at"], name: "index_customers_on_deleted_at"
     t.index ["email"], name: "index_customers_on_email", unique: true

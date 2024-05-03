@@ -7,11 +7,25 @@ RSpec.describe Customer::CustomerPolicy, type: :policy do
 
   subject { described_class }
 
-  permissions :show? do
-    it { is_expected.to permit(customer, customer) }
+  context 'when customer is not confirmed' do
+    permissions :show? do
+      it { is_expected.to_not permit(customer, customer) }
+    end
+
+    permissions :update? do
+      it { is_expected.to_not permit(customer, customer) }
+    end
   end
 
-  permissions :update? do
-    it { is_expected.to permit(customer, customer) }
+  context 'when customer is confirmed' do
+    before { customer.update confirmed_at: 5.minutes.ago }
+
+    permissions :show? do
+      it { is_expected.to permit(customer, customer) }
+    end
+
+    permissions :update? do
+      it { is_expected.to permit(customer, customer) }
+    end
   end
 end

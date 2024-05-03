@@ -13,8 +13,9 @@ class FrontofficeController < ApplicationController
   end
 
   def unauthorized(exception)
-    render json: {
-      error: I18n.t("customer.#{exception.query}", scope: 'pundit', default: :default)
-    }, status: :unauthorized
+    error = I18n.t("customer.#{exception.query}", scope: 'pundit', default: :default)
+    error = 'Você precisa confirmar o seu e-mail antes de continuar.' if current_user.present? && !current_user.confirmed?
+
+    render json: { error: error }, status: :unauthorized
   end
 end

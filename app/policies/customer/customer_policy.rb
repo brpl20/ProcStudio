@@ -2,7 +2,7 @@
 
 class Customer::CustomerPolicy < ApplicationPolicy
   def show?
-    user == record
+    user.confirmed? && user == record
   end
 
   def update?
