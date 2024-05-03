@@ -13,6 +13,10 @@ class Admin::CustomerPolicy < Admin::BasePolicy
     lawyer? || paralegal? || trainee? || secretary?
   end
 
+  def resend_confirmation?
+    create?
+  end
+
   def update?
     lawyer? || paralegal? || (trainee? && owner?) || (secretary? && owner?)
   end

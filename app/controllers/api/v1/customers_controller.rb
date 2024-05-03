@@ -3,7 +3,7 @@
 module Api
   module V1
     class CustomersController < BackofficeController
-      before_action :retrieve_customer, only: %i[update show destroy]
+      before_action :retrieve_customer, only: %i[update show destroy resend_confirmation]
       before_action :perform_authorization, except: %i[update]
 
       after_action :verify_authorized
@@ -37,6 +37,12 @@ module Api
           status: :bad_request,
           json: { errors: [{ code: e }] }
         )
+      end
+
+      def resend_confirmation
+        @customer.update(confirmed_at: nil)
+        @customer.send_confirmation_instructions
+        head :ok
       end
 
       def update
