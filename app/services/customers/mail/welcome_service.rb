@@ -3,13 +3,14 @@
 class Customers::Mail::WelcomeService < ApplicationService
   include Customers::Mail::MailjetService
 
-  def initialize(customer)
+  def initialize(customer, confirmation_url)
     @customer = customer
+    @confirmation_url = confirmation_url
   end
 
   private
 
-  attr_reader :customer
+  attr_reader :customer, :confirmation_url
 
   WELCOME_TO_PROCSTUDIO = 5_667_725
 
@@ -31,7 +32,8 @@ class Customers::Mail::WelcomeService < ApplicationService
 
   def variables
     {
-      customer_full_name: customer_name
+      customer_full_name: customer_name,
+      confirmation_url: confirmation_url
     }
   end
 

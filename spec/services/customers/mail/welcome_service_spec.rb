@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Customers::Mail::WelcomeService do
   let(:customer) { double('Customer', profile_customer_full_name: 'Test User', email: 'customer@email.com') }
-  let(:service) { described_class.new(customer) }
+  let(:service) { described_class.new(customer, 'localhost:3000/api/v1/customer?confirmation_token=abcde') }
   let(:mailjet_service) { double('Mailjet::Send') }
 
   before do
@@ -24,7 +24,10 @@ RSpec.describe Customers::Mail::WelcomeService do
             TemplateID: 5_667_725,
             TemplateLanguage: true,
             Subject: 'Boas-vindas ao Procstudio Test User - Seu Parceiro em Gestão de Processos',
-            Variables: { customer_full_name: 'Test User' }
+            Variables: {
+              customer_full_name: 'Test User',
+              confirmation_url: 'localhost:3000/api/v1/customer?confirmation_token=abcde'
+            }
           }
         ],
         sandbox_mode: true
