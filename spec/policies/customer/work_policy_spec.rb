@@ -8,14 +8,30 @@ RSpec.describe Customer::WorkPolicy, type: :policy do
   subject { described_class }
 
   describe 'when the customer has profile customer' do
-    permissions :index? do
-      it { is_expected.to permit(customer, nil) }
+    context 'when customer is not confirmed' do
+      permissions :index? do
+        it { is_expected.to_not permit(customer, nil) }
+      end
+
+      permissions :show? do
+        let(:work) { create(:work, profile_customers: [customer.profile_customer]) }
+
+        it { is_expected.to_not permit(customer, work) }
+      end
     end
 
-    permissions :show? do
-      let(:work) { create(:work, profile_customers: [customer.profile_customer]) }
+    context 'when customer is confirmed' do
+      before { customer.update confirmed_at: 5.minutes.ago }
 
-      it { is_expected.to permit(customer, work) }
+      permissions :index? do
+        it { is_expected.to permit(customer, nil) }
+      end
+
+      permissions :show? do
+        let(:work) { create(:work, profile_customers: [customer.profile_customer]) }
+
+        it { is_expected.to permit(customer, work) }
+      end
     end
   end
 end

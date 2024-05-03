@@ -13,5 +13,9 @@ FactoryBot.define do
       )
       customer.update(jwt_token: token)
     end
+
+    trait :confirmed do
+      confirmed_at { 5.minutes.ago }
+    end
   end
 end

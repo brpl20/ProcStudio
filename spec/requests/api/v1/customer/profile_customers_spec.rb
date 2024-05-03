@@ -7,6 +7,8 @@ RSpec.describe '/api/v1/customer/profile_customers', type: :request do
   let(:profile_customer) { customer.profile_customer }
   let(:valid_headers) { { Authorization: "Bearer #{customer.jwt_token}", Accept: 'application/json' } }
 
+  before { customer.update confirmed_at: 5.minutes.ago }
+
   describe 'GET /show' do
     it 'renders a successful response' do
       get api_v1_customer_profile_customer_url(profile_customer), headers: valid_headers, as: :json
