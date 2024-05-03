@@ -5,7 +5,7 @@ module ProcStudio::UrlHelper
     if Rails.env.development? || Rails.env.test?
       'http://localhost:3000'
     else
-      'https://staging.procstudio.com.br'
+      'https://staging_cliente.procstudio.com.br'
     end
   end
 
