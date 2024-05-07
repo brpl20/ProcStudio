@@ -49,6 +49,7 @@ RSpec.describe Work do
     it { is_expected.to have_many(:offices) }
     it { is_expected.to have_many(:recommendations) }
     it { is_expected.to have_many(:jobs) }
+    it { is_expected.to have_many(:work_events) }
   end
 
   describe 'Enums' do

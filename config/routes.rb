@@ -19,6 +19,8 @@ Rails.application.routes.draw do
       resources :profile_customers
       resources :profile_admins
       resources :works
+      resources :work_events
+
       post '/login', to: 'auth#authenticate'
       delete '/logout', to: 'auth#destroy'
 

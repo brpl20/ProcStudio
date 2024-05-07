@@ -74,6 +74,7 @@
       profile_customer: Perfil de cliente
       work: Trabalho
       draft/work: Rascunho de Trabalho
+      work_event: Atualização de Trabalho
     attributes:
       admin:
         email: E-mail
@@ -218,6 +219,11 @@
       draft/work:
         name: Nome
         work: Trabalho
+      work_event:
+        description: Descrição
+        work: Trabalho
+        date: Data
+        status: Status
     errors:
       messages:
         record_invalid: 'A validação falhou: %{errors}'
