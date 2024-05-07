@@ -18,7 +18,8 @@ module Api
           :recommendations,
           :jobs,
           :documents,
-          :pending_documents
+          :pending_documents,
+          :work_events
         ).all.order(id: :desc).limit(params[:limit])
 
         filtering_params.each do |key, value|

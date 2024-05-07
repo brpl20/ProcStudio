@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V1::WorkEventsController < BackofficeController
   before_action :set_work_event, only: %i[show update destroy]
   before_action :perform_authorization

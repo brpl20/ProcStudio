@@ -120,4 +120,15 @@ class CustomerWorkSerializer
   rescue ActiveRecord::RecordNotFound
     {}
   end
+
+  attribute :work_events do |object|
+    object.work_events.map do |work_event|
+      {
+        description: work_event.description,
+        status: work_event.status,
+        date: work_event.date,
+        work_id: work_event.work_id
+      }
+    end
+  end
 end

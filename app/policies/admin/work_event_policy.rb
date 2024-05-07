@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Admin::WorkEventPolicy < Admin::BasePolicy
   def index?
     lawyer? || paralegal? || trainee? || secretary? || counter? || excounter?

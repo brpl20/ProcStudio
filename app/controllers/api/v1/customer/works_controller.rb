@@ -10,7 +10,16 @@ class Api::V1::Customer::WorksController < FrontofficeController
   def index
     authorize [:customer, :work], :index?
 
-    works = current_user.profile_customer.works.includes(:documents, :offices, :profile_admins, :powers, :recommendations, :jobs, :pending_documents)
+    works = current_user.profile_customer.works.includes(
+      :documents,
+      :offices,
+      :profile_admins,
+      :powers,
+      :recommendations,
+      :jobs,
+      :pending_documents,
+      :work_events
+    )
 
     render json: CustomerWorkSerializer.new(
       works,
