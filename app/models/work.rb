@@ -50,6 +50,7 @@ class Work < ApplicationRecord
   has_many :offices, through: :office_works
 
   has_many :recommendations, dependent: :destroy
+  has_many :work_events, dependent: :destroy
 
   has_many :jobs
 
