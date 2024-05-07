@@ -1,39 +1,61 @@
-class Api::V1::WorkEventsController < ApplicationController
-  before_action :set_work_event, only: %i[ show update destroy ]
+class Api::V1::WorkEventsController < BackofficeController
+  before_action :set_work_event, only: %i[show update destroy]
+  before_action :perform_authorization
 
-  # GET /work_events
+  # GET api/v1/work_events
   def index
-    @work_events = WorkEvent.all
+    work_events = WorkEvent.all.order(id: :desc).limit(params[:limit])
 
-    render json: @work_events
+    render json: WorkEventSerializer.new(
+      work_events,
+      meta: {
+        total_count: work_events.size
+      }
+    ), status: :ok
   end
 
-  # GET /work_events/1
+  # GET api/v1/work_events/1
   def show
-    render json: @work_event
+    render json: WorkEventSerializer.new(@work_event), status: :ok
   end
 
-  # POST /work_events
+  # POST api/v1/work_events
   def create
-    @work_event = WorkEvent.new(work_event_params)
+    work_event = WorkEvent.new(work_event_params)
 
-    if @work_event.save
-      render json: @work_event, status: :created, location: @work_event
+    if work_event.save
+      render json: WorkEventSerializer.new(work_event), status: :created
     else
-      render json: @work_event.errors, status: :unprocessable_entity
+      render(
+        status: :unprocessable_entity,
+        json: { errors: [{ code: work_event.errors.full_messages }] }
+      )
     end
+  rescue StandardError => e
+    render(
+      status: :bad_request,
+      json: { errors: [{ code: e }] }
+    )
   end
 
-  # PATCH/PUT /work_events/1
+  # PATCH/PUT api/v1/work_events/1
   def update
     if @work_event.update(work_event_params)
-      render json: @work_event
+      render json: WorkEventSerializer.new(@work_event), status: :ok
     else
-      render json: @work_event.errors, status: :unprocessable_entity
+      render(
+        status: :unprocessable_entity,
+        json: { errors: [{ code: @work_event.errors.full_messages }] }
+      )
     end
+  rescue StandardError => e
+    render(
+      status: :bad_request,
+      json: { errors: [{ code: e }] }
+    )
   end
 
-  # DELETE /work_events/1
+  # DELETE api/v1/work_events/1
   def destroy
     @work_event.destroy
   end
@@ -46,5 +68,9 @@ class Api::V1::WorkEventsController < ApplicationController
 
   def work_event_params
     params.require(:work_event).permit(:status, :description, :date, :work_id)
+  end
+
+  def perform_authorization
+    authorize [:admin, :work_event], "#{action_name}?".to_sym
   end
 end
