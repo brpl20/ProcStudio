@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_05_02_113500) do
+ActiveRecord::Schema[7.0].define(version: 2024_05_07_114255) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -450,6 +450,16 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_02_113500) do
     t.index ["representor_id"], name: "index_represents_on_representor_id"
   end
 
+  create_table "work_events", force: :cascade do |t|
+    t.string "status"
+    t.string "description"
+    t.datetime "date"
+    t.bigint "work_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["work_id"], name: "index_work_events_on_work_id"
+  end
+
   create_table "works", force: :cascade do |t|
     t.string "procedure"
     t.string "subject"
@@ -534,5 +544,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_02_113500) do
   add_foreign_key "recommendations", "works"
   add_foreign_key "represents", "profile_customers"
   add_foreign_key "represents", "profile_customers", column: "representor_id"
+  add_foreign_key "work_events", "works"
   add_foreign_key "works", "admins", column: "created_by_id"
 end
