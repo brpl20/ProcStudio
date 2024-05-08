@@ -13,7 +13,7 @@ module ProcStudio::UrlHelper
     if Rails.env.development? || Rails.env.test?
       "/api/v1/customer/confirm?confirmation_token=#{token}"
     else
-      "?confirmation_token=#{token}"
+      "/primeiro-acesso?confirmation_token=#{token}"
     end
   end
 end
