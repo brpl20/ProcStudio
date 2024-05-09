@@ -32,4 +32,17 @@ class Customer < ApplicationRecord
   has_many :jobs
 
   delegate :full_name, to: :profile_customer, prefix: true, allow_nil: true
+
+  before_validation :setup_password, if: :new_record?
+
+  # Setup a random password for the customer if such is not present. This is
+  # necessary because we want to not override Devise's defaults, also, customers will
+  # configure their passwords as part of our 'first access' workflow.
+  #
+  # @return [void]
+  def setup_password
+    return if password.present?
+
+    self.password = Devise.friendly_token.first(24)
+  end
 end

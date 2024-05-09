@@ -23,6 +23,7 @@ RSpec.describe Api::V1::CustomersController, type: :request do
             'id' => customer.id.to_s,
             'type' => 'customer',
             'attributes' => {
+              'profile_customer_id' => customer.profile_customer_id,
               'email' => customer.email,
               'created_by_id' => customer.created_by_id,
               'confirmed_at' => customer.confirmed_at,
@@ -82,6 +83,7 @@ RSpec.describe Api::V1::CustomersController, type: :request do
             'id' => customer.id.to_s,
             'type' => 'customer',
             'attributes' => {
+              'profile_customer_id' => customer.profile_customer_id,
               'email' => 'emailnovo@gmail.com',
               'created_by_id' => customer.created_by_id,
               'confirmed_at' => customer.confirmed_at,
@@ -111,6 +113,7 @@ RSpec.describe Api::V1::CustomersController, type: :request do
             'id' => customer.id.to_s,
             'type' => 'customer',
             'attributes' => {
+              'profile_customer_id' => customer.profile_customer_id,
               'email' => customer.email,
               'created_by_id' => customer.created_by_id,
               'confirmed_at' => customer.confirmed_at,
