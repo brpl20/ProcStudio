@@ -216,6 +216,7 @@
         rate_parceled: Parcelamento
         rate_parceled_exfield: Parcelamento
         power_ids: Poderes
+        status: Status
       draft/work:
         name: Nome
         work: Trabalho
@@ -223,7 +224,6 @@
         description: Descrição
         work: Trabalho
         date: Data
-        status: Status
     errors:
       messages:
         record_invalid: 'A validação falhou: %{errors}'

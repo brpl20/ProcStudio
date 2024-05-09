@@ -11,8 +11,7 @@ RSpec.describe '/api/v1/work_events', type: :request do
     {
       work_id: work.id,
       date: Time.now.to_fs(:db),
-      description: 'Teste',
-      status: 'in_progress'
+      description: 'Teste'
     }
   end
 

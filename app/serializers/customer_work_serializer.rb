@@ -7,7 +7,7 @@ class CustomerWorkSerializer
              :other_description, :laborite_areas, :tributary_areas, :physical_lawyer, :responsible_lawyer,
              :partner_lawyer, :intern, :bachelor, :initial_atendee, :note, :folder, :rate_parceled_exfield,
              :extra_pending_document, :compensations_five_years, :compensations_service, :lawsuit,
-             :gain_projection, :procedures, :honorary
+             :gain_projection, :procedures, :honorary, :status
 
   attribute :procurations_created do |object|
     object.documents.procurations.size
@@ -125,7 +125,6 @@ class CustomerWorkSerializer
     object.work_events.map do |work_event|
       {
         description: work_event.description,
-        status: work_event.status,
         date: work_event.date,
         work_id: work_event.work_id
       }

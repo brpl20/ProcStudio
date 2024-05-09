@@ -31,6 +31,7 @@
 #  initial_atendee          :integer
 #  procedures               :text             default([]), is an Array
 #  created_by_id            :bigint(8)
+#  status                   :string           default("in_progress")
 #
 class Work < ApplicationRecord
   has_many :customer_works, dependent: :destroy
@@ -99,6 +100,12 @@ class Work < ApplicationRecord
 
   enum laborite_areas: {
     labor_claim: 'reclamatoria_trabalhista'
+  }
+
+  enum status: {
+    in_progress: 'in_progress',
+    paused: 'paused',
+    completed: 'completed'
   }
 
   validates :subject, presence: true

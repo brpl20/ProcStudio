@@ -31,7 +31,9 @@ RSpec.describe Work do
         intern: nil,
         bachelor: nil,
         initial_atendee: nil,
-        procedures: []
+        procedures: [],
+        created_by_id: nil,
+        status: 'in_progress'
       )
     end
   end
@@ -110,6 +112,15 @@ RSpec.describe Work do
       is_expected.to define_enum_for(:laborite_areas)
         .with_values(labor_claim: 'reclamatoria_trabalhista')
         .backed_by_column_of_type(:string)
+    end
+
+    it do
+      is_expected.to define_enum_for(:status)
+        .with_values(
+          in_progress: 'in_progress',
+          paused: 'paused',
+          completed: 'completed'
+        ).backed_by_column_of_type(:string)
     end
   end
 

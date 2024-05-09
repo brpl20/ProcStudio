@@ -7,7 +7,6 @@ RSpec.describe WorkEvent, type: :model do
     it do
       is_expected.to have_attributes(
         id: nil,
-        status: nil,
         description: nil,
         date: nil,
         work_id: nil,
@@ -23,19 +22,7 @@ RSpec.describe WorkEvent, type: :model do
     it { is_expected.to belong_to(:work) }
   end
 
-  describe 'Enums' do
-    it do
-      is_expected.to define_enum_for(:status)
-        .with_values(
-          in_progress: 'in_progress',
-          paused: 'paused',
-          completed: 'completed'
-        ).backed_by_column_of_type(:string)
-    end
-  end
-
   describe 'Validations' do
-    it { is_expected.to validate_presence_of(:status) }
     it { is_expected.to validate_presence_of(:description) }
     it { is_expected.to validate_presence_of(:date) }
   end
