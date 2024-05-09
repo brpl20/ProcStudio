@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_05_07_114255) do
+ActiveRecord::Schema[7.0].define(version: 2024_05_09_095335) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -451,7 +451,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_07_114255) do
   end
 
   create_table "work_events", force: :cascade do |t|
-    t.string "status"
     t.string "description"
     t.datetime "date"
     t.bigint "work_id", null: false
@@ -487,6 +486,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_07_114255) do
     t.integer "initial_atendee"
     t.text "procedures", default: [], array: true
     t.bigint "created_by_id"
+    t.string "status", default: "in_progress"
     t.index ["created_by_id"], name: "index_works_on_created_by_id"
   end
 

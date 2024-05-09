@@ -18,8 +18,7 @@ module Api
           :recommendations,
           :jobs,
           :documents,
-          :pending_documents,
-          :work_events
+          :pending_documents
         ).all.order(id: :desc).limit(params[:limit])
 
         filtering_params.each do |key, value|
@@ -95,7 +94,7 @@ module Api
           :procedure, :subject, :number, :folder, :initial_atendee, :note, :extra_pending_document,
           :civel_area, :social_security_areas, :laborite_areas, :tributary_areas, :other_description,
           :compensations_five_years, :compensations_service, :lawsuit, :gain_projection, :physical_lawyer,
-          :responsible_lawyer, :partner_lawyer, :intern, :bachelor, :rate_parceled_exfield,
+          :responsible_lawyer, :partner_lawyer, :intern, :bachelor, :rate_parceled_exfield, :status,
           documents_attributes: %i[id document_type profile_customer_id],
           pending_documents_attributes: %i[id description profile_customer_id],
           recommendations_attributes: %i[id percentage commission profile_customer_id],
