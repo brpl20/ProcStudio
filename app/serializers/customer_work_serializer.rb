@@ -122,8 +122,9 @@ class CustomerWorkSerializer
   end
 
   attribute :work_events do |object|
-    object.work_events.map do |work_event|
+    object.work_events.order(date: :desc).map do |work_event|
       {
+        id: work_event.id,
         description: work_event.description,
         date: work_event.date,
         work_id: work_event.work_id
