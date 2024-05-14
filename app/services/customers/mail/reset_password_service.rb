@@ -12,7 +12,7 @@ class Customers::Mail::ResetPasswordService < ApplicationService
 
   attr_reader :customer, :password_url
 
-  WELCOME_TO_PROCSTUDIO = 5_667_725
+  WELCOME_TO_PROCSTUDIO = 5_963_600
 
   def template_id
     WELCOME_TO_PROCSTUDIO

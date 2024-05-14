@@ -29,6 +29,7 @@ Rails.application.routes.draw do
         get :confirm, to: 'auth#confirm'
         post :password, to: 'auth#reset_password'
         put :password, to: 'auth#update_password'
+        patch :password, to: 'auth#update_password'
         delete :logout, to: 'auth#destroy'
 
         resources :customers, only: %i[update show]

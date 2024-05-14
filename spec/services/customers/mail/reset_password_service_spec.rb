@@ -21,7 +21,7 @@ RSpec.describe Customers::Mail::ResetPasswordService do
           {
             From: { Email: 'contato@brunopellizzetti.com.br', Name: 'Procstudio' },
             To: [{ Email: 'customer@email.com', Name: 'Test User' }],
-            TemplateID: 5_667_725,
+            TemplateID: 5_963_600,
             TemplateLanguage: true,
             Subject: 'Procstudio - Recuperação de Senha',
             Variables: {
