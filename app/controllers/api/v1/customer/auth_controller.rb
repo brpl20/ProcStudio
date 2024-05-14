@@ -44,6 +44,27 @@ class Api::V1::Customer::AuthController < ApplicationController
     end
   end
 
+  # POST /api/v1/customer/reset_password
+  def reset_password
+    Customer.send_reset_password_instructions(reset_password_params)
+    head :ok
+  end
+
+  # POST /api/v1/customer/update_password
+  def update_password
+    customer = Customer.reset_password_by_token(update_password_params)
+
+    if customer.errors.empty?
+      token = update_user_token(customer)
+      render json: { token: token, full_name: customer.profile_customer_full_name }
+    else
+      render json: {
+        success: false,
+        message: customer.errors.full_messages.join(', ')
+      }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def authenticate_with_email_and_password
@@ -110,5 +131,13 @@ class Api::V1::Customer::AuthController < ApplicationController
   rescue JWT::DecodeError
     # puts "Error decoding JWT token: #{e.message}"
     nil
+  end
+
+  def reset_password_params
+    params.require(:user).permit(:email)
+  end
+
+  def update_password_params
+    params.require(:user).permit(:password, :password_confirmation, :reset_password_token)
   end
 end

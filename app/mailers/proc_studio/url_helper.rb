@@ -16,4 +16,12 @@ module ProcStudio::UrlHelper
       "/primeiro-acesso?confirmation_token=#{token}"
     end
   end
+
+  def update_password_path(token)
+    if Rails.env.development? || Rails.env.test?
+      "/api/v1/customer/password?reset_password_token=#{token}"
+    else
+      "/cadastrar-nova-senha?reset_password_token=#{token}"
+    end
+  end
 end
