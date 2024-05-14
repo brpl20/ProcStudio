@@ -27,6 +27,8 @@ Rails.application.routes.draw do
       namespace :customer do
         post :login, to: 'auth#authenticate'
         get :confirm, to: 'auth#confirm'
+        post :password, to: 'auth#reset_password'
+        put :password, to: 'auth#update_password'
         delete :logout, to: 'auth#destroy'
 
         resources :customers, only: %i[update show]
