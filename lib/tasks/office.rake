@@ -8,23 +8,42 @@ namespace :cad do
     require 'faker'
     Faker::Config.locale = 'pt-BR'
 
-    3.times do
-      Office.create!(
-        name: Faker::Company.name,
-        cnpj: Faker::Company.brazilian_company_number,
-        oab: Faker::Number.number(digits: 5),
-        society: 'individual',
-        accounting_type: 'simple',
-        foundation: Faker::Date.backward(days: 14),
-        site: Faker::Internet.domain_name,
-        cep: Faker::Number.number(digits: 5),
-        street: Faker::Address.street_name,
-        number: Faker::Address.building_number,
-        neighborhood: Faker::Address.community,
-        city: Faker::Address.city,
-        state: Faker::Address.state_abbr,
-        office_type: OfficeType.all.sample
-        )
-    end
+    Office.create!(
+      name: 'João Augusto Prado Sociedade Unipessoal de Advocacia',
+      cnpj: '49.609.519/0001-60',
+      oab: '15.074 PR',
+      society: 'society',  # Se for sociedade simples, está correto
+      foundation: '25-09-2023',
+      site: 'pellizzetti.adv.br',
+      zip_code: '85810-010', 
+      street: 'Rua Paraná',
+      number: '3033',
+      neighborhood: 'Centro',
+      city: 'Cascavel',
+      state: 'PR', 
+      office_type_id: 1,
+      bank_accounts_attributes: [
+        {
+          bank_name: "Sicredi",
+          type_account: "Pagamentos",
+          agency: "0710",
+          account: "5445109",
+          operation: "0",
+          pix: "49609519000160"
+        }
+      ],
+      phones_attributes: [
+        {
+          phone_number: "45 3038-5898"
+        }
+      ],
+      emails_attributes: [
+        {
+          email: "joao@pellizzetti.adv.br"
+        }
+      ]
+    )
+
+
   end
 end

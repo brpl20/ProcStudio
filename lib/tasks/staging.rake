@@ -14,6 +14,9 @@ namespace :staging do
     p 'Creating office'
     p %x(rake cad:office)
 
+    p 'Creating admins'
+    p %x(rake cad:admin)
+
     p 'Loading seeds Offices + AdminUsers'
     p %x(rake db:seed)
 
@@ -22,13 +25,6 @@ namespace :staging do
 
     p 'Creating powers'
     p %x(rake cad:power)
-
-    # FIX WORK
-    # p 'Creating work'
-    # p %x(rake cad:work)
-
-    # FIX JOBS
-
 
     p 'Setup completed successfully!'
 
