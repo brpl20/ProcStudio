@@ -79,7 +79,7 @@ module ProfileCustomers
     # outorgados paragraph
     def substitute_justice_agents(text)
       translated_text = if @office.present?
-                          ["#{I18n.t('general.lawyers')}: #{lawyers_text}", "integrante(s) da #{@office.name&.strip} inscrita sob o cnpj #{@office.cnpj}",
+                          ["#{I18n.t('general.lawyers')}: #{lawyers_text}", "integrante(s) da #{@office.name&.strip} inscrita sob o CNPJ #{@office.cnpj}",
                            "com endereço profissional à Rua #{@office.street.to_s.downcase.titleize&.strip}", @office.number.to_s, @office.neighborhood.downcase.titleize&.strip,
                            "#{@office.city&.strip}-#{@office.state&.strip}", "e endereço eletrônico #{@office&.phones&.first&.phone_number&.strip}"]
                             .join(', ')
