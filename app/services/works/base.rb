@@ -92,7 +92,7 @@ module Works
                           [
                             "#{I18n.t('general.lawyers')}: #{lawyers_text}", "integrante da #{office.name&.strip} inscrita sob o cnpj #{office.cnpj}",
                             "com endereço profissional à Rua #{office.street.to_s.downcase.titleize&.strip}", office.number.to_s, office.neighborhood.downcase.titleize&.strip,
-                            "#{office.city&.strip}-#{office.state&.strip}", "e endereço eletrônico #{office.site&.strip}"
+                            "#{office.city&.strip}-#{office.state&.strip}", "e endereço eletrônico #{office&.phones&.first&.phone_number&.strip}"
                           ].join(', ')
                         else
                           ["#{I18n.t('general.lawyers')}: #{lawyers_text_without_office}"].join(', ')
