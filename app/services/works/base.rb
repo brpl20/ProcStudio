@@ -20,7 +20,7 @@ module Works
         customer.profession.downcase&.strip,
         "#{word_for_gender('owner', customer.gender)} do RG n° #{customer.rg} e #{word_for_gender('subscribe', customer.gender)} no CPF sob o n° #{customer.cpf}",
         customer.last_email&.strip, "residente e #{word_for_gender('live', customer.gender)}: #{address.street.to_s.downcase.titleize&.strip}, n° #{address.number}",
-        address.description.to_s.downcase.titleize&.strip, "#{address.city&.strip} - #{address.state&.strip}, CEP #{address.zip_code&.strip} #{responsable}"
+        address.description.to_s.downcase.titleize&.strip, "#{address.city&.strip} - #{address.state&.strip}, CEP #{address.zip_code&.strip}", responsable
       ].compact.join(', ')
 
       text.substitute('_proc_outorgante_', translated_text)
@@ -38,9 +38,9 @@ module Works
       representor_address = representor.addresses.first
       representor_text =
         if @customer.unable?
-          "Neste ato #{word_for_gender('represent', representor.gender).downcase}"
+          "neste ato #{word_for_gender('represent', representor.gender).downcase}"
         else
-          "Neste ato #{word_for_gender('assisted', representor.gender).downcase}"
+          "neste ato #{word_for_gender('assisted', representor.gender).downcase}"
         end
 
       [

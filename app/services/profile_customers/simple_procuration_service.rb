@@ -104,9 +104,9 @@ module ProfileCustomers
       representor_address = representor.addresses.first
       representor_text =
         if @customer.unable?
-          "Neste ato #{word_for_gender('represent', representor.gender).downcase}"
+          "neste ato #{word_for_gender('represent', representor.gender).downcase}"
         else
-          "Neste ato #{word_for_gender('assisted', representor.gender).downcase}"
+          "neste ato #{word_for_gender('assisted', representor.gender).downcase}"
         end
 
       [
