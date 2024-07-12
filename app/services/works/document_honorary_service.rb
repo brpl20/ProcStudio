@@ -60,11 +60,18 @@ module Works
     end
 
     def rate_text
-      return 'Nada a ser pago' if honorary.honorary_type == 'bonus'
-
-      if honorary.parcelling_value.present? && honorary.honorary_type != 'both'
-        "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)} em #{honorary&.parcelling_value&.to_i} parcelas de igual valor e com mesmo vencimento a partir da assinatura deste documento"
-      elsif honorary.honorary_type == 'both'
+      case honorary.honorary_type
+      when 'bonus'
+        'Nada a ser pago'
+      when 'work'
+        if honorary.parcelling_value.present?
+          "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)} em #{honorary&.parcelling_value&.to_i} parcelas de igual valor e com mesmo vencimento a partir da assinatura deste documento"
+        else
+          "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)} a vista"
+        end
+      when 'success'
+        "O(A) advogado(a) receberá o valor de #{number_to_percentage(honorary&.percent_honorary_value, precision: 2)} dos benefícios brutos advindos deste processo"
+      when 'both'
         if honorary.parcelling_value.present?
           [
             "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)}",
@@ -72,10 +79,8 @@ module Works
             "mais um valor variável de #{number_to_percentage(honorary&.percent_honorary_value, precision: 2)} dos benefícios brutos advindos deste processo"
           ].join(' ')
         else
-          "O(A) advogado(a) receberá o valor de #{number_to_percentage(honorary&.percent_honorary_value, precision: 2)} dos benefícios brutos advindos deste processo"
+          "O(A) advogado(a) receberá o valor de #{number_to_percentage(honorary&.percent_honorary_value, precision: 2)} a vista e mais um valor variável de #{number_to_percentage(honorary&.percent_honorary_value, precision: 2)} dos benefícios brutos advindos deste processo"
         end
-      else
-        "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)} a vista"
       end
     end
 
