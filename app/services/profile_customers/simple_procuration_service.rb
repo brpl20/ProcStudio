@@ -67,7 +67,7 @@ module ProfileCustomers
         @customer.last_email&.strip, "residente e #{word_for_gender('live', @customer.gender)} à #{@address.street.to_s.downcase.titleize&.strip}, n° #{@address.number}",
         @address.description.to_s.downcase.titleize&.strip, "#{@address.city&.strip} - #{@address.state}, CEP #{@address.zip_code&.strip}",
         responsable
-      ].compact.join(', ')
+      ].reject(&:blank?).join(', ')
 
       text.substitute('_proc_outorgante_', translated_text)
     end
@@ -79,9 +79,9 @@ module ProfileCustomers
     # outorgados paragraph
     def substitute_justice_agents(text)
       translated_text = if @office.present?
-                          ["#{I18n.t('general.lawyers')}: #{lawyers_text}", "integrante(s) da #{@office.name&.strip} inscrita sob o cnpj #{@office.cnpj}",
+                          ["#{I18n.t('general.lawyers')}: #{lawyers_text}", "integrante(s) da #{@office.name&.strip} inscrita sob o CNPJ #{@office.cnpj}",
                            "com endereço profissional à Rua #{@office.street.to_s.downcase.titleize&.strip}", @office.number.to_s, @office.neighborhood.downcase.titleize&.strip,
-                           "#{@office.city&.strip}-#{@office.state&.strip}", "e endereço eletrônico #{@office.site&.strip}"]
+                           "#{@office.city&.strip}-#{@office.state&.strip}", "e endereço eletrônico #{@office&.phones&.first&.phone_number&.strip}"]
                             .join(', ')
                         else
                           ["#{I18n.t('general.lawyers')}: #{lawyers_text_without_office}"].join(', ')
@@ -104,9 +104,9 @@ module ProfileCustomers
       representor_address = representor.addresses.first
       representor_text =
         if @customer.unable?
-          "Neste ato #{word_for_gender('represent', representor.gender).downcase}"
+          "neste ato #{word_for_gender('represent', representor.gender).downcase}"
         else
-          "Neste ato #{word_for_gender('assisted', representor.gender).downcase}"
+          "neste ato #{word_for_gender('assisted', representor.gender).downcase}"
         end
 
       [

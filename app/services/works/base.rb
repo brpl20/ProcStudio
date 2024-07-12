@@ -20,8 +20,8 @@ module Works
         customer.profession.downcase&.strip,
         "#{word_for_gender('owner', customer.gender)} do RG n° #{customer.rg} e #{word_for_gender('subscribe', customer.gender)} no CPF sob o n° #{customer.cpf}",
         customer.last_email&.strip, "residente e #{word_for_gender('live', customer.gender)}: #{address.street.to_s.downcase.titleize&.strip}, n° #{address.number}",
-        address.description.to_s.downcase.titleize&.strip, "#{address.city&.strip} - #{address.state&.strip}, CEP #{address.zip_code&.strip} #{responsable}"
-      ].compact.join(', ')
+        address.description.to_s.downcase.titleize&.strip, "#{address.city&.strip} - #{address.state&.strip}, CEP #{address.zip_code&.strip}", responsable
+      ].reject(&:blank?).join(', ')
 
       text.substitute('_proc_outorgante_', translated_text)
     end
@@ -38,9 +38,9 @@ module Works
       representor_address = representor.addresses.first
       representor_text =
         if @customer.unable?
-          "Neste ato #{word_for_gender('represent', representor.gender).downcase}"
+          "neste ato #{word_for_gender('represent', representor.gender).downcase}"
         else
-          "Neste ato #{word_for_gender('assisted', representor.gender).downcase}"
+          "neste ato #{word_for_gender('assisted', representor.gender).downcase}"
         end
 
       [
@@ -90,9 +90,9 @@ module Works
     def substitute_justice_agents(text)
       translated_text = if office.present?
                           [
-                            "#{I18n.t('general.lawyers')}: #{lawyers_text}", "integrante da #{office.name&.strip} inscrita sob o cnpj #{office.cnpj}",
+                            "#{I18n.t('general.lawyers')}: #{lawyers_text}", "integrante da #{office.name&.strip} inscrita sob o CNPJ #{office.cnpj}",
                             "com endereço profissional à Rua #{office.street.to_s.downcase.titleize&.strip}", office.number.to_s, office.neighborhood.downcase.titleize&.strip,
-                            "#{office.city&.strip}-#{office.state&.strip}", "e endereço eletrônico #{office.site&.strip}"
+                            "#{office.city&.strip}-#{office.state&.strip}", "e endereço eletrônico #{office&.phones&.first&.phone_number&.strip}"
                           ].join(', ')
                         else
                           ["#{I18n.t('general.lawyers')}: #{lawyers_text_without_office}"].join(', ')
