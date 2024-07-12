@@ -67,7 +67,7 @@ module ProfileCustomers
         @customer.last_email&.strip, "residente e #{word_for_gender('live', @customer.gender)} à #{@address.street.to_s.downcase.titleize&.strip}, n° #{@address.number}",
         @address.description.to_s.downcase.titleize&.strip, "#{@address.city&.strip} - #{@address.state}, CEP #{@address.zip_code&.strip}",
         responsable
-      ].compact.join(', ')
+      ].reject(&:blank?).join(', ')
 
       text.substitute('_proc_outorgante_', translated_text)
     end
