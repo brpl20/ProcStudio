@@ -49,6 +49,8 @@ module Api
         authorize @customer, :update?, policy_class: Admin::CustomerPolicy
 
         if @customer.update(customers_params)
+          @customer.send_confirmation_instructions if @customer.saved_change_to_email?
+
           render json: CustomerSerializer.new(
             @customer
           ), status: :ok
