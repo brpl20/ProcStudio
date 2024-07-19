@@ -106,6 +106,8 @@ class ProfileCustomer < ApplicationRecord
     validates :rg
   end
 
+  validates_with PhoneNumberValidator
+
   def full_name
     [name&.strip, last_name&.strip].join(' ')
   end

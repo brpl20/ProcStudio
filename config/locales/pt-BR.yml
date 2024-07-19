@@ -178,6 +178,7 @@
         nit: NIT
         mother_name: Nome da mãe
         inss_password: Senha do meu inss
+        phones: Telefone
       office:
         accounting_type: Enquadramento Contábil
         address: Endereço
@@ -235,6 +236,10 @@
           attributes:
             name:
               taken: "'%{value}' já está em uso"
+        profile_customer:
+          attributes:
+            phones:
+              taken: contém contatos duplicados
   date:
     abbr_day_names:
     - dom
