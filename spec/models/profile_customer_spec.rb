@@ -80,6 +80,21 @@ RSpec.describe ProfileCustomer, type: :model do
     it { is_expected.to validate_presence_of(:rg) }
 
     it { is_expected.to_not validate_presence_of(:accountant) }
+
+    describe '#phones' do
+      it 'is valid with at least one phone' do
+        profile = build(:profile_customer)
+        profile.phones << build(:phone)
+        expect(profile).to be_valid
+      end
+
+      it 'is invalid with duplicated phones' do
+        profile = build(:profile_customer)
+        profile.phones.build(phone_number: '123456789')
+        profile.phones.build(phone_number: '123456789')
+        expect(profile).to be_invalid
+      end
+    end
   end
 
   context 'Instance Methods' do
