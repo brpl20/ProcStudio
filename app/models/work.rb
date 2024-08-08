@@ -57,7 +57,7 @@ class Work < ApplicationRecord
 
   has_many_attached :tributary_files
 
-  has_one :honorary
+  has_one :honorary, dependent: :destroy
   has_one :draft_work, class_name: 'Draft::Work', dependent: :destroy
 
   enum procedure: {
