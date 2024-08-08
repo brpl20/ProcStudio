@@ -31,7 +31,7 @@ class Admin < ApplicationRecord
 
   private
 
-  def update_created_records
+  def update_created_by_records
     Work.where(created_by_id: id).update_all(created_by_id: nil)
     Customer.where(created_by_id: id).update_all(created_by_id: nil)
     Job.where(created_by_id: id).update_all(created_by_id: nil)
