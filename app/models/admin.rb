@@ -26,4 +26,15 @@ class Admin < ApplicationRecord
   accepts_nested_attributes_for :profile_admin, reject_if: :all_blank
 
   delegate :role, to: :profile_admin, allow_nil: true
+
+  before_destroy :update_created_by_records
+
+  private
+
+  def update_created_by_records
+    Work.where(created_by_id: id).update_all(created_by_id: nil)
+    Customer.where(created_by_id: id).update_all(created_by_id: nil)
+    Job.where(created_by_id: id).update_all(created_by_id: nil)
+    ProfileCustomer.where(created_by_id: id).update_all(created_by_id: nil)
+  end
 end
