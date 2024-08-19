@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_08_19_102839) do
+ActiveRecord::Schema[7.0].define(version: 2024_08_19_105115) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -278,6 +278,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_19_102839) do
     t.bigint "work_id"
     t.bigint "profile_customer_id"
     t.bigint "created_by_id"
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_jobs_on_deleted_at"
     t.index ["profile_admin_id"], name: "index_jobs_on_profile_admin_id"
     t.index ["profile_customer_id"], name: "index_jobs_on_profile_customer_id"
     t.index ["work_id"], name: "index_jobs_on_work_id"
