@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_08_19_094740) do
+ActiveRecord::Schema[7.0].define(version: 2024_08_19_100555) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -282,7 +282,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_19_094740) do
     t.bigint "office_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
     t.index ["bank_account_id"], name: "index_office_bank_accounts_on_bank_account_id"
+    t.index ["deleted_at"], name: "index_office_bank_accounts_on_deleted_at"
     t.index ["office_id"], name: "index_office_bank_accounts_on_office_id"
   end
 
@@ -291,6 +293,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_19_094740) do
     t.bigint "email_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_office_emails_on_deleted_at"
     t.index ["email_id"], name: "index_office_emails_on_email_id"
     t.index ["office_id"], name: "index_office_emails_on_office_id"
   end
@@ -300,6 +304,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_19_094740) do
     t.bigint "phone_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_office_phones_on_deleted_at"
     t.index ["office_id"], name: "index_office_phones_on_office_id"
     t.index ["phone_id"], name: "index_office_phones_on_phone_id"
   end
@@ -315,6 +321,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_19_094740) do
     t.bigint "office_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_office_works_on_deleted_at"
     t.index ["office_id"], name: "index_office_works_on_office_id"
     t.index ["work_id"], name: "index_office_works_on_work_id"
   end
