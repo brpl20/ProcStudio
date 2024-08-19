@@ -12,6 +12,8 @@
 #  deleted_at          :datetime
 #
 class CustomerWork < ApplicationRecord
+  acts_as_paranoid
+
   belongs_to :profile_customer
   belongs_to :work
 end

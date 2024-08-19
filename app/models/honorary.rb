@@ -13,8 +13,11 @@
 #  work_id                :bigint(8)        not null
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
+#  deleted_at             :datetime
 #
 class Honorary < ApplicationRecord
+  acts_as_paranoid
+
   belongs_to :work
 
   enum honorary_type: {
