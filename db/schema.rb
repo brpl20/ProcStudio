@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_08_08_105142) do
+ActiveRecord::Schema[7.0].define(version: 2024_08_19_094740) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -59,7 +59,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_08_105142) do
     t.bigint "profile_admin_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
     t.index ["address_id"], name: "index_admin_addresses_on_address_id"
+    t.index ["deleted_at"], name: "index_admin_addresses_on_deleted_at"
     t.index ["profile_admin_id"], name: "index_admin_addresses_on_profile_admin_id"
   end
 
@@ -68,7 +70,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_08_105142) do
     t.bigint "profile_admin_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
     t.index ["bank_account_id"], name: "index_admin_bank_accounts_on_bank_account_id"
+    t.index ["deleted_at"], name: "index_admin_bank_accounts_on_deleted_at"
     t.index ["profile_admin_id"], name: "index_admin_bank_accounts_on_profile_admin_id"
   end
 
@@ -77,6 +81,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_08_105142) do
     t.bigint "profile_admin_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_admin_emails_on_deleted_at"
     t.index ["email_id"], name: "index_admin_emails_on_email_id"
     t.index ["profile_admin_id"], name: "index_admin_emails_on_profile_admin_id"
   end
@@ -86,6 +92,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_08_105142) do
     t.bigint "profile_admin_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_admin_phones_on_deleted_at"
     t.index ["phone_id"], name: "index_admin_phones_on_phone_id"
     t.index ["profile_admin_id"], name: "index_admin_phones_on_profile_admin_id"
   end
@@ -99,6 +107,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_08_105142) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "jwt_token"
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_admins_on_deleted_at"
     t.index ["email"], name: "index_admins_on_email", unique: true
     t.index ["jwt_token"], name: "index_admins_on_jwt_token", unique: true
     t.index ["reset_password_token"], name: "index_admins_on_reset_password_token", unique: true
@@ -327,7 +337,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_08_105142) do
     t.datetime "updated_at", null: false
     t.integer "responsible_lawyer_id"
     t.string "accounting_type"
+    t.datetime "deleted_at"
     t.index ["accounting_type"], name: "index_offices_on_accounting_type"
+    t.index ["deleted_at"], name: "index_offices_on_deleted_at"
     t.index ["office_type_id"], name: "index_offices_on_office_type_id"
     t.index ["responsible_lawyer_id"], name: "index_offices_on_responsible_lawyer_id"
   end
@@ -369,6 +381,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_08_105142) do
     t.bigint "work_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_profile_admin_works_on_deleted_at"
     t.index ["profile_admin_id"], name: "index_profile_admin_works_on_profile_admin_id"
     t.index ["work_id"], name: "index_profile_admin_works_on_work_id"
   end
@@ -391,7 +405,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_08_105142) do
     t.datetime "updated_at", null: false
     t.bigint "office_id"
     t.string "origin"
+    t.datetime "deleted_at"
     t.index ["admin_id"], name: "index_profile_admins_on_admin_id"
+    t.index ["deleted_at"], name: "index_profile_admins_on_deleted_at"
     t.index ["office_id"], name: "index_profile_admins_on_office_id"
   end
 

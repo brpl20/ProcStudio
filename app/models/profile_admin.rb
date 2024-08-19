@@ -22,8 +22,11 @@
 #  updated_at   :datetime         not null
 #  office_id    :bigint(8)
 #  origin       :string
+#  deleted_at   :datetime
 #
 class ProfileAdmin < ApplicationRecord
+  acts_as_paranoid
+
   belongs_to :admin
   belongs_to :office, optional: true
 

@@ -22,12 +22,15 @@
 #  updated_at            :datetime         not null
 #  responsible_lawyer_id :integer
 #  accounting_type       :string
+#  deleted_at            :datetime
 #
 class Office < ApplicationRecord
+  acts_as_paranoid
+
   belongs_to :office_type
   belongs_to :responsible_lawyer, class_name: 'ProfileAdmin', optional: true
 
-  has_many :profile_admins
+  has_many :profile_admins, dependent: :destroy
   has_one_attached :logo
 
   enum society: {
