@@ -6,7 +6,15 @@ class Api::V1::WorkEventsController < BackofficeController
 
   # GET api/v1/work_events
   def index
-    work_events = WorkEvent.all.order(id: :desc).limit(params[:limit])
+    work_events = WorkEvent.all
+
+    filter_by_deleted_params.each do |key, value|
+      next unless value.present?
+
+      work_events = work_events.public_send("filter_by_#{key}", value.strip)
+    end
+
+    work_events = work_events.order(id: :desc).limit(params[:limit])
 
     render json: WorkEventSerializer.new(
       work_events,
