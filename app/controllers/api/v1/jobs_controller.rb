@@ -10,6 +10,13 @@ module Api
 
       def index
         jobs = JobFilter.retrieve_jobs
+
+        filter_by_deleted_params.each do |key, value|
+          next unless value.present?
+
+          jobs = jobs.public_send("filter_by_#{key}", value.strip)
+        end
+
         render json: JobSerializer.new(
           jobs,
           meta: {
