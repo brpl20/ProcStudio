@@ -17,6 +17,10 @@ class Admin::WorkEventPolicy < Admin::BasePolicy
     lawyer? || paralegal? || counter? || (trainee? && owner?) || (secretary? && owner?)
   end
 
+  def restore?
+    update?
+  end
+
   def destroy?
     lawyer? || paralegal? || secretary?
   end

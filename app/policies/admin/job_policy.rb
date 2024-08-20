@@ -17,6 +17,10 @@ class Admin::JobPolicy < Admin::BasePolicy
     index?
   end
 
+  def restore?
+    index?
+  end
+
   def destroy?
     index?
   end

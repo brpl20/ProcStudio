@@ -21,6 +21,10 @@ class Admin::CustomerPolicy < Admin::BasePolicy
     lawyer? || paralegal? || (trainee? && owner?) || (secretary? && owner?)
   end
 
+  def restore?
+    update?
+  end
+
   def destroy?
     lawyer? || paralegal? || secretary?
   end

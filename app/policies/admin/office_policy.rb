@@ -17,6 +17,10 @@ class Admin::OfficePolicy < Admin::BasePolicy
     lawyer?
   end
 
+  def restore?
+    lawyer?
+  end
+
   def destroy?
     lawyer?
   end

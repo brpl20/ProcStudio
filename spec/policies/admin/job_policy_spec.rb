@@ -23,6 +23,10 @@ RSpec.describe Admin::JobPolicy, type: :policy do
       it { is_expected.to permit(admin, nil) }
     end
 
+    permissions :restore? do
+      it { is_expected.to permit(admin, nil) }
+    end
+
     permissions :destroy? do
       it { is_expected.to permit(admin, nil) }
     end
@@ -44,6 +48,10 @@ RSpec.describe Admin::JobPolicy, type: :policy do
     end
 
     permissions :update? do
+      it { is_expected.to permit(admin, nil) }
+    end
+
+    permissions :restore? do
       it { is_expected.to permit(admin, nil) }
     end
 
@@ -71,6 +79,10 @@ RSpec.describe Admin::JobPolicy, type: :policy do
       it { is_expected.to permit(admin, nil) }
     end
 
+    permissions :restore? do
+      it { is_expected.to permit(admin, nil) }
+    end
+
     permissions :destroy? do
       it { is_expected.to permit(admin, nil) }
     end
@@ -92,6 +104,10 @@ RSpec.describe Admin::JobPolicy, type: :policy do
     end
 
     permissions :update? do
+      it { is_expected.to permit(admin, nil) }
+    end
+
+    permissions :restore? do
       it { is_expected.to permit(admin, nil) }
     end
 
@@ -119,6 +135,10 @@ RSpec.describe Admin::JobPolicy, type: :policy do
       it { is_expected.to permit(admin, nil) }
     end
 
+    permissions :restore? do
+      it { is_expected.to permit(admin, nil) }
+    end
+
     permissions :destroy? do
       it { is_expected.to permit(admin, nil) }
     end
@@ -140,6 +160,10 @@ RSpec.describe Admin::JobPolicy, type: :policy do
     end
 
     permissions :update? do
+      it { is_expected.not_to permit(admin, nil) }
+    end
+
+    permissions :restore? do
       it { is_expected.not_to permit(admin, nil) }
     end
 

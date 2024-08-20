@@ -6,20 +6,49 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       get '/offices/with_lawyers', to: 'offices#with_lawyers'
-      resources :admins
+      resources :admins do
+        member do
+          post :restore
+        end
+      end
       resources :customers do
         member do
           post :resend_confirmation
+          post :restore
         end
       end
-      resources :jobs
-      resources :offices
+      resources :jobs do
+        member do
+          post :restore
+        end
+      end
+      resources :offices do
+        member do
+          post :restore
+        end
+      end
       resources :office_types
       resources :powers
-      resources :profile_customers
-      resources :profile_admins
-      resources :works
-      resources :work_events
+      resources :profile_customers do
+        member do
+          post :restore
+        end
+      end
+      resources :profile_admins do
+        member do
+          post :restore
+        end
+      end
+      resources :works do
+        member do
+          post :restore
+        end
+      end
+      resources :work_events do
+        member do
+          post :restore
+        end
+      end
 
       post '/login', to: 'auth#authenticate'
       delete '/logout', to: 'auth#destroy'
