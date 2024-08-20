@@ -10,6 +10,12 @@ class Api::V1::Draft::WorksController < BackofficeController
   def index
     @draft_works = Draft::Work.all
 
+    filter_by_deleted_params.each do |key, value|
+      next unless value.present?
+
+      @draft_works = @draft_works.public_send("filter_by_#{key}", value.strip)
+    end
+
     render json: Draft::WorkSerializer.new(
       @draft_works,
       meta: { total_count: @draft_works.offset(nil).limit(nil).count }
