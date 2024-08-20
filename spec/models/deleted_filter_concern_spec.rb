@@ -46,4 +46,5 @@ RSpec.describe 'DeletedFilterConcern' do
   it_behaves_like 'filters by deleted_at', :profile_admin
   it_behaves_like 'filters by deleted_at', :work
   it_behaves_like 'filters by deleted_at', :work_event
+  it_behaves_like 'filters by deleted_at', :draft_work, :with_work
 end

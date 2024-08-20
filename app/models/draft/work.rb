@@ -12,6 +12,8 @@
 #  deleted_at :datetime
 #
 class Draft::Work < ApplicationRecord
+  include DeletedFilterConcern
+
   acts_as_paranoid
 
   belongs_to :work, class_name: '::Work', foreign_key: 'work_id'

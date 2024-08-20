@@ -5,4 +5,8 @@ FactoryBot.define do
     name { 'Rascunho de Trabalho 1' }
     work { nil }
   end
+
+  trait :with_work do
+    work_id { create(:work).id }
+  end
 end
