@@ -25,6 +25,8 @@
 #  deleted_at            :datetime
 #
 class Office < ApplicationRecord
+  include DeletedFilterConcern
+
   acts_as_paranoid
 
   belongs_to :office_type

@@ -25,6 +25,8 @@
 #  deleted_at   :datetime
 #
 class ProfileAdmin < ApplicationRecord
+  include DeletedFilterConcern
+
   acts_as_paranoid
 
   belongs_to :admin

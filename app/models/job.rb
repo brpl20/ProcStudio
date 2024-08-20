@@ -19,6 +19,8 @@
 #  deleted_at          :datetime
 #
 class Job < ApplicationRecord
+  include DeletedFilterConcern
+
   acts_as_paranoid
 
   belongs_to :work, optional: true

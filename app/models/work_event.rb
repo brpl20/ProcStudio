@@ -13,6 +13,8 @@
 #  deleted_at  :datetime
 #
 class WorkEvent < ApplicationRecord
+  include DeletedFilterConcern
+
   acts_as_paranoid
 
   belongs_to :work

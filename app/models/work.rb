@@ -35,6 +35,8 @@
 #  deleted_at               :datetime
 #
 class Work < ApplicationRecord
+  include DeletedFilterConcern
+
   acts_as_paranoid
 
   has_many :customer_works, dependent: :destroy

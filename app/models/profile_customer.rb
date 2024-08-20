@@ -33,6 +33,8 @@
 #  created_by_id  :bigint(8)
 #
 class ProfileCustomer < ApplicationRecord
+  include DeletedFilterConcern
+
   acts_as_paranoid
 
   belongs_to :customer

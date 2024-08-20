@@ -21,6 +21,8 @@
 #  unconfirmed_email      :datetime
 #
 class Customer < ApplicationRecord
+  include DeletedFilterConcern
+
   acts_as_paranoid
 
   # Include default devise modules. Others available are:
