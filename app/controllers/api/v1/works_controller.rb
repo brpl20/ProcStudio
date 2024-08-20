@@ -6,7 +6,7 @@ module Api
       before_action :load_active_storage_url_options unless Rails.env.production?
 
       before_action :set_work, only: %i[show update]
-      before_action :perform_authorization, except: %i[update]
+      before_action :perform_authorization, except: %i[update restore]
 
       after_action :verify_authorized
 
@@ -85,6 +85,22 @@ module Api
         else
           set_work
           @work.destroy
+        end
+      end
+
+      def restore
+        work = Work.with_deleted.find(params[:id])
+        authorize work, :restore?, policy_class: Admin::WorkPolicy
+
+        if work.recover
+          render json: WorkSerializer.new(
+            work
+          ), status: :ok
+        else
+          render(
+            status: :bad_request,
+            json: { errors: [{ code: work.errors.full_messages }] }
+          )
         end
       end
 

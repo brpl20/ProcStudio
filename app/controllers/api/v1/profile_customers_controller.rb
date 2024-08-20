@@ -85,6 +85,23 @@ module Api
         end
       end
 
+      def restore
+        profile_customer = ProfileCustomer.with_deleted.find(params[:id])
+        authorize profile_customer, :restore?, policy_class: Admin::CustomerPolicy
+
+        if profile_customer.recover
+          render json: ProfileCustomerSerializer.new(
+            profile_customer,
+            params: { action: 'show' }
+          ), status: :ok
+        else
+          render(
+            status: :bad_request,
+            json: { errors: [{ code: profile_customer.errors.full_messages }] }
+          )
+        end
+      end
+
       private
 
       def retrieve_customer

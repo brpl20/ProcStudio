@@ -74,6 +74,22 @@ module Api
         end
       end
 
+      def restore
+        job = Job.with_deleted.find(params[:id])
+        authorize job, :restore?, policy_class: Admin::WorkPolicy
+
+        if job.recover
+          render json: JobSerializer.new(
+            job
+          ), status: :ok
+        else
+          render(
+            status: :bad_request,
+            json: { errors: [{ code: job.errors.full_messages }] }
+          )
+        end
+      end
+
       private
 
       def retrieve_job

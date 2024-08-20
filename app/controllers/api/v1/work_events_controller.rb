@@ -2,6 +2,7 @@
 
 class Api::V1::WorkEventsController < BackofficeController
   before_action :set_work_event, only: %i[show update]
+  before_action :set_deleted_work_event, only: %i[restore]
   before_action :perform_authorization
 
   # GET api/v1/work_events
@@ -75,10 +76,31 @@ class Api::V1::WorkEventsController < BackofficeController
     end
   end
 
+  # POST api/v1/work_events/1
+  def restore
+    if @work_event.recover
+      render json: WorkEventSerializer.new(@work_event), status: :ok
+    else
+      render(
+        status: :unprocessable_entity,
+        json: { errors: [{ code: @work_event.errors.full_messages }] }
+      )
+    end
+  rescue StandardError => e
+    render(
+      status: :bad_request,
+      json: { errors: [{ code: e }] }
+    )
+  end
+
   private
 
   def set_work_event
     @work_event = WorkEvent.find(params[:id])
+  end
+
+  def set_deleted_work_event
+    @work_event = WorkEvent.with_deleted.find(params[:id])
   end
 
   def work_event_params

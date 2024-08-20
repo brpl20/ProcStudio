@@ -84,6 +84,22 @@ module Api
         end
       end
 
+      def restore
+        customer = ::Customer.with_deleted.find(params[:id])
+        authorize customer, :restore?, policy_class: Admin::CustomerPolicy
+
+        if customer.recover
+          render json: CustomerSerializer.new(
+            customer
+          ), status: :ok
+        else
+          render(
+            status: :bad_request,
+            json: { errors: [{ code: customer.errors.full_messages }] }
+          )
+        end
+      end
+
       private
 
       def customers_params

@@ -74,6 +74,20 @@ module Api
         end
       end
 
+      def restore
+        admin = Admin.with_deleted.find(params[:id])
+        if admin.recover
+          render json: AdminSerializer.new(
+            admin
+          ), status: :ok
+        else
+          render(
+            status: :bad_request,
+            json: { errors: [{ code: admin.errors.full_messages }] }
+          )
+        end
+      end
+
       private
 
       def admins_params
