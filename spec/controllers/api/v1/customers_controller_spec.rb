@@ -27,7 +27,8 @@ RSpec.describe Api::V1::CustomersController, type: :request do
               'email' => customer.email,
               'created_by_id' => customer.created_by_id,
               'confirmed_at' => customer.confirmed_at,
-              'confirmed' => customer.confirmed?
+              'confirmed' => customer.confirmed?,
+              'deleted' => false
             }
           }],
           'meta' => {
@@ -87,7 +88,8 @@ RSpec.describe Api::V1::CustomersController, type: :request do
               'email' => 'emailnovo@gmail.com',
               'created_by_id' => customer.created_by_id,
               'confirmed_at' => customer.confirmed_at,
-              'confirmed' => customer.confirmed?
+              'confirmed' => customer.confirmed?,
+              'deleted' => false
             }
           }
         )
@@ -117,7 +119,8 @@ RSpec.describe Api::V1::CustomersController, type: :request do
               'email' => customer.email,
               'created_by_id' => customer.created_by_id,
               'confirmed_at' => customer.confirmed_at,
-              'confirmed' => customer.confirmed?
+              'confirmed' => customer.confirmed?,
+              'deleted' => false
             }
           }
         )

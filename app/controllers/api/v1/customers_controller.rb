@@ -10,6 +10,13 @@ module Api
 
       def index
         customers = ::Customer.all
+
+        filter_by_deleted_params.each do |key, value|
+          next unless value.present?
+
+          customers = customers.public_send("filter_by_#{key}", value.strip)
+        end
+
         render json: CustomerSerializer.new(
           customers,
           meta: {
