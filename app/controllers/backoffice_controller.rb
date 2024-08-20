@@ -17,4 +17,8 @@ class BackofficeController < ApplicationController
       error: I18n.t("admin.#{exception.query}", scope: 'pundit', default: :default)
     }, status: :unauthorized
   end
+
+  def filter_by_deleted_params
+    params.permit(:deleted)
+  end
 end

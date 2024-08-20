@@ -11,6 +11,12 @@ module Api
       def index
         admins = Admin.includes(:profile_admin).all
 
+        filter_by_deleted_params.each do |key, value|
+          next unless value.present?
+
+          admins = admins.public_send("filter_by_#{key}", value.strip)
+        end
+
         render json: AdminSerializer.new(
           admins,
           meta: {

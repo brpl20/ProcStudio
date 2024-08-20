@@ -22,7 +22,8 @@ RSpec.describe Api::V1::AdminsController, type: :request do
             'id' => admin.id.to_s,
             'type' => 'admin',
             'attributes' => {
-              'email' => admin.email
+              'email' => admin.email,
+              'deleted' => false
             },
             'relationships' => {
               'profile_admin' => {
@@ -124,7 +125,8 @@ RSpec.describe Api::V1::AdminsController, type: :request do
             'id' => admin.id.to_s,
             'type' => 'admin',
             'attributes' => {
-              'email' => 'emailnovo@gmail.com'
+              'email' => 'emailnovo@gmail.com',
+              'deleted' => false
             },
             'relationships' => {
               'profile_admin' => {
@@ -159,7 +161,8 @@ RSpec.describe Api::V1::AdminsController, type: :request do
             'id' => admin.id.to_s,
             'type' => 'admin',
             'attributes' => {
-              'email' => admin.email
+              'email' => admin.email,
+              'deleted' => false
             },
             'relationships' => {
               'profile_admin' => {

@@ -5,4 +5,8 @@ class AdminSerializer
   attributes :email
 
   has_one :profile_admin, serializer: ProfileAdminSerializer
+
+  attribute :deleted do |object|
+    object.deleted_at.present?
+  end
 end
