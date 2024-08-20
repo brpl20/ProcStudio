@@ -10,6 +10,13 @@ module Api
 
       def index
         profile_admins = ProfileAdmin.all
+
+        filter_by_deleted_params.each do |key, value|
+          next unless value.present?
+
+          profile_admins = profile_customers.public_send("filter_by_#{key}", value.strip)
+        end
+
         render json: ProfileAdminSerializer.new(
           profile_admins,
           meta: {

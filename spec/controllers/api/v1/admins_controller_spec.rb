@@ -41,7 +41,8 @@ RSpec.describe Api::V1::AdminsController, type: :request do
               'role' => admin.profile_admin.role,
               'name' => admin.profile_admin.name,
               'last_name' => admin.profile_admin.last_name,
-              'email' => admin.email
+              'email' => admin.email,
+              'deleted' => false
             }
           ],
           'meta' => {
@@ -180,7 +181,8 @@ RSpec.describe Api::V1::AdminsController, type: :request do
               'role' => admin.profile_admin.role,
               'name' => admin.profile_admin.name,
               'last_name' => admin.profile_admin.last_name,
-              'email' => admin.email
+              'email' => admin.email,
+              'deleted' => false
             }
           ]
         )
