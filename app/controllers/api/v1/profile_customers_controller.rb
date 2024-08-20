@@ -15,6 +15,12 @@ module Api
       def index
         profile_customers = ProfileCustomerFilter.retrieve_customers
 
+        filter_by_deleted_params.each do |key, value|
+          next unless value.present?
+
+          profile_customers = profile_customers.public_send("filter_by_#{key}", value.strip)
+        end
+
         render json: ProfileCustomerSerializer.new(
           profile_customers,
           meta: {
