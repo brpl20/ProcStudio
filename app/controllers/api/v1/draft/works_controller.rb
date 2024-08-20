@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Api::V1::Draft::WorksController < BackofficeController
-  before_action :set_draft_work, only: %i[show update destroy]
+  before_action :set_draft_work, only: %i[show update]
   before_action :perform_authorization
 
   after_action :verify_authorized
@@ -63,7 +63,12 @@ class Api::V1::Draft::WorksController < BackofficeController
 
   # DELETE /draft/works/1
   def destroy
-    @draft_work.destroy
+    if destroy_fully?
+      Draft::Work.with_deleted.find(params[:id]).destroy_fully!
+    else
+      set_draft_work
+      @draft_work.destroy
+    end
   end
 
   private

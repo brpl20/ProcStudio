@@ -5,7 +5,7 @@ module Api
     class WorksController < BackofficeController
       before_action :load_active_storage_url_options unless Rails.env.production?
 
-      before_action :set_work, only: %i[show update destroy]
+      before_action :set_work, only: %i[show update]
       before_action :perform_authorization, except: %i[update]
 
       after_action :verify_authorized
@@ -80,7 +80,12 @@ module Api
       end
 
       def destroy
-        @work.destroy
+        if destroy_fully?
+          Work.with_deleted.find(params[:id]).destroy_fully!
+        else
+          set_work
+          @work.destroy
+        end
       end
 
       private

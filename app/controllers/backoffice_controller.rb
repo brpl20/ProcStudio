@@ -21,4 +21,8 @@ class BackofficeController < ApplicationController
   def filter_by_deleted_params
     params.permit(:deleted)
   end
+
+  def destroy_fully?
+    truthy_param?(:destroy_fully)
+  end
 end

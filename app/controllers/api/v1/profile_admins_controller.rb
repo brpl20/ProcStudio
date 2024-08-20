@@ -3,7 +3,7 @@
 module Api
   module V1
     class ProfileAdminsController < BackofficeController
-      before_action :retrieve_profile_admin, only: %i[update show destroy]
+      before_action :retrieve_profile_admin, only: %i[update show]
       before_action :perform_authorization
 
       after_action :verify_authorized
@@ -66,7 +66,12 @@ module Api
       end
 
       def destroy
-        @profile_admin.destroy
+        if destroy_fully?
+          ProfileAdmin.with_deleted.find(params[:id]).destroy_fully!
+        else
+          retrieve_profile_admin
+          @profile_admin.destroy
+        end
       end
 
       private

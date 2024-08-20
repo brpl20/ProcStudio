@@ -3,7 +3,7 @@
 module Api
   module V1
     class OfficesController < BackofficeController
-      before_action :retrieve_office, only: %i[show update destroy]
+      before_action :retrieve_office, only: %i[show update]
       before_action :perform_authorization, except: %i[with_lawyers]
 
       after_action :verify_authorized
@@ -61,7 +61,12 @@ module Api
       end
 
       def destroy
-        @office.destroy
+        if destroy_fully?
+          Office.with_deleted.find(params[:id]).destroy_fully!
+        else
+          retrieve_office
+          @office.destroy
+        end
       end
 
       def with_lawyers

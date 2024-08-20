@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Api::V1::WorkEventsController < BackofficeController
-  before_action :set_work_event, only: %i[show update destroy]
+  before_action :set_work_event, only: %i[show update]
   before_action :perform_authorization
 
   # GET api/v1/work_events
@@ -67,7 +67,12 @@ class Api::V1::WorkEventsController < BackofficeController
 
   # DELETE api/v1/work_events/1
   def destroy
-    @work_event.destroy
+    if destroy_fully?
+      WorkEvent.with_deleted.find(params[:id]).destroy_fully!
+    else
+      set_work_event
+      @work_event.destroy
+    end
   end
 
   private

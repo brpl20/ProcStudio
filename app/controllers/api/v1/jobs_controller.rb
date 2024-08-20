@@ -3,7 +3,7 @@
 module Api
   module V1
     class JobsController < BackofficeController
-      before_action :retrieve_job, only: %i[show update destroy]
+      before_action :retrieve_job, only: %i[show update]
       before_action :perform_authorization, except: %i[update]
 
       after_action :verify_authorized
@@ -66,7 +66,12 @@ module Api
       end
 
       def destroy
-        @job.destroy
+        if destroy_fully?
+          Job.with_deleted.find(params[:id]).destroy_fully!
+        else
+          retrieve_job
+          @job.destroy
+        end
       end
 
       private

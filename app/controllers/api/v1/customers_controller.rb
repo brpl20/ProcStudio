@@ -3,7 +3,7 @@
 module Api
   module V1
     class CustomersController < BackofficeController
-      before_action :retrieve_customer, only: %i[update show destroy resend_confirmation]
+      before_action :retrieve_customer, only: %i[update show resend_confirmation]
       before_action :perform_authorization, except: %i[update]
 
       after_action :verify_authorized
@@ -76,7 +76,12 @@ module Api
       end
 
       def destroy
-        @customer.destroy
+        if destroy_fully?
+          ::Customer.with_deleted.find(params[:id]).destroy_fully!
+        else
+          retrieve_customer
+          @customer.destroy
+        end
       end
 
       private
@@ -89,8 +94,6 @@ module Api
 
       def retrieve_customer
         @customer = ::Customer.find(params[:id])
-      rescue ActiveRecord::RecordNotFound
-        head :not_found
       end
 
       def perform_authorization
