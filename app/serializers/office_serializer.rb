@@ -11,4 +11,8 @@ class OfficeSerializer
   attribute :office_type_description do |object|
     object.office_type.description
   end
+
+  attribute :deleted do |object|
+    object.deleted_at.present?
+  end
 end
