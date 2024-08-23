@@ -14,6 +14,7 @@
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #  deleted_at             :datetime
+#  work_prev              :integer
 #
 class Honorary < ApplicationRecord
   acts_as_paranoid

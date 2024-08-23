@@ -64,7 +64,11 @@ module Works
       when 'bonus'
         'Nada a ser pago'
       when 'work'
-        if honorary.parcelling_value.present?
+        if honorary.work_prev.present? && honorary.parcelling_value.present?
+          "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)} e #{honorary.work_prev} benefícios previdenciários em #{honorary&.parcelling_value&.to_i} parcelas de igual valor e com mesmo vencimento a partir da assinatura deste documento"
+        elsif honorary.work_prev.present? && honorary.parcelling_value.blank?
+          "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)} a vista e #{honorary.work_prev} benefícios previdenciários"
+        elsif honorary.parcelling_value.present?
           "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)} em #{honorary&.parcelling_value&.to_i} parcelas de igual valor e com mesmo vencimento a partir da assinatura deste documento"
         else
           "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)} a vista"
@@ -72,7 +76,11 @@ module Works
       when 'success'
         "O(A) advogado(a) receberá o valor de #{number_to_percentage(honorary&.percent_honorary_value, precision: 2)} dos benefícios brutos advindos deste processo"
       when 'both'
-        if honorary.parcelling_value.present?
+        if honorary.work_prev.present? && honorary.parcelling_value.present?
+          "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)} a vista e #{honorary.work_prev} benefícios previdenciários em #{honorary&.parcelling_value&.to_i} parcelas de igual valor e mais um valor variável de #{number_to_percentage(honorary&.percent_honorary_value, precision: 2)} dos benefícios brutos advindos deste processo"
+        elsif honorary.work_prev.present? && honorary.parcelling_value.blank?
+          "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)} a vista e mais um valor variável de #{number_to_percentage(honorary&.percent_honorary_value, precision: 2)} dos benefícios brutos advindos deste processo"
+        elsif honorary.parcelling_value.present?
           [
             "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)}",
             "em #{honorary&.parcelling_value&.to_i} parcelas de igual valor e com mesmo vencimento a partir da assinatura deste documento,",
