@@ -20,4 +20,8 @@ class Admin::AdminPolicy < Admin::BasePolicy
   def destroy?
     lawyer?
   end
+
+  def restore?
+    lawyer?
+  end
 end

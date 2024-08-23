@@ -9,8 +9,13 @@
 #  work_id    :bigint(8)        not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  deleted_at :datetime
 #
 class Draft::Work < ApplicationRecord
+  include DeletedFilterConcern
+
+  acts_as_paranoid
+
   belongs_to :work, class_name: '::Work', foreign_key: 'work_id'
 
   validates :name, uniqueness: { case_sensitive: false }, presence: true

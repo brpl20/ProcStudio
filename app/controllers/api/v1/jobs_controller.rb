@@ -3,13 +3,20 @@
 module Api
   module V1
     class JobsController < BackofficeController
-      before_action :retrieve_job, only: %i[show update destroy]
+      before_action :retrieve_job, only: %i[show update]
       before_action :perform_authorization, except: %i[update]
 
       after_action :verify_authorized
 
       def index
         jobs = JobFilter.retrieve_jobs
+
+        filter_by_deleted_params.each do |key, value|
+          next unless value.present?
+
+          jobs = jobs.public_send("filter_by_#{key}", value.strip)
+        end
+
         render json: JobSerializer.new(
           jobs,
           meta: {
@@ -59,7 +66,28 @@ module Api
       end
 
       def destroy
-        @job.destroy
+        if destroy_fully?
+          Job.with_deleted.find(params[:id]).destroy_fully!
+        else
+          retrieve_job
+          @job.destroy
+        end
+      end
+
+      def restore
+        job = Job.with_deleted.find(params[:id])
+        authorize job, :restore?, policy_class: Admin::WorkPolicy
+
+        if job.recover
+          render json: JobSerializer.new(
+            job
+          ), status: :ok
+        else
+          render(
+            status: :bad_request,
+            json: { errors: [{ code: job.errors.full_messages }] }
+          )
+        end
       end
 
       private

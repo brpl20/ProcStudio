@@ -21,6 +21,8 @@
 #  unconfirmed_email      :datetime
 #
 class Customer < ApplicationRecord
+  include DeletedFilterConcern
+
   acts_as_paranoid
 
   # Include default devise modules. Others available are:
@@ -29,7 +31,6 @@ class Customer < ApplicationRecord
          :recoverable, :rememberable, :validatable, :confirmable
 
   has_one :profile_customer, dependent: :destroy
-  has_many :jobs
 
   delegate :full_name, to: :profile_customer, prefix: true, allow_nil: true
 

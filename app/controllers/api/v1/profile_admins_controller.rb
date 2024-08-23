@@ -3,13 +3,21 @@
 module Api
   module V1
     class ProfileAdminsController < BackofficeController
-      before_action :retrieve_profile_admin, only: %i[update show destroy]
+      before_action :retrieve_profile_admin, only: %i[update show]
+      before_action :retrieve_deleted_profile_admin, only: %i[restore]
       before_action :perform_authorization
 
       after_action :verify_authorized
 
       def index
         profile_admins = ProfileAdmin.all
+
+        filter_by_deleted_params.each do |key, value|
+          next unless value.present?
+
+          profile_admins = profile_admins.public_send("filter_by_#{key}", value.strip)
+        end
+
         render json: ProfileAdminSerializer.new(
           profile_admins,
           meta: {
@@ -59,7 +67,25 @@ module Api
       end
 
       def destroy
-        @profile_admin.destroy
+        if destroy_fully?
+          ProfileAdmin.with_deleted.find(params[:id]).destroy_fully!
+        else
+          retrieve_profile_admin
+          @profile_admin.destroy
+        end
+      end
+
+      def restore
+        if @profile_admin.recover
+          render json: ProfileAdminSerializer.new(
+            @profile_admin
+          ), status: :ok
+        else
+          render(
+            status: :bad_request,
+            json: { errors: [{ code: @profile_admin.errors.full_messages }] }
+          )
+        end
       end
 
       private
@@ -79,6 +105,10 @@ module Api
 
       def retrieve_profile_admin
         @profile_admin = ProfileAdmin.find(params[:id])
+      end
+
+      def retrieve_deleted_profile_admin
+        @profile_admin = ProfileAdmin.with_deleted.find(params[:id])
       end
 
       def perform_authorization

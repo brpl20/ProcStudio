@@ -9,8 +9,11 @@
 #  office_id       :bigint(8)        not null
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
+#  deleted_at      :datetime
 #
 class OfficeBankAccount < ApplicationRecord
+  acts_as_paranoid
+
   belongs_to :bank_account
   belongs_to :office
 end

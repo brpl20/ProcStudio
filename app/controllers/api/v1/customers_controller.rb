@@ -3,13 +3,20 @@
 module Api
   module V1
     class CustomersController < BackofficeController
-      before_action :retrieve_customer, only: %i[update show destroy resend_confirmation]
+      before_action :retrieve_customer, only: %i[update show resend_confirmation]
       before_action :perform_authorization, except: %i[update]
 
       after_action :verify_authorized
 
       def index
         customers = ::Customer.all
+
+        filter_by_deleted_params.each do |key, value|
+          next unless value.present?
+
+          customers = customers.public_send("filter_by_#{key}", value.strip)
+        end
+
         render json: CustomerSerializer.new(
           customers,
           meta: {
@@ -69,7 +76,28 @@ module Api
       end
 
       def destroy
-        @customer.destroy
+        if destroy_fully?
+          ::Customer.with_deleted.find(params[:id]).destroy_fully!
+        else
+          retrieve_customer
+          @customer.destroy
+        end
+      end
+
+      def restore
+        customer = ::Customer.with_deleted.find(params[:id])
+        authorize customer, :restore?, policy_class: Admin::CustomerPolicy
+
+        if customer.recover
+          render json: CustomerSerializer.new(
+            customer
+          ), status: :ok
+        else
+          render(
+            status: :bad_request,
+            json: { errors: [{ code: customer.errors.full_messages }] }
+          )
+        end
       end
 
       private
@@ -82,8 +110,6 @@ module Api
 
       def retrieve_customer
         @customer = ::Customer.find(params[:id])
-      rescue ActiveRecord::RecordNotFound
-        head :not_found
       end
 
       def perform_authorization

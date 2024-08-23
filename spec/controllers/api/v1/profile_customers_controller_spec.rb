@@ -31,7 +31,8 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               'default_phone' => nil,
               'default_email' => nil,
               'city' => profile_customer.addresses.first.city,
-              'customer_files' => []
+              'customer_files' => [],
+              'deleted' => false
             }
           }],
           'meta' => {
@@ -277,7 +278,8 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               'represent' => nil,
               'accountant_id' => nil,
               'customer_files' => [],
-              'created_by_id' => profile_customer.created_by_id
+              'created_by_id' => profile_customer.created_by_id,
+              'deleted' => false
             }
           }
         )

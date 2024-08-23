@@ -29,7 +29,8 @@ RSpec.describe Api::V1::JobsController, type: :request do
               'customer' => "#{job.profile_customer.name} #{job.profile_customer.last_name}",
               'responsible' => job.profile_admin.name,
               'work_number' => job.work.number,
-              'created_by_id' => job.created_by_id
+              'created_by_id' => job.created_by_id,
+              'deleted' => false
             }
           }],
           'meta' => {
@@ -176,7 +177,8 @@ RSpec.describe Api::V1::JobsController, type: :request do
                 'compensations_service' => job.work.compensations_service,
                 'lawsuit' => job.work.lawsuit,
                 'gain_projection' => job.work.gain_projection
-              }
+              },
+              'deleted' => false
             }
           }
         )

@@ -3,13 +3,21 @@
 module Api
   module V1
     class OfficesController < BackofficeController
-      before_action :retrieve_office, only: %i[show update destroy]
+      before_action :retrieve_office, only: %i[show update]
+      before_action :retrieve_deleted_office, only: %i[restore]
       before_action :perform_authorization, except: %i[with_lawyers]
 
       after_action :verify_authorized
 
       def index
         @offices = OfficeFilter.retrieve_offices
+
+        filter_by_deleted_params.each do |key, value|
+          next unless value.present?
+
+          @offices = @offices.public_send("filter_by_#{key}", value.strip)
+        end
+
         render json: OfficeSerializer.new(
           @offices,
           meta: {
@@ -54,7 +62,12 @@ module Api
       end
 
       def destroy
-        @office.destroy
+        if destroy_fully?
+          Office.with_deleted.find(params[:id]).destroy_fully!
+        else
+          retrieve_office
+          @office.destroy
+        end
       end
 
       def with_lawyers
@@ -66,12 +79,27 @@ module Api
         ), status: :ok
       end
 
+      def restore
+        if @office.recover
+          head :ok
+        else
+          render(
+            status: :bad_request,
+            json: { errors: [{ code: @office.errors.full_messages }] }
+          )
+        end
+      end
+
       private
 
       def retrieve_office
         @office = OfficeFilter.retrieve_office(params[:id])
       rescue ActiveRecord::RecordNotFound
         head :not_found
+      end
+
+      def retrieve_deleted_office
+        @office = Office.with_deleted.find(params[:id])
       end
 
       def offices_params

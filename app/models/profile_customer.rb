@@ -33,6 +33,8 @@
 #  created_by_id  :bigint(8)
 #
 class ProfileCustomer < ApplicationRecord
+  include DeletedFilterConcern
+
   acts_as_paranoid
 
   belongs_to :customer
@@ -88,6 +90,7 @@ class ProfileCustomer < ApplicationRecord
   has_many :works, through: :customer_works
 
   has_many :customer_files, dependent: :destroy
+  has_many :jobs, dependent: :destroy
 
   has_one :represent
 

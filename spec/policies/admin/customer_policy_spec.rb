@@ -23,6 +23,10 @@ RSpec.describe Admin::CustomerPolicy, type: :policy do
       it { is_expected.to permit(admin, nil) }
     end
 
+    permissions :restore? do
+      it { is_expected.to permit(admin, nil) }
+    end
+
     permissions :destroy? do
       it { is_expected.to permit(admin, nil) }
     end
@@ -44,6 +48,10 @@ RSpec.describe Admin::CustomerPolicy, type: :policy do
     end
 
     permissions :update? do
+      it { is_expected.to permit(admin, nil) }
+    end
+
+    permissions :restore? do
       it { is_expected.to permit(admin, nil) }
     end
 
@@ -71,6 +79,20 @@ RSpec.describe Admin::CustomerPolicy, type: :policy do
     end
 
     permissions :update? do
+      context 'when admin is owner' do
+        let(:customer) { create(:customer, created_by_id: admin.id) }
+
+        it { is_expected.to permit(admin, customer) }
+      end
+
+      context 'when admin is not owner' do
+        let(:customer) { create(:customer) }
+
+        it { is_expected.not_to permit(admin, customer) }
+      end
+    end
+
+    permissions :restore? do
       context 'when admin is owner' do
         let(:customer) { create(:customer, created_by_id: admin.id) }
 
@@ -121,6 +143,20 @@ RSpec.describe Admin::CustomerPolicy, type: :policy do
       end
     end
 
+    permissions :restore? do
+      context 'when admin is owner' do
+        let(:customer) { create(:customer, created_by_id: admin.id) }
+
+        it { is_expected.to permit(admin, customer) }
+      end
+
+      context 'when admin is not owner' do
+        let(:customer) { create(:customer) }
+
+        it { is_expected.not_to permit(admin, customer) }
+      end
+    end
+
     permissions :destroy? do
       it { is_expected.to permit(admin, nil) }
     end
@@ -145,6 +181,10 @@ RSpec.describe Admin::CustomerPolicy, type: :policy do
       it { is_expected.to_not permit(admin, nil) }
     end
 
+    permissions :restore? do
+      it { is_expected.to_not permit(admin, nil) }
+    end
+
     permissions :destroy? do
       it { is_expected.not_to permit(admin, nil) }
     end
@@ -166,6 +206,10 @@ RSpec.describe Admin::CustomerPolicy, type: :policy do
     end
 
     permissions :update? do
+      it { is_expected.not_to permit(admin, nil) }
+    end
+
+    permissions :restore? do
       it { is_expected.not_to permit(admin, nil) }
     end
 

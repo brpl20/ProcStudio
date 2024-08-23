@@ -10,8 +10,11 @@
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
 #  profile_customer_id :bigint(8)
+#  deleted_at          :datetime
 #
 class Document < ApplicationRecord
+  acts_as_paranoid
+
   belongs_to :profile_customer
   belongs_to :work
 

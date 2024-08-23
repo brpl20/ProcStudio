@@ -12,4 +12,8 @@ class ProfileAdminSerializer
              :nationality, :origin, :civil_status, :birth, :mother_name,
              :office_id, :addresses, :phones, :emails, :bank_accounts,
              if: proc { |_, options| options[:action] == 'show' }
+
+  attribute :deleted do |object|
+    object.deleted_at.present?
+  end
 end

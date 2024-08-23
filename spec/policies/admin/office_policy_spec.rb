@@ -80,6 +80,12 @@ RSpec.describe Admin::OfficePolicy, type: :policy do
     end
   end
 
+  permissions :restore? do
+    describe 'when admin is lawyer' do
+      it { is_expected.to permit(admin, nil) }
+    end
+  end
+
   permissions :destroy? do
     describe 'when admin is lawyer' do
       it { is_expected.to permit(admin, nil) }

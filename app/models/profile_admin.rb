@@ -22,8 +22,13 @@
 #  updated_at   :datetime         not null
 #  office_id    :bigint(8)
 #  origin       :string
+#  deleted_at   :datetime
 #
 class ProfileAdmin < ApplicationRecord
+  include DeletedFilterConcern
+
+  acts_as_paranoid
+
   belongs_to :admin
   belongs_to :office, optional: true
 
@@ -77,7 +82,7 @@ class ProfileAdmin < ApplicationRecord
   has_many :profile_admin_works, dependent: :destroy
   has_many :works, through: :profile_admin_works
 
-  has_many :jobs
+  has_many :jobs, dependent: :destroy
 
   accepts_nested_attributes_for :admin, :addresses, :phones, :emails, :bank_accounts, reject_if: :all_blank
 

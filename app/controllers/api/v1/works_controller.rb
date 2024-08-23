@@ -5,8 +5,8 @@ module Api
     class WorksController < BackofficeController
       before_action :load_active_storage_url_options unless Rails.env.production?
 
-      before_action :set_work, only: %i[show update destroy]
-      before_action :perform_authorization, except: %i[update]
+      before_action :set_work, only: %i[show update]
+      before_action :perform_authorization, except: %i[update restore]
 
       after_action :verify_authorized
 
@@ -19,13 +19,15 @@ module Api
           :jobs,
           :documents,
           :pending_documents
-        ).all.order(id: :desc).limit(params[:limit])
+        ).all
 
         filtering_params.each do |key, value|
           next unless value.present?
 
           works = works.public_send("filter_by_#{key}", value)
         end
+
+        works = works.order(id: :desc).limit(params[:limit])
 
         render json: WorkSerializer.new(
           works,
@@ -78,7 +80,28 @@ module Api
       end
 
       def destroy
-        @work.destroy
+        if destroy_fully?
+          Work.with_deleted.find(params[:id]).destroy_fully!
+        else
+          set_work
+          @work.destroy
+        end
+      end
+
+      def restore
+        work = Work.with_deleted.find(params[:id])
+        authorize work, :restore?, policy_class: Admin::WorkPolicy
+
+        if work.recover
+          render json: WorkSerializer.new(
+            work
+          ), status: :ok
+        else
+          render(
+            status: :bad_request,
+            json: { errors: [{ code: work.errors.full_messages }] }
+          )
+        end
       end
 
       private
@@ -108,7 +131,7 @@ module Api
       end
 
       def filtering_params
-        params.permit(:customer_id)
+        params.permit(:customer_id, :deleted)
       end
 
       def perform_authorization

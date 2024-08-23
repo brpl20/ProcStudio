@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 class Api::V1::Draft::WorksController < BackofficeController
-  before_action :set_draft_work, only: %i[show update destroy]
+  before_action :set_draft_work, only: %i[show update]
+  before_action :set_deleted_draft_work, only: %i[restore]
   before_action :perform_authorization
 
   after_action :verify_authorized
@@ -9,6 +10,12 @@ class Api::V1::Draft::WorksController < BackofficeController
   # GET /draft/works
   def index
     @draft_works = Draft::Work.all
+
+    filter_by_deleted_params.each do |key, value|
+      next unless value.present?
+
+      @draft_works = @draft_works.public_send("filter_by_#{key}", value.strip)
+    end
 
     render json: Draft::WorkSerializer.new(
       @draft_works,
@@ -57,13 +64,34 @@ class Api::V1::Draft::WorksController < BackofficeController
 
   # DELETE /draft/works/1
   def destroy
-    @draft_work.destroy
+    if destroy_fully?
+      Draft::Work.with_deleted.find(params[:id]).destroy_fully!
+    else
+      set_draft_work
+      @draft_work.destroy
+    end
+  end
+
+  # POST /draft/works/1
+  def restore
+    if @draft_work.recover
+      render json: Draft::WorkSerializer.new(
+        @draft_work,
+        params: { action: 'show' }
+      ), status: :ok
+    else
+      render json: @draft_work.errors, status: :unprocessable_entity
+    end
   end
 
   private
 
   def set_draft_work
     @draft_work = Draft::Work.find(params[:id])
+  end
+
+  def set_deleted_draft_work
+    @draft_work = Draft::Work.with_deleted.find(params[:id])
   end
 
   def draft_work_params

@@ -30,10 +30,15 @@
 #  bachelor                 :integer
 #  initial_atendee          :integer
 #  procedures               :text             default([]), is an Array
-#  created_by_id            :bigint(8)
 #  status                   :string           default("in_progress")
+#  created_by_id            :bigint(8)
+#  deleted_at               :datetime
 #
 class Work < ApplicationRecord
+  include DeletedFilterConcern
+
+  acts_as_paranoid
+
   has_many :customer_works, dependent: :destroy
   has_many :profile_customers, through: :customer_works
 

@@ -5,11 +5,11 @@ class JobSerializer
   attributes :description, :deadline, :status, :priority, :comment, :created_by_id
 
   attribute :customer do |object|
-    "#{object.profile_customer.name} #{object.profile_customer.last_name}"
+    "#{object&.profile_customer&.name} #{object&.profile_customer&.last_name}"
   end
 
   attribute :responsible do |object|
-    object.profile_admin.name
+    object&.profile_admin&.name
   end
 
   attribute :work_number do |object|
@@ -68,5 +68,9 @@ class JobSerializer
       lawsuit: object.work.lawsuit,
       gain_projection: object.work.gain_projection
     }
+  end
+
+  attributes :deleted do |object|
+    object.deleted_at.present?
   end
 end

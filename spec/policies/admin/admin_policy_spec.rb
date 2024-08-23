@@ -35,4 +35,10 @@ RSpec.describe Admin::AdminPolicy, type: :policy do
       it { is_expected.to permit(admin, nil) }
     end
   end
+
+  permissions :restore? do
+    describe 'when admin is lawyer' do
+      it { is_expected.to permit(admin, nil) }
+    end
+  end
 end

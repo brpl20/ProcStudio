@@ -16,8 +16,13 @@
 #  work_id             :bigint(8)
 #  profile_customer_id :bigint(8)
 #  created_by_id       :bigint(8)
+#  deleted_at          :datetime
 #
 class Job < ApplicationRecord
+  include DeletedFilterConcern
+
+  acts_as_paranoid
+
   belongs_to :work, optional: true
   belongs_to :profile_customer
   belongs_to :profile_admin

@@ -105,4 +105,8 @@ class Draft::WorkSerializer
       }
     end
   end
+
+  attribute :deleted do |object|
+    object.deleted_at.present?
+  end
 end

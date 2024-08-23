@@ -13,8 +13,13 @@
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #  jwt_token              :string
+#  deleted_at             :datetime
 #
 class Admin < ApplicationRecord
+  include DeletedFilterConcern
+
+  acts_as_paranoid
+
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
