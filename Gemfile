@@ -35,3 +35,5 @@ group :development, :test do
   gem 'shoulda-matchers'
   gem 'simplecov', '~> 0.22.0'
 end
+
+gem 'extensobr'

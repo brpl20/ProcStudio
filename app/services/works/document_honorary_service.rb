@@ -59,27 +59,35 @@ module Works
       text.substitute('_proc_office_bank_', bank_information(office))
     end
 
-    def rate_text
+    def rate_text # rubocop:disable Metrics/MethodLength
       case honorary.honorary_type
       when 'bonus'
         'Nada a ser pago'
       when 'work'
-        if honorary.parcelling_value.present?
-          "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)} em #{honorary&.parcelling_value&.to_i} parcelas de igual valor e com mesmo vencimento a partir da assinatura deste documento"
+        if honorary.work_prev.present? && honorary.parcelling_value.present?
+          "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)} (#{Extenso.moeda(honorary.fixed_honorary_value.to_f)}) e #{honorary.work_prev} (#{Extenso.numero(honorary.work_prev)}) benefícios previdenciários em #{honorary&.parcelling_value&.to_i} (#{Extenso.numero(honorary.parcelling_value.to_i, 1)}) parcelas de igual valor e com mesmo vencimento a partir da assinatura deste documento"
+        elsif honorary.work_prev.present? && honorary.parcelling_value.blank?
+          "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)} (#{Extenso.moeda(honorary.fixed_honorary_value.to_f)}) a vista e #{honorary.work_prev} (#{Extenso.numero(honorary.work_prev)}) benefícios previdenciários"
+        elsif honorary.parcelling_value.present?
+          "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)} (#{Extenso.moeda(honorary.fixed_honorary_value.to_f)}) em #{honorary&.parcelling_value&.to_i} (#{Extenso.numero(honorary.parcelling_value.to_i, 1)}) parcelas de igual valor e com mesmo vencimento a partir da assinatura deste documento"
         else
-          "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)} a vista"
+          "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)} (#{Extenso.moeda(honorary.fixed_honorary_value.to_f)}) a vista"
         end
       when 'success'
         "O(A) advogado(a) receberá o valor de #{number_to_percentage(honorary&.percent_honorary_value, precision: 2)} dos benefícios brutos advindos deste processo"
       when 'both'
-        if honorary.parcelling_value.present?
+        if honorary.work_prev.present? && honorary.parcelling_value.present?
+          "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)} (#{Extenso.moeda(honorary.fixed_honorary_value.to_f)}) a vista e #{honorary.work_prev} (#{Extenso.numero(honorary.work_prev)}) benefícios previdenciários em #{honorary&.parcelling_value&.to_i} (#{Extenso.numero(honorary.parcelling_value.to_i, 1)}) parcelas de igual valor e mais um valor variável de #{number_to_percentage(honorary&.percent_honorary_value, precision: 2)} dos benefícios brutos advindos deste processo"
+        elsif honorary.work_prev.present? && honorary.parcelling_value.blank?
+          "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)} (#{Extenso.moeda(honorary.fixed_honorary_value.to_f)}) a vista e mais um valor variável de #{number_to_percentage(honorary&.percent_honorary_value, precision: 2)} dos benefícios brutos advindos deste processo"
+        elsif honorary.parcelling_value.present?
           [
-            "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)}",
-            "em #{honorary&.parcelling_value&.to_i} parcelas de igual valor e com mesmo vencimento a partir da assinatura deste documento,",
+            "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)} (#{Extenso.moeda(honorary.fixed_honorary_value.to_f)})",
+            "em #{honorary&.parcelling_value&.to_i} (#{Extenso.numero(honorary.parcelling_value.to_i, 1)}) parcelas de igual valor e com mesmo vencimento a partir da assinatura deste documento,",
             "mais um valor variável de #{number_to_percentage(honorary&.percent_honorary_value, precision: 2)} dos benefícios brutos advindos deste processo"
           ].join(' ')
         else
-          "O(A) advogado(a) receberá o valor de #{number_to_percentage(honorary&.percent_honorary_value, precision: 2)} a vista e mais um valor variável de #{number_to_percentage(honorary&.percent_honorary_value, precision: 2)} dos benefícios brutos advindos deste processo"
+          "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value, precision: 2)} (#{Extenso.moeda(honorary.fixed_honorary_value.to_f)}) a vista e mais um valor variável de #{number_to_percentage(honorary&.percent_honorary_value, precision: 2)} dos benefícios brutos advindos deste processo"
         end
       end
     end

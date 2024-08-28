@@ -121,7 +121,7 @@ module Api
           documents_attributes: %i[id document_type profile_customer_id],
           pending_documents_attributes: %i[id description profile_customer_id],
           recommendations_attributes: %i[id percentage commission profile_customer_id],
-          honorary_attributes: %i[id fixed_honorary_value parcelling_value honorary_type percent_honorary_value parcelling],
+          honorary_attributes: %i[id fixed_honorary_value parcelling_value honorary_type percent_honorary_value parcelling work_prev],
           power_ids: [],
           profile_customer_ids: [],
           profile_admin_ids: [],
