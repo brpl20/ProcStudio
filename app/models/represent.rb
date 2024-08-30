@@ -13,4 +13,10 @@
 class Represent < ApplicationRecord
   belongs_to :profile_customer
   belongs_to :representor, class_name: 'ProfileCustomer', optional: true, foreign_key: 'representor_id'
+
+  before_destroy :clear_representor
+
+  def clear_representor
+    update(representor_id: nil)
+  end
 end
