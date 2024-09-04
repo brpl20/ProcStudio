@@ -79,7 +79,7 @@ module Works
         if honorary.work_prev.present? && honorary.parcelling_value.present?
           "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)} (#{Extenso.moeda(honorary.fixed_honorary_value.to_f)}) a vista e #{honorary.work_prev} (#{Extenso.numero(honorary.work_prev)}) benefícios previdenciários em #{honorary&.parcelling_value&.to_i} (#{Extenso.numero(honorary.parcelling_value.to_i, 1)}) parcelas de igual valor e mais um valor variável de #{number_to_percentage(honorary&.percent_honorary_value, precision: 2)} dos benefícios brutos advindos deste processo"
         elsif honorary.work_prev.present? && honorary.parcelling_value.blank?
-          "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)} (#{Extenso.moeda(honorary.fixed_honorary_value.to_f)}) a vista e mais um valor variável de #{number_to_percentage(honorary&.percent_honorary_value, precision: 2)} dos benefícios brutos advindos deste processo"
+          "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)} (#{Extenso.moeda(honorary.fixed_honorary_value.to_f)}) a vista e mais #{honorary.work_prev} (#{Extenso.numero(honorary.work_prev)}) benefícios previdenciários e maisl um valor variável de #{number_to_percentage(honorary&.percent_honorary_value, precision: 2)} dos benefícios brutos advindos deste processo"
         elsif honorary.parcelling_value.present?
           [
             "O(A) advogado(a) receberá o valor de #{number_to_currency(honorary&.fixed_honorary_value)} (#{Extenso.moeda(honorary.fixed_honorary_value.to_f)})",
