@@ -24,6 +24,6 @@ class Job < ApplicationRecord
   acts_as_paranoid
 
   belongs_to :work, optional: true
-  belongs_to :profile_customer
+  belongs_to :profile_customer, optional: true
   belongs_to :profile_admin
 end
