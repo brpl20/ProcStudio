@@ -6,39 +6,57 @@ RSpec.describe Admin::AdminPolicy, type: :policy do
   let(:admin) { build(:profile_admin).admin }
   subject { described_class }
 
-  permissions :index? do
-    describe 'when admin is lawyer' do
+  describe 'when admin is lawyer' do
+    permissions :index? do
+      it { is_expected.to permit(admin, nil) }
+    end
+
+    permissions :show? do
+      it { is_expected.to permit(admin, nil) }
+    end
+
+    permissions :create? do
+      it { is_expected.to permit(admin, nil) }
+    end
+
+    permissions :update? do
+      it { is_expected.to permit(admin, nil) }
+    end
+
+    permissions :destroy? do
+      it { is_expected.to permit(admin, nil) }
+    end
+
+    permissions :restore? do
       it { is_expected.to permit(admin, nil) }
     end
   end
 
-  permissions :show? do
-    describe 'when admin is lawyer' do
+  describe 'when admin is secretary' do
+    before { admin.profile_admin.role = :secretary }
+
+    permissions :index? do
       it { is_expected.to permit(admin, nil) }
     end
-  end
 
-  permissions :create? do
-    describe 'when admin is lawyer' do
+    permissions :show? do
       it { is_expected.to permit(admin, nil) }
     end
-  end
 
-  permissions :update? do
-    describe 'when admin is lawyer' do
-      it { is_expected.to permit(admin, nil) }
+    permissions :create? do
+      it { is_expected.to_not permit(admin, nil) }
     end
-  end
 
-  permissions :destroy? do
-    describe 'when admin is lawyer' do
-      it { is_expected.to permit(admin, nil) }
+    permissions :update? do
+      it { is_expected.to_not permit(admin, nil) }
     end
-  end
 
-  permissions :restore? do
-    describe 'when admin is lawyer' do
-      it { is_expected.to permit(admin, nil) }
+    permissions :destroy? do
+      it { is_expected.to_not permit(admin, nil) }
+    end
+
+    permissions :restore? do
+      it { is_expected.to_not permit(admin, nil) }
     end
   end
 end

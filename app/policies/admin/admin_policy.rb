@@ -2,11 +2,11 @@
 
 class Admin::AdminPolicy < Admin::BasePolicy
   def index?
-    lawyer?
+    lawyer? || secretary?
   end
 
   def show?
-    lawyer?
+    lawyer? || secretary?
   end
 
   def create?
