@@ -57,7 +57,7 @@ module Works
     end
 
     def substitute_powers(text)
-      text.substitute('_proc_powers_', work.powers.map { _1.description.titleize }.join(','))
+      text.substitute('_proc_powers_', work.powers.map { _1.description.downcase }.join(', '))
     end
 
     def substitute_word(text)
