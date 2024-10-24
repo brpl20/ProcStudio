@@ -97,7 +97,7 @@ class ProfileAdmin < ApplicationRecord
   end
 
   def full_name
-    "#{name} #{last_name}".squish.titleize
+    "#{name} #{last_name}".squish
   end
 
   def last_email
