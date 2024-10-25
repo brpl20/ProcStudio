@@ -69,7 +69,7 @@ module Works
 
       text.substitute('_proc_today_', "#{address.city&.strip}, #{address.state&.strip}, #{proc_date}")
       text.substitute('_proc_date_', proc_date)
-      text.substitute('_proc_full_name_', customer.full_name.downcase.titleize&.strip)
+      text.substitute('_proc_full_name_', customer.full_name.upcase)
     end
   end
 end

@@ -128,8 +128,8 @@ module Works
       substitute_office_bank(text)
 
       text.substitute('_proc_today_', "#{address.city&.strip}, #{address.state&.strip}, #{proc_date}")
-      text.substitute('_proc_full_name_', customer.full_name.downcase.titleize&.strip)
-      text.substitute('_proc_lawyer_full_name_', lawyers.first.full_name.downcase.titleize&.strip)
+      text.substitute('_proc_full_name_', customer.full_name.upcase)
+      text.substitute('_proc_lawyer_full_name_', lawyers.first.full_name.upcase)
     end
   end
 end
