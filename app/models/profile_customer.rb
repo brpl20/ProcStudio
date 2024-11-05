@@ -114,7 +114,7 @@ class ProfileCustomer < ApplicationRecord
   validates_with PhoneNumberValidator
 
   def full_name
-    [name&.strip, last_name&.strip].join(' ')
+    "#{name} #{last_name}".squish
   end
 
   def last_email

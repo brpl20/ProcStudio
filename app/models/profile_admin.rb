@@ -97,7 +97,7 @@ class ProfileAdmin < ApplicationRecord
   end
 
   def full_name
-    [name&.strip, last_name&.strip].join(' ')
+    "#{name} #{last_name}".squish
   end
 
   def last_email
