@@ -39,8 +39,19 @@ module Works
       false
     end
 
+    def representor
+      customer&.represent&.representor
+    end
+
     def doc
-      @doc ||= Docx::Document.open('app/template_documents/procuracao.docx')
+      @doc ||=
+        if customer.able?
+          Docx::Document.open('app/template_documents/procuracao.docx')
+        elsif customer.unable?
+          Docx::Document.open('app/template_documents/procuracao_incapaz.docx')
+        else
+          Docx::Document.open('app/template_documents/procuracao_parcialmente_incapaz.docx')
+        end
     end
 
     def filename
@@ -70,6 +81,7 @@ module Works
       text.substitute('_proc_today_', "#{address.city&.strip}, #{address.state&.strip}, #{proc_date}")
       text.substitute('_proc_date_', proc_date)
       text.substitute('_proc_full_name_', customer.full_name.downcase.titleize&.strip)
+      text.substitute('_proc_represent_full_name_', representor&.full_name&.strip) if representor&.present?
     end
   end
 end
