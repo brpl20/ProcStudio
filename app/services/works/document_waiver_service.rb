@@ -69,8 +69,8 @@ module Works
       substitute_client_info(text)
 
       text.substitute('_proc_today_', "#{address.city&.strip}, #{address.state&.strip}, #{proc_date}")
-      text.substitute('_proc_full_name_', customer.full_name.downcase.titleize&.strip)
-      text.substitute('_proc_represent_full_name_', representor&.full_name&.strip) if representor&.present?
+      text.substitute('_proc_full_name_', customer.full_name.upcase)
+      text.substitute('_proc_represent_full_name_', representor&.full_name&.upcase) if representor&.present?
     end
   end
 end

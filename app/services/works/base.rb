@@ -13,7 +13,7 @@ module Works
 
     def substitute_client_info(text)
       translated_text = [
-        customer.full_name.downcase.titleize,
+        customer.full_name.upcase,
         word_for_gender(customer.nationality, customer.gender),
         word_for_gender(customer.civil_status, customer.gender),
         capacity,
@@ -44,7 +44,7 @@ module Works
         end
 
       [
-        "#{representor_text} #{representor.full_name.downcase.titleize}",
+        "#{representor_text} #{representor.full_name.upcase}",
         word_for_gender(representor.civil_status, representor.gender),
         "#{word_for_gender('owner', representor.gender)} do RG n° #{representor.rg} e #{word_for_gender('subscribe', representor.gender)} no CPF sob o n° #{representor.cpf}",
         representor.last_email,
@@ -62,7 +62,7 @@ module Works
     def lawyers_text
       text = []
       lawyers.each do |lawyer|
-        text.push(lawyer.full_name&.strip)
+        text.push(lawyer.full_name&.upcase)
         text.push(word_for_gender(lawyer.civil_status, lawyer.gender))
         text.push("OAB n° #{lawyer.oab&.strip}")
         text.push(word_for_gender(lawyer.nationality, lawyer.gender))
@@ -75,7 +75,7 @@ module Works
       text = []
       lawyers.each do |lawyer|
         address = lawyer.addresses.first
-        text.push(lawyer.full_name&.strip)
+        text.push(lawyer.full_name&.upcase)
         text.push(word_for_gender(lawyer.civil_status, lawyer.gender))
         text.push("OAB n° #{lawyer.oab&.strip}")
         text.push(word_for_gender(lawyer.nationality, lawyer.gender))
@@ -90,12 +90,12 @@ module Works
     def substitute_justice_agents(text)
       translated_text = if office.present?
                           [
-                            "#{I18n.t('general.lawyers')}: #{lawyers_text}", "integrante da #{office.name&.strip} inscrita sob o CNPJ #{office.cnpj}",
+                            lawyers_text, "integrante da #{office.name&.strip} inscrita sob o CNPJ #{office.cnpj}",
                             "com endereço profissional à Rua #{office.street.to_s.downcase.titleize&.strip}", office.number.to_s, office.neighborhood.downcase.titleize&.strip,
-                            "#{office.city&.strip}-#{office.state&.strip}", "e endereço eletrônico #{office&.phones&.first&.phone_number&.strip}"
+                            "#{office.city&.strip}-#{office.state&.strip}", "e endereço eletrônico #{office&.emails&.first&.email&.strip}"
                           ].join(', ')
                         else
-                          ["#{I18n.t('general.lawyers')}: #{lawyers_text_without_office}"].join(', ')
+                          lawyers_text_without_office
                         end
 
       text.substitute('_proc_outorgado_', translated_text)
