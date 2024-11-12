@@ -101,7 +101,18 @@ module Works
     end
 
     def doc
-      @doc ||= Docx::Document.open('app/template_documents/honorario.docx')
+      @doc ||=
+        if customer.able?
+          Docx::Document.open('app/template_documents/honorario.docx')
+        elsif customer.unable?
+          Docx::Document.open('app/template_documents/honorario_incapaz.docx')
+        else
+          Docx::Document.open('app/template_documents/honorario_parcialmente_incapaz.docx')
+        end
+    end
+
+    def representor
+      customer&.represent&.representor
     end
 
     def filename
@@ -130,6 +141,7 @@ module Works
       text.substitute('_proc_today_', "#{address.city&.strip}, #{address.state&.strip}, #{proc_date}")
       text.substitute('_proc_full_name_', customer.full_name.upcase)
       text.substitute('_proc_lawyer_full_name_', lawyers.first.full_name.upcase)
+      text.substitute('_proc_represent_full_name_', representor&.full_name&.upcase) if representor&.present?
     end
   end
 end
