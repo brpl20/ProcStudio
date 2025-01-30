@@ -2,13 +2,14 @@
 
 class ProfileCustomerSerializer
   include JSONAPI::Serializer
+
   attributes :customer_id, :customer_type, :name, :last_name, :cpf, :cnpj,
              :emails
 
-  attributes :addresses, :bank_accounts, :birth, :capacity, :civil_status,
-             :company, :customer_id, :emails, :gender, :inss_password,
-             :mother_name, :nationality, :nit, :number_benefit, :phones,
-             :profession, :rg, :status, :represent, :accountant_id,
+  attributes :bank_accounts, :birth, :capacity, :civil_status,
+             :company, :customer_id, :gender, :inss_password,
+             :mother_name, :nationality, :nit, :number_benefit,
+             :profession, :rg, :status, :accountant_id,
              :created_by_id, if: proc { |_, options| options[:action] == 'show' }
 
   attribute :default_phone do |object|
@@ -38,5 +39,29 @@ class ProfileCustomerSerializer
 
   attribute :deleted do |object|
     object.deleted_at.present?
+  end
+
+  attribute :represent do |object|
+    represent = object.represent
+
+    RepresentSerializer.new(represent).serializable_hash[:data][:attributes] if represent
+  end
+
+  attribute :phones do |object|
+    phones = object.phones
+
+    phones&.map { |phone| PhoneSerializer.new(phone).serializable_hash[:data][:attributes] }
+  end
+
+  attribute :addresses do |object|
+    addresses = object.addresses
+
+    addresses&.map { |address| AddressSerializer.new(address).serializable_hash[:data][:attributes] }
+  end
+
+  attribute :emails do |object|
+    emails = object.emails
+
+    emails&.map { |email| EmailSerializer.new(email).serializable_hash[:data][:attributes] }
   end
 end
