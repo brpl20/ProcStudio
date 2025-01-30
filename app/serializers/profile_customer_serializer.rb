@@ -54,7 +54,7 @@ class ProfileCustomerSerializer
   attribute :addresses do |object|
     addresses = object.addresses
 
-      addresses.map { |address| AddressSerializer.new(address).serializable_hash[:data][:attributes] }
+    addresses.map { |address| AddressSerializer.new(address).serializable_hash[:data][:attributes] }
   end
 
   attribute :emails do |object|
