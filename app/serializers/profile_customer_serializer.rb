@@ -44,24 +44,32 @@ class ProfileCustomerSerializer
   attribute :represent do |object|
     represent = object.represent
 
-    RepresentSerializer.new(represent).serializable_hash[:data][:attributes]
+    if represent
+      RepresentSerializer.new(represent).serializable_hash[:data][:attributes]
+    end
   end
 
   attribute :phones do |object|
     phones = object.phones
 
-    phones.map { |phone| PhoneSerializer.new(phone).serializable_hash[:data][:attributes] }
+    if phones
+      phones.map { |phone| PhoneSerializer.new(phone).serializable_hash[:data][:attributes] }
+    end
   end
 
   attribute :addresses do |object|
     addresses = object.addresses
 
-    addresses.map { |address| AddressSerializer.new(address).serializable_hash[:data][:attributes] }
+    if addresses
+      addresses.map { |address| AddressSerializer.new(address).serializable_hash[:data][:attributes] }
+    end
   end
 
   attribute :emails do |object|
     emails = object.emails
 
-    emails.map { |email| EmailSerializer.new(email).serializable_hash[:data][:attributes] }
+    if emails
+      emails.map { |email| EmailSerializer.new(email).serializable_hash[:data][:attributes] }
+    end
   end
 end
