@@ -30,8 +30,6 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
           }
         end
 
-        # {"city"=>"Belém do Piauí", "description"=>"Pine Pointe", "id"=>"2", "neighborhood"=>"6145 Viela João Lucas Almeida", "number"=>20087, "state"=>"Rio Grande do Sul", "street"=>"Marginal Suélen Dorneles", "zip_code"=>"95073-714"}]
-
         expect(JSON.parse(response.body)).to eq(
           'data' => [{
             'id' => profile_customer.id.to_s,
