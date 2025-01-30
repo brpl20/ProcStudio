@@ -19,6 +19,7 @@ module Works
       @documents.each do |document|
         class_name = document.document_type.classify
         klass = "Works::Document#{class_name}Service".safe_constantize
+
         klass.call(document.id)
       end
     end
