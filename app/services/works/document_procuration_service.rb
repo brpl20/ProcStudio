@@ -8,12 +8,12 @@ module Works
 
     def initialize(document_id)
       @document = Document.find(document_id)
-      @work     = document.work
-      @office   = work.offices.first
-      @lawyers  = work.profile_admins.lawyer
+      @work = document.work
+      @office = work.offices&.first
+      @lawyers = work.profile_admins&.lawyer
       @customer = document.profile_customer
-      @address  = customer.addresses.first
-      @lawyer_address = lawyers.first.addresses.first
+      @address = customer&.addresses&.first
+      @lawyer_address = lawyers&.first&.addresses&.first
     end
 
     def call
