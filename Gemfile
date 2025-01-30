@@ -21,6 +21,7 @@ gem 'rubocop', '~> 1.48', require: false
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 group :development, :test, :staging do
+  gem 'pry-byebug'
   gem 'faker'
   gem 'mina', '0.3.8'
   gem 'webmock'

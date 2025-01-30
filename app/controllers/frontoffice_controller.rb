@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 class FrontofficeController < ApplicationController
-  include JwtAuth
-  include Pundit::Authorization
+  # include JwtAuth
+  # include Pundit::Authorization
 
-  before_action :authenticate_customer
+  # before_action :authenticate_customer
 
-  rescue_from Pundit::NotAuthorizedError, with: :unauthorized
+  # rescue_from Pundit::NotAuthorizedError, with: :unauthorized
 
   def current_user
     @current_user ||= @current_customer

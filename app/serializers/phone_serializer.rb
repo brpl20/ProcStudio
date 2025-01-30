@@ -2,5 +2,6 @@
 
 class PhoneSerializer
   include JSONAPI::Serializer
+
   attributes :id, :phone_number
 end
