@@ -5,7 +5,7 @@ class ProfileCustomerSerializer
              :emails
 
   attributes :bank_accounts, :birth, :capacity, :civil_status,
-             :company, :customer_id, :emails, :gender, :inss_password,
+             :company, :customer_id, :gender, :inss_password,
              :mother_name, :nationality, :nit, :number_benefit,
              :profession, :rg, :status, :accountant_id,
              :created_by_id, if: proc { |_, options| options[:action] == 'show' }
@@ -55,5 +55,11 @@ class ProfileCustomerSerializer
     addresses = object.addresses
 
       addresses.map { |address| AddressSerializer.new(address).serializable_hash[:data][:attributes] }
+  end
+
+  attribute :emails do |object|
+    emails = object.emails
+
+    emails.map { |email| EmailSerializer.new(email).serializable_hash[:data][:attributes] }
   end
 end
