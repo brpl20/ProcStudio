@@ -18,6 +18,20 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
       end
 
       it 'returns all profile_customers' do
+        serialized_addresses = profile_customer.addresses.map do |address|
+          {
+            'id' => address.id,
+            'description' => address.description,
+            'zip_code' => address.zip_code,
+            'number' => address.number,
+            'neighborhood' => address.neighborhood,
+            'city' => address.city,
+            'state' => address.state
+          }
+        end
+
+        # {"city"=>"Belém do Piauí", "description"=>"Pine Pointe", "id"=>"2", "neighborhood"=>"6145 Viela João Lucas Almeida", "number"=>20087, "state"=>"Rio Grande do Sul", "street"=>"Marginal Suélen Dorneles", "zip_code"=>"95073-714"}]
+
         expect(JSON.parse(response.body)).to eq(
           'data' => [{
             'id' => profile_customer.id.to_s,
@@ -26,6 +40,10 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               'customer_type' => profile_customer.customer_type,
               'name' => profile_customer.name,
               'last_name' => profile_customer.last_name,
+              'phones' => [],
+              'represent' => nil,
+              'addresses' => serialized_addresses,
+              'emails' => [],
               'cpf' => profile_customer.cpf,
               'cnpj' => profile_customer.cnpj,
               'default_phone' => nil,
