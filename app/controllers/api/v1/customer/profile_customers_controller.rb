@@ -7,7 +7,7 @@ class Api::V1::Customer::ProfileCustomersController < FrontofficeController
 
   # GET /api/v1/customer/profile_customers/1
   def show
-    # authorize @profile_customer, :show?, policy_class: Customer::ProfileCustomerPolicy
+    authorize @profile_customer, :show?, policy_class: Customer::ProfileCustomerPolicy
 
     render json: ProfileCustomerSerializer.new(
       @profile_customer,
@@ -17,7 +17,7 @@ class Api::V1::Customer::ProfileCustomersController < FrontofficeController
 
   # PATCH/PUT /api/v1/customer/profile_customers/1
   def update
-    # authorize @profile_customer, :update?, policy_class: Customer::ProfileCustomerPolicy
+    authorize @profile_customer, :update?, policy_class: Customer::ProfileCustomerPolicy
 
     if @profile_customer.update(profile_customers_params)
 
