@@ -26,7 +26,8 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
             'number' => address.number,
             'neighborhood' => address.neighborhood,
             'city' => address.city,
-            'state' => address.state
+            'state' => address.state,
+            'street' => address.street
           }
         end
 
@@ -48,7 +49,8 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               'default_email' => nil,
               'city' => profile_customer.addresses.first.city,
               'customer_files' => [],
-              'deleted' => false
+              'deleted' => false,
+              'bank_accounts' => []
             }
           }],
           'meta' => {

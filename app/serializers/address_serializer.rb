@@ -2,5 +2,5 @@
 
 class AddressSerializer
   include JSONAPI::Serializer
-  attributes :id, :description, :zip_code, :number, :neighborhood, :city, :state
+  attributes :id, :description, :zip_code, :number, :neighborhood, :city, :state, :street
 end
