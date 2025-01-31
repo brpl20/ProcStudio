@@ -146,7 +146,7 @@ module ProfileCustomers
     end
 
     def lawyers_text_without_office
-      return "placeholder"
+      'placeholder'
     end
   end
 end
