@@ -7,12 +7,12 @@ module ProfileCustomers
     def initialize(document_id, admin_id)
       @document = CustomerFile.find(document_id)
       @customer = @document.profile_customer
-      @address = @customer.addresses.first
-      @customer_email = @customer.emails.first
+      @address = @customer.addresses&.first
+      @customer_email = @customer.emails&.first
       @current_user = ProfileAdmin.find(admin_id)
       @office = @current_user.office
-      @lawyers = @office.profile_admins.lawyer
-      @lawyer_address = @lawyers.first.addresses.first
+      @lawyers = @office&.profile_admins&.lawyer
+      @lawyer_address = @lawyers&.first&.addresses&.first
       @represent = @customer&.represent
     end
 
@@ -143,6 +143,10 @@ module ProfileCustomers
       return :test  if Rails.env.test?
 
       :amazon
+    end
+
+    def lawyers_text_without_office
+      'placeholder'
     end
   end
 end
