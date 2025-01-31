@@ -6,7 +6,7 @@ class ProfileCustomerSerializer
   attributes :customer_id, :customer_type, :name, :last_name, :cpf, :cnpj,
              :emails
 
-  attributes :bank_accounts, :birth, :capacity, :civil_status,
+  attributes :birth, :capacity, :civil_status,
              :company, :customer_id, :gender, :inss_password,
              :mother_name, :nationality, :nit, :number_benefit,
              :profession, :rg, :status, :accountant_id,
@@ -30,8 +30,6 @@ class ProfileCustomerSerializer
         id: document.id,
         file_description: document.file_description,
         profile_customer_id: document.profile_customer_id,
-        created_at: document.created_at,
-        updated_at: document.updated_at,
         url: document.document_docx&.url
       }
     end
@@ -64,4 +62,10 @@ class ProfileCustomerSerializer
 
     emails&.map { |email| EmailSerializer.new(email).serializable_hash[:data][:attributes] }
   end
+
+  attribute :bank_accounts do |object|
+    bank_accounts = object.bank_accounts
+
+    bank_accounts&.map { |email| BankAccountSerializer.new(email).serializable_hash[:data][:attributes] }
+end
 end
