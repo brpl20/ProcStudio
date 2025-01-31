@@ -67,5 +67,5 @@ class ProfileCustomerSerializer
     bank_accounts = object.bank_accounts
 
     bank_accounts&.map { |email| BankAccountSerializer.new(email).serializable_hash[:data][:attributes] }
-end
+  end
 end
