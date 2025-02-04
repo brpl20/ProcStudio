@@ -7,7 +7,7 @@ class WorkSerializer
              :other_description, :laborite_areas, :tributary_areas, :physical_lawyer, :responsible_lawyer,
              :partner_lawyer, :intern, :bachelor, :initial_atendee, :note, :folder, :rate_parceled_exfield,
              :extra_pending_document, :compensations_five_years, :compensations_service, :lawsuit,
-             :gain_projection, :procedures, :honorary, :created_by_id, :status
+             :gain_projection, :procedures, :honorary, :created_by_id, :status, :created_at
 
   attribute :procurations_created do |object|
     object.documents.procurations.size
@@ -90,7 +90,6 @@ class WorkSerializer
         work_id: document.work_id,
         profile_customer_id: document.profile_customer_id,
         created_at: document.created_at,
-        updated_at: document.updated_at,
         url: document.document_docx&.url
       }
     end

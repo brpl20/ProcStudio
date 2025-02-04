@@ -1,36 +1,22 @@
 # frozen_string_literal: true
 
 class S3Service
-    def initialize
-        Aws.config.update(
-        {
-            region: 'us-west-2',
-            credentials: Aws::Credentials.new(
-                ENV.fetch('AWS_ID', nil),
-                ENV.fetch('AWS_SECRET_KEY', nil)
-            )
-        }
-        )
+    def upload_document(file_path)
+      file = File.open(file_path)
 
-        @aws_client = Aws::S3::Client.new
-        @bucket = 'prcstudio3herokubucket/base'
-        @key = 'file.docx'
+      blob = ActiveStorage::Blob.create_and_upload!(
+        io: file,
+        filename: File.basename(file_path),
+        content_type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      )
+
+      file.close
+      blob.service_url
     end
 
-    def get_document
-        aws_client.get_object(bucket: 'prcstudio3herokubucket', key: 'base/procuracao_simples.docx')
+    def get_document(document)
+        document.blob.open do |file|
+            file.read
+        end
     end
-
-    def upload_document; end
-
-    private
-
-    def retrieve_document
-        aws_doc = aws_client.get_object(bucket: 'prcstudio3herokubucket', key: 'base/procuracao_simples.docx')
-        Docx::Document.open(aws_doc.body)
-    end
-
-    def save_and_upload(doc)
-        doc.save(Rails.root.join('tmp/procuração_teste.docx').to_s)
-    end
-end
+  end

@@ -43,6 +43,8 @@ Rails.application.routes.draw do
         member do
           post :restore
         end
+
+        resources :documents, only: [:update]
       end
       resources :work_events do
         member do
