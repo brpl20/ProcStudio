@@ -58,6 +58,7 @@ RSpec.describe Api::V1::WorksController, type: :request do
               documents: [],
               procedures: [],
               work_events: [],
+              created_at_date: work.created_at.to_date.iso8601,
               created_by_id: work.created_by_id,
               status: work.status,
               deleted: false
@@ -259,6 +260,7 @@ RSpec.describe Api::V1::WorksController, type: :request do
               documents: [],
               procedures: [],
               work_events: [],
+              created_at_date: work.created_at.to_date.iso8601,
               created_by_id: work.created_by_id,
               status: work.status,
               deleted: false

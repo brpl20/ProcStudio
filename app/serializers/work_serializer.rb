@@ -7,7 +7,7 @@ class WorkSerializer
              :other_description, :laborite_areas, :tributary_areas, :physical_lawyer, :responsible_lawyer,
              :partner_lawyer, :intern, :bachelor, :initial_atendee, :note, :folder, :rate_parceled_exfield,
              :extra_pending_document, :compensations_five_years, :compensations_service, :lawsuit,
-             :gain_projection, :procedures, :honorary, :created_by_id, :status, :created_at
+             :gain_projection, :procedures, :honorary, :created_by_id, :status
 
   attribute :procurations_created do |object|
     object.documents.procurations.size
@@ -108,5 +108,9 @@ class WorkSerializer
 
   attribute :deleted do |object|
     object.deleted_at.present?
+  end
+
+  attribute :created_at_date do |object|
+    object.created_at.to_date.iso8601
   end
 end
