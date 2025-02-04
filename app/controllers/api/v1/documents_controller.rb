@@ -8,8 +8,8 @@ module Api
 
       def update
         if params[:file].present?
-          @document.document_docx.purge_later # Remove o arquivo anterior (assíncrono)
-          @document.document_docx.attach(params[:file]) # Faz o upload do novo arquivo
+          @document.document_docx.purge_later
+          @document.document_docx.attach(params[:file])
 
           render json: { message: 'Documento atualizado com sucesso!' }, status: :ok
         else
