@@ -36,6 +36,7 @@
 /config/database.yml
 
 .vscode/
+.env
 
 /config/credentials/development.key
 /config/credentials/staging.key
