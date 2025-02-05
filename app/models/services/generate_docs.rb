@@ -14,16 +14,6 @@ class GenerateDocs
       )
     end
 
-    def retrieve_document
-      aws_client = Aws::S3::Client.new
-      aws_doc = aws_client.get_object(bucket: 'prcstudio3herokubucket', key: 'base/procuracao_simples.docx')
-      Docx::Document.open(aws_doc.body)
-    end
-
-    def save_and_upload(doc)
-      doc.save(Rails.root.join('tmp/procuração_teste.docx').to_s)
-    end
-
     def prepare_documents
       config_aws
 
@@ -37,6 +27,18 @@ class GenerateDocs
       end
 
       save_and_upload(doc)
+    end
+
+    private
+
+    def retrieve_document
+      aws_client = Aws::S3::Client.new
+      aws_doc = aws_client.get_object(bucket: 'prcstudio3herokubucket', key: 'base/procuracao_simples.docx')
+      Docx::Document.open(aws_doc.body)
+    end
+
+    def save_and_upload(doc)
+      doc.save(Rails.root.join('tmp/procuração_teste.docx').to_s)
     end
   end
 end

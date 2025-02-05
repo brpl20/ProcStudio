@@ -90,7 +90,6 @@ class WorkSerializer
         work_id: document.work_id,
         profile_customer_id: document.profile_customer_id,
         created_at: document.created_at,
-        updated_at: document.updated_at,
         url: document.document_docx&.url
       }
     end
@@ -109,5 +108,9 @@ class WorkSerializer
 
   attribute :deleted do |object|
     object.deleted_at.present?
+  end
+
+  attribute :created_at_date do |object|
+    object.created_at.to_date.iso8601
   end
 end
