@@ -29,8 +29,6 @@ module Api
           rescue StandardError => e
             render json: { error: "Erro ao atualizar documento: #{e.message}" }, status: :internal_server_error
           end
-
-          render json: { message: 'Documento atualizado com sucesso!' }, status: :ok
         else
           render json: { error: 'Arquivo não fornecido' }, status: :unprocessable_entity
         end
