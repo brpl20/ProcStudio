@@ -8,7 +8,8 @@ module Api
 
       def update
         if params[:file].present?
-          @document.document_docx.purge_later
+          Rails.logger.info("Rails.env: #{Rails.env}")
+          @document.document_docx.purge
           @document.document_docx.attach(params[:file])
 
           render json: { message: 'Documento atualizado com sucesso!' }, status: :ok
@@ -30,7 +31,7 @@ module Api
       end
 
       def document_params
-        params.require(:document).permit(:file) # Assumindo que `file` é o campo do upload
+        params.require(:document).permit(:file)
       end
     end
   end
