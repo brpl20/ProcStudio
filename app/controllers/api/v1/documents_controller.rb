@@ -8,9 +8,27 @@ module Api
 
       def update
         if params[:file].present?
-          Rails.logger.info("Rails.env: #{Rails.env}")
           @document.document_docx.purge
-          @document.document_docx.attach(params[:file])
+
+          begin
+            @document.document_docx.attach(
+              io: params[:file],
+              filename: params[:file].original_filename,
+              content_type: params[:file].content_type
+            )
+
+            if @document.save
+              render json: { message: 'Documento atualizado com sucesso!' }, status: :ok
+            else
+              render json: { error: @document.errors.full_messages }, status: :unprocessable_entity
+            end
+          rescue ActiveStorage::IntegrityError => e
+            render json: { error: "Erro de integridade ao anexar o documento: #{e.message}" }, status: :unprocessable_entity
+          rescue ActiveRecord::RecordInvalid => e
+            render json: { error: "Erro ao salvar documento: #{e.message}" }, status: :unprocessable_entity
+          rescue StandardError => e
+            render json: { error: "Erro ao atualizar documento: #{e.message}" }, status: :internal_server_error
+          end
 
           render json: { message: 'Documento atualizado com sucesso!' }, status: :ok
         else
