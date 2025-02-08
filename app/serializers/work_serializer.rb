@@ -90,7 +90,7 @@ class WorkSerializer
         work_id: document.work_id,
         profile_customer_id: document.profile_customer_id,
         created_at: document.created_at,
-        url: document.document_docx&.url
+        url: document.file&.url
       }
     end
   end

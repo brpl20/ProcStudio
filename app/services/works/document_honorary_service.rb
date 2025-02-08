@@ -93,7 +93,7 @@ module Works
     end
 
     def save
-      document.document_docx.attach(blob)
+      document.file.attach(blob)
       FileUtils.remove_file(filename, true)
     rescue StandardError => e
       Rails.logger.error("[Document Error]: #{e.message}")

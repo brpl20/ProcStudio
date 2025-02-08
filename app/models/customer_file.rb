@@ -15,7 +15,7 @@ class CustomerFile < ApplicationRecord
   acts_as_paranoid
 
   belongs_to :profile_customer
-  has_one_attached :document_docx
+  has_one_attached :file
 
   enum file_description: {
     simple_procuration: 'simple procuration', # procuracao simples

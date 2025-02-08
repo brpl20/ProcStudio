@@ -219,7 +219,7 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               nationality: 'brazilian',
               profession: Faker::Job.title,
               customer_files_attributes: [file_description: 'simple_procuration',
-                                          document_docx: Rack::Test::UploadedFile.new(Rails.root.join('spec', 'factories', 'images', 'Ruby.jpg'), 'image/jpg')]
+                                          file: Rack::Test::UploadedFile.new(Rails.root.join('spec', 'factories', 'images', 'Ruby.jpg'), 'image/jpg')]
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         end.to change(CustomerFile, :count).by(1)

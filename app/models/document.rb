@@ -11,6 +11,8 @@
 #  updated_at          :datetime         not null
 #  profile_customer_id :bigint(8)
 #  deleted_at          :datetime
+#  format              :integer          default("docx"), not null
+#  status              :integer          default("waiting_signature"), not null
 #
 class Document < ApplicationRecord
   acts_as_paranoid
@@ -18,7 +20,7 @@ class Document < ApplicationRecord
   belongs_to :profile_customer
   belongs_to :work
 
-  has_one_attached :document_docx
+  has_one_attached :file
 
   enum document_type: {
     procuration: 'procuration',
@@ -26,6 +28,10 @@ class Document < ApplicationRecord
     deficiency_statement: 'deficiency statement',
     honorary: 'honorary'
   }
+
+  enum format: [:docx, :pdf]
+
+  enum status: [:waiting_signature, :assigned, :finished]
 
   scope :procurations, -> { where(document_type: 'procuration') }
 end

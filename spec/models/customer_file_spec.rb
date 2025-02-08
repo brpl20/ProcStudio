@@ -17,12 +17,12 @@ RSpec.describe CustomerFile do
     end
     it 'is attached a file' do
       customer_file = create(:customer_file)
-      customer_file.document_docx.attach(
+      customer_file.file.attach(
         io: File.open('spec/factories/images/Ruby.jpg'),
         filename: 'Ruby.jpg',
         content_type: 'application/jpg'
       )
-      expect(customer_file.document_docx).to be_attached
+      expect(customer_file.file).to be_attached
     end
   end
 

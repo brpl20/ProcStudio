@@ -23,7 +23,7 @@ describe Works::DocumentWaiverService do
 
     it 'creates a document' do
       described_class.call(document.id)
-      expect(document.document_docx).to be_attached
+      expect(document.file).to be_attached
     end
   end
 end

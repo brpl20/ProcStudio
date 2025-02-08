@@ -30,7 +30,7 @@ class ProfileCustomerSerializer
         id: document.id,
         file_description: document.file_description,
         profile_customer_id: document.profile_customer_id,
-        url: document.document_docx&.url
+        url: document.file&.url
       }
     end
   end

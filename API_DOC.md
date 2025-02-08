@@ -3,17 +3,17 @@
 ## Work
 
 - profile_customer_ids(Array): Um array de ids de vários tipos de customers
-- procedure(String):  administrative, judicial, extrajudicial 
+- procedure(String):  administrative, judicial, extrajudicial
 - number(Integer): Número do Processo
 - subject(String):  administrative_subject, civil, criminal,  social_security, laborite, tributary, tributary_pis, others
 - civel_area(String): family, consumer, moral_damages, só deve possuir valor se *subject* for `civil`
 - social_security_areas(String): retirement_by_time, retirement_by_age, retirement_by_rural, disablement, benefit_review, administrative_services, só deve possuir valor se *subject* for `social_security`
 - laborite_areas(String): labor_claim, só deve possuir valor se *subject* for `laborite`
 - tributary_areas(String): asphalt, license, others_tributary , só deve possuir valor se *subject* for `tributary`
-- compensations_five_years, compensations_service, lawsuit (Boolean): só deve possuir valor se *subject* for `tributary_pis` 
-- gain_projection(String): só deve possuir valor se *subject* for `tributary_pis` 
+- compensations_five_years, compensations_service, lawsuit (Boolean): só deve possuir valor se *subject* for `tributary_pis`
+- gain_projection(String): só deve possuir valor se *subject* for `tributary_pis`
 - other_description(Text): só deve possuir valor se *subject* for `others`
-- honorary_attributes(Array): um array que possui os valores de honorários de trabalho 
+- honorary_attributes(Array): um array que possui os valores de honorários de trabalho
 - power_ids(Array): Um array de ids de vários poderes
 - office_ids(Array): Um array de ids de vários escritórios
 - profile_admin_ids(Array): Um array de vários tipos de profile_admins
@@ -41,15 +41,15 @@
 
 ## Recommendations
 
-- percentage(Float): Porcentagem 
-- commission(Float): Comissão 
+- percentage(Float): Porcentagem
+- commission(Float): Comissão
 - profile_customer_id(Integer): id de customer
 - work_id(Integer): id de trabalho
 
 ## Documents
 
 - document_type(String): procuration, waiver, deficiency_statement
-- document_docx(File):  Arquivo de documentos, gerado automaticamente quando um documento do tipo procuração é escolhido
+- file(File):  Arquivo de documentos, gerado automaticamente quando um documento do tipo procuração é escolhido
 - work_id(Integer): id de trabalho
 
 ## Pending_documents
