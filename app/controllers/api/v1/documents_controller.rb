@@ -8,10 +8,10 @@ module Api
 
       def update
         if params[:file].present?
-          @document.document_docx.purge
+          @document.file.purge
 
           begin
-            @document.document_docx.attach(
+            @document.file.attach(
               io: params[:file],
               filename: params[:file].original_filename,
               content_type: params[:file].content_type

@@ -37,7 +37,7 @@ module ProfileCustomers
         filename: "procuracao_simples_#{@document.id}.docx",
         service_name: service_name
       )
-      @document.document_docx.attach(blob)
+      @document.file.attach(blob)
       FileUtils.remove_file("tmp/procuracao_simples_#{@document.id}.docx", true)
     end
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_01_31_214214) do
+ActiveRecord::Schema[7.0].define(version: 2025_02_08_024101) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -200,13 +200,12 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_31_214214) do
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
     t.string "jwt_token"
-    t.bigint "created_by_id"
     t.string "confirmation_token"
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
     t.datetime "unconfirmed_email"
+    t.bigint "created_by_id"
     t.index ["confirmation_token"], name: "index_customers_on_confirmation_token", unique: true
-    t.index ["created_by_id"], name: "index_customers_on_created_by_id"
     t.index ["deleted_at"], name: "index_customers_on_deleted_at"
     t.index ["email"], name: "index_customers_on_email", unique: true
     t.index ["reset_password_token"], name: "index_customers_on_reset_password_token", unique: true
@@ -219,6 +218,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_31_214214) do
     t.datetime "updated_at", null: false
     t.bigint "profile_customer_id"
     t.datetime "deleted_at"
+    t.integer "format", default: 0, null: false
+    t.integer "status", default: 0, null: false
     t.index ["deleted_at"], name: "index_documents_on_deleted_at"
     t.index ["profile_customer_id"], name: "index_documents_on_profile_customer_id"
     t.index ["work_id"], name: "index_documents_on_work_id"
@@ -281,7 +282,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_31_214214) do
     t.bigint "profile_customer_id"
     t.bigint "created_by_id"
     t.datetime "deleted_at"
-    t.index ["created_by_id"], name: "index_jobs_on_created_by_id"
     t.index ["deleted_at"], name: "index_jobs_on_deleted_at"
     t.index ["profile_admin_id"], name: "index_jobs_on_profile_admin_id"
     t.index ["profile_customer_id"], name: "index_jobs_on_profile_customer_id"
@@ -462,7 +462,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_31_214214) do
     t.datetime "deleted_at"
     t.bigint "created_by_id"
     t.index ["accountant_id"], name: "index_profile_customers_on_accountant_id"
-    t.index ["created_by_id"], name: "index_profile_customers_on_created_by_id"
     t.index ["customer_id"], name: "index_profile_customers_on_customer_id"
     t.index ["deleted_at"], name: "index_profile_customers_on_deleted_at"
   end
@@ -526,10 +525,9 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_31_214214) do
     t.integer "bachelor"
     t.integer "initial_atendee"
     t.text "procedures", default: [], array: true
-    t.bigint "created_by_id"
     t.string "status", default: "in_progress"
+    t.bigint "created_by_id"
     t.datetime "deleted_at"
-    t.index ["created_by_id"], name: "index_works_on_created_by_id"
     t.index ["deleted_at"], name: "index_works_on_deleted_at"
   end
 
@@ -554,7 +552,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_31_214214) do
   add_foreign_key "customer_phones", "profile_customers"
   add_foreign_key "customer_works", "profile_customers"
   add_foreign_key "customer_works", "works"
-  add_foreign_key "customers", "admins", column: "created_by_id"
   add_foreign_key "documents", "profile_customers"
   add_foreign_key "documents", "works"
   add_foreign_key "draft_works", "works"
@@ -563,7 +560,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_31_214214) do
   add_foreign_key "job_works", "profile_admins"
   add_foreign_key "job_works", "profile_customers"
   add_foreign_key "job_works", "works"
-  add_foreign_key "jobs", "admins", column: "created_by_id"
   add_foreign_key "office_bank_accounts", "bank_accounts"
   add_foreign_key "office_bank_accounts", "offices"
   add_foreign_key "office_emails", "emails"
@@ -581,12 +577,10 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_31_214214) do
   add_foreign_key "profile_admin_works", "works"
   add_foreign_key "profile_admins", "admins"
   add_foreign_key "profile_admins", "offices"
-  add_foreign_key "profile_customers", "admins", column: "created_by_id"
   add_foreign_key "profile_customers", "customers"
   add_foreign_key "recommendations", "profile_customers"
   add_foreign_key "recommendations", "works"
   add_foreign_key "represents", "profile_customers"
   add_foreign_key "represents", "profile_customers", column: "representor_id"
   add_foreign_key "work_events", "works"
-  add_foreign_key "works", "admins", column: "created_by_id"
 end

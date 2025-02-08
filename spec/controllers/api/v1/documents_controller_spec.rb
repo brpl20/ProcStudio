@@ -17,8 +17,8 @@ RSpec.describe Api::V1::DocumentsController, type: :request do
       let(:file) { fixture_file_upload('test_document.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') }
 
       it 'purges the old document and attaches the new one' do
-        expect(document.document_docx).to receive(:purge)
-        expect(document.document_docx).to receive(:attach).with(hash_including(:io, :filename, :content_type))
+        expect(document.file).to receive(:purge_later)
+        expect(document.file).to receive(:attach).with(hash_including(:io, :filename, :content_type))
 
         put "/api/v1/works/#{work.id}/documents/#{document.id}",
             params: {

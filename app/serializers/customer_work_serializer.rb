@@ -94,7 +94,7 @@ class CustomerWorkSerializer
         profile_customer_id: document.profile_customer_id,
         created_at: document.created_at,
         updated_at: document.updated_at,
-        url: document.document_docx&.url
+        url: document.file&.url
       }
     end
   end
