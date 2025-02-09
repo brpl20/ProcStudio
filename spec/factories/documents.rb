@@ -2,9 +2,18 @@
 
 FactoryBot.define do
   factory :document do
-    document_type { 'procuration' }
-    file { Rack::Test::UploadedFile.new(Rails.root.join('spec', 'factories', 'images', 'Ruby.jpg'), 'image/jpg') }
     work
     profile_customer
+    document_type { 'procuration' }
+    format { :docx }
+    status { :waiting_signature }
+
+    transient do
+      file { Rack::Test::UploadedFile.new(Rails.root.join('spec', 'fixtures', 'files', 'test_document.docx'), 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') }
+    end
+
+    after(:create) do |document, evaluator|
+      document.file.attach(evaluator.file)
+    end
   end
 end
