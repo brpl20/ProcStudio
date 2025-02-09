@@ -42,6 +42,7 @@ Rails.application.routes.draw do
       resources :works do
         member do
           post :restore
+          post :convert_documents_to_pdf
         end
 
         resources :documents, only: [:update]

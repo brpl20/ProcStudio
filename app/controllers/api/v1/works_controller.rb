@@ -5,7 +5,7 @@ module Api
     class WorksController < BackofficeController
       before_action :load_active_storage_url_options unless Rails.env.production?
 
-      before_action :set_work, only: %i[show update]
+      before_action :set_work, only: %i[show update convert_documents_to_pdf]
       before_action :perform_authorization, except: %i[update restore]
 
       after_action :verify_authorized
@@ -104,6 +104,14 @@ module Api
             json: { errors: [{ code: work.errors.full_messages }] }
           )
         end
+      end
+
+      def convert_documents_to_pdf
+        @work.documents.each do |document|
+          Works::DocxToPdfConverterService.call(document)
+        end
+
+        render json: { message: 'Documentos convertidos com sucesso!' }, status: :ok
       end
 
       private

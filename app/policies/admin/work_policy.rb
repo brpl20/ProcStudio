@@ -24,4 +24,8 @@ class Admin::WorkPolicy < Admin::BasePolicy
   def destroy?
     lawyer? || paralegal? || secretary?
   end
+
+  def convert_documents_to_pdf?
+    update?
+  end
 end

@@ -34,4 +34,8 @@ class Document < ApplicationRecord
   enum status: [:waiting_signature, :assigned, :finished]
 
   scope :procurations, -> { where(document_type: 'procuration') }
+
+  def mark_as_pdf_and_finished
+    update(format: :pdf, status: :finished)
+  end
 end
