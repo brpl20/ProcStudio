@@ -1,7 +1,7 @@
 # frozen_string_literal: true
+
 require 'docx'
 require 'prawn'
-
 
 module Works
   class DocxToPdfConverterService < ApplicationService
@@ -17,10 +17,9 @@ module Works
 
       attach_pdf(pdf_path)
     ensure
-      @document.mark_as_pdf_and_finished()
+      @document.mark_as_pdf_and_finished
 
-      return if Rails.env.test?
-      cleanup_temp_files(file_path, pdf_path)
+      cleanup_temp_files(file_path, pdf_path) unless Rails.env.test?
     end
 
     private
@@ -33,7 +32,7 @@ module Works
       file_path = Rails.root.join('tmp', @document.file.filename.to_s)
 
       File.open(file_path, 'wb') do |file|
-        file.write(@document.file.download)
+        file.binwrite(@document.file.download)
       end
 
       file_path

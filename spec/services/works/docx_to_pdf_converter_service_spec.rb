@@ -1,22 +1,26 @@
 # frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Works::DocxToPdfConverterService, type: :service do
   let(:document) { create(:document) }
   let(:service) { described_class.new(document) }
-  let(:file_path) { Rails.root.join('spec', 'fixtures', 'files', 'test_document.docx') }
-  let(:pdf_file_path) { Rails.root.join('spec', 'fixtures', 'files', 'test_document.pdf') }
+
+  before(:all) do
+    @docx_file_path = Rails.root.join('spec', 'fixtures', 'files', 'test_document.docx')
+    @pdf_file_path = Rails.root.join('spec', 'fixtures', 'files', 'test_document.pdf')
+  end
 
   describe '#call' do
     context 'when the document has a file attached' do
       before do
         allow(document.file).to receive(:attached?).and_return(true)
-        allow(document.file).to receive(:download).and_return(file_path)
+        allow(document.file).to receive(:download).and_return(@docx_file_path)
         allow(document).to receive(:file).and_return(document.file)
       end
 
       it 'downloads the file successfully' do
-        allow(service).to receive(:download_file).and_return(file_path.to_s)
+        allow(service).to receive(:download_file).and_return(@docx_file_path.to_s)
 
         expect(service).to receive(:download_file)
 
@@ -24,41 +28,41 @@ RSpec.describe Works::DocxToPdfConverterService, type: :service do
       end
 
       it 'converts the docx file to pdf' do
-        allow(service).to receive(:download_file).and_return(file_path.to_s)
-        allow(service).to receive(:convert_to_pdf).and_return('/tmp/file.pdf')
+        allow(service).to receive(:download_file).and_return(@docx_file_path.to_s)
+        allow(service).to receive(:convert_to_pdf).and_return(@pdf_file_path)
 
         doc_mock = double('Docx::Document')
-        allow(Docx::Document).to receive(:open).with(file_path.to_s).and_return(doc_mock)
+        allow(Docx::Document).to receive(:open).with(@docx_file_path.to_s).and_return(doc_mock)
 
         allow(doc_mock).to receive(:close)
 
-        expect(service).to receive(:convert_to_pdf).with(file_path.to_s)
+        expect(service).to receive(:convert_to_pdf).with(@docx_file_path.to_s)
 
         service.call
       end
 
       it 'attaches the converted pdf to the document' do
-        allow(service).to receive(:download_file).and_return(file_path.to_s)
-        allow(service).to receive(:convert_to_pdf).and_return('/tmp/file.pdf')
+        allow(service).to receive(:download_file).and_return(@docx_file_path.to_s)
+        allow(service).to receive(:convert_to_pdf).and_return(@pdf_file_path)
         allow(service).to receive(:attach_pdf)
 
         doc_mock = double('Docx::Document')
-        allow(Docx::Document).to receive(:open).with(file_path.to_s).and_return(doc_mock)
+        allow(Docx::Document).to receive(:open).with(@docx_file_path.to_s).and_return(doc_mock)
 
         allow(doc_mock).to receive(:close)
 
-        expect(service).to receive(:attach_pdf).with('/tmp/file.pdf')
+        expect(service).to receive(:attach_pdf).with(@pdf_file_path)
 
         service.call
       end
 
       it 'marks the document as PDF and finished' do
-        allow(service).to receive(:download_file).and_return(file_path.to_s)
-        allow(service).to receive(:convert_to_pdf).and_return('/tmp/file.pdf')
+        allow(service).to receive(:download_file).and_return(@docx_file_path.to_s)
+        allow(service).to receive(:convert_to_pdf).and_return(@pdf_file_path)
         allow(service).to receive(:attach_pdf)
 
         doc_mock = double('Docx::Document')
-        allow(Docx::Document).to receive(:open).with(file_path.to_s).and_return(doc_mock)
+        allow(Docx::Document).to receive(:open).with(@docx_file_path.to_s).and_return(doc_mock)
 
         allow(doc_mock).to receive(:close)
 
@@ -68,12 +72,12 @@ RSpec.describe Works::DocxToPdfConverterService, type: :service do
       end
 
       it 'does not clean up temporary files (prevents deletion of files)' do
-        allow(service).to receive(:download_file).and_return(file_path.to_s)
-        allow(service).to receive(:convert_to_pdf).and_return('/tmp/file.pdf')
+        allow(service).to receive(:download_file).and_return(@docx_file_path.to_s)
+        allow(service).to receive(:convert_to_pdf).and_return(@pdf_file_path)
         allow(service).to receive(:attach_pdf)
 
         doc_mock = double('Docx::Document')
-        allow(Docx::Document).to receive(:open).with(file_path.to_s).and_return(doc_mock)
+        allow(Docx::Document).to receive(:open).with(@docx_file_path.to_s).and_return(doc_mock)
 
         allow(doc_mock).to receive(:close)
 
@@ -81,7 +85,7 @@ RSpec.describe Works::DocxToPdfConverterService, type: :service do
 
         service.call
 
-        expect(File.exist?(file_path)).to be true
+        expect(File.exist?(@docx_file_path)).to be true
       end
     end
 
@@ -117,7 +121,7 @@ RSpec.describe Works::DocxToPdfConverterService, type: :service do
     end
   end
 
-  after do
-    File.delete(pdf_file_path) if File.exist?(pdf_file_path)
+  after(:all) do
+    FileUtils.rm_f(@pdf_file_path)
   end
 end
