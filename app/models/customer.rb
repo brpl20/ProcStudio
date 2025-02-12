@@ -28,13 +28,22 @@ class Customer < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable, :confirmable
+         :recoverable, :rememberable, :confirmable
 
   has_one :profile_customer, dependent: :destroy
 
   delegate :full_name, to: :profile_customer, prefix: true, allow_nil: true
 
   before_validation :setup_password, if: :new_record?
+
+  validates_uniqueness_of :email, conditions: -> { where(deleted_at: nil) }
+
+  # From Devise module Validatable
+  validates_presence_of     :email, if: :email_required?
+  validates_format_of       :email, with: Devise.email_regexp, allow_blank: true, if: :email_changed?
+  validates_presence_of     :password, if: :password_required?
+  validates_confirmation_of :password, if: :password_required?
+  validates_length_of       :password, minimum: proc { Devise.password_length.min }, maximum: proc { Devise.password_length.max }, allow_blank: true
 
   # Setup a random password for the customer if such is not present. This is
   # necessary because we want to not override Devise's defaults, also, customers will
@@ -45,5 +54,18 @@ class Customer < ApplicationRecord
     return if password.present?
 
     self.password = Devise.friendly_token.first(24)
+  end
+
+  # From Devise module Validatable
+
+  # Checks whether a password is needed or not. For validations only.
+  # Passwords are always required if it's a new record, or if the password
+  # or confirmation are being set somewhere.
+  def password_required?
+    !persisted? || !password.nil? || !password_confirmation.nil?
+  end
+
+  def email_required?
+    true
   end
 end
