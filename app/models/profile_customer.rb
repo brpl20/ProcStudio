@@ -100,6 +100,8 @@ class ProfileCustomer < ApplicationRecord
                                 :phones, :emails, :bank_accounts, :represent,
                                 reject_if: :all_blank
 
+  accepts_nested_attributes_for :customer_emails, allow_destroy: true
+
   with_options presence: true do
     validates :capacity
     validates :civil_status
@@ -125,5 +127,13 @@ class ProfileCustomer < ApplicationRecord
 
   def unable?
     capacity == 'unable'
+  end
+
+  def emails_attributes=(attributes)
+    current_email_ids = attributes.map { |attr| attr[:id].to_i }.compact
+
+    customer_emails.where.not(email_id: current_email_ids).destroy_all
+
+    super(attributes)
   end
 end

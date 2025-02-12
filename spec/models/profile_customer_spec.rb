@@ -128,5 +128,27 @@ RSpec.describe ProfileCustomer, type: :model do
         expect(profile.unable?).to eq(false)
       end
     end
+
+    context 'Desassociar Emails' do
+      let(:profile) { create(:profile_customer) }
+      let!(:email1) { create(:email) }
+      let!(:email2) { create(:email) }
+
+      before do
+        profile.emails << email1
+        profile.emails << email2
+      end
+
+      it 'remove a associação de um email sem excluí-lo' do
+        expect(profile.emails).to contain_exactly(email1, email2)
+        expect(profile.customer_emails.count).to eq(2)
+
+        profile.update(emails_attributes: [{ id: email2.id, _destroy: 'false' }])
+
+        expect(profile.emails.reload).to contain_exactly(email2)
+        expect(profile.customer_emails.count).to eq(1)
+        expect(Email.exists?(email1.id)).to be true # # Verifica que o email1 não foi excluído
+      end
+    end
   end
 end
