@@ -19,6 +19,8 @@ class JobSerializer
   attributes :profile_admin_id, if: proc { |_, options| options[:action] == 'show' }
 
   attribute :profile_customer, if: proc { |_, options| options[:action] == 'show' } do |object|
+    next unless object.profile_customer
+
     {
       id: object.profile_customer.id,
       customer_type: object.profile_customer.customer_type,
@@ -46,6 +48,8 @@ class JobSerializer
   end
 
   attributes :work, if: proc { |_, options| options[:action] == 'show' } do |object|
+    next unless object.work
+
     {
       id: object.work.id,
       procedure: object.work.procedure,
