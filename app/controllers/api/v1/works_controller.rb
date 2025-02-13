@@ -107,7 +107,12 @@ module Api
       end
 
       def convert_documents_to_pdf
-        @work.documents.each do |document|
+        approved_ids = convert_docs_params[:approved_documents] || []
+        documents = @work.documents.where(id: approved_ids)
+
+        return render json: { error: 'Nenhum documento encontrado' }, status: :not_found if documents.empty?
+
+        documents.each do |document|
           Works::DocxToPdfConverterService.call(document)
         end
 
@@ -142,6 +147,10 @@ module Api
 
       def filtering_params
         params.permit(:customer_id, :deleted)
+      end
+
+      def convert_docs_params
+        params.permit(approved_documents: [])
       end
 
       def perform_authorization
