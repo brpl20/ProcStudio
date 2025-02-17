@@ -29,11 +29,10 @@ module Works
     end
 
     def download_file
-      file_path = Rails.root.join('tmp', @document.file.filename.to_s)
+      file_path = Rails.root.join('tmp', @document.file.filename.to_s) # Define o caminho onde o arquivo será salvo
 
-      File.open(file_path, 'wb') do |file|
-        file.binwrite(@document.file.download)
-      end
+      file_content = @document.file.download
+      File.binwrite(file_path, file_content)
 
       file_path
     end
