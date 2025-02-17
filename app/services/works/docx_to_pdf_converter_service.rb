@@ -17,7 +17,7 @@ module Works
 
       attach_pdf(pdf_path)
     ensure
-      @document.mark_as_pdf_and_finished
+      @document.mark_as_pdf_and_approved
 
       cleanup_temp_files(file_path, pdf_path) unless Rails.env.test?
     end

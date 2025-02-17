@@ -66,7 +66,7 @@ RSpec.describe Works::DocxToPdfConverterService, type: :service do
 
         allow(doc_mock).to receive(:close)
 
-        expect(document).to receive(:mark_as_pdf_and_finished)
+        expect(document).to receive(:mark_as_pdf_and_approved)
 
         service.call
       end

@@ -225,6 +225,15 @@
         description: Descrição
         work: Trabalho
         date: Data
+      document:
+        statuses:
+          pending_review: "Pendente de revisão"
+          approved: "Aprovado"
+          signed: "Assinado"
+        sign_sources:
+          no_signature: "Sem assinatura"
+          manual_signature: "Assinatura manual"
+          zap_sign: "Assinatura digital (Zap Sign)"
     errors:
       messages:
         record_invalid: 'A validação falhou: %{errors}'

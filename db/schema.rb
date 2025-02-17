@@ -10,9 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_02_10_234130) do
+ActiveRecord::Schema[7.0].define(version: 2025_02_17_223820) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "pgcrypto"
   enable_extension "plpgsql"
 
   create_table "active_storage_attachments", force: :cascade do |t|
@@ -221,6 +220,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_02_10_234130) do
     t.datetime "deleted_at"
     t.integer "format", default: 0, null: false
     t.integer "status", default: 0, null: false
+    t.integer "sign_source", default: 0, null: false
     t.index ["deleted_at"], name: "index_documents_on_deleted_at"
     t.index ["profile_customer_id"], name: "index_documents_on_profile_customer_id"
     t.index ["work_id"], name: "index_documents_on_work_id"
