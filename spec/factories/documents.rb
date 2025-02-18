@@ -6,7 +6,7 @@ FactoryBot.define do
     profile_customer
     document_type { 'procuration' }
     format { :docx }
-    status { :waiting_signature }
+    status { :pending_review }
 
     transient do
       file { Rack::Test::UploadedFile.new(Rails.root.join('spec', 'fixtures', 'files', 'test_document.docx'), 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') }

@@ -12,7 +12,7 @@
 #  profile_customer_id :bigint(8)
 #  deleted_at          :datetime
 #  format              :integer          default("docx"), not null
-#  status              :integer          default("waiting_signature"), not null
+#  status              :integer          default("pending_review"), not null
 #
 class Document < ApplicationRecord
   acts_as_paranoid
@@ -21,6 +21,8 @@ class Document < ApplicationRecord
   belongs_to :work
 
   has_one_attached :file
+
+  validate :sign_source_restriction
 
   enum document_type: {
     procuration: 'procuration',
@@ -31,11 +33,23 @@ class Document < ApplicationRecord
 
   enum format: [:docx, :pdf]
 
-  enum status: [:waiting_signature, :assigned, :finished]
+  enum status: [:pending_review, :approved, :signed]
+
+  enum sign_source: [:no_signature, :manual_signature, :zap_sign]
 
   scope :procurations, -> { where(document_type: 'procuration') }
 
-  def mark_as_pdf_and_finished
-    update(format: :pdf, status: :finished)
+  def mark_as_pdf_and_approved
+    update(format: :pdf, status: :approved)
+  end
+
+  private
+
+  def sign_source_restriction
+    if status == :signed
+      errors.add(:sign_source, 'deve ser "manual_signature" ou "zap_sign" quando o status for "signed"') unless sign_source.in?(%w[manual_signature zap_sign])
+    else
+      errors.add(:sign_source, 'deve ser "no_signature" quando o status não for "signed"') unless sign_source == 'no_signature'
+    end
   end
 end

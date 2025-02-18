@@ -2,5 +2,30 @@
 
 class DocumentSerializer
   include JSONAPI::Serializer
-  attributes :document_type, :work_id
+
+  attributes :id, :document_type, :work_id, :profile_customer_id, :status, :format
+
+  attribute :url do |document|
+    document.file&.url
+  end
+
+  attribute :created_at do |document|
+    document.created_at.iso8601
+  end
+
+  def self.simple_serialize(documents)
+    documents.map do |document|
+      {
+        id: document.id,
+        document_type: document.document_type,
+        work_id: document.work_id,
+        profile_customer_id: document.profile_customer_id,
+        status: I18n.t(document.status, scope: 'activerecord.attributes.document.statuses'),
+        format: document.format,
+        sign_source: I18n.t(document.sign_source, scope: 'activerecord.attributes.document.sign_sources'),
+        url: document.file&.url,
+        created_at: document.created_at.to_date.iso8601
+      }
+    end
+  end
 end
