@@ -85,18 +85,8 @@ class CustomerWorkSerializer
     end
   end
 
-  attribute :documents do |object, params|
-    object.documents.select { _1.profile_customer == params[:current_user].profile_customer }.map do |document|
-      {
-        id: document.id,
-        document_type: document.document_type,
-        work_id: document.work_id,
-        profile_customer_id: document.profile_customer_id,
-        created_at: document.created_at,
-        updated_at: document.updated_at,
-        url: document.file&.url
-      }
-    end
+  attribute :documents do |object|
+    DocumentSerializer.simple_serialize(object.documents)
   end
 
   attribute :initial_atendee do |object|
@@ -130,5 +120,9 @@ class CustomerWorkSerializer
         work_id: work_event.work_id
       }
     end
+  end
+
+  attribute :created_at_date do |object|
+    object.created_at.to_date.iso8601
   end
 end
