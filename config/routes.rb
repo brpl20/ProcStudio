@@ -11,34 +11,38 @@ Rails.application.routes.draw do
           post :restore
         end
       end
+
       resources :customers do
         member do
           post :resend_confirmation
           post :restore
         end
       end
+
       resources :jobs do
         member do
           post :restore
         end
       end
+
       resources :offices do
         member do
           post :restore
         end
       end
-      resources :office_types
-      resources :powers
+
       resources :profile_customers do
         member do
           post :restore
         end
       end
+
       resources :profile_admins do
         member do
           post :restore
         end
       end
+
       resources :works do
         member do
           post :restore
@@ -47,11 +51,13 @@ Rails.application.routes.draw do
 
         resources :documents, only: [:update]
       end
+
       resources :work_events do
         member do
           post :restore
         end
       end
+
       namespace :draft do
         resources :works do
           member do
@@ -59,6 +65,10 @@ Rails.application.routes.draw do
           end
         end
       end
+
+      resources :office_types
+      resources :powers
+      resources :zapsign, only: %i[create]
 
       post '/login', to: 'auth#authenticate'
       delete '/logout', to: 'auth#destroy'
