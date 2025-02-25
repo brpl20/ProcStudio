@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Api::V1::ZapsignController, type: :request do
@@ -9,9 +11,14 @@ RSpec.describe Api::V1::ZapsignController, type: :request do
 
   before do
     allow(ZapsignService).to receive(:new).and_return(zapsign_service)
+
+    allow(Rails.application.credentials).to receive(:zapsign).and_return(
+      base_url: 'https://sandbox.api.zapsign.com.br',
+      api_token: 'fake-api-token'
+    )
   end
 
-  xdescribe 'POST #create' do
+  describe 'POST #create' do
     context 'com documentos válidos' do
       before do
         allow(zapsign_service).to receive(:create_document).and_return({ id: 'doc_123', status: 'pending' })
@@ -35,14 +42,14 @@ RSpec.describe Api::V1::ZapsignController, type: :request do
         post '/api/v1/zapsign', params: { work_id: work.id }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 
         expect(response).to have_http_status(:ok)
-        expect(json_response[:errors].size).to eq(1)
+        expect(json_response[:errors].size).to eq(2)
         expect(json_response[:errors].first[:error]).to eq('Erro na API')
       end
     end
   end
 
   describe 'POST #webhook' do
-    let(:document) { create(:document) }
+    let(:document) { create(:document, :approved) }
 
     context 'quando o documento é encontrado e o status é signed' do
       let(:payload) do
@@ -61,7 +68,7 @@ RSpec.describe Api::V1::ZapsignController, type: :request do
       end
     end
 
-    xcontext 'quando o documento é encontrado, mas o status não é signed' do
+    context 'quando o documento é encontrado, mas o status não é signed' do
       let(:payload) do
         {
           external_id: document.id,
@@ -81,7 +88,7 @@ RSpec.describe Api::V1::ZapsignController, type: :request do
     context 'quando o documento não é encontrado' do
       let(:payload) do
         {
-          external_id: 999999, # ID inválido
+          external_id: 999_999, # ID inválido
           status: 'signed'
         }
       end

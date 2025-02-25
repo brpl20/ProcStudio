@@ -15,5 +15,11 @@ FactoryBot.define do
     after(:create) do |document, evaluator|
       document.file.attach(evaluator.file)
     end
+
+    # Trait para documentos aprovados
+    trait :approved do
+      status { :approved }
+      format { :pdf }
+    end
   end
 end

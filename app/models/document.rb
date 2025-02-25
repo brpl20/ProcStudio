@@ -61,7 +61,9 @@ class Document < ApplicationRecord
   private
 
   def sign_source_restriction
-    if status == :signed
+    return unless will_save_change_to_sign_source?
+
+    if status.to_sym == :signed
       errors.add(:sign_source, 'deve ser "manual_signature" ou "zapsign" quando o status for "signed"') unless sign_source.in?(%w[manual_signature zapsign])
     else
       errors.add(:sign_source, 'deve ser "no_signature" quando o status não for "signed"') unless sign_source == 'no_signature'

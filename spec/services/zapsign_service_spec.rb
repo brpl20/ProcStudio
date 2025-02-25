@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe ZapsignService, type: :service do
@@ -25,7 +27,6 @@ RSpec.describe ZapsignService, type: :service do
   let(:zapsign_service) { described_class.new }
 
   before do
-    # Mock das credenciais do Rails
     allow(Rails.application.credentials).to receive(:zapsign).and_return(
       base_url: 'https://sandbox.api.zapsign.com.br',
       api_token: 'fake-api-token'
@@ -48,7 +49,7 @@ RSpec.describe ZapsignService, type: :service do
           .with(
             headers: {
               'Accept' => 'application/json',
-              'Authorization' => 'Bearer fake-api-token',
+              'Authorization' => 'Bearer fake-api-token', # Ensure this matches the actual request
               'Content-Type' => 'application/json'
             },
             body: {

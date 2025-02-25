@@ -24,13 +24,12 @@ module Api
       end
 
       def webhook
-        binding.pry
         payload = JSON.parse(request.body.read, symbolize_names: true)
         document = Document.find_by(id: payload[:external_id])
 
         if document
           if payload[:status] == 'signed'
-            document.update(status: :signed, sign_source: :zapsign)
+            document.update!(status: :signed, sign_source: :zapsign)
             render json: { message: 'Documento atualizado para signed.' }, status: :ok
           else
             render json: { message: 'Documento não está assinado.' }, status: :ok

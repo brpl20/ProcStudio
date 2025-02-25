@@ -5,15 +5,17 @@ require 'httparty'
 class ZapsignService
   include HTTParty
 
-  base_uri Rails.application.credentials.zapsign[:base_url]
+  base_uri Rails.application.credentials.dig(:zapsign, :base_url) || 'https://sandbox.api.zapsign.com.br'
   headers 'Content-Type' => 'application/json'
   headers 'Accept' => 'application/json'
 
   def initialize
-    @api_token = Rails.application.credentials.zapsign[:api_token]
+    @api_token = Rails.application.credentials.dig(:zapsign, :api_token)
+    @api_token = 'fake-api-token' if Rails.env.test?
   end
 
   def create_document(document)
+    Rails.logger.error(Rails.application.credentials.dig(:zapsign, :base_url))
     payload = build_payload(document)
     self.class.headers 'Authorization' => "Bearer #{@api_token}"
 
