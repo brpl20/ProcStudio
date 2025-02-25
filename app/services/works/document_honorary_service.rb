@@ -59,7 +59,7 @@ module Works
       text.substitute('_proc_office_bank_', bank_information(office))
     end
 
-    def rate_text # rubocop:disable Metrics/MethodLength
+    def rate_text
       case honorary.honorary_type
       when 'bonus'
         'Nada a ser pago'

@@ -11,13 +11,10 @@ module Api
         valid_documents, invalid_documents = validate_documents(@documents)
 
         results = valid_documents.map do |document|
-          begin
-            document.update(sign_source: :zap_sign)
-            result = @zapsign_service.create_document(document)
-            { document_id: document.id, status: :success, response: result }
-          rescue StandardError => e
-            { document_id: document.id, status: :error, error: e.message }
-          end
+          result = @zapsign_service.create_document(document)
+          { document_id: document.id, status: :success, response: result }
+        rescue StandardError => e
+          { document_id: document.id, status: :error, error: e.message }
         end
 
         render json: {
@@ -27,20 +24,19 @@ module Api
       end
 
       def webhook
+        binding.pry
         payload = JSON.parse(request.body.read, symbolize_names: true)
-
-        # Encontre o documento pelo external_id
-        document = Document.find_by(external_id: payload[:external_id])
+        document = Document.find_by(id: payload[:external_id])
 
         if document
-          if payload[:status] == "signed"
-            document.update(status: :signed) # Atualiza o status para :signed
-            render json: { message: "Documento atualizado para signed." }, status: :ok
+          if payload[:status] == 'signed'
+            document.update(status: :signed, sign_source: :zapsign)
+            render json: { message: 'Documento atualizado para signed.' }, status: :ok
           else
-            render json: { message: "Documento não está assinado." }, status: :ok
+            render json: { message: 'Documento não está assinado.' }, status: :ok
           end
         else
-          render json: { error: "Documento não encontrado." }, status: :not_found
+          render json: { error: 'Documento não encontrado.' }, status: :not_found
         end
       end
 
@@ -65,13 +61,13 @@ module Api
         invalid_documents = []
 
         documents.each do |document|
-          if document.format == "pdf" && document.status == "approved"
+          if document.format == 'pdf' && document.status == 'approved'
             valid_documents << document
           else
             invalid_documents << {
               document_id: document.id,
               status: :error,
-              error: "Documento não atende aos requisitos: format=pdf, status=approved, sign_source=no_signature"
+              error: 'Documento não atende aos requisitos: format=pdf, status=approved, sign_source=no_signature'
             }
           end
         end

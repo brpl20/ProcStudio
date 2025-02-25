@@ -1,15 +1,16 @@
+# frozen_string_literal: true
+
 require 'httparty'
 
 class ZapsignService
   include HTTParty
 
-  base_uri 'https://sandbox.api.zapsign.com.br'
+  base_uri Rails.application.credentials.zapsign[:base_url]
   headers 'Content-Type' => 'application/json'
   headers 'Accept' => 'application/json'
 
   def initialize
     @api_token = Rails.application.credentials.zapsign[:api_token]
-    @base_uri = Rails.application.credentials.zapsign[:base_url]
   end
 
   def create_document(document)
@@ -53,13 +54,13 @@ class ZapsignService
   end
 
   def signer(profile_customer)
-    [{
+    [
+      {
         name: profile_customer.full_name,
-        email: "m.informatica@yahoo.com.br",
-        # email: profile_customer.last_email,
-        auth_mode: "assinaturaTela",
+        email: profile_customer.last_email,
+        auth_mode: 'assinaturaTela',
         send_automatic_email: true,
-        phone_country: "55",
+        phone_country: '55',
         phone_number: profile_customer.last_phone,
         lock_email: false,
         blank_email: false,
@@ -72,13 +73,14 @@ class ZapsignService
         cpf: profile_customer.cpf,
         require_selfie_photo: true,
         require_document_photo: true,
-        selfie_validation_type: "liveness-document-match",
+        selfie_validation_type: 'liveness-document-match',
         selfie_photo_url: nil,
         document_photo_url: nil,
         document_verse_photo_url: nil,
         qualification: nil,
         external_id: profile_customer.id,
         redirect_link: nil
-    }]
+      }
+    ]
   end
 end

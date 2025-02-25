@@ -66,9 +66,14 @@ Rails.application.routes.draw do
         end
       end
 
+      resources :zapsign, only: %i[create] do
+        collection do
+          post 'webhook'
+        end
+      end
+
       resources :office_types
       resources :powers
-      resources :zapsign, only: %i[create]
 
       post '/login', to: 'auth#authenticate'
       delete '/logout', to: 'auth#destroy'
