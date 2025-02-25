@@ -43,6 +43,21 @@ class Document < ApplicationRecord
     update(format: :pdf, status: :approved)
   end
 
+  def document_name
+    case document_type
+    when 'procuration'
+      'Procuração'
+    when 'waiver'
+      'Termo de Renúncia'
+    when 'deficiency_statement'
+      'Declaração de Carência'
+    when 'honorary'
+      'Contrato de Honorário'
+    else
+      'Tipo Desconhecido'
+    end
+  end
+
   private
 
   def sign_source_restriction

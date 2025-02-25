@@ -1,6 +1,7 @@
 'pt-BR':
   general:
-    without_email: sem endereço eletrônico
+    without_email: sem e-mail cadastrado
+    without_phone: sem telefone cadastrado
     lawyers: Advogados
     lawyer: Advogado
   gender:

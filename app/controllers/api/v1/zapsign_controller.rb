@@ -3,15 +3,16 @@
 module Api
   module V1
     class ZapsignController < BackofficeController
-      before_action :set_work
-      before_action :set_documents
-      before_action :initialize_zapsign_service
+      before_action :set_work, only: [:create]
+      before_action :set_documents, only: [:create]
+      before_action :initialize_zapsign_service, only: [:create]
 
       def create
         valid_documents, invalid_documents = validate_documents(@documents)
 
         results = valid_documents.map do |document|
           begin
+            document.update(sign_source: :zap_sign)
             result = @zapsign_service.create_document(document)
             { document_id: document.id, status: :success, response: result }
           rescue StandardError => e
@@ -23,6 +24,24 @@ module Api
           success: results.select { |r| r[:status] == :success },
           errors: results.select { |r| r[:status] == :error } + invalid_documents
         }, status: :ok
+      end
+
+      def webhook
+        payload = JSON.parse(request.body.read, symbolize_names: true)
+
+        # Encontre o documento pelo external_id
+        document = Document.find_by(external_id: payload[:external_id])
+
+        if document
+          if payload[:status] == "signed"
+            document.update(status: :signed) # Atualiza o status para :signed
+            render json: { message: "Documento atualizado para signed." }, status: :ok
+          else
+            render json: { message: "Documento não está assinado." }, status: :ok
+          end
+        else
+          render json: { error: "Documento não encontrado." }, status: :not_found
+        end
       end
 
       private
@@ -38,7 +57,7 @@ module Api
       end
 
       def initialize_zapsign_service
-        @zapsign_service = ZapsignService.new('479ea6a3-50db-4621-9a9f-f9a4a4e67d3b0880c773-a70b-4db2-8121-f671306d3d0e')
+        @zapsign_service = ZapsignService.new
       end
 
       def validate_documents(documents)
@@ -46,7 +65,7 @@ module Api
         invalid_documents = []
 
         documents.each do |document|
-          if document.format == "pdf" && document.status == "approved" && document.sign_source == "no_signature"
+          if document.format == "pdf" && document.status == "approved"
             valid_documents << document
           else
             invalid_documents << {
