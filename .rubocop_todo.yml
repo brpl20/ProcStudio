@@ -60,7 +60,7 @@ Metrics/CyclomaticComplexity:
 # Offense count: 8
 # Configuration parameters: CountComments, CountAsOne, AllowedMethods, AllowedPatterns.
 Metrics/MethodLength:
-  Max: 24
+  Max: 30
 
 # Offense count: 1
 # Configuration parameters: AllowedMethods, AllowedPatterns.
@@ -178,6 +178,6 @@ Layout/LineLength:
   Max: 198
   Exclude:
     - 'Gemfile'
-  
+
 Lint/MissingSuper:
   Enabled: false

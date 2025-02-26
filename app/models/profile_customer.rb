@@ -125,6 +125,12 @@ class ProfileCustomer < ApplicationRecord
     emails.last.email
   end
 
+  def last_phone
+    return I18n.t('general.without_phone') unless phones.present?
+
+    phones.last.phone_number
+  end
+
   def unable?
     capacity == 'unable'
   end

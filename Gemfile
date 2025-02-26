@@ -8,6 +8,7 @@ gem 'aws-sdk-s3', require: false
 gem 'bootsnap', require: false
 gem 'devise'
 gem 'docx'
+gem 'httparty'
 gem 'i18n'
 gem 'jsonapi-serializer'
 gem 'jwt'

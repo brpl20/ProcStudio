@@ -1,6 +1,7 @@
 'pt-BR':
   general:
-    without_email: sem endereço eletrônico
+    without_email: sem e-mail cadastrado
+    without_phone: sem telefone cadastrado
     lawyers: Advogados
     lawyer: Advogado
   gender:
@@ -233,7 +234,7 @@
         sign_sources:
           no_signature: "Sem assinatura"
           manual_signature: "Assinatura manual"
-          zap_sign: "Assinatura digital (Zap Sign)"
+          zapsign: "Assinatura digital (Zap Sign)"
     errors:
       messages:
         record_invalid: 'A validação falhou: %{errors}'

@@ -10,6 +10,7 @@ require 'rspec/rails'
 require 'factory_bot_rails'
 require 'devise'
 require 'database_cleaner'
+require 'webmock/rspec'
 
 # Add additional requires below this line. Rails is not loaded until this point!
 
@@ -70,6 +71,8 @@ RSpec.configure do |config|
   config.include Devise::Test::ControllerHelpers, type: :controller
   config.extend ControllerMacros, type: :controller
   config.include ActiveSupport::Testing::TimeHelpers
+
+  WebMock.disable_net_connect!(allow_localhost: true) # Bloqueia requisições externas, exceto para localhost
 
   Shoulda::Matchers.configure do |configure|
     configure.integrate do |with|
