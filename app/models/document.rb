@@ -13,6 +13,7 @@
 #  deleted_at          :datetime
 #  format              :integer          default("docx"), not null
 #  status              :integer          default("pending_review"), not null
+#  sign_source         :integer          default("no_signature"), not null
 #
 class Document < ApplicationRecord
   acts_as_paranoid
@@ -20,7 +21,10 @@ class Document < ApplicationRecord
   belongs_to :profile_customer
   belongs_to :work
 
-  has_one_attached :file
+  has_one_attached :file # esse vai ser removido
+
+  has_one_attached :original
+  has_one_attached :signed
 
   validate :sign_source_restriction
 
@@ -56,6 +60,15 @@ class Document < ApplicationRecord
     else
       'Tipo Desconhecido'
     end
+  end
+
+  def document_name_parsed
+    document_name.to_s
+                 .unicode_normalize(:nfkd)
+                 .gsub(/[^\x00-\x7F]/, '')
+                 .gsub(/[^a-zA-Z0-9\s]/, '')
+                 .gsub(/\s+/, '_')
+                 .downcase
   end
 
   private

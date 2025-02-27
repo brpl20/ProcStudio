@@ -29,7 +29,7 @@ module Works
     attr_reader :document, :work, :customer, :address
 
     def save
-      document.file.attach(blob)
+      document.original.attach(blob)
       FileUtils.remove_file(filename, true)
     rescue StandardError => e
       Rails.logger.error("[Document Error]: #{e.message}")

@@ -10,7 +10,7 @@ module Works
     end
 
     def call
-      return unless @document.file.attached? && docx_file?
+      return unless @document.original.attached? && docx_file?
 
       file_path = download_file
       pdf_path = convert_to_pdf(file_path)
@@ -25,13 +25,13 @@ module Works
     private
 
     def docx_file?
-      @document.file.blob.content_type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      @document.original.blob.content_type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     end
 
     def download_file
-      file_path = Rails.root.join('tmp', @document.file.filename.to_s) # Define o caminho onde o arquivo será salvo
+      file_path = Rails.root.join('tmp', @document.original.filename.to_s) # Define o caminho onde o arquivo será salvo
 
-      file_content = @document.file.download
+      file_content = @document.original.download
       File.binwrite(file_path, file_content)
 
       file_path
@@ -52,7 +52,8 @@ module Works
 
     def attach_pdf(pdf_path)
       pdf_file = File.open(pdf_path)
-      @document.file.attach(io: pdf_file, filename: "converted_#{Time.now.to_i}.pdf", content_type: 'application/pdf')
+      file_name = @document.document_name_parsed
+      @document.original.attach(io: pdf_file, filename: "#{file_name}.pdf", content_type: 'application/pdf')
 
       pdf_file.close
     end

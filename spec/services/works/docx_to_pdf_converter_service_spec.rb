@@ -14,9 +14,9 @@ RSpec.describe Works::DocxToPdfConverterService, type: :service do
   describe '#call' do
     context 'when the document has a file attached' do
       before do
-        allow(document.file).to receive(:attached?).and_return(true)
-        allow(document.file).to receive(:download).and_return(@docx_file_path)
-        allow(document).to receive(:file).and_return(document.file)
+        allow(document.original).to receive(:attached?).and_return(true)
+        allow(document.original).to receive(:download).and_return(@docx_file_path)
+        allow(document).to receive(:file).and_return(document.original)
       end
 
       it 'downloads the file successfully' do
@@ -91,7 +91,7 @@ RSpec.describe Works::DocxToPdfConverterService, type: :service do
 
     context 'when the document does not have a file attached' do
       before do
-        allow(document.file).to receive(:attached?).and_return(false)
+        allow(document.original).to receive(:attached?).and_return(false)
       end
 
       it 'does not perform any actions' do
@@ -106,8 +106,8 @@ RSpec.describe Works::DocxToPdfConverterService, type: :service do
 
     context 'when the file is not a .docx file' do
       before do
-        allow(document.file.blob).to receive(:content_type).and_return('application/pdf')
-        allow(document.file).to receive(:attached?).and_return(true)
+        allow(document.original.blob).to receive(:content_type).and_return('application/pdf')
+        allow(document.original).to receive(:attached?).and_return(true)
       end
 
       it 'does not convert the file' do
@@ -119,9 +119,5 @@ RSpec.describe Works::DocxToPdfConverterService, type: :service do
         service.call
       end
     end
-  end
-
-  after(:all) do
-    FileUtils.rm_f(@pdf_file_path)
   end
 end
