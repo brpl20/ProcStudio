@@ -29,7 +29,7 @@ class ZapsignService
   def build_payload(document)
     {
       name: document.document_name,
-      url_pdf: document.file.url,
+      url_pdf: document.original.url,
       external_id: document.id,
       signers: signer(document.profile_customer),
       lang: 'pt-br',

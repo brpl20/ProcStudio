@@ -14,23 +14,85 @@ RSpec.describe Api::V1::DocumentsController, type: :request do
     end
 
     context 'when the file is provided' do
-      let(:file) { fixture_file_upload('test_document.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') }
+      context 'when the file is a DOCX' do
+        let(:file) { fixture_file_upload('test_document.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') }
 
-      it 'purges the old document and attaches the new one' do
-        expect(document.file).to receive(:purge)
-        expect(document.file).to receive(:attach).with(hash_including(:io, :filename, :content_type))
+        it 'purges the old document and attaches the new one' do
+          expect(document.original).to receive(:purge)
+          expect(document.original).to receive(:attach).with(hash_including(:io, :filename, :content_type))
 
-        put "/api/v1/works/#{work.id}/documents/#{document.id}",
-            params: {
-              file: file
-            },
-            headers: {
-              Authorization: "Bearer #{admin.jwt_token}",
-              Accept: 'application/json'
-            }
+          put "/api/v1/works/#{work.id}/documents/#{document.id}",
+              params: {
+                file: file
+              },
+              headers: {
+                Authorization: "Bearer #{admin.jwt_token}",
+                Accept: 'application/json'
+              }
 
-        expect(response).to have_http_status(:ok)
-        expect(JSON.parse(response.body)['message']).to eq('Documento atualizado com sucesso!')
+          expect(response).to have_http_status(:ok)
+          expect(JSON.parse(response.body)['message']).to eq('Documento atualizado com sucesso!')
+        end
+      end
+
+      context 'when the file is a PDF and is_signed_pdf is true' do
+        let(:file) { fixture_file_upload('test_document.pdf', 'application/pdf') }
+
+        it 'attaches the new one, and updates status' do
+          expect(document.signed).to receive(:attach).with(hash_including(:io, :filename, :content_type))
+
+          put "/api/v1/works/#{work.id}/documents/#{document.id}",
+              params: {
+                file: file,
+                is_signed_pdf: 'true'
+              },
+              headers: {
+                Authorization: "Bearer #{admin.jwt_token}",
+                Accept: 'application/json'
+              }
+
+          expect(response).to have_http_status(:ok)
+          expect(document.reload.status).to eq('signed')
+          expect(document.reload.sign_source).to eq('manual_signature')
+          expect(JSON.parse(response.body)['message']).to eq('Documento assinado atualizado com sucesso!')
+        end
+      end
+
+      context 'when the file is not a DOCX' do
+        let(:file) { fixture_file_upload('test_document.pdf', 'application/pdf') }
+
+        it 'returns an unprocessable entity status with error message' do
+          put "/api/v1/works/#{work.id}/documents/#{document.id}",
+              params: {
+                file: file
+              },
+              headers: {
+                Authorization: "Bearer #{admin.jwt_token}",
+                Accept: 'application/json'
+              }
+
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(JSON.parse(response.body)['error']).to eq('O arquivo deve ser um DOCX')
+        end
+      end
+
+      context 'when the file is not a PDF and is_signed_pdf is true' do
+        let(:file) { fixture_file_upload('test_document.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') }
+
+        it 'returns an unprocessable entity status with error message' do
+          put "/api/v1/works/#{work.id}/documents/#{document.id}",
+              params: {
+                file: file,
+                is_signed_pdf: 'true'
+              },
+              headers: {
+                Authorization: "Bearer #{admin.jwt_token}",
+                Accept: 'application/json'
+              }
+
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(JSON.parse(response.body)['error']).to eq('O arquivo deve ser um PDF')
+        end
       end
     end
 

@@ -18,9 +18,9 @@ RSpec.describe ZapsignService, type: :service do
     double(
       'Document',
       document_name: 'Contrato de Honorário',
-      file: double('File', url: 'https://example.com/contract.pdf'),
       id: 1,
-      profile_customer: profile_customer
+      profile_customer: profile_customer,
+      original: double('ActiveStorage::Attached::One', url: 'https://example.com/contract.pdf')
     )
   end
 
@@ -44,12 +44,11 @@ RSpec.describe ZapsignService, type: :service do
       end
 
       before do
-        # Mock da requisição POST para a API do Zapsign
         stub_request(:post, 'https://sandbox.api.zapsign.com.br/api/v1/docs/')
           .with(
             headers: {
               'Accept' => 'application/json',
-              'Authorization' => 'Bearer fake-api-token', # Ensure this matches the actual request
+              'Authorization' => 'Bearer fake-api-token',
               'Content-Type' => 'application/json'
             },
             body: {
@@ -108,7 +107,6 @@ RSpec.describe ZapsignService, type: :service do
 
     context 'quando a requisição falha' do
       before do
-        # Mock de uma requisição falha
         stub_request(:post, 'https://sandbox.api.zapsign.com.br/api/v1/docs/')
           .to_return(status: 500, body: 'Internal Server Error', headers: {})
       end

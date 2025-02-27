@@ -5,8 +5,12 @@ class DocumentSerializer
 
   attributes :id, :document_type, :work_id, :profile_customer_id, :status, :format
 
-  attribute :url do |document|
-    document.file&.url
+  attribute :original_file_url do |document|
+    document.original&.url
+  end
+
+  attribute :signed_file_url do |document|
+    document.signed&.url
   end
 
   attribute :created_at do |document|
@@ -23,7 +27,8 @@ class DocumentSerializer
         status: I18n.t(document.status, scope: 'activerecord.attributes.document.statuses'),
         format: document.format,
         sign_source: I18n.t(document.sign_source, scope: 'activerecord.attributes.document.sign_sources'),
-        url: document.file&.url,
+        original_file_url: document.original&.url,
+        signed_file_url: document.signed&.url,
         created_at: document.created_at.to_date.iso8601
       }
     end
