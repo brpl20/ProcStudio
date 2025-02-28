@@ -17,8 +17,7 @@ RSpec.describe Api::V1::ZapsignController, type: :request do
       api_token: 'fake-api-token'
     )
 
-    # Mock para o secret_key
-    allow(Rails.application.credentials).to receive(:dig).with(:secret_key).and_return('valid_secret_key')
+    allow(Rails.application.credentials).to receive(:[]).with(:secret_key).and_return('valid_secret_key')
   end
 
   describe 'POST #create' do
