@@ -2,6 +2,7 @@
 
 require 'docx'
 require 'prawn'
+require 'libreconv'
 
 module Works
   class DocxToPdfConverterService < ApplicationService
@@ -37,15 +38,22 @@ module Works
       file_path
     end
 
+    # def convert_to_pdf(file_path)
+    #   output_path = file_path.to_s.gsub('.docx', '.pdf')
+
+    #   doc = Docx::Document.open(file_path.to_s)
+    #   Prawn::Document.generate(output_path) do |pdf|
+    #     doc.paragraphs.each do |p|
+    #       pdf.text p.to_s
+    #     end
+    #   end
+
+    #   output_path
+    # end
+
     def convert_to_pdf(file_path)
       output_path = file_path.to_s.gsub('.docx', '.pdf')
-
-      doc = Docx::Document.open(file_path.to_s)
-      Prawn::Document.generate(output_path) do |pdf|
-        doc.paragraphs.each do |p|
-          pdf.text p.to_s
-        end
-      end
+      Libreconv.convert(file_path, output_path)
 
       output_path
     end
