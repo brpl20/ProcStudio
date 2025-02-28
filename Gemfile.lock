@@ -159,6 +159,7 @@ GEM
     jsonapi-serializer (2.2.0)
       activesupport (>= 4.2)
     jwt (2.7.0)
+    libreconv (0.9.5)
     loofah (2.20.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
@@ -358,6 +359,7 @@ DEPENDENCIES
   i18n
   jsonapi-serializer
   jwt
+  libreconv (~> 0.9.5)
   mailjet
   mina (= 0.3.8)
   pg

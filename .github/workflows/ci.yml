@@ -53,6 +53,12 @@ jobs:
         with:
           ruby-version: 3.0.0
 
+      - name: Install LibreOffice
+        run: sudo apt-get update && sudo apt-get install -y libreoffice
+
+      - name: Start LibreOffice in headless mode
+        run: soffice --headless --accept="socket,host=127.0.0.1,port=2002;urp;" --nofirststartwizard &
+
       - name: Install dependencies
         run: |
           gem install bundler
@@ -83,6 +89,9 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.0.0
+
+      - name: Install LibreOffice
+        run: sudo apt-get update && sudo apt-get install -y libreoffice
 
       - name: Install dependencies
         run: |
