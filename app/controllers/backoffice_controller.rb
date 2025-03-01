@@ -25,4 +25,13 @@ class BackofficeController < ApplicationController
   def destroy_fully?
     truthy_param?(:destroy_fully)
   end
+
+  def secret_key_access
+    secret_key = request.headers['HTTP_SECRET_KEY']
+    credential = Rails.application.credentials[:secret_key]
+
+    return unless secret_key.blank? || credential.blank? || secret_key != credential
+
+    render json: { error: 'Acesso não autorizado' }, status: :unauthorized
+  end
 end

@@ -6,6 +6,8 @@ module Api
       before_action :set_work, only: [:create]
       before_action :set_documents, only: [:create]
       before_action :initialize_zapsign_service, only: [:create]
+      before_action :authenticate_admin, only: [:create]
+      before_action :secret_key_access, only: [:webhook]
 
       def create
         valid_documents, invalid_documents = validate_documents(@documents)
