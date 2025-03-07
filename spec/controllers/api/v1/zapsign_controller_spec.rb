@@ -26,12 +26,13 @@ RSpec.describe Api::V1::ZapsignController, type: :request do
         allow(zapsign_service).to receive(:create_document).and_return({ id: 'doc_123', status: 'pending' })
       end
 
-      it 'atualiza o sign_source e retorna sucesso' do
+      it 'atualiza o status do documento para pending_external_signature e retorna sucesso' do
         post '/api/v1/zapsign', params: { work_id: work.id }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 
         expect(response).to have_http_status(:ok)
         expect(json_response[:success].size).to eq(1)
         expect(json_response[:errors].size).to eq(1)
+        expect(valid_document.reload.status).to eq('pending_external_signature') # Verifica se o status foi atualizado
       end
     end
 
@@ -40,12 +41,13 @@ RSpec.describe Api::V1::ZapsignController, type: :request do
         allow(zapsign_service).to receive(:create_document).and_raise(StandardError, 'Erro na API')
       end
 
-      it 'retorna erro e não atualiza o documento' do
+      it 'retorna erro e não atualiza o status do documento' do
         post '/api/v1/zapsign', params: { work_id: work.id }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 
         expect(response).to have_http_status(:ok)
         expect(json_response[:errors].size).to eq(2)
         expect(json_response[:errors].first[:error]).to eq('Erro na API')
+        expect(valid_document.reload.status).to eq('approved') # Verifica se o status NÃO foi atualizado
       end
     end
   end

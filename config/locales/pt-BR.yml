@@ -230,6 +230,7 @@
         statuses:
           pending_review: "Pendente de revisão"
           approved: "Aprovado"
+          pending_external_signature: "Pendente de assinatura externa"
           signed: "Assinado"
         sign_sources:
           no_signature: "Sem assinatura"
