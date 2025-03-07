@@ -14,6 +14,8 @@ module Api
 
         results = valid_documents.map do |document|
           result = @zapsign_service.create_document(document)
+          document.update!(status: :pending_external_signature)
+
           { document_id: document.id, status: :success, response: result }
         rescue StandardError => e
           { document_id: document.id, status: :error, error: e.message }

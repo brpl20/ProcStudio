@@ -37,7 +37,7 @@ class Document < ApplicationRecord
 
   enum format: [:docx, :pdf]
 
-  enum status: [:pending_review, :approved, :signed]
+  enum status: [:pending_review, :approved, :pending_external_signature, :signed]
 
   enum sign_source: [:no_signature, :manual_signature, :zapsign]
 
