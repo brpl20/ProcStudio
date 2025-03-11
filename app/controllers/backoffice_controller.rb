@@ -27,14 +27,7 @@ class BackofficeController < ApplicationController
   end
 
   def secret_key_access
-    request.headers.each do |key, value|
-      Rails.logger.info("#{key}: #{value}")
-    end
-
-    Rails.logger.info("HTTP_SECRET_KEY: #{request.headers['HTTP_SECRET_KEY']}")
-    Rails.logger.info("secret_key: #{request.headers['secret_key']}")
-
-    secret_key = request.headers['HTTP_SECRET_KEY']
+    secret_key = request.headers['HTTP_AUTHORIZATION']
     credential = Rails.application.credentials[:secret_key]
 
     return unless secret_key.blank? || credential.blank? || secret_key != credential
