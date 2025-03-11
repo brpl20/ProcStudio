@@ -75,7 +75,6 @@ class ZapsignService
         cpf: profile_customer.cpf,
         require_selfie_photo: false,
         require_document_photo: false,
-        selfie_validation_type: 'liveness-document-match',
         selfie_photo_url: nil,
         document_photo_url: nil,
         document_verse_photo_url: nil,
