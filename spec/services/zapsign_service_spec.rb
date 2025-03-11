@@ -74,7 +74,6 @@ RSpec.describe ZapsignService, type: :service do
                   cpf: '123.456.789-00',
                   require_selfie_photo: false,
                   require_document_photo: false,
-                  selfie_validation_type: 'liveness-document-match',
                   selfie_photo_url: nil,
                   document_photo_url: nil,
                   document_verse_photo_url: nil,
