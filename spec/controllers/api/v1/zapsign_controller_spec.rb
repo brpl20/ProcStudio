@@ -64,7 +64,7 @@ RSpec.describe Api::V1::ZapsignController, type: :request do
       end
 
       it 'atualiza o status do documento para signed' do
-        post '/api/v1/zapsign/webhook', params: payload.to_json, headers: { 'HTTP_SECRET_KEY' => 'valid_secret_key', 'Content-Type' => 'application/json' }
+        post '/api/v1/zapsign/webhook', params: payload.to_json, headers: { 'HTTP_AUTHORIZATION' => 'valid_secret_key', 'Content-Type' => 'application/json' }
 
         expect(response).to have_http_status(:ok)
         expect(document.reload.status).to eq('signed')
@@ -81,7 +81,7 @@ RSpec.describe Api::V1::ZapsignController, type: :request do
       end
 
       it 'retorna erro de acesso não autorizado' do
-        post '/api/v1/zapsign/webhook', params: payload.to_json, headers: { 'HTTP_SECRET_KEY' => 'invalid_secret_key', 'Content-Type' => 'application/json' }
+        post '/api/v1/zapsign/webhook', params: payload.to_json, headers: { 'HTTP_AUTHORIZATION' => 'invalid_secret_key', 'Content-Type' => 'application/json' }
 
         expect(response).to have_http_status(:unauthorized)
         expect(json_response[:error]).to eq('Acesso não autorizado')
@@ -97,7 +97,7 @@ RSpec.describe Api::V1::ZapsignController, type: :request do
       end
 
       it 'não atualiza o status do documento' do
-        post '/api/v1/zapsign/webhook', params: payload.to_json, headers: { 'HTTP_SECRET_KEY' => 'valid_secret_key', 'Content-Type' => 'application/json' }
+        post '/api/v1/zapsign/webhook', params: payload.to_json, headers: { 'HTTP_AUTHORIZATION' => 'valid_secret_key', 'Content-Type' => 'application/json' }
 
         expect(response).to have_http_status(:ok)
         expect(document.reload.status).not_to eq('signed')
@@ -114,7 +114,7 @@ RSpec.describe Api::V1::ZapsignController, type: :request do
       end
 
       it 'retorna erro de documento não encontrado' do
-        post '/api/v1/zapsign/webhook', params: payload.to_json, headers: { 'HTTP_SECRET_KEY' => 'valid_secret_key', 'Content-Type' => 'application/json' }
+        post '/api/v1/zapsign/webhook', params: payload.to_json, headers: { 'HTTP_AUTHORIZATION' => 'valid_secret_key', 'Content-Type' => 'application/json' }
 
         expect(response).to have_http_status(:not_found)
         expect(json_response[:error]).to eq('Documento não encontrado.')
