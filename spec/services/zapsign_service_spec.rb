@@ -20,7 +20,9 @@ RSpec.describe ZapsignService, type: :service do
       document_name: 'Contrato de Honorário',
       id: 1,
       profile_customer: profile_customer,
-      original: double('ActiveStorage::Attached::One', url: 'https://example.com/contract.pdf')
+      original: double('ActiveStorage::Attached::One', url: 'https://example.com/contract.pdf'),
+      signed: double('ActiveStorage::Attached::One', attach: true),
+      update!: true
     )
   end
 
@@ -115,6 +117,69 @@ RSpec.describe ZapsignService, type: :service do
           'Erro na requisição: 500 - Internal Server Error'
         )
       end
+    end
+  end
+
+  describe '#receive_signed_doc' do
+    context 'quando o documento está assinado' do
+      let(:signed_payload) do
+        {
+          status: 'signed',
+          signed_file: 'https://zapsign.s3.amazonaws.com/sandbox/dev/2025/3/pdf/b406bdb0-e01e-4582-910c-b07462a822f3/16111735-da4d-4b5e-a082-5ac370a8df3d.pdf?AWSAccessKeyId=AKIASUFZJ7JCTI2ZRGWX&Signature=ZEpHcHqIEGPZgIQPcF64KJa7cBE%3D&Expires=1741787529'
+        }
+      end
+
+      before do
+        allow(zapsign_service).to receive(:save_signed_file).and_return(true)
+        allow(zapsign_service).to receive(:update_document_to_signed).and_return(true)
+      end
+
+      it 'atualiza o documento para assinado e salva o arquivo assinado' do
+        result = zapsign_service.receive_signed_doc(document, signed_payload)
+        expect(result).to eq({ message: 'Documento atualizado para signed.' })
+        expect(zapsign_service).to have_received(:update_document_to_signed).with(document)
+        expect(zapsign_service).to have_received(:save_signed_file).with(document, signed_payload[:signed_file])
+      end
+    end
+
+    context 'quando o documento não está assinado' do
+      let(:unsigned_payload) do
+        {
+          status: 'pending',
+          signed_file: nil
+        }
+      end
+
+      it 'retorna uma mensagem indicando que o documento não está assinado' do
+        result = zapsign_service.receive_signed_doc(document, unsigned_payload)
+        expect(result).to eq({ message: 'Documento não está assinado.' })
+      end
+    end
+  end
+
+  describe '#save_signed_file' do
+    let(:s3_document) do
+      'https://zapsign.s3.amazonaws.com/sandbox/dev/2025/3/pdf/b406bdb0-e01e-4582-910c-b07462a822f3/16111735-da4d-4b5e-a082-5ac370a8df3d.pdf?AWSAccessKeyId=AKIASUFZJ7JCTI2ZRGWX&Signature=ZEpHcHqIEGPZgIQPcF64KJa7cBE%3D&Expires=1741787529'
+    end
+
+    before do
+      allow(Down).to receive(:download).with(s3_document).and_return(StringIO.new('fake-pdf-content'))
+    end
+
+    it 'anexa o arquivo assinado ao documento' do
+      expect(document.signed).to receive(:attach).with(
+        io: an_instance_of(StringIO),
+        filename: '16111735-da4d-4b5e-a082-5ac370a8df3d.pdf',
+        content_type: 'application/pdf'
+      )
+      zapsign_service.send(:save_signed_file, document, s3_document)
+    end
+  end
+
+  describe '#update_document_to_signed' do
+    it 'atualiza o status do documento para assinado' do
+      expect(document).to receive(:update!).with(status: :signed, sign_source: :zapsign)
+      zapsign_service.send(:update_document_to_signed, document)
     end
   end
 end
