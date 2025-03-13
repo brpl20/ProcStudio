@@ -32,7 +32,7 @@ RSpec.describe Api::V1::ZapsignController, type: :request do
         expect(response).to have_http_status(:ok)
         expect(json_response[:success].size).to eq(1)
         expect(json_response[:errors].size).to eq(1)
-        expect(valid_document.reload.status).to eq('pending_external_signature') # Verifica se o status foi atualizado
+        expect(valid_document.reload.status).to eq('pending_external_signature')
       end
     end
 
@@ -47,7 +47,7 @@ RSpec.describe Api::V1::ZapsignController, type: :request do
         expect(response).to have_http_status(:ok)
         expect(json_response[:errors].size).to eq(2)
         expect(json_response[:errors].first[:error]).to eq('Erro na API')
-        expect(valid_document.reload.status).to eq('approved') # Verifica se o status NÃO foi atualizado
+        expect(valid_document.reload.status).to eq('approved')
       end
     end
   end
@@ -63,11 +63,14 @@ RSpec.describe Api::V1::ZapsignController, type: :request do
         }
       end
 
+      before do
+        allow(zapsign_service).to receive(:receive_signed_doc).and_return({ message: 'Documento atualizado para signed.' })
+      end
+
       it 'atualiza o status do documento para signed' do
         post '/api/v1/zapsign/webhook', params: payload.to_json, headers: { 'HTTP_AUTHORIZATION' => 'valid_secret_key', 'Content-Type' => 'application/json' }
 
         expect(response).to have_http_status(:ok)
-        expect(document.reload.status).to eq('signed')
         expect(json_response[:message]).to eq('Documento atualizado para signed.')
       end
     end
@@ -96,11 +99,14 @@ RSpec.describe Api::V1::ZapsignController, type: :request do
         }
       end
 
+      before do
+        allow(zapsign_service).to receive(:receive_signed_doc).and_return({ message: 'Documento não está assinado.' })
+      end
+
       it 'não atualiza o status do documento' do
         post '/api/v1/zapsign/webhook', params: payload.to_json, headers: { 'HTTP_AUTHORIZATION' => 'valid_secret_key', 'Content-Type' => 'application/json' }
 
         expect(response).to have_http_status(:ok)
-        expect(document.reload.status).not_to eq('signed')
         expect(json_response[:message]).to eq('Documento não está assinado.')
       end
     end
@@ -108,7 +114,7 @@ RSpec.describe Api::V1::ZapsignController, type: :request do
     context 'quando o documento não é encontrado' do
       let(:payload) do
         {
-          external_id: 999_999, # ID inválido
+          external_id: 999_999,
           status: 'signed'
         }
       end

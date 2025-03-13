@@ -5,7 +5,7 @@ module Api
     class ZapsignController < BackofficeController
       before_action :set_work, only: [:create]
       before_action :set_documents, only: [:create]
-      before_action :initialize_zapsign_service, only: [:create]
+      before_action :initialize_zapsign_service
       before_action :authenticate_admin, only: [:create]
       before_action :secret_key_access, only: [:webhook]
 
@@ -32,12 +32,9 @@ module Api
         document = Document.find_by(id: payload[:external_id])
 
         if document
-          if payload[:status] == 'signed'
-            document.update!(status: :signed, sign_source: :zapsign)
-            render json: { message: 'Documento atualizado para signed.' }, status: :ok
-          else
-            render json: { message: 'Documento não está assinado.' }, status: :ok
-          end
+          response = @zapsign_service.receive_signed_doc(document, payload)
+
+          render json: response, status: :ok
         else
           render json: { error: 'Documento não encontrado.' }, status: :not_found
         end

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'httparty'
+require 'open-uri'
 
 class ZapsignService
   include HTTParty
@@ -15,13 +16,23 @@ class ZapsignService
   end
 
   def create_document(document)
-    Rails.logger.error(Rails.application.credentials.dig(:zapsign, :base_url))
     payload = build_payload(document)
     self.class.headers 'Authorization' => "Bearer #{@api_token}"
 
     response = self.class.post('/api/v1/docs/', body: payload.to_json)
 
     handle_response(response)
+  end
+
+  def receive_signed_doc(document, payload)
+    if payload[:status] == 'signed'
+      update_document_to_signed(document)
+      save_signed_file(document, payload[:signed_file])
+
+      return { message: 'Documento atualizado para signed.' }
+    else
+      return { message: 'Documento não está assinado.' }
+    end
   end
 
   private
@@ -83,5 +94,21 @@ class ZapsignService
         redirect_link: nil
       }
     ]
+  end
+
+  def save_signed_file(document, s3_document)
+    downloaded_file = URI.open(s3_document)
+
+    document.signed.attach(
+      io: downloaded_file,
+      filename: File.basename(URI.parse(s3_document).path),
+      content_type: 'application/pdf'
+    )
+  ensure
+    downloaded_file.close if downloaded_file
+  end
+
+  def update_document_to_signed(document)
+    document.update!(status: :signed, sign_source: :zapsign)
   end
 end
