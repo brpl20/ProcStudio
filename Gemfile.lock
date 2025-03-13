@@ -129,6 +129,8 @@ GEM
     dotenv-rails (3.1.7)
       dotenv (= 3.1.7)
       railties (>= 6.1)
+    down (5.4.2)
+      addressable (~> 2.8)
     erubi (1.12.0)
     extensobr (1.2.2)
     factory_bot (6.2.1)
@@ -352,6 +354,7 @@ DEPENDENCIES
   devise
   docx
   dotenv-rails
+  down
   extensobr
   factory_bot_rails
   faker

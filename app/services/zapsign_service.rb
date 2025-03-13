@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'httparty'
-require 'open-uri'
+require 'down'
 
 class ZapsignService
   include HTTParty
@@ -25,14 +25,12 @@ class ZapsignService
   end
 
   def receive_signed_doc(document, payload)
-    if payload[:status] == 'signed'
-      update_document_to_signed(document)
-      save_signed_file(document, payload[:signed_file])
+    return { message: 'Documento não está assinado.' } unless payload[:status] == 'signed'
 
-      return { message: 'Documento atualizado para signed.' }
-    else
-      return { message: 'Documento não está assinado.' }
-    end
+    update_document_to_signed(document)
+    save_signed_file(document, payload[:signed_file])
+
+    { message: 'Documento atualizado para signed.' }
   end
 
   private
@@ -97,7 +95,7 @@ class ZapsignService
   end
 
   def save_signed_file(document, s3_document)
-    downloaded_file = URI.open(s3_document)
+    downloaded_file = Down.download(s3_document)
 
     document.signed.attach(
       io: downloaded_file,
@@ -105,7 +103,7 @@ class ZapsignService
       content_type: 'application/pdf'
     )
   ensure
-    downloaded_file.close if downloaded_file
+    downloaded_file&.close
   end
 
   def update_document_to_signed(document)

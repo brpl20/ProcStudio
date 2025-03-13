@@ -163,7 +163,7 @@ RSpec.describe ZapsignService, type: :service do
     end
 
     before do
-      allow(URI).to receive(:open).with(s3_document).and_return(StringIO.new('fake-pdf-content'))
+      allow(Down).to receive(:download).with(s3_document).and_return(StringIO.new('fake-pdf-content'))
     end
 
     it 'anexa o arquivo assinado ao documento' do
