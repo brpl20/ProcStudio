@@ -30,14 +30,13 @@ module ProfileCustomers
           substitute_word(text)
         end
       end
-      doc.save("tmp/procuracao_simples_#{@document.id}.docx")
+      file_name = "tmp/procuracao_simples_#{@document.id}.docx"
+      content_type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
 
-      blob = ActiveStorage::Blob.create_and_upload!(
-        io: File.open("tmp/procuracao_simples_#{@document.id}.docx"),
-        filename: "procuracao_simples_#{@document.id}.docx",
-        service_name: service_name
-      )
-      @document.file.attach(blob)
+      doc.save(file_name)
+
+      file = File.open(file_name)
+      S3UploadManager.upload_file(file, @document, :file, file_name = file_name, content_type = content_type)
       FileUtils.remove_file("tmp/procuracao_simples_#{@document.id}.docx", true)
     end
 

@@ -15,13 +15,14 @@ RSpec.describe CustomerFile do
         create(:customer_file)
       end.to change(described_class, :count).by_at_least(1)
     end
+
     it 'is attached a file' do
       customer_file = create(:customer_file)
-      customer_file.file.attach(
-        io: File.open('spec/factories/images/Ruby.jpg'),
-        filename: 'Ruby.jpg',
-        content_type: 'application/jpg'
-      )
+
+      file = Rack::Test::UploadedFile.new('spec/factories/images/Ruby.jpg', 'image/jpg')
+
+      S3UploadManager.upload_file(file, customer_file, :file)
+
       expect(customer_file.file).to be_attached
     end
   end

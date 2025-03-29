@@ -53,7 +53,7 @@ RSpec.describe Api::V1::ZapsignController, type: :request do
   end
 
   describe 'POST #webhook' do
-    let(:document) { create(:document, :approved) }
+    let(:document) { create(:document) }
 
     context 'quando o secret_key é válido' do
       let(:payload) do

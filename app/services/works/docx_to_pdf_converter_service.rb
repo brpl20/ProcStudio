@@ -47,7 +47,7 @@ module Works
     def attach_pdf(pdf_path)
       pdf_file = File.open(pdf_path)
       file_name = @document.document_name_parsed
-      @document.original.attach(io: pdf_file, filename: "#{file_name}.pdf", content_type: 'application/pdf')
+      S3UploadManager.upload_file(pdf_file, @document, :original, file_name = file_name, file_content = 'application/pdf')
 
       pdf_file.close
     end

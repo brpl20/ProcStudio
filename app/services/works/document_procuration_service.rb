@@ -22,7 +22,7 @@ module Works
           substitute_word(text)
         end
       end
-      doc.save(filename)
+      doc.save(file_path)
 
       save
     end
@@ -32,8 +32,11 @@ module Works
     attr_reader :document, :work, :office, :lawyers, :lawyer_address, :customer, :address
 
     def save
-      document.original.attach(blob)
-      FileUtils.remove_file(filename, true)
+      file = File.open(file_path)
+      content_type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+
+      S3UploadManager.upload_file(file, document, :original, file_name = file_name, content_type = content_type)
+      FileUtils.remove_file(file_path, true)
     rescue StandardError => e
       Rails.logger.error("[Document Error]: #{e.message}")
       false
@@ -54,17 +57,12 @@ module Works
         end
     end
 
-    def filename
-      @filename ||= "tmp/procuracao_#{work.id}_#{customer.id}.docx"
+    def file_path
+      @file_path ||= "tmp/#{file_name}"
     end
 
-    def blob
-      @blob ||=
-        ActiveStorage::Blob.create_and_upload!(
-          io: File.open(filename),
-          filename: "procuracao_#{work.id}_#{customer.id}.docx",
-          service_name: service_name
-        )
+    def file_name
+      @file_name ||= "procuracao_#{work.id}_#{customer.id}.docx"
     end
 
     def substitute_powers(text)
