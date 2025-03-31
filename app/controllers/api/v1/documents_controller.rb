@@ -87,20 +87,12 @@ module Api
 
       def attach_signed_file(file)
         @document.signed.purge if @document.signed.attached?
-        @document.signed.attach(
-          io: file,
-          filename: file.original_filename,
-          content_type: file.content_type
-        )
+        S3UploadManager.upload_file(file, @document, :signed)
       end
 
       def attach_source_file(file)
         @document.original.purge if @document.original.attached?
-        @document.original.attach(
-          io: file,
-          filename: file.original_filename,
-          content_type: file.content_type
-        )
+        S3UploadManager.upload_file(file, @document, :original)
       end
 
       def update_document_status(status, sign_source)
