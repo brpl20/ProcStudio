@@ -9,7 +9,7 @@ admin_front = Admin.find_or_create_by!(
 end
 
 puts "Criando ProfileAdmin para Admin Front..."
-ProfileAdmin.find_or_create_by!(
+profile_front = ProfileAdmin.find_or_create_by!(
   admin: admin_front
 ) do |profile|
   profile.role = 'lawyer'
@@ -27,6 +27,22 @@ ProfileAdmin.find_or_create_by!(
   profile.office = Office.last
 end
 
+# Criando e associando endereço para Admin Front
+address_front = Address.create!(
+  description: 'Endereço do Admin Front',
+  zip_code: '12345-678',
+  street: 'Rua Exemplo Front',
+  number: 100,
+  neighborhood: 'Centro',
+  city: 'São Paulo',
+  state: 'SP'
+)
+
+AdminAddress.create!(
+  address: address_front,
+  profile_admin: profile_front
+)
+
 puts "Criando Admin API..."
 admin_api = Admin.find_or_create_by!(
   email: 'adminapi@procstudio.com.br'
@@ -36,7 +52,7 @@ admin_api = Admin.find_or_create_by!(
 end
 
 puts "Criando ProfileAdmin para Admin API..."
-ProfileAdmin.find_or_create_by!(
+profile_api = ProfileAdmin.find_or_create_by!(
   admin: admin_api
 ) do |profile|
   profile.role = 'lawyer'
@@ -53,6 +69,74 @@ ProfileAdmin.find_or_create_by!(
   profile.status = 'active'
   profile.office = Office.last
 end
+
+# Criando e associando endereço para Admin API
+address_api = Address.create!(
+  description: 'Endereço do Admin API',
+  zip_code: '87654-321',
+  street: 'Rua Exemplo API',
+  number: 200,
+  neighborhood: 'Bela Vista',
+  city: 'São Paulo',
+  state: 'SP'
+)
+
+AdminAddress.create!(
+  address: address_api,
+  profile_admin: profile_api
+)
+
+puts "Criando ou atualizando o Office..."
+
+office_data = {
+  name: 'Teste front-end',
+  cnpj: '12.345.678/0001-99',
+  oab: '123456',
+  society: :company,
+  foundation: '2020-01-01',
+  site: 'https://www.testefront.com',
+  cep: '12345-678',
+  street: 'Rua Exemplo',
+  number: 100,
+  neighborhood: 'Centro',
+  city: 'São Paulo',
+  state: 'SP',
+  office_type_id: 1,
+  responsible_lawyer_id: nil,
+  accounting_type: :simple,
+  deleted_at: nil
+}
+
+office = Office.find_or_initialize_by(name: office_data[:name])
+office.assign_attributes(office_data)
+office.profile_admins = [profile_front]
+office.save!
+
+backend_office_data = {
+  name: 'Teste Back-end',
+  cnpj: '68.628.339/0001-70',
+  oab: '654321',
+  society: :company,
+  foundation: '2020-02-02',
+  site: 'https://www.testeback.com',
+  cep: '12345-678',
+  street: 'Rua Exemplo',
+  number: 100,
+  neighborhood: 'Centro',
+  city: 'São Paulo',
+  state: 'SP',
+  office_type_id: 1,
+  responsible_lawyer_id: nil,
+  accounting_type: :simple,
+  deleted_at: nil
+}
+
+office_backend = Office.find_or_initialize_by(name: backend_office_data[:name])
+office_backend.assign_attributes(backend_office_data)
+office_backend.profile_admins = [profile_api]
+office_backend.save!
+
+puts "Office '#{office.name}' criado ou atualizado com sucesso!"
 
 puts "Criando Clientes e seus Perfis..."
 3.times do |i|
@@ -103,5 +187,24 @@ puts "Criando Clientes e seus Perfis..."
 
   puts "Cliente #{i+1} criado com sucesso!"
 end
+
+puts "Criando ou atualizando Powers..."
+
+powers = [
+  { description: 'Permite gerenciar usuários e configurações do sistema', category: :admgeneral },
+  { description: 'Acesso ao módulo financeiro para controle de pagamentos', category: :admspecific },
+  { description: 'Permite a geração e visualização de relatórios gerenciais', category: :lawspecific },
+  { description: 'Acesso ao módulo de atendimento ao cliente', category: :lawgeneral },
+  { description: 'Permite acessar processos jurídicos e documentos legais', category: :lawspecificsecret }
+]
+
+powers.each do |power_data|
+  power = Power.find_or_initialize_by(description: power_data[:description])
+  power.category = power_data[:category]
+  power.save!
+  puts "Power com descrição '#{power.description}' criado ou atualizado com sucesso!"
+end
+
+puts "Powers criados/atualizados com sucesso!"
 
 puts "Dados de Seed finalizados com sucesso!"
