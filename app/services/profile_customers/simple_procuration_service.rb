@@ -36,7 +36,7 @@ module ProfileCustomers
       doc.save(file_name)
 
       file = File.open(file_name)
-      S3UploadManager.upload_file(file, @document, :file, file_name = file_name, content_type = content_type)
+      S3UploadManager.upload_file(file, @document, :file, file_name, content_type)
       FileUtils.remove_file("tmp/procuracao_simples_#{@document.id}.docx", true)
     end
 

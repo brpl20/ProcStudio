@@ -80,12 +80,4 @@ RSpec.configure do |config|
       with.library :rails
     end
   end
-
-  RSpec.configure do |config|
-    config.before(:suite) do
-      # Limpar a pasta tmp/storage antes de rodar os testes
-      FileUtils.rm_rf(Rails.root.join('tmp', 'storage'))
-    end
-  end
-
 end

@@ -35,7 +35,7 @@ module Works
       file = File.open(file_path)
       content_type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
 
-      S3UploadManager.upload_file(file, document, :original, file_name = file_name, content_type = content_type)
+      S3UploadManager.upload_file(file, document, :original, file_name, content_type)
       FileUtils.remove_file(file_path, true)
     rescue StandardError => e
       Rails.logger.error("[Document Error]: #{e.message}")

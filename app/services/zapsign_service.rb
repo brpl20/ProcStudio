@@ -98,7 +98,7 @@ class ZapsignService
     downloaded_file = Down.download(s3_document)
     filename = File.basename(URI.parse(s3_document).path)
 
-    S3UploadManager.upload_file(downloaded_file, document, :signed, file_name = filename, content_type = 'application/pdf')
+    S3UploadManager.upload_file(downloaded_file, document, :signed, filename, 'application/pdf')
   ensure
     downloaded_file&.close
   end
