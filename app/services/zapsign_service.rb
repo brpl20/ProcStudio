@@ -6,7 +6,7 @@ require 'down'
 class ZapsignService
   include HTTParty
 
-  base_uri Rails.application.credentials.dig(:zapsign, :base_url) || 'https://sandbox.api.zapsign.com.br'
+  base_uri Rails.application.credentials.dig(:zapsign, :base_url) || 'https://sandbox.api.zapsign.com.br/api'
   headers 'Content-Type' => 'application/json'
   headers 'Accept' => 'application/json'
 
@@ -19,7 +19,7 @@ class ZapsignService
     payload = build_payload(document)
     self.class.headers 'Authorization' => "Bearer #{@api_token}"
 
-    response = self.class.post('/api/v1/docs/', body: payload.to_json)
+    response = self.class.post('/v1/docs/', body: payload.to_json)
 
     handle_response(response)
   end
