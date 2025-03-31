@@ -168,9 +168,11 @@ RSpec.describe ZapsignService, type: :service do
 
     it 'anexa o arquivo assinado ao documento' do
       expect(document.signed).to receive(:attach).with(
-        io: an_instance_of(StringIO),
-        filename: '16111735-da4d-4b5e-a082-5ac370a8df3d.pdf',
-        content_type: 'application/pdf'
+        hash_including(
+          content_type: 'application/pdf',
+          io: an_instance_of(StringIO),
+          key: start_with('test/')
+        )
       )
       zapsign_service.send(:save_signed_file, document, s3_document)
     end
