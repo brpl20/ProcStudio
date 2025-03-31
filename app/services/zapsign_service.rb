@@ -6,7 +6,7 @@ require 'down'
 class ZapsignService
   include HTTParty
 
-  base_uri Rails.application.credentials.dig(:zapsign, :base_url) || 'https://sandbox.api.zapsign.com.br'
+  base_uri Rails.application.credentials.dig(:zapsign, :base_url) || 'https://sandbox.api.zapsign.com.br/api'
   headers 'Content-Type' => 'application/json'
   headers 'Accept' => 'application/json'
 
