@@ -28,7 +28,7 @@ class BackofficeController < ApplicationController
 
   def secret_key_access
     secret_key = request.headers['HTTP_AUTHORIZATION']
-    credential = Rails.application.credentials[:secret_key]
+    credential = Rails.application.credentials[:webhook_secret_key]
 
     return unless secret_key.blank? || credential.blank? || secret_key != credential
 
