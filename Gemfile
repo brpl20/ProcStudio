@@ -23,7 +23,6 @@ gem 'rack-cors'
 gem 'rails', '~> 7.0.4', '>= 7.0.4.2'
 gem 'rubocop', '~> 1.48', require: false
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
-gem 'bcrypt', '~> 3.1.7'
 
 group :development, :test, :staging do
   gem 'faker'
