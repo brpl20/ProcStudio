@@ -10,7 +10,7 @@ require 'mina/rvm'
 
 # Repository project
 set :application_name, 'procstudio_api'
-set :domain, '34.214.28.153'
+set :domain, '54.184.147.128'
 set :deploy_to, '/home/production/procstudio_api'
 set :repository, 'git@github.com:Jemisson/procstudio_api.git'
 set :branch, 'master'
@@ -71,7 +71,7 @@ end
 task :production do
   set :rails_env, 'production'
   set :user, 'production'
-  set :domain, '34.214.28.153'
+  set :domain, '54.184.147.128'
   set :deploy_to, '/home/production/procstudio_api'
   set :branch, 'master'
 end
@@ -80,7 +80,7 @@ end
 task :staging do
   set :rails_env, 'staging'
   set :user, 'staging'
-  set :domain, '34.214.28.153'
+  set :domain, '54.184.147.128'
   set :deploy_to, '/home/staging/procstudio_api'
   set :branch, 'master'
 end
