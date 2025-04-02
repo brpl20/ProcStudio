@@ -21,6 +21,7 @@ module Procstudio_api
 
     config.autoload_paths << "#{config.root}/app/models/filters"
     config.autoload_paths << "#{config.root}/app/models/services"
+    config.autoload_paths << "#{config.root}/lib/helpers"
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -29,5 +30,10 @@ module Procstudio_api
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    config.before_configuration do
+      ENV['ZAPSIGN_BASE_URL'] = 'https://sandbox.api.zapsign.com.br/api'
+      ENV['ZAPSIGN_API_TOKEN'] = 'fake-api-token'
+    end
   end
 end
