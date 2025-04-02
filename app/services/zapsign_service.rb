@@ -5,14 +5,19 @@ require 'down'
 
 class ZapsignService
   include HTTParty
-
-  base_uri Rails.application.credentials.dig(:zapsign, :base_url) || 'https://sandbox.api.zapsign.com.br/api'
+  base_uri CredentialsHelper.get(:zapsign, :base_url, 'ZAPSIGN_BASE_URL')
+  # TODO: Remover
+  # base_uri Rails.application.credentials.dig(Rails.env.to_sym, :zapsign, :base_url) || 'https://sandbox.api.zapsign.com.br/api'
   headers 'Content-Type' => 'application/json'
   headers 'Accept' => 'application/json'
 
   def initialize
-    @api_token = Rails.application.credentials.dig(:zapsign, :api_token)
-    @api_token = 'fake-api-token' if Rails.env.test?
+    # TODO: Remover
+    # @api_token = Rails.application.credentials.dig(:zapsign, :api_token)
+    @api_token = CredentialsHelper.get(:zapsign, :api_token, 'ZAPSIGN_API_TOKEN')
+
+    # TODO: Remover
+    # @api_token = 'fake-api-token' if Rails.env.test?
   end
 
   def create_document(document)
