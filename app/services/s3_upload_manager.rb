@@ -4,7 +4,7 @@ class S3UploadManager
   def self.upload_file(file, record, attachment_name, file_name = nil, content_type = nil)
     file_name ||= file.original_filename
     company_name = 'pellizzeti_walber' # Aqui vai ser uma variavel em algum momento
-    key = "#{Rails.env}/#{company_name}/#{record.class}/#{record.id}/#{file_name}"
+    key = "#{Rails.env}/#{company_name}/#{record.class}/#{record.id}/#{SecureRandom.uuid}-#{file_name}"
 
     content_type ||= file.content_type
 
