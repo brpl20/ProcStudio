@@ -30,14 +30,15 @@ module ProfileCustomers
           substitute_word(text)
         end
       end
-      file_name = "tmp/procuracao_simples_#{@document.id}.docx"
+      file_name = "procuracao_simples_#{@document.id}.docx"
+      file_path = "tmp/#{file_name}"
       content_type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
 
-      doc.save(file_name)
+      doc.save(file_path)
 
-      file = File.open(file_name)
+      file = File.open(file_path)
       S3UploadManager.upload_file(file, @document, :file, file_name, content_type)
-      FileUtils.remove_file("tmp/procuracao_simples_#{@document.id}.docx", true)
+      FileUtils.remove_file(file_path, true)
     end
 
     # main function
