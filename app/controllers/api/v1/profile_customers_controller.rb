@@ -105,7 +105,8 @@ module Api
       private
 
       def retrieve_customer
-        @profile_customer = ProfileCustomerFilter.retrieve_customer(params[:id])
+        @profile_customer = ProfileCustomer.with_deleted.find(params[:id]) if truthy_param?(:include_deleted)
+        @profile_customer ||= ProfileCustomerFilter.retrieve_customer(params[:id])
       end
 
       def profile_customers_params
