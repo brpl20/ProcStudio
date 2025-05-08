@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  root to: proc { [200, {}, ['API running']] }
+
   get '/api/v1/customer/document' => 'profile_customers#prepare_document'
 
   namespace :api do
