@@ -7,7 +7,7 @@ module Api
     class ProfileCustomersController < BackofficeController
       before_action :load_active_storage_url_options unless Rails.env.production?
 
-      before_action :retrieve_customer, only: %i[update show]
+      before_action :profile_customer, only: %i[update show]
       before_action :perform_authorization, except: %i[update]
 
       after_action :verify_authorized
@@ -80,7 +80,7 @@ module Api
         if destroy_fully?
           ProfileCustomer.with_deleted.find(params[:id]).destroy_fully!
         else
-          retrieve_customer
+          profile_customer
           @profile_customer.destroy
         end
       end
@@ -104,7 +104,7 @@ module Api
 
       private
 
-      def retrieve_customer
+      def profile_customer
         @profile_customer = ProfileCustomer.with_deleted.find(params[:id]) if truthy_param?(:include_deleted)
         @profile_customer ||= ProfileCustomerFilter.retrieve_customer(params[:id])
       end
