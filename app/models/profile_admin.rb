@@ -105,4 +105,19 @@ class ProfileAdmin < ApplicationRecord
 
     emails.last.email
   end
+
+  def emails_attributes=(attributes)
+    current_email_ids = attributes.map { |attr| attr[:id].to_i }.compact
+    admin_emails.where.not(email_id: current_email_ids).destroy_all
+
+    super(attributes)
+  end
+
+  def phones_attributes=(attributes)
+    current_phone_ids = attributes.map { |attr| attr[:id].to_i }.compact
+
+    admin_phones.where.not(phone_id: current_phone_ids).destroy_all
+
+    super(attributes)
+  end
 end
