@@ -8,17 +8,6 @@ require 'mina/rvm'
 # set :rvm_path, '/usr/james/.rvm/scripts/rvm'
 # set :ruby_version, '3.0.0'
 
-# Repository project
-set :application_name, 'procstudio_api'
-set :domain, '54.184.147.128'
-set :deploy_to, '/home/production/procstudio_api'
-set :repository, 'git@github.com:Jemisson/procstudio_api.git'
-set :branch, 'master'
-set :user, 'production'
-set :port, '22'
-set :forward_agent, true
-set :rails_env, 'production'
-
 task :remote_environment do
   invoke :'rvm:use[ruby-3.0.0]'
 end
@@ -67,22 +56,23 @@ task deploy: :remote_environment do
   end
 end
 
+set :repository, 'git@github.com:SoftOwn-Solutions/SoftOwn_procstudio_api.git'
+set :domain, '168.231.90.14'
+set :branch, 'main'
+set :forward_agent, true
+
 # Server Production
 task :production do
   set :rails_env, 'production'
-  set :user, 'production'
-  set :domain, '54.184.147.128'
-  set :deploy_to, '/home/production/procstudio_api'
-  set :branch, 'master'
+  set :user, 'procstudio_prd'
+  set :deploy_to, '/home/procstudio_prd/SoftOwn_procstudio_api'
 end
 
 # Server staging
 task :staging do
   set :rails_env, 'staging'
-  set :user, 'staging'
-  set :domain, '54.184.147.128'
-  set :deploy_to, '/home/staging/procstudio_api'
-  set :branch, 'master'
+  set :user, 'procstudio_hml'
+  set :deploy_to, '/home/procstudio_hml/SoftOwn_procstudio_api'
 end
 
 # Fix
