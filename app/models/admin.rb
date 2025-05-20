@@ -25,6 +25,8 @@ class Admin < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
+  alias_attribute :access_email, :email
+
   has_one :profile_admin, dependent: :destroy
 
   validates :email, presence: true

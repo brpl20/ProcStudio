@@ -3,6 +3,10 @@
 class ProfileCustomerSerializer
   include JSONAPI::Serializer
 
+  attribute :access_email do |object|
+    object.customer.email
+  end
+
   attributes :customer_id, :customer_type, :name, :last_name, :cpf, :cnpj,
              :emails
 
