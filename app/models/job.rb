@@ -26,4 +26,23 @@ class Job < ApplicationRecord
   belongs_to :work, optional: true
   belongs_to :profile_customer, optional: true
   belongs_to :profile_admin
+
+  enum status: {
+    pending: 'pending',
+    delayed: 'delayed',
+    finished: 'finished'
+  }
+
+  after_find :check_and_update_status
+
+  private
+
+  def check_and_update_status
+    return unless status == 'pending'
+    return unless deadline < Date.today
+
+    self.status = 'delayed'
+    save!
+    end
+  end
 end
