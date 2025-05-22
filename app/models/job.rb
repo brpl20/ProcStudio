@@ -6,7 +6,7 @@
 #
 #  id                  :bigint(8)        not null, primary key
 #  description         :string
-#  deadline            :date
+#  deadline            :date             not null
 #  status              :string
 #  priority            :string
 #  comment             :string
@@ -43,6 +43,5 @@ class Job < ApplicationRecord
 
     self.status = 'delayed'
     save!
-    end
   end
 end
