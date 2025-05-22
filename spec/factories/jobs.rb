@@ -3,12 +3,14 @@
 FactoryBot.define do
   factory :job do
     description { 'MyString' }
-    deadline { '2023-05-04' }
-    status { 'MyString' }
+    deadline { Date.today + 1 }
+    status { 'pending' }
     priority { 'MyString' }
     comment { 'MyString' }
   end
+
   trait :job_complete do
+    status { 'finished' }
     profile_customer_id { create(:profile_customer).id }
     profile_admin_id { create(:profile_admin).id }
     work_id { create(:work).id }
