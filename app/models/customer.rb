@@ -30,6 +30,8 @@ class Customer < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :confirmable
 
+  alias_attribute :access_email, :email
+
   has_one :profile_customer, dependent: :destroy
 
   delegate :full_name, to: :profile_customer, prefix: true, allow_nil: true

@@ -39,7 +39,7 @@ class BackofficeController < ApplicationController
   end
 
   def record_not_found(exception)
-    model_name = exception.model || "Registro"
+    model_name = exception.model || 'Registro'
     render json: { error: "#{model_name} não encontrado" }, status: :not_found
   end
 end
