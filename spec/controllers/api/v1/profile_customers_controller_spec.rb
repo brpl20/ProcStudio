@@ -37,6 +37,7 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
             'type' => 'profile_customer',
             'attributes' => {
               'customer_type' => profile_customer.customer_type,
+              'access_email' => profile_customer.customer.access_email,
               'name' => profile_customer.name,
               'last_name' => profile_customer.last_name,
               'phones' => [],
@@ -269,6 +270,7 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
             'attributes' => {
               'name' => profile_customer.name,
               'last_name' => profile_customer.last_name,
+              'access_email' => profile_customer.customer.access_email,
               'cpf' => profile_customer.cpf,
               'cnpj' => profile_customer.cnpj,
               'customer_type' => profile_customer.customer_type,
