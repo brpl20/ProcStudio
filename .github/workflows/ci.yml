@@ -72,7 +72,7 @@ jobs:
     needs: [rubocop, rspec]
     runs-on: ubuntu-latest
 
-    if: github.ref == 'refs/heads/master' && success()
+    if: github.ref == 'refs/heads/stg' && success()
 
     steps:
       - name: Checkout code
@@ -83,7 +83,7 @@ jobs:
         with:
           ssh-private-key: |
             ${{ secrets.GIT_KEY }}
-            ${{ secrets.STAGING_KEY }}
+            ${{ secrets.DEPLOY_KEY }}
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -102,3 +102,39 @@ jobs:
         run: |
           gem install mina
           bundle exec mina staging deploy
+
+  deploy_production:
+    name: Deploy to production
+    needs: [rubocop, rspec]
+    runs-on: ubuntu-latest
+
+    if: github.ref == 'refs/heads/main' && success()
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: setup ssh-agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: |
+            ${{ secrets.GIT_KEY }}
+            ${{ secrets.DEPLOY_KEY }}
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.0.0
+
+      - name: Install LibreOffice
+        run: sudo apt-get update && sudo apt-get install -y libreoffice
+
+      - name: Install dependencies
+        run: |
+          gem install bundler
+          bundle install
+
+      - name: Deploy to production
+        run: |
+          gem install mina
+          bundle exec mina production deploy

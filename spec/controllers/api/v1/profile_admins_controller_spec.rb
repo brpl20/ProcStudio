@@ -23,11 +23,14 @@ RSpec.describe Api::V1::ProfileAdminsController, type: :request do
             'id' => profile_admin.id.to_s,
             'type' => 'profile_admin',
             'attributes' => {
-              'email' => profile_admin.admin.email,
+              'access_email' => profile_admin.admin.email,
               'role' => profile_admin.role,
               'name' => profile_admin.name,
               'last_name' => profile_admin.last_name,
-              'deleted' => false
+              'deleted' => false,
+              'bank_accounts' => [],
+              'emails' => [],
+              'phones' => [],
             }
           }],
           'meta' => {

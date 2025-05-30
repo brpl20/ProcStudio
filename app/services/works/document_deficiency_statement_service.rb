@@ -11,7 +11,6 @@ module Works
       @work     = document.work
       @customer = document.profile_customer
       @address  = customer.addresses.first
-      # binding.pry
     end
 
     def call

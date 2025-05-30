@@ -7,6 +7,7 @@ class BackofficeController < ApplicationController
   before_action :authenticate_admin
 
   rescue_from Pundit::NotAuthorizedError, with: :unauthorized
+  rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
   def current_user
     @current_user ||= @current_admin
@@ -35,5 +36,10 @@ class BackofficeController < ApplicationController
     return unless secret_key.blank? || credential.blank? || secret_key != credential
 
     render json: { error: 'Acesso não autorizado' }, status: :unauthorized
+  end
+
+  def record_not_found(exception)
+    model_name = exception.model || 'Registro'
+    render json: { error: "#{model_name} não encontrado" }, status: :not_found
   end
 end

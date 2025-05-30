@@ -22,7 +22,7 @@ RSpec.describe Api::V1::AdminsController, type: :request do
             'id' => admin.id.to_s,
             'type' => 'admin',
             'attributes' => {
-              'email' => admin.email,
+              'access_email' => admin.email,
               'deleted' => false
             },
             'relationships' => {
@@ -41,8 +41,11 @@ RSpec.describe Api::V1::AdminsController, type: :request do
               'role' => admin.profile_admin.role,
               'name' => admin.profile_admin.name,
               'last_name' => admin.profile_admin.last_name,
-              'email' => admin.email,
-              'deleted' => false
+              'access_email' => admin.email,
+              'deleted' => false,
+              'bank_accounts' => [],
+              'emails' => [],
+              'phones' => [],
             }
           ],
           'meta' => {
@@ -126,7 +129,7 @@ RSpec.describe Api::V1::AdminsController, type: :request do
             'id' => admin.id.to_s,
             'type' => 'admin',
             'attributes' => {
-              'email' => 'emailnovo@gmail.com',
+              'access_email' => 'emailnovo@gmail.com',
               'deleted' => false
             },
             'relationships' => {
@@ -162,7 +165,7 @@ RSpec.describe Api::V1::AdminsController, type: :request do
             'id' => admin.id.to_s,
             'type' => 'admin',
             'attributes' => {
-              'email' => admin.email,
+              'access_email' => admin.email,
               'deleted' => false
             },
             'relationships' => {
@@ -181,8 +184,11 @@ RSpec.describe Api::V1::AdminsController, type: :request do
               'role' => admin.profile_admin.role,
               'name' => admin.profile_admin.name,
               'last_name' => admin.profile_admin.last_name,
-              'email' => admin.email,
-              'deleted' => false
+              'access_email' => admin.email,
+              'deleted' => false,
+              'bank_accounts' => [],
+              'emails' => [],
+              'phones' => [],
             }
           ]
         )

@@ -13,10 +13,10 @@ module Works
 
     def responsable_company
       return nil unless @customer&.represent&.representor&.present?
-      
+
       representor = @customer.represent.representor
       representor_address = representor.addresses.first
-      
+
       [
         "neste ato representado por seu sócio administrador #{representor.full_name.upcase}",
         word_for_gender(representor.nationality, representor.gender),
@@ -31,13 +31,13 @@ module Works
 
     def mask_cnpj(cnpj)
       return "" if cnpj.blank?
-      
+
       # Remove any non-digit characters
       digits = cnpj.to_s.gsub(/\D/, '')
-      
+
       # Make sure we have exactly 14 digits
       return "" if digits.length != 14
-      
+
       # Format as XX.XXX.XXX/XXXX-XX
       "#{digits[0..1]}.#{digits[2..4]}.#{digits[5..7]}/#{digits[8..11]}-#{digits[12..13]}"
     end
@@ -56,7 +56,6 @@ module Works
           "#{responsable}"
         ].reject(&:blank?).join(', ')
         # responsable_company
-        # binding.pry 
       else
         # Original code for individual persons
         translated_text = [
@@ -66,10 +65,10 @@ module Works
           capacity,
           customer.profession.downcase&.strip,
           "#{word_for_gender('owner', customer.gender)} do RG n° #{customer.rg} e #{word_for_gender('subscribe', customer.gender)} no CPF sob o n° #{customer.cpf}",
-          customer.last_email&.strip, 
+          customer.last_email&.strip,
           "residente e #{word_for_gender('live', customer.gender)}: #{address.street.to_s.downcase.titleize&.strip}, n° #{address.number}",
-          address.description.to_s.downcase.titleize&.strip, 
-          "#{address.city&.strip} - #{address.state&.strip}, CEP #{address.zip_code&.strip}", 
+          address.description.to_s.downcase.titleize&.strip,
+          "#{address.city&.strip} - #{address.state&.strip}, CEP #{address.zip_code&.strip}",
           responsable
         ].reject(&:blank?).join(', ')
       end
