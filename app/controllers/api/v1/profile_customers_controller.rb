@@ -122,7 +122,7 @@ module Api
           :accountant_id,
           addresses_attributes: %i[id description zip_code street number neighborhood city state],
           bank_accounts_attributes: %i[id bank_name type_account agency account operation pix],
-          customer_attributes: %i[id email password password_confirmation],
+          customer_attributes: %i[id email access_email password password_confirmation],
           phones_attributes: %i[id phone_number],
           emails_attributes: %i[id email],
           represent_attributes: %i[id representor_id],

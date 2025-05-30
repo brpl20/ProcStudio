@@ -104,7 +104,7 @@ module Api
 
       def customers_params
         params.require(:customer).permit(
-          :email, :password, :password_confirmation, :status
+          :email, :access_email, :password, :password_confirmation, :status
         )
       end
 
@@ -114,6 +114,10 @@ module Api
 
       def perform_authorization
         authorize [:admin, :customer], "#{action_name}?".to_sym
+      end
+
+      def normalize_email_param
+        params[:customer][:email] ||= params[:customer].delete(:access_email)
       end
     end
   end
