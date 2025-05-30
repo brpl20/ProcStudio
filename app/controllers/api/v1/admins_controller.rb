@@ -92,7 +92,7 @@ module Api
 
       def admins_params
         params.require(:admin).permit(
-          :email, :password, :password_confirmation,
+          :email, :password, :password_confirmation, :status,
           profile_admin_attributes: %i[
             role status admin_id office_id name last_name gender oab
             rg cpf nationality civil_status birth mother_name

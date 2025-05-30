@@ -20,7 +20,6 @@
 #  birth          :date
 #  mother_name    :string
 #  number_benefit :string
-#  status         :integer
 #  document       :json
 #  nit            :string
 #  inss_password  :string
@@ -31,6 +30,7 @@
 #  accountant_id  :integer
 #  deleted_at     :datetime
 #  created_by_id  :bigint(8)
+#  status         :string           default("active"), not null
 #
 class ProfileCustomer < ApplicationRecord
   include DeletedFilterConcern
@@ -55,6 +55,11 @@ class ProfileCustomer < ApplicationRecord
     able: 'able',
     relatively: 'relatively',
     unable: 'unable'
+  }
+
+  enum status: {
+    active: 'active',
+    inactive: 'inactive'
   }
 
   enum civil_status: {

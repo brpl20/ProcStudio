@@ -22,7 +22,7 @@ RSpec.describe ProfileCustomer, type: :model do
         birth: nil,
         mother_name: nil,
         number_benefit: nil,
-        status: nil,
+        status: 'active',
         document: nil,
         nit: nil,
         inss_password: nil,

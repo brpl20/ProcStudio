@@ -14,6 +14,7 @@
 #  updated_at             :datetime         not null
 #  jwt_token              :string
 #  deleted_at             :datetime
+#  status                 :string           default("active"), not null
 #
 class Admin < ApplicationRecord
   include DeletedFilterConcern
@@ -24,6 +25,11 @@ class Admin < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
+
+  enum status: {
+    active: 'active',
+    inactive: 'inactive'
+  }
 
   alias_attribute :access_email, :email
 

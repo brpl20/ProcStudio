@@ -2,7 +2,7 @@
 
 class AdminSerializer
   include JSONAPI::Serializer
-  attributes :access_email
+  attributes :access_email, :status
 
   has_one :profile_admin, serializer: ProfileAdminSerializer
 

@@ -30,7 +30,7 @@ RSpec.describe Api::V1::ProfileAdminsController, type: :request do
               'deleted' => false,
               'bank_accounts' => [],
               'emails' => [],
-              'phones' => [],
+              'phones' => []
             }
           }],
           'meta' => {

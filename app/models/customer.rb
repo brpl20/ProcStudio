@@ -19,6 +19,7 @@
 #  confirmed_at           :datetime
 #  confirmation_sent_at   :datetime
 #  unconfirmed_email      :datetime
+#  status                 :string           default("active"), not null
 #
 class Customer < ApplicationRecord
   include DeletedFilterConcern
@@ -46,6 +47,11 @@ class Customer < ApplicationRecord
   validates_presence_of     :password, if: :password_required?
   validates_confirmation_of :password, if: :password_required?
   validates_length_of       :password, minimum: proc { Devise.password_length.min }, maximum: proc { Devise.password_length.max }, allow_blank: true
+
+  enum status: {
+    active: 'active',
+    inactive: 'inactive'
+  }
 
   # Setup a random password for the customer if such is not present. This is
   # necessary because we want to not override Devise's defaults, also, customers will

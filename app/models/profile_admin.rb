@@ -44,8 +44,7 @@ class ProfileAdmin < ApplicationRecord
 
   enum status: {
     active: 'active',
-    inactive: 'inactive',
-    pending: 'pending'
+    inactive: 'inactive'
   }
 
   enum civil_status: {
