@@ -30,30 +30,30 @@ module Works
     end
 
     def mask_cnpj(cnpj)
-      return "" if cnpj.blank?
+      return '' if cnpj.blank?
 
       # Remove any non-digit characters
       digits = cnpj.to_s.gsub(/\D/, '')
 
       # Make sure we have exactly 14 digits
-      return "" if digits.length != 14
+      return '' if digits.length != 14
 
       # Format as XX.XXX.XXX/XXXX-XX
       "#{digits[0..1]}.#{digits[2..4]}.#{digits[5..7]}/#{digits[8..11]}-#{digits[12..13]}"
     end
 
     def substitute_client_info(text)
-      if customer.customer_type == "legal_person"
+      if customer.customer_type == 'legal_person'
         # For companies (legal persons)
         responsable = responsable_company
         translated_text = [
           customer.name.upcase,
-          "pessoa jurídica de direito privado",
+          'pessoa jurídica de direito privado',
           "inscrita no CNPJ sob o n° #{mask_cnpj(customer.cnpj)}",
           "com sede na #{address.street.to_s.downcase.titleize&.strip}, n° #{address.number}",
           address.description.to_s.downcase.titleize&.strip,
           "#{address.neighborhood&.strip}, #{address.city&.strip} - #{address.state&.strip}, CEP #{address.zip_code&.strip}",
-          "#{responsable}"
+          responsable.to_s
         ].reject(&:blank?).join(', ')
         # responsable_company
       else
@@ -73,8 +73,8 @@ module Works
         ].reject(&:blank?).join(', ')
       end
 
-    text.substitute('_proc_outorgante_', translated_text)
-  end
+      text.substitute('_proc_outorgante_', translated_text)
+    end
 
     def capacity
       ProfileCustomer.human_enum_name(:capacity, @customer.capacity).downcase unless @customer.capacity == 'able'

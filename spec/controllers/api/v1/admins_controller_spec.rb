@@ -45,7 +45,7 @@ RSpec.describe Api::V1::AdminsController, type: :request do
               'deleted' => false,
               'bank_accounts' => [],
               'emails' => [],
-              'phones' => [],
+              'phones' => []
             }
           ],
           'meta' => {
@@ -188,7 +188,7 @@ RSpec.describe Api::V1::AdminsController, type: :request do
               'deleted' => false,
               'bank_accounts' => [],
               'emails' => [],
-              'phones' => [],
+              'phones' => []
             }
           ]
         )
