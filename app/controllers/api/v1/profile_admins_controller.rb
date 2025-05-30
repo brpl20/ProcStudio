@@ -94,7 +94,7 @@ module Api
         params.require(:profile_admin).permit(
           :role, :status, :admin_id, :office_id, :name, :last_name, :gender, :oab,
           :rg, :cpf, :nationality, :civil_status, :birth, :mother_name, :origin,
-          admin_attributes: %i[id email password password_confirmation],
+          admin_attributes: %i[id email access_email password password_confirmation],
           office_attributes: %i[name cnpj],
           addresses_attributes: %i[id description zip_code street number neighborhood city state],
           bank_accounts_attributes: %i[id bank_name type_account agency account operation pix],
