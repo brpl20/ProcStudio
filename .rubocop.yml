@@ -29,3 +29,6 @@ Metrics/PerceivedComplexity:
 
 Layout/LineLength:
   Enabled: false
+
+Metrics/ModuleLength:
+  Max: 150

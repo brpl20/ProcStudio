@@ -11,17 +11,67 @@ module Works
       :amazon
     end
 
-    def substitute_client_info(text)
-      translated_text = [
-        customer.full_name.upcase,
-        word_for_gender(customer.nationality, customer.gender),
-        word_for_gender(customer.civil_status, customer.gender),
-        capacity,
-        customer.profession.downcase&.strip,
-        "#{word_for_gender('owner', customer.gender)} do RG n° #{customer.rg} e #{word_for_gender('subscribe', customer.gender)} no CPF sob o n° #{customer.cpf}",
-        customer.last_email&.strip, "residente e #{word_for_gender('live', customer.gender)}: #{address.street.to_s.downcase.titleize&.strip}, n° #{address.number}",
-        address.description.to_s.downcase.titleize&.strip, "#{address.city&.strip} - #{address.state&.strip}, CEP #{address.zip_code&.strip}", responsable
+    def responsable_company
+      return nil unless @customer&.represent&.representor&.present?
+
+      representor = @customer.represent.representor
+      representor_address = representor.addresses.first
+
+      [
+        "neste ato representado por seu sócio administrador #{representor.full_name.upcase}",
+        word_for_gender(representor.nationality, representor.gender),
+        word_for_gender(representor.civil_status, representor.gender),
+        "#{word_for_gender('owner', representor.gender)} do RG n° #{representor.rg} e #{word_for_gender('subscribe', representor.gender)} no CPF sob o n° #{representor.cpf}",
+        representor.last_email,
+        "residente e #{word_for_gender('live', representor.gender)} à #{representor_address.street.to_s.downcase.titleize}, n° #{representor_address.number}",
+        representor_address.description.to_s.downcase.titleize,
+        "#{representor_address.city} - #{representor_address.state}, CEP #{representor_address.zip_code}"
       ].reject(&:blank?).join(', ')
+    end
+
+    def mask_cnpj(cnpj)
+      return '' if cnpj.blank?
+
+      # Remove any non-digit characters
+      digits = cnpj.to_s.gsub(/\D/, '')
+
+      # Make sure we have exactly 14 digits
+      return '' if digits.length != 14
+
+      # Format as XX.XXX.XXX/XXXX-XX
+      "#{digits[0..1]}.#{digits[2..4]}.#{digits[5..7]}/#{digits[8..11]}-#{digits[12..13]}"
+    end
+
+    def substitute_client_info(text)
+      if customer.customer_type == 'legal_person'
+        # For companies (legal persons)
+        responsable = responsable_company
+        translated_text = [
+          customer.name.upcase,
+          'pessoa jurídica de direito privado',
+          "inscrita no CNPJ sob o n° #{mask_cnpj(customer.cnpj)}",
+          "com sede na #{address.street.to_s.downcase.titleize&.strip}, n° #{address.number}",
+          address.description.to_s.downcase.titleize&.strip,
+          "#{address.neighborhood&.strip}, #{address.city&.strip} - #{address.state&.strip}, CEP #{address.zip_code&.strip}",
+          responsable.to_s
+        ].reject(&:blank?).join(', ')
+        # responsable_company
+      else
+        # Original code for individual persons
+        translated_text = [
+          customer.full_name.upcase,
+          word_for_gender(customer.nationality, customer.gender),
+          word_for_gender(customer.civil_status, customer.gender),
+          capacity,
+          customer.profession.downcase&.strip,
+          "#{word_for_gender('owner', customer.gender)} do RG n° #{customer.rg} e #{word_for_gender('subscribe', customer.gender)} no CPF sob o n° #{customer.cpf}",
+          customer.last_email&.strip,
+          "residente e #{word_for_gender('live', customer.gender)}: #{address.street.to_s.downcase.titleize&.strip}, n° #{address.number}",
+          address.description.to_s.downcase.titleize&.strip,
+          "#{address.city&.strip} - #{address.state&.strip}, CEP #{address.zip_code&.strip}",
+          responsable
+        ].reject(&:blank?).join(', ')
+      end
 
       text.substitute('_proc_outorgante_', translated_text)
     end
