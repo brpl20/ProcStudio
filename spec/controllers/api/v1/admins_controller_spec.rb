@@ -23,7 +23,8 @@ RSpec.describe Api::V1::AdminsController, type: :request do
             'type' => 'admin',
             'attributes' => {
               'access_email' => admin.email,
-              'deleted' => false
+              'deleted' => false,
+              'status' => 'active'
             },
             'relationships' => {
               'profile_admin' => {
@@ -130,7 +131,8 @@ RSpec.describe Api::V1::AdminsController, type: :request do
             'type' => 'admin',
             'attributes' => {
               'access_email' => 'emailnovo@gmail.com',
-              'deleted' => false
+              'deleted' => false,
+              'status' => 'active'
             },
             'relationships' => {
               'profile_admin' => {
@@ -166,7 +168,8 @@ RSpec.describe Api::V1::AdminsController, type: :request do
             'type' => 'admin',
             'attributes' => {
               'access_email' => admin.email,
-              'deleted' => false
+              'deleted' => false,
+              'status' => 'active'
             },
             'relationships' => {
               'profile_admin' => {

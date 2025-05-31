@@ -28,7 +28,8 @@ RSpec.describe Api::V1::CustomersController, type: :request do
               'created_by_id' => customer.created_by_id,
               'confirmed_at' => customer.confirmed_at,
               'confirmed' => customer.confirmed?,
-              'deleted' => false
+              'deleted' => false,
+              'status' => customer.status
             }
           }],
           'meta' => {
@@ -89,7 +90,8 @@ RSpec.describe Api::V1::CustomersController, type: :request do
               'created_by_id' => customer.created_by_id,
               'confirmed_at' => customer.confirmed_at,
               'confirmed' => customer.confirmed?,
-              'deleted' => false
+              'deleted' => false,
+              'status' => customer.status
             }
           }
         )
@@ -120,7 +122,8 @@ RSpec.describe Api::V1::CustomersController, type: :request do
               'created_by_id' => customer.created_by_id,
               'confirmed_at' => customer.confirmed_at,
               'confirmed' => customer.confirmed?,
-              'deleted' => false
+              'deleted' => false,
+              'status' => customer.status
             }
           }
         )

@@ -55,8 +55,7 @@ RSpec.describe ProfileAdmin, type: :model do
       is_expected.to define_enum_for(:status)
         .with_values(
           active: 'active',
-          inactive: 'inactive',
-          pending: 'pending'
+          inactive: 'inactive'
         ).backed_by_column_of_type(:string)
     end
 

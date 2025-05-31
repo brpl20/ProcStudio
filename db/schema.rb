@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_05_22_181814) do
+ActiveRecord::Schema[7.0].define(version: 2025_05_30_021552) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -108,6 +108,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_22_181814) do
     t.datetime "updated_at", null: false
     t.string "jwt_token"
     t.datetime "deleted_at"
+    t.string "status", default: "active", null: false
     t.index ["deleted_at"], name: "index_admins_on_deleted_at"
     t.index ["email"], name: "index_admins_on_email", unique: true
     t.index ["jwt_token"], name: "index_admins_on_jwt_token", unique: true
@@ -205,6 +206,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_22_181814) do
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
     t.datetime "unconfirmed_email"
+    t.string "status", default: "active", null: false
     t.index ["confirmation_token"], name: "index_customers_on_confirmation_token", unique: true
     t.index ["created_by_id"], name: "index_customers_on_created_by_id"
     t.index ["deleted_at"], name: "index_customers_on_deleted_at"
@@ -453,7 +455,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_22_181814) do
     t.date "birth"
     t.string "mother_name"
     t.string "number_benefit"
-    t.integer "status"
     t.json "document"
     t.string "nit"
     t.string "inss_password"
@@ -464,6 +465,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_22_181814) do
     t.integer "accountant_id"
     t.datetime "deleted_at"
     t.bigint "created_by_id"
+    t.string "status", default: "active", null: false
     t.index ["accountant_id"], name: "index_profile_customers_on_accountant_id"
     t.index ["created_by_id"], name: "index_profile_customers_on_created_by_id"
     t.index ["customer_id"], name: "index_profile_customers_on_customer_id"
