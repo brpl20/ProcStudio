@@ -8,24 +8,25 @@ on:
 jobs:
   test_secret:
     name: test_secret
+    runs-on: ubuntu-latest
 
     steps:
       - name: GIT KEY
         run: |
           if [ -z "${{ secrets.GIT_KEY }}" ]; then
-            echo "GIT_KEY is NOT set"
+            echo "❌ GIT_KEY is NOT set"
             exit 1
           else
-            echo "GIT_KEY is set"
+            echo "✅ GIT_KEY is set"
           fi
 
       - name: DEPLOY KEY
         run: |
           if [ -z "${{ secrets.DEPLOY_KEY }}" ]; then
-            echo "DEPLOY_KEY is NOT set"
+            echo "❌ DEPLOY_KEY is NOT set"
             exit 1
           else
-            echo "DEPLOY_KEY is set"
+            echo "✅ DEPLOY_KEY is set"
           fi
 
   rubocop:
