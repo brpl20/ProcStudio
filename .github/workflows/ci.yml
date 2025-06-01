@@ -15,17 +15,6 @@ jobs:
     name: test_secret
     runs-on: ubuntu-latest
     steps:
-<<<<<<< Updated upstream
-=======
-      - name: GIT KEY
-        run: |
-          if [ -z "${{ secrets.GIT_KEY }}" ]; then
-            echo "❌ GIT_KEY is NOT set"
-            exit 1
-          else
-            echo "✅ GIT_KEY is set"
-          fi
->>>>>>> Stashed changes
       - name: DEPLOY KEY
         run: |
           if [ -z "${{ secrets.DEPLOY_KEY }}" ]; then
@@ -79,21 +68,12 @@ jobs:
     name: Deploy to staging
     needs: [rubocop, rspec]
     runs-on: ubuntu-latest
-    # if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'stg'
     steps:
       - uses: actions/checkout@v2
       - uses: webfactory/ssh-agent@v0.9.0
         with:
-<<<<<<< Updated upstream
-          ssh-private-key: |
-            ${{ secrets.DEPLOY_KEY }}
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-=======
           ssh-private-key: ${{ secrets.DEPLOY_KEY }}
       - uses: ruby/setup-ruby@v1
->>>>>>> Stashed changes
         with:
           ruby-version: 3.0.0
       - run: sudo apt-get update && sudo apt-get install -y libreoffice
@@ -113,16 +93,8 @@ jobs:
       - uses: actions/checkout@v2
       - uses: webfactory/ssh-agent@v0.9.0
         with:
-<<<<<<< Updated upstream
-          ssh-private-key: |
-            ${{ secrets.DEPLOY_KEY }}
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-=======
           ssh-private-key: ${{ secrets.DEPLOY_KEY }}
       - uses: ruby/setup-ruby@v1
->>>>>>> Stashed changes
         with:
           ruby-version: 3.0.0
       - run: sudo apt-get update && sudo apt-get install -y libreoffice
