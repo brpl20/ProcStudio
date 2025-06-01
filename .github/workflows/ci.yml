@@ -3,14 +3,29 @@ name: CI
 on:
   push:
     branches:
-      - '*'
+      - '*'       # roda testes em qualquer push
+  pull_request:
+    types: [closed]  # roda deploy quando PR fechado (merged ou não)
+    branches:
+      - main
+      - stg
 
 jobs:
   test_secret:
     name: test_secret
     runs-on: ubuntu-latest
-
     steps:
+<<<<<<< Updated upstream
+=======
+      - name: GIT KEY
+        run: |
+          if [ -z "${{ secrets.GIT_KEY }}" ]; then
+            echo "❌ GIT_KEY is NOT set"
+            exit 1
+          else
+            echo "✅ GIT_KEY is set"
+          fi
+>>>>>>> Stashed changes
       - name: DEPLOY KEY
         run: |
           if [ -z "${{ secrets.DEPLOY_KEY }}" ]; then
@@ -23,23 +38,15 @@ jobs:
   rubocop:
     name: Rubocop
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
+      - uses: actions/checkout@v2
+      - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-
-      - name: Install dependencies
-        run: |
+      - run: |
           gem install bundler
           bundle install
-
-      - name: Rubocop
-        run: bundle exec rubocop
+      - run: bundle exec rubocop
 
   rspec:
     name: RSpec
@@ -47,7 +54,6 @@ jobs:
     env:
       RAILS_ENV: test
       DATABASE_URL: postgres://postgres:example@localhost:5432/db_test
-
     services:
       postgres:
         image: postgres:latest
@@ -57,62 +63,44 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: example
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+      - uses: actions/checkout@v2
+      - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.0.0
-
-      - name: Install LibreOffice
-        run: sudo apt-get update && sudo apt-get install -y libreoffice
-
-      - name: Start LibreOffice in headless mode
-        run: soffice --headless --accept="socket,host=127.0.0.1,port=2002;urp;" --nofirststartwizard &
-
-      - name: Install dependencies
-        run: |
+      - run: sudo apt-get update && sudo apt-get install -y libreoffice
+      - run: soffice --headless --accept="socket,host=127.0.0.1,port=2002;urp;" --nofirststartwizard &
+      - run: |
           gem install bundler
           bundle install
-
-      - name: Run RSpec
-        run: RAILS_ENV=test bundle exec rspec
+      - run: RAILS_ENV=test bundle exec rspec
 
   deploy_staging:
     name: Deploy to staging
     needs: [rubocop, rspec]
     runs-on: ubuntu-latest
-
-    if: github.ref == 'refs/heads/stg' && success()
-
+    # if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'stg'
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: setup ssh-agent
-        uses: webfactory/ssh-agent@v0.9.0
+      - uses: actions/checkout@v2
+      - uses: webfactory/ssh-agent@v0.9.0
         with:
+<<<<<<< Updated upstream
           ssh-private-key: |
             ${{ secrets.DEPLOY_KEY }}
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
+=======
+          ssh-private-key: ${{ secrets.DEPLOY_KEY }}
+      - uses: ruby/setup-ruby@v1
+>>>>>>> Stashed changes
         with:
           ruby-version: 3.0.0
-
-      - name: Install LibreOffice
-        run: sudo apt-get update && sudo apt-get install -y libreoffice
-
-      - name: Install dependencies
-        run: |
+      - run: sudo apt-get update && sudo apt-get install -y libreoffice
+      - run: |
           gem install bundler
           bundle install
-
-      - name: Deploy to staging
-        run: |
+      - run: |
           gem install mina
           bundle exec mina staging deploy
 
@@ -120,33 +108,27 @@ jobs:
     name: Deploy to production
     needs: [rubocop, rspec]
     runs-on: ubuntu-latest
-
-    if: github.ref == 'refs/heads/main' && success()
-
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: setup ssh-agent
-        uses: webfactory/ssh-agent@v0.9.0
+      - uses: actions/checkout@v2
+      - uses: webfactory/ssh-agent@v0.9.0
         with:
+<<<<<<< Updated upstream
           ssh-private-key: |
             ${{ secrets.DEPLOY_KEY }}
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
+=======
+          ssh-private-key: ${{ secrets.DEPLOY_KEY }}
+      - uses: ruby/setup-ruby@v1
+>>>>>>> Stashed changes
         with:
           ruby-version: 3.0.0
-
-      - name: Install LibreOffice
-        run: sudo apt-get update && sudo apt-get install -y libreoffice
-
-      - name: Install dependencies
-        run: |
+      - run: sudo apt-get update && sudo apt-get install -y libreoffice
+      - run: |
           gem install bundler
           bundle install
-
-      - name: Deploy to production
-        run: |
+      - run: |
           gem install mina
           bundle exec mina production deploy
