@@ -68,6 +68,7 @@ jobs:
     name: Deploy to staging
     needs: [rubocop, rspec]
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'stg'
     steps:
       - uses: actions/checkout@v2
       - uses: webfactory/ssh-agent@v0.9.0
@@ -76,7 +77,6 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.0.0
-      - run: sudo apt-get update && sudo apt-get install -y libreoffice
       - run: |
           gem install bundler
           bundle install
@@ -97,7 +97,6 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.0.0
-      - run: sudo apt-get update && sudo apt-get install -y libreoffice
       - run: |
           gem install bundler
           bundle install
