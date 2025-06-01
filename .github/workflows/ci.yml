@@ -11,15 +11,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: GIT KEY
-        run: |
-          if [ -z "${{ secrets.GIT_KEY }}" ]; then
-            echo "❌ GIT_KEY is NOT set"
-            exit 1
-          else
-            echo "✅ GIT_KEY is set"
-          fi
-
       - name: DEPLOY KEY
         run: |
           if [ -z "${{ secrets.DEPLOY_KEY }}" ]; then
@@ -105,7 +96,6 @@ jobs:
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: |
-            ${{ secrets.GIT_KEY }}
             ${{ secrets.DEPLOY_KEY }}
 
       - name: Set up Ruby
@@ -141,7 +131,6 @@ jobs:
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: |
-            ${{ secrets.GIT_KEY }}
             ${{ secrets.DEPLOY_KEY }}
 
       - name: Set up Ruby
