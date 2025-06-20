@@ -22,8 +22,6 @@ class Address < ApplicationRecord
   with_options presence: true do
     validates :zip_code
     validates :street
-    validates :number
-    validates :neighborhood
     validates :city
     validates :state
   end
