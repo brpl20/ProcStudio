@@ -55,7 +55,7 @@ RSpec.describe ProfileCustomer, type: :model do
 
     it { is_expected.to have_one(:represent) }
 
-    it { is_expected.to belong_to(:customer) }
+    it { is_expected.to belong_to(:customer).optional }
     it { is_expected.to belong_to(:accountant).class_name('ProfileCustomer').optional(true) }
   end
 
