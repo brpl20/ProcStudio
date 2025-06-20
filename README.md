@@ -2,7 +2,7 @@
 - [![Ruby Style Guide](https://img.shields.io/badge/code_style-rubocop-brightgreen.svg)](https://github.com/rubocop/rubocop)
 - API Reference [API DOC](API_DOC.md) and ```public\openapi.yaml```
 
-## FrontEnd 
+## FrontEnd
 
 [FrontEnd Repo](https://github.com/brpl20/procstudio_front)
 
@@ -23,7 +23,7 @@
 - Postgres
 - You can check DB Schema Here == (needs update?) ==> /public/DER_Procstudio_v2.mwb
 
-## Hosting & Files 
+## Hosting & Files
 - Aws EC2
 - Aws S3
 
@@ -31,16 +31,16 @@
 - MailGun: Mail Delivery
 - ZapSign: Signature
 
-## Specs 
+## Specs
 - Ruby 3.0.0
 - Rails 7.0.4.2
 
-### Ruby Gems 
+### Ruby Gems
 - Docx
 - Devise
 - Check others in `gemfile`
 
-## Project Description  
+## Project Description
 This project was born under the premisse of helping lawyers generate documents in a easy way. Simple documents and mass documents. The original idea was only create some legal documents. Specially documents between the lawyer and it's final client. But, with the document generation we have a lot ot components to deal with (like the Customer details, and the Work details) and we need a database and a system around it. We've choosen Ruby on Rails to deal with it.
 
 In the first phase of the developing we are working only with Lawyers and Customers documents. This will be the MVP. In the future we want create more layers of the documents.  Like documents regarding Lawyer and final documents. Mayber related to the Justice System or B2B/B2C contracts for example. The third layer will be mass documents.
@@ -49,22 +49,22 @@ In the first phase of the developing we are working only with Lawyers and Custom
 - Second layer documents: Lawyer x Final Work (Justice or other procedures: contracts and so on).
 - Third layer documents: Mass generation of documents.
 
-## Signatures 
+## Signatures
 Currently using [ZapSign](https://zapsign.com.br/) services as API. The main focus is making fast documents and provide signature suport for contract and representation documents (Procuração, Contrato, Declaração de Carência, Termo de Renúncia).
 
-We provide a way to use digital signature or keep the signature as regular print and sign system. We also implemented revision of the documents. 
+We provide a way to use digital signature or keep the signature as regular print and sign system. We also implemented revision of the documents.
 
-## Install 
+## Install
 - Clone
 - Configure DB ```config/database.yml```
 - Run: ```rails staging:setup```
 
-## Models 
+## Models
 Brief explanation of the main Models (/models):
 
 1. Admin: Central users of the platform, those who will use the system. They will be the lawyers who use the system. It is directly related to the ProfileAdmin, which will store all data and determine other attributes, such as whether they are a lawyer, paralegal, intern, secretary, accountant, or external accountant (TD: Review accountant and external accountant to see if they whre really implemented). It may seem strange, but here in Brazil, we have some situations where it is important to have an accountant working alongside a lawyer. The word was incorrectly translated into English. The term "counter" means a user who will have powers similar to a lawyer. The "excounter" will be an accountant with limited powers, usually only to monitor the work of their clients, typically in tax cases that require specific knowledge of tax calculations. Additionally, there are attributes such as "status," "civil_status," and others. There is an error that will be discussed shortly in the logic between the lawyer and the office.
 
-2. Customer: The lawyer's client who will use our platform. The Customer also has access to the system, where they can consult data from their cases, download documents, and check the work being done by the lawyer/office. Customer will be created when they information is setup in the system. An e-mail will be generated and they will receive a simple access. The general route for this will be `cliente.procstudio.com.br`, you can check staging version [here](https://staging_cliente.procstudio.com.br/). 
+2. Customer: The lawyer's client who will use our platform. The Customer also has access to the system, where they can consult data from their cases, download documents, and check the work being done by the lawyer/office. Customer will be created when they information is setup in the system. An e-mail will be generated and they will receive a simple access. The general route for this will be `cliente.procstudio.com.br`, you can check staging version [here](https://cliente_hml.procstudio.com.br/).
 
 3. Document: The model used to create documents. At this moment, these documents are related to Works and the lawyer x customer hiring.
 
@@ -110,48 +110,48 @@ role: and status: are the main fields of the admin, this will be helpful to set 
 6. excounter:
 
 #### Lawyer Access
-**Lawyer Full Admin:** The main and first Admin of the system. Will be able to have full access to it, FULL CRUD. 
+**Lawyer Full Admin:** The main and first Admin of the system. Will be able to have full access to it, FULL CRUD.
 - CRUD: Admins, Offices, Customers, Works, Jobs, GenerateDoc's
 
-**Lawyer Level 1:** The second lawyer in the hierarchy, will be able to have the following crud options: 
-- CRUD: Offices, Customers, Works, Jobs, GenerateDocs. 
+**Lawyer Level 1:** The second lawyer in the hierarchy, will be able to have the following crud options:
+- CRUD: Offices, Customers, Works, Jobs, GenerateDocs.
 
 #### Paralegal Access and Lawyer Level 2
-Paralegal will be the lawyers assistants, will help in the daily routine, will have the following powers: 
+Paralegal will be the lawyers assistants, will help in the daily routine, will have the following powers:
 
-- CRU: Customers. 
-- D: Under supervision of Admin(lawyers): Customers. 
-- CRUD: Works, Jobs, GenerateDocs. Destroy only what is created by _self_. If is from others will need permission from Admin(laywer) - Full Admin or Lawyer Level 1. 
+- CRU: Customers.
+- D: Under supervision of Admin(lawyers): Customers.
+- CRUD: Works, Jobs, GenerateDocs. Destroy only what is created by _self_. If is from others will need permission from Admin(laywer) - Full Admin or Lawyer Level 1.
 
 #### Trainee
-Helps the Lawyers and the paralegals in the deaily routines. 
+Helps the Lawyers and the paralegals in the deaily routines.
 
-- CR: Customers (cannot read or update :bank_details), Works, Jobs, GenerateDocs 
-- UD: Customers, Works, Jobs, GenerateDocs, Only: created by _self_. 
-- UD: Customers, Works, Jobs, GenerateDocs from other users, only with permission from Admins, Lawyers and Paralegals.  
+- CR: Customers (cannot read or update :bank_details), Works, Jobs, GenerateDocs
+- UD: Customers, Works, Jobs, GenerateDocs, Only: created by _self_.
+- UD: Customers, Works, Jobs, GenerateDocs from other users, only with permission from Admins, Lawyers and Paralegals.
 
-#### Secretary 
+#### Secretary
 Schedule apointments, meetings and helps the team in general.
 
-- CR: Customers (cannot update :bank_details), Works, Jobs, GenerateDocs 
-- UD: Customers, Works, Jobs, GenerateDocs, Only: created by _self_. 
-- UD: Customers, Works, Jobs, GenerateDocs from other users, only with permission from Admins, Lawyers and Paralegals. 
+- CR: Customers (cannot update :bank_details), Works, Jobs, GenerateDocs
+- UD: Customers, Works, Jobs, GenerateDocs, Only: created by _self_.
+- UD: Customers, Works, Jobs, GenerateDocs from other users, only with permission from Admins, Lawyers and Paralegals.
 
 #### Counter / accountant
-The accountant is an specific user that is a accountant, sometimes they help the lawyers with some cases, so it's important that they have access to the system. 
+The accountant is an specific user that is a accountant, sometimes they help the lawyers with some cases, so it's important that they have access to the system.
 
 - CRU customers
-- CRU works => Only tributary -- PERDCOMP 
+- CRU works => Only tributary -- PERDCOMP
     - http://localhost:3000/cadastrar?type=trabalho
-    - Create an specific route that will have access to only this kind of work: 
-        - Tributário Pis/Cofins 
-- CRU jobs related to the specific works 
+    - Create an specific route that will have access to only this kind of work:
+        - Tributário Pis/Cofins
+- CRU jobs related to the specific works
 
-#### Excounter / external accountant 
-Sometimes the company has an accountant that whants follow up the works from the lawyers office, so we created a simplified view to this kind of users.  
-- R: Specific Client/Work attached to it: 
+#### Excounter / external accountant
+Sometimes the company has an accountant that whants follow up the works from the lawyers office, so we created a simplified view to this kind of users.
+- R: Specific Client/Work attached to it:
     * List view INDEX
-    * View by :id 
+    * View by :id
 
 
 ## Services Details => Document Generation
