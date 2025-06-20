@@ -5,7 +5,7 @@ module ProcStudio::UrlHelper
     if production?
       'https://cliente.procstudio.com.br'
     elsif staging?
-      'https://staging_cliente.procstudio.com.br'
+      'https://cliente_hml.procstudio.com.br'
     else
       'http://localhost:3000'
     end

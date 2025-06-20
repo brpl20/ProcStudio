@@ -39,8 +39,8 @@ class Work < ApplicationRecord
 
   acts_as_paranoid
 
-  has_many :customer_works, dependent: :destroy
-  has_many :profile_customers, through: :customer_works
+  has_many :customer_works, -> { with_deleted }, dependent: :destroy
+  has_many :profile_customers, -> { with_deleted }, through: :customer_works
 
   has_many :profile_admin_works, dependent: :destroy
   has_many :profile_admins, through: :profile_admin_works
