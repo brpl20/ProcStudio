@@ -15,5 +15,5 @@ class CustomerWork < ApplicationRecord
   acts_as_paranoid
 
   belongs_to :profile_customer
-  belongs_to :work
+  belongs_to :work, -> { with_deleted }, optional: true
 end
