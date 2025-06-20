@@ -37,7 +37,7 @@ class ProfileCustomer < ApplicationRecord
 
   acts_as_paranoid
 
-  belongs_to :customer
+  belongs_to :customer, -> { with_deleted }, optional: true
   belongs_to :accountant, class_name: 'ProfileCustomer', optional: true
 
   enum gender: {
