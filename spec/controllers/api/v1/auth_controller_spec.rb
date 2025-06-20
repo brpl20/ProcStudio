@@ -4,9 +4,12 @@ require 'rails_helper'
 require 'webmock/rspec'
 
 RSpec.describe Api::V1::AuthController, type: :request do
-  let!(:admin) { create(:admin) }
+  let!(:admin) { create(:profile_admin).admin }
   let!(:jwt_token) do
-    JWT.encode({ admin_id: admin.id, exp: Time.now.to_i + 3600 }, Rails.application.secret_key_base)
+    JWT.encode({ admin_id: admin.id,
+                 exp: Time.now.to_i + 3600,
+                 name: admin.profile_admin.name,
+                 last_name: admin.profile_admin.last_name }, Rails.application.secret_key_base)
   end
   let(:headers) { { 'Authorization' => "Bearer #{jwt_token}" } }
 
@@ -129,7 +132,7 @@ RSpec.describe Api::V1::AuthController, type: :request do
     context 'when authenticating with Google' do
       let(:access_token) { 'valid_access_token' }
       let(:email) { 'user@example.com' }
-      let(:admin) { create(:admin, email: email) }
+      let(:admin) { create(:profile_admin).admin }
 
       before do
         allow(controller).to receive(:params).and_return({ provider: 'google', accessToken: access_token })
