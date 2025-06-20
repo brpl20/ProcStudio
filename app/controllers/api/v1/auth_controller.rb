@@ -58,7 +58,8 @@ module Api
         admin = Admin.find_for_authentication(email: email)
 
         if admin
-          token = update_user_token(admin)
+          profile_admin = admin.profile_admin
+          token = update_user_token(admin, profile_admin)
           render json: { token: token, role: admin.role }
         else
           head :not_found
