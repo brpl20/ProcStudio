@@ -37,7 +37,8 @@ module Api
         admin = Admin.find_for_authentication(email: auth_params[:email])
 
         if admin&.valid_password?(auth_params[:password])
-          token = update_user_token(admin)
+          profile_admin = admin.profile_admin
+          token = update_user_token(admin, profile_admin)
           render json: { token: token, role: admin.role }
         else
           head :unauthorized
@@ -57,7 +58,8 @@ module Api
         admin = Admin.find_for_authentication(email: email)
 
         if admin
-          token = update_user_token(admin)
+          profile_admin = admin.profile_admin
+          token = update_user_token(admin, profile_admin)
           render json: { token: token, role: admin.role }
         else
           head :not_found
@@ -79,9 +81,10 @@ module Api
         nil
       end
 
-      def update_user_token(admin)
+      def update_user_token(admin, profile_admin)
         exp = Time.now.to_i + (24 * 3600)
-        token = JWT.encode({ admin_id: admin.id, exp: exp }, Rails.application.secret_key_base)
+        token_data = { admin_id: admin.id, name: profile_admin.name, last_name: profile_admin.last_name, exp: exp }
+        token = JWT.encode(token_data, Rails.application.secret_key_base)
         admin.update(jwt_token: token)
         token
       end
