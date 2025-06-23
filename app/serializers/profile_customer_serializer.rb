@@ -43,10 +43,20 @@ class ProfileCustomerSerializer
     object.deleted_at.present?
   end
 
-  attribute :represent do |object|
+  attribute :represent_by do |object|
     represent = object.represent
 
-    RepresentSerializer.new(represent).serializable_hash[:data][:attributes] if represent
+    {
+      "profile_customer_id": represent.representor_id
+    } if represent
+  end
+
+  attribute :represents do |object|
+    object.represented_customers.map do |represent|
+      {
+        "profile_customer_id": represent.profile_customer_id
+      }
+    end
   end
 
   attribute :phones do |object|

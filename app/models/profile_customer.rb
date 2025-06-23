@@ -99,6 +99,7 @@ class ProfileCustomer < ApplicationRecord
   has_many :documents, dependent: :destroy
   has_many :recommendations, dependent: :destroy
 
+  has_many :represented_customers, class_name: 'Represent', foreign_key: 'representor_id', dependent: :nullify
   has_one :represent, dependent: :destroy
 
   accepts_nested_attributes_for :customer_files, :customer, :addresses,
