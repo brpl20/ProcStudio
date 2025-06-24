@@ -58,9 +58,7 @@ module Api
         if @profile_customer.update(profile_customers_params)
           ProfileCustomers::CreateDocumentService.call(@profile_customer, @current_admin) if truthy_param?(:regenerate_documents)
 
-          if @profile_customer.customer&.saved_change_to_access_email?
-            @profile_customer.customer.send_confirmation_instructions
-          end
+          @profile_customer.customer.send_confirmation_instructions if @profile_customer.customer&.saved_change_to_email?
 
           render json: ProfileCustomerSerializer.new(
             @profile_customer,
