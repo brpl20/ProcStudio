@@ -46,15 +46,17 @@ class ProfileCustomerSerializer
   attribute :represent_by do |object|
     represent = object.represent
 
-    {
-      "profile_customer_id": represent.representor_id
-    } if represent
+    if represent
+      {
+        profile_customer_id: represent.representor_id
+      }
+    end
   end
 
   attribute :represents do |object|
     object.represented_customers.map do |represent|
       {
-        "profile_customer_id": represent.profile_customer_id
+        profile_customer_id: represent.profile_customer_id
       }
     end
   end
