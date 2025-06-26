@@ -54,7 +54,25 @@ class ProfileCustomerSerializer
   end
 
   attribute :represents do |object|
-    object.represented_customers.map { |represent| ProfileCustomerSerializer.new(represent.profile_customer).serializable_hash[:data][:attributes] }
+    object.represented_customers.map do |represent|
+      profile_customer = represent.profile_customer
+
+      {
+        access_email: profile_customer.customer.email,
+        customer_id: profile_customer.customer_id,
+        customer_type: profile_customer.customer_type,
+        name: profile_customer.name,
+        last_name: profile_customer.last_name,
+        cpf: profile_customer.cpf,
+        cnpj: profile_customer.cnpj,
+        company: profile_customer.company,
+        nit: profile_customer.nit,
+        number_benefit: profile_customer.number_benefit,
+        profession: profile_customer.profession,
+        rg: profile_customer.rg,
+        status: profile_customer.status
+      }
+    end
   end
 
   attribute :phones do |object|
