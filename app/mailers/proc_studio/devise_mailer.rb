@@ -7,6 +7,7 @@ class ProcStudio::DeviseMailer < Devise::Mailer
 
   def confirmation_instructions(record, token, _opts = {})
     return if Rails.env.test? || Rails.env.development?
+    return unless record.persisted?
 
     confirmation_url = base_client_url + confirmation_path(token)
     Customers::Mail::WelcomeService.call(record, confirmation_url)
