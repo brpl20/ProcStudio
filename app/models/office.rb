@@ -23,6 +23,7 @@
 #  responsible_lawyer_id :integer
 #  accounting_type       :string
 #  deleted_at            :datetime
+#  team_id               :bigint(8)
 #
 class Office < ApplicationRecord
   include DeletedFilterConcern
@@ -31,6 +32,7 @@ class Office < ApplicationRecord
 
   belongs_to :office_type
   belongs_to :responsible_lawyer, class_name: 'ProfileAdmin', optional: true
+  belongs_to :team, optional: true
 
   has_many :profile_admins, dependent: :destroy
   has_one_attached :logo

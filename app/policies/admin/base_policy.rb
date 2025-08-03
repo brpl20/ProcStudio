@@ -2,11 +2,20 @@
 
 class Admin::BasePolicy < ApplicationPolicy
   def role
-    @role ||= user&.profile_admin&.role
+    @role ||= admin_user&.profile_admin&.role
   end
 
   def owner?
-    record.created_by_id == user.id
+    record.created_by_id == admin_user.id
+  end
+  
+  def admin_user
+    # Handle both old format (user object) and new format (hash with admin/team)
+    user.is_a?(Hash) ? user[:admin] : user
+  end
+  
+  def current_team
+    user.is_a?(Hash) ? user[:team] : nil
   end
 
   # Define methods for each role

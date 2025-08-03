@@ -76,6 +76,26 @@ Rails.application.routes.draw do
 
       resources :office_types
       resources :powers
+      
+      # Team management routes
+      resources :teams do
+        member do
+          post :add_member
+          delete 'members/:admin_id', to: 'teams#remove_member'
+          patch 'members/:admin_id', to: 'teams#update_member'
+        end
+      end
+      
+      # Subscription management routes
+      resources :subscriptions, only: %i[show create update] do
+        collection do
+          get :plans
+          get :usage
+        end
+        member do
+          patch :cancel
+        end
+      end
 
       post '/login', to: 'auth#authenticate'
       delete '/logout', to: 'auth#destroy'

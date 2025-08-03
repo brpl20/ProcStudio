@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_05_30_021552) do
+ActiveRecord::Schema[7.0].define(version: 2025_08_03_132717) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -124,6 +124,22 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_30_021552) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "pix"
+  end
+
+  create_table "contact_infos", force: :cascade do |t|
+    t.string "contactable_type", null: false
+    t.bigint "contactable_id", null: false
+    t.string "contact_type", null: false
+    t.json "contact_data", default: {}, null: false
+    t.boolean "is_primary", default: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contact_type", "contactable_type", "contactable_id"], name: "index_contact_infos_on_type_and_contactable"
+    t.index ["contactable_type", "contactable_id", "is_primary"], name: "index_contact_infos_on_primary"
+    t.index ["contactable_type", "contactable_id"], name: "index_contact_infos_on_contactable"
+    t.index ["contactable_type", "contactable_id"], name: "index_contact_infos_on_contactable_type_and_contactable_id"
+    t.index ["deleted_at"], name: "index_contact_infos_on_deleted_at"
   end
 
   create_table "customer_addresses", force: :cascade do |t|
@@ -260,6 +276,29 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_30_021552) do
     t.index ["work_id"], name: "index_honoraries_on_work_id"
   end
 
+  create_table "individual_entities", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "last_name"
+    t.string "gender"
+    t.string "rg"
+    t.string "cpf", null: false
+    t.string "nationality"
+    t.string "civil_status"
+    t.string "profession"
+    t.date "birth"
+    t.string "mother_name"
+    t.string "nit"
+    t.string "inss_password"
+    t.boolean "invalid_person", default: false
+    t.json "additional_documents", default: {}
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cpf"], name: "index_individual_entities_on_cpf", unique: true
+    t.index ["deleted_at"], name: "index_individual_entities_on_deleted_at"
+    t.index ["name", "last_name"], name: "index_individual_entities_on_name_and_last_name"
+  end
+
   create_table "job_works", force: :cascade do |t|
     t.bigint "job_id", null: false
     t.bigint "work_id", null: false
@@ -291,6 +330,28 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_30_021552) do
     t.index ["profile_admin_id"], name: "index_jobs_on_profile_admin_id"
     t.index ["profile_customer_id"], name: "index_jobs_on_profile_customer_id"
     t.index ["work_id"], name: "index_jobs_on_work_id"
+  end
+
+  create_table "legal_entities", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "cnpj"
+    t.string "inscription_number"
+    t.string "state_registration"
+    t.string "oab_id"
+    t.string "society_link"
+    t.integer "number_of_partners"
+    t.string "status", default: "active"
+    t.string "accounting_type"
+    t.string "entity_type"
+    t.bigint "legal_representative_id"
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cnpj"], name: "index_legal_entities_on_cnpj", unique: true, where: "(cnpj IS NOT NULL)"
+    t.index ["deleted_at"], name: "index_legal_entities_on_deleted_at"
+    t.index ["entity_type"], name: "index_legal_entities_on_entity_type"
+    t.index ["legal_representative_id"], name: "index_legal_entities_on_legal_representative_id"
+    t.index ["status"], name: "index_legal_entities_on_status"
   end
 
   create_table "office_bank_accounts", force: :cascade do |t|
@@ -362,10 +423,29 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_30_021552) do
     t.integer "responsible_lawyer_id"
     t.string "accounting_type"
     t.datetime "deleted_at"
+    t.bigint "team_id"
     t.index ["accounting_type"], name: "index_offices_on_accounting_type"
     t.index ["deleted_at"], name: "index_offices_on_deleted_at"
     t.index ["office_type_id"], name: "index_offices_on_office_type_id"
     t.index ["responsible_lawyer_id"], name: "index_offices_on_responsible_lawyer_id"
+    t.index ["team_id"], name: "index_offices_on_team_id"
+  end
+
+  create_table "payment_transactions", force: :cascade do |t|
+    t.bigint "subscription_id", null: false
+    t.decimal "amount", precision: 10, scale: 2, null: false
+    t.string "currency", default: "BRL"
+    t.string "status", default: "pending"
+    t.string "payment_method"
+    t.string "transaction_id"
+    t.json "payment_data", default: {}
+    t.datetime "processed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["processed_at"], name: "index_payment_transactions_on_processed_at"
+    t.index ["status"], name: "index_payment_transactions_on_status"
+    t.index ["subscription_id"], name: "index_payment_transactions_on_subscription_id"
+    t.index ["transaction_id"], name: "index_payment_transactions_on_transaction_id"
   end
 
   create_table "pending_documents", force: :cascade do |t|
@@ -434,8 +514,12 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_30_021552) do
     t.bigint "office_id"
     t.string "origin"
     t.datetime "deleted_at"
+    t.bigint "individual_entity_id"
+    t.bigint "legal_entity_id"
     t.index ["admin_id"], name: "index_profile_admins_on_admin_id"
     t.index ["deleted_at"], name: "index_profile_admins_on_deleted_at"
+    t.index ["individual_entity_id"], name: "index_profile_admins_on_individual_entity_id"
+    t.index ["legal_entity_id"], name: "index_profile_admins_on_legal_entity_id"
     t.index ["office_id"], name: "index_profile_admins_on_office_id"
   end
 
@@ -466,10 +550,14 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_30_021552) do
     t.datetime "deleted_at"
     t.bigint "created_by_id"
     t.string "status", default: "active", null: false
+    t.bigint "individual_entity_id"
+    t.bigint "legal_entity_id"
     t.index ["accountant_id"], name: "index_profile_customers_on_accountant_id"
     t.index ["created_by_id"], name: "index_profile_customers_on_created_by_id"
     t.index ["customer_id"], name: "index_profile_customers_on_customer_id"
     t.index ["deleted_at"], name: "index_profile_customers_on_deleted_at"
+    t.index ["individual_entity_id"], name: "index_profile_customers_on_individual_entity_id"
+    t.index ["legal_entity_id"], name: "index_profile_customers_on_legal_entity_id"
   end
 
   create_table "recommendations", force: :cascade do |t|
@@ -492,6 +580,87 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_30_021552) do
     t.bigint "representor_id"
     t.index ["profile_customer_id"], name: "index_represents_on_profile_customer_id"
     t.index ["representor_id"], name: "index_represents_on_representor_id"
+  end
+
+  create_table "subscription_plans", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "description"
+    t.decimal "price", precision: 10, scale: 2
+    t.string "currency", default: "BRL"
+    t.string "billing_interval"
+    t.integer "max_users"
+    t.integer "max_offices"
+    t.integer "max_cases"
+    t.json "features", default: {}
+    t.boolean "is_active", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["billing_interval"], name: "index_subscription_plans_on_billing_interval"
+    t.index ["is_active"], name: "index_subscription_plans_on_is_active"
+  end
+
+  create_table "subscriptions", force: :cascade do |t|
+    t.bigint "team_id", null: false
+    t.bigint "subscription_plan_id", null: false
+    t.date "start_date", null: false
+    t.date "end_date"
+    t.string "status", default: "trial"
+    t.date "trial_end_date"
+    t.decimal "monthly_amount", precision: 10, scale: 2
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deleted_at"], name: "index_subscriptions_on_deleted_at"
+    t.index ["status"], name: "index_subscriptions_on_status"
+    t.index ["subscription_plan_id"], name: "index_subscriptions_on_subscription_plan_id"
+    t.index ["team_id", "status"], name: "index_subscriptions_on_team_id_and_status"
+    t.index ["team_id"], name: "index_subscriptions_on_team_id"
+  end
+
+  create_table "team_memberships", force: :cascade do |t|
+    t.bigint "team_id", null: false
+    t.bigint "admin_id", null: false
+    t.string "role", default: "member", null: false
+    t.string "status", default: "active"
+    t.datetime "joined_at"
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_id"], name: "index_team_memberships_on_admin_id"
+    t.index ["deleted_at"], name: "index_team_memberships_on_deleted_at"
+    t.index ["role"], name: "index_team_memberships_on_role"
+    t.index ["status"], name: "index_team_memberships_on_status"
+    t.index ["team_id", "admin_id"], name: "index_team_memberships_on_team_id_and_admin_id", unique: true
+    t.index ["team_id"], name: "index_team_memberships_on_team_id"
+  end
+
+  create_table "team_offices", force: :cascade do |t|
+    t.bigint "team_id", null: false
+    t.bigint "office_id", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deleted_at"], name: "index_team_offices_on_deleted_at"
+    t.index ["office_id"], name: "index_team_offices_on_office_id"
+    t.index ["team_id", "office_id"], name: "index_team_offices_on_team_id_and_office_id", unique: true
+    t.index ["team_id"], name: "index_team_offices_on_team_id"
+  end
+
+  create_table "teams", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "subdomain", null: false
+    t.bigint "main_admin_id", null: false
+    t.bigint "owner_admin_id", null: false
+    t.string "status", default: "active"
+    t.json "settings", default: {}
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deleted_at"], name: "index_teams_on_deleted_at"
+    t.index ["main_admin_id"], name: "index_teams_on_main_admin_id"
+    t.index ["owner_admin_id"], name: "index_teams_on_owner_admin_id"
+    t.index ["status"], name: "index_teams_on_status"
+    t.index ["subdomain"], name: "index_teams_on_subdomain", unique: true
   end
 
   create_table "work_events", force: :cascade do |t|
@@ -569,6 +738,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_30_021552) do
   add_foreign_key "job_works", "profile_customers"
   add_foreign_key "job_works", "works"
   add_foreign_key "jobs", "admins", column: "created_by_id"
+  add_foreign_key "legal_entities", "individual_entities", column: "legal_representative_id"
   add_foreign_key "office_bank_accounts", "bank_accounts"
   add_foreign_key "office_bank_accounts", "offices"
   add_foreign_key "office_emails", "emails"
@@ -578,6 +748,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_30_021552) do
   add_foreign_key "office_works", "offices"
   add_foreign_key "office_works", "works"
   add_foreign_key "offices", "office_types"
+  add_foreign_key "offices", "teams"
+  add_foreign_key "payment_transactions", "subscriptions"
   add_foreign_key "pending_documents", "profile_customers"
   add_foreign_key "pending_documents", "works"
   add_foreign_key "power_works", "powers"
@@ -585,13 +757,25 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_30_021552) do
   add_foreign_key "profile_admin_works", "profile_admins"
   add_foreign_key "profile_admin_works", "works"
   add_foreign_key "profile_admins", "admins"
+  add_foreign_key "profile_admins", "individual_entities"
+  add_foreign_key "profile_admins", "legal_entities"
   add_foreign_key "profile_admins", "offices"
   add_foreign_key "profile_customers", "admins", column: "created_by_id"
   add_foreign_key "profile_customers", "customers"
+  add_foreign_key "profile_customers", "individual_entities"
+  add_foreign_key "profile_customers", "legal_entities"
   add_foreign_key "recommendations", "profile_customers"
   add_foreign_key "recommendations", "works"
   add_foreign_key "represents", "profile_customers"
   add_foreign_key "represents", "profile_customers", column: "representor_id"
+  add_foreign_key "subscriptions", "subscription_plans"
+  add_foreign_key "subscriptions", "teams"
+  add_foreign_key "team_memberships", "admins"
+  add_foreign_key "team_memberships", "teams"
+  add_foreign_key "team_offices", "offices"
+  add_foreign_key "team_offices", "teams"
+  add_foreign_key "teams", "admins", column: "main_admin_id"
+  add_foreign_key "teams", "admins", column: "owner_admin_id"
   add_foreign_key "work_events", "works"
   add_foreign_key "works", "admins", column: "created_by_id"
 end

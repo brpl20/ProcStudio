@@ -5,12 +5,21 @@ class BackofficeController < ApplicationController
   include Pundit::Authorization
 
   before_action :authenticate_admin
+  before_action :require_team!
 
   rescue_from Pundit::NotAuthorizedError, with: :unauthorized
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
   def current_user
     @current_user ||= @current_admin
+  end
+  
+  def current_admin
+    @current_admin
+  end
+  
+  def pundit_user
+    { admin: current_admin, team: current_team }
   end
 
   def unauthorized(exception)

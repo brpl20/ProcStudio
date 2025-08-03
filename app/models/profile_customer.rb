@@ -4,33 +4,35 @@
 #
 # Table name: profile_customers
 #
-#  id             :bigint(8)        not null, primary key
-#  customer_type  :string
-#  name           :string
-#  last_name      :string
-#  gender         :string
-#  rg             :string
-#  cpf            :string
-#  cnpj           :string
-#  nationality    :string
-#  civil_status   :string
-#  capacity       :string
-#  profession     :string
-#  company        :string
-#  birth          :date
-#  mother_name    :string
-#  number_benefit :string
-#  document       :json
-#  nit            :string
-#  inss_password  :string
-#  invalid_person :integer
-#  customer_id    :bigint(8)        not null
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
-#  accountant_id  :integer
-#  deleted_at     :datetime
-#  created_by_id  :bigint(8)
-#  status         :string           default("active"), not null
+#  id                   :bigint(8)        not null, primary key
+#  customer_type        :string
+#  name                 :string
+#  last_name            :string
+#  gender               :string
+#  rg                   :string
+#  cpf                  :string
+#  cnpj                 :string
+#  nationality          :string
+#  civil_status         :string
+#  capacity             :string
+#  profession           :string
+#  company              :string
+#  birth                :date
+#  mother_name          :string
+#  number_benefit       :string
+#  document             :json
+#  nit                  :string
+#  inss_password        :string
+#  invalid_person       :integer
+#  customer_id          :bigint(8)        not null
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
+#  accountant_id        :integer
+#  deleted_at           :datetime
+#  created_by_id        :bigint(8)
+#  status               :string           default("active"), not null
+#  individual_entity_id :bigint(8)
+#  legal_entity_id      :bigint(8)
 #
 class ProfileCustomer < ApplicationRecord
   include DeletedFilterConcern

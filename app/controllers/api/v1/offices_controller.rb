@@ -10,7 +10,7 @@ module Api
       after_action :verify_authorized
 
       def index
-        @offices = OfficeFilter.retrieve_offices
+        @offices = current_team.offices
 
         filter_by_deleted_params.each do |key, value|
           next unless value.present?
@@ -34,7 +34,14 @@ module Api
       end
 
       def create
-        @office = Office.new(offices_params)
+        @office = current_team.offices.build(offices_params)
+        
+        unless current_team.can_add_offices?
+          return render json: { 
+            errors: ['Office limit reached for current subscription plan'] 
+          }, status: :unprocessable_entity
+        end
+        
         if @office.save
           render json: @office, status: :created
         else
@@ -73,7 +80,7 @@ module Api
       def with_lawyers
         authorize [:admin, :office], :index?
 
-        offices = OfficeFilter.retrieve_offices_with_lawyers
+        offices = current_team.offices.includes(:profile_admins)
         render json: OfficeWithLawyersSerializer.new(
           offices
         ), status: :ok
@@ -93,7 +100,7 @@ module Api
       private
 
       def retrieve_office
-        @office = OfficeFilter.retrieve_office(params[:id])
+        @office = current_team.offices.find(params[:id])
       rescue ActiveRecord::RecordNotFound
         head :not_found
       end

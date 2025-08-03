@@ -4,25 +4,27 @@
 #
 # Table name: profile_admins
 #
-#  id           :bigint(8)        not null, primary key
-#  role         :string
-#  name         :string
-#  last_name    :string
-#  gender       :string
-#  oab          :string
-#  rg           :string
-#  cpf          :string
-#  nationality  :string
-#  civil_status :string
-#  birth        :date
-#  mother_name  :string
-#  status       :string
-#  admin_id     :bigint(8)        not null
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  office_id    :bigint(8)
-#  origin       :string
-#  deleted_at   :datetime
+#  id                   :bigint(8)        not null, primary key
+#  role                 :string
+#  name                 :string
+#  last_name            :string
+#  gender               :string
+#  oab                  :string
+#  rg                   :string
+#  cpf                  :string
+#  nationality          :string
+#  civil_status         :string
+#  birth                :date
+#  mother_name          :string
+#  status               :string
+#  admin_id             :bigint(8)        not null
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
+#  office_id            :bigint(8)
+#  origin               :string
+#  deleted_at           :datetime
+#  individual_entity_id :bigint(8)
+#  legal_entity_id      :bigint(8)
 #
 class ProfileAdmin < ApplicationRecord
   include DeletedFilterConcern
