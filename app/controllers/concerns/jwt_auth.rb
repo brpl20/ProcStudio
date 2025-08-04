@@ -66,8 +66,7 @@ module JwtAuth
     Admin.create!(
       email: 'dev@localhost.com',
       password: 'password123',
-      password_confirmation: 'password123',
-      name: 'Development Admin'
+      password_confirmation: 'password123'
     )
   rescue ActiveRecord::RecordInvalid
     Admin.first
