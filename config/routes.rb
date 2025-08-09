@@ -90,6 +90,20 @@ Rails.application.routes.draw do
           delete 'members/:admin_id', to: 'teams#remove_member'
           patch 'members/:admin_id', to: 'teams#update_member'
         end
+        
+        # Wiki routes nested under teams
+        resources :wiki_pages do
+          member do
+            post :publish
+            post :unpublish
+            post :lock
+            post :unlock
+            get :revisions
+            post :revert
+          end
+        end
+        
+        resources :wiki_categories
       end
       
       # Subscription management routes

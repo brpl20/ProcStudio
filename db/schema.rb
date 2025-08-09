@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_08_09_004313) do
+ActiveRecord::Schema[7.0].define(version: 2025_08_09_184831) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -559,12 +559,14 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_09_004313) do
     t.string "status", default: "active", null: false
     t.bigint "individual_entity_id"
     t.bigint "legal_entity_id"
+    t.bigint "team_id"
     t.index ["accountant_id"], name: "index_profile_customers_on_accountant_id"
     t.index ["created_by_id"], name: "index_profile_customers_on_created_by_id"
     t.index ["customer_id"], name: "index_profile_customers_on_customer_id"
     t.index ["deleted_at"], name: "index_profile_customers_on_deleted_at"
     t.index ["individual_entity_id"], name: "index_profile_customers_on_individual_entity_id"
     t.index ["legal_entity_id"], name: "index_profile_customers_on_legal_entity_id"
+    t.index ["team_id"], name: "index_profile_customers_on_team_id"
   end
 
   create_table "recommendations", force: :cascade do |t|
@@ -668,6 +670,80 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_09_004313) do
     t.index ["owner_admin_id"], name: "index_teams_on_owner_admin_id"
     t.index ["status"], name: "index_teams_on_status"
     t.index ["subdomain"], name: "index_teams_on_subdomain", unique: true
+  end
+
+  create_table "wiki_categories", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "slug", null: false
+    t.text "description"
+    t.bigint "team_id", null: false
+    t.bigint "parent_id"
+    t.integer "position", default: 0
+    t.string "color"
+    t.string "icon"
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deleted_at"], name: "index_wiki_categories_on_deleted_at"
+    t.index ["parent_id"], name: "index_wiki_categories_on_parent_id"
+    t.index ["position"], name: "index_wiki_categories_on_position"
+    t.index ["team_id", "parent_id"], name: "index_wiki_categories_on_team_id_and_parent_id"
+    t.index ["team_id", "slug"], name: "index_wiki_categories_on_team_id_and_slug", unique: true
+    t.index ["team_id"], name: "index_wiki_categories_on_team_id"
+  end
+
+  create_table "wiki_page_categories", force: :cascade do |t|
+    t.bigint "wiki_page_id", null: false
+    t.bigint "wiki_category_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["wiki_category_id"], name: "index_wiki_page_categories_on_wiki_category_id"
+    t.index ["wiki_page_id", "wiki_category_id"], name: "index_wiki_page_categories_unique", unique: true
+    t.index ["wiki_page_id"], name: "index_wiki_page_categories_on_wiki_page_id"
+  end
+
+  create_table "wiki_page_revisions", force: :cascade do |t|
+    t.bigint "wiki_page_id", null: false
+    t.string "title", null: false
+    t.text "content"
+    t.integer "version_number", null: false
+    t.bigint "created_by_id", null: false
+    t.text "change_summary"
+    t.json "diff_data", default: {}
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_by_id"], name: "index_wiki_page_revisions_on_created_by_id"
+    t.index ["deleted_at"], name: "index_wiki_page_revisions_on_deleted_at"
+    t.index ["wiki_page_id", "version_number"], name: "index_wiki_page_revisions_on_wiki_page_id_and_version_number", unique: true
+    t.index ["wiki_page_id"], name: "index_wiki_page_revisions_on_wiki_page_id"
+  end
+
+  create_table "wiki_pages", force: :cascade do |t|
+    t.string "title", null: false
+    t.string "slug", null: false
+    t.text "content"
+    t.bigint "team_id", null: false
+    t.bigint "created_by_id", null: false
+    t.bigint "updated_by_id", null: false
+    t.bigint "parent_id"
+    t.integer "position", default: 0
+    t.boolean "is_published", default: false
+    t.boolean "is_locked", default: false
+    t.json "metadata", default: {}
+    t.datetime "published_at"
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_by_id"], name: "index_wiki_pages_on_created_by_id"
+    t.index ["deleted_at"], name: "index_wiki_pages_on_deleted_at"
+    t.index ["is_published"], name: "index_wiki_pages_on_is_published"
+    t.index ["parent_id"], name: "index_wiki_pages_on_parent_id"
+    t.index ["position"], name: "index_wiki_pages_on_position"
+    t.index ["team_id", "parent_id"], name: "index_wiki_pages_on_team_id_and_parent_id"
+    t.index ["team_id", "slug"], name: "index_wiki_pages_on_team_id_and_slug", unique: true
+    t.index ["team_id"], name: "index_wiki_pages_on_team_id"
+    t.index ["updated_by_id"], name: "index_wiki_pages_on_updated_by_id"
   end
 
   create_table "work_events", force: :cascade do |t|
@@ -776,6 +852,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_09_004313) do
   add_foreign_key "profile_customers", "customers"
   add_foreign_key "profile_customers", "individual_entities"
   add_foreign_key "profile_customers", "legal_entities"
+  add_foreign_key "profile_customers", "teams"
   add_foreign_key "recommendations", "profile_customers"
   add_foreign_key "recommendations", "works"
   add_foreign_key "represents", "profile_customers"
@@ -788,6 +865,16 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_09_004313) do
   add_foreign_key "team_offices", "teams"
   add_foreign_key "teams", "admins", column: "main_admin_id"
   add_foreign_key "teams", "admins", column: "owner_admin_id"
+  add_foreign_key "wiki_categories", "teams"
+  add_foreign_key "wiki_categories", "wiki_categories", column: "parent_id"
+  add_foreign_key "wiki_page_categories", "wiki_categories"
+  add_foreign_key "wiki_page_categories", "wiki_pages"
+  add_foreign_key "wiki_page_revisions", "admins", column: "created_by_id"
+  add_foreign_key "wiki_page_revisions", "wiki_pages"
+  add_foreign_key "wiki_pages", "admins", column: "created_by_id"
+  add_foreign_key "wiki_pages", "admins", column: "updated_by_id"
+  add_foreign_key "wiki_pages", "teams"
+  add_foreign_key "wiki_pages", "wiki_pages", column: "parent_id"
   add_foreign_key "work_events", "works"
   add_foreign_key "works", "admins", column: "created_by_id"
   add_foreign_key "works", "teams"

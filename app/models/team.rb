@@ -30,6 +30,8 @@ class Team < ApplicationRecord
   has_many :subscriptions, dependent: :destroy
   has_many :invitations, dependent: :destroy
   has_many :email_logs, dependent: :destroy
+  has_many :wiki_pages, dependent: :destroy
+  has_many :wiki_categories, dependent: :destroy
   
   validates :name, presence: true, length: { minimum: 2, maximum: 100 }
   validates :subdomain, presence: true, uniqueness: { case_sensitive: false }, 

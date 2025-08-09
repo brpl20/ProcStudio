@@ -52,6 +52,11 @@ class Admin < ApplicationRecord
            class_name: 'ContactInfo', as: :contactable
   has_many :bank_accounts, -> { where(contact_type: 'bank_account') }, 
            class_name: 'ContactInfo', as: :contactable
+  
+  # Wiki relationships
+  has_many :created_wiki_pages, class_name: 'WikiPage', foreign_key: 'created_by_id'
+  has_many :updated_wiki_pages, class_name: 'WikiPage', foreign_key: 'updated_by_id'
+  has_many :wiki_revisions, class_name: 'WikiPageRevision', foreign_key: 'created_by_id'
 
   validates :email, presence: true
   validates :status, inclusion: { in: %w[active inactive suspended] }

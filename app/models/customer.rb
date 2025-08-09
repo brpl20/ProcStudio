@@ -39,7 +39,7 @@ class Customer < ApplicationRecord
 
   delegate :full_name, to: :profile_customer, prefix: true, allow_nil: true
 
-  scope :by_team, ->(team) { where(team: team) }
+  scope :by_team, ->(team) { where(team_id: team&.id) }
 
   before_validation :setup_password, if: :new_record?
 

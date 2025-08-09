@@ -110,7 +110,8 @@ module Api
       end
 
       def retrieve_customer
-        @customer = ::Customer.find(params[:id])
+        scope = current_team ? ::Customer.by_team(current_team) : ::Customer
+        @customer = scope.find(params[:id])
       end
 
       def perform_authorization

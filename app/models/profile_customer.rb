@@ -33,6 +33,7 @@
 #  status               :string           default("active"), not null
 #  individual_entity_id :bigint(8)
 #  legal_entity_id      :bigint(8)
+#  team_id              :bigint(8)
 #
 class ProfileCustomer < ApplicationRecord
   include DeletedFilterConcern
@@ -41,6 +42,7 @@ class ProfileCustomer < ApplicationRecord
 
   belongs_to :customer, -> { with_deleted }, optional: true
   belongs_to :accountant, class_name: 'ProfileCustomer', optional: true
+  belongs_to :team, optional: true
 
   enum gender: {
     male: 'male',
@@ -103,6 +105,8 @@ class ProfileCustomer < ApplicationRecord
 
   has_many :represented_customers, class_name: 'Represent', foreign_key: 'representor_id', dependent: :nullify
   has_one :represent, dependent: :destroy
+
+  scope :by_team, ->(team) { where(team: team) }
 
   accepts_nested_attributes_for :customer_files, :customer, :addresses,
                                 :phones, :emails, :bank_accounts, :represent,
