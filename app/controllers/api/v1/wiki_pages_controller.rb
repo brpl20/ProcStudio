@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
-class Api::V1::WikiPagesController < ApplicationController
-  before_action :authenticate_admin!
-  before_action :set_team
+module Api
+  module V1
+    class WikiPagesController < BackofficeController
+  before_action :set_team_from_params
   before_action :set_wiki_page, only: [:show, :update, :destroy, :publish, :unpublish, :lock, :unlock, :revisions, :revert]
 
   def index
@@ -113,7 +114,7 @@ class Api::V1::WikiPagesController < ApplicationController
 
   private
 
-  def set_team
+  def set_team_from_params
     @team = current_admin.teams.find(params[:team_id])
   rescue ActiveRecord::RecordNotFound
     render json: { error: 'Team not found' }, status: :not_found
@@ -158,5 +159,7 @@ class Api::V1::WikiPagesController < ApplicationController
 
     search_term = "%#{params[:search]}%"
     @wiki_pages = @wiki_pages.where('title ILIKE ? OR content ILIKE ?', search_term, search_term)
+  end
+    end
   end
 end

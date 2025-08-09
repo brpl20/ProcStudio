@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
-class Api::V1::WikiCategoriesController < ApplicationController
-  before_action :authenticate_admin!
-  before_action :set_team
+module Api
+  module V1
+    class WikiCategoriesController < BackofficeController
+      before_action :set_team_from_params
   before_action :set_wiki_category, only: [:show, :update, :destroy]
 
   def index
@@ -52,7 +53,7 @@ class Api::V1::WikiCategoriesController < ApplicationController
 
   private
 
-  def set_team
+  def set_team_from_params
     @team = current_admin.teams.find(params[:team_id])
   rescue ActiveRecord::RecordNotFound
     render json: { error: 'Team not found' }, status: :not_found
@@ -66,5 +67,7 @@ class Api::V1::WikiCategoriesController < ApplicationController
 
   def wiki_category_params
     params.require(:wiki_category).permit(:name, :slug, :description, :parent_id, :position, :color, :icon)
+  end
+    end
   end
 end
