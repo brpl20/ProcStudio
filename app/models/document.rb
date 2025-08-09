@@ -14,6 +14,7 @@
 #  format              :integer          default("docx"), not null
 #  status              :integer          default("pending_review"), not null
 #  sign_source         :integer          default("no_signature"), not null
+#  team_id             :bigint(8)
 #
 class Document < ApplicationRecord
   acts_as_paranoid

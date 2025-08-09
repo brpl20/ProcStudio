@@ -17,6 +17,7 @@
 #  profile_customer_id :bigint(8)
 #  created_by_id       :bigint(8)
 #  deleted_at          :datetime
+#  team_id             :bigint(8)
 #
 class Job < ApplicationRecord
   include DeletedFilterConcern

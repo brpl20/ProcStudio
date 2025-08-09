@@ -13,7 +13,7 @@ module Api
       after_action :verify_authorized
 
       def index
-        profile_customers = ProfileCustomerFilter.retrieve_customers
+        profile_customers = ProfileCustomerFilter.retrieve_customers(current_team)
 
         filter_by_deleted_params.each do |key, value|
           next unless value.present?
@@ -32,6 +32,7 @@ module Api
       def create
         profile_customer = ProfileCustomer.new(profile_customers_params)
         profile_customer.created_by_id = current_user.id
+        profile_customer.team = current_team
         if profile_customer.save
           ProfileCustomers::CreateDocumentService.call(profile_customer, current_user) if truthy_param?(:issue_documents)
 
@@ -109,7 +110,7 @@ module Api
 
       def profile_customer
         @profile_customer = ProfileCustomer.with_deleted.find(params[:id]) if truthy_param?(:include_deleted)
-        @profile_customer ||= ProfileCustomerFilter.retrieve_customer(params[:id])
+        @profile_customer ||= ProfileCustomerFilter.retrieve_customer(params[:id], current_team)
       end
 
       def profile_customers_params
@@ -123,6 +124,7 @@ module Api
           :nit, :mother_name,
           :inss_password,
           :accountant_id,
+          :team_id,
           addresses_attributes: %i[id description zip_code street number neighborhood city state],
           bank_accounts_attributes: %i[id bank_name type_account agency account operation pix],
           customer_attributes: %i[id email access_email password password_confirmation],

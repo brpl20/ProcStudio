@@ -20,6 +20,7 @@
 #  confirmation_sent_at   :datetime
 #  unconfirmed_email      :datetime
 #  status                 :string           default("active"), not null
+#  team_id                :bigint(8)
 #
 class Customer < ApplicationRecord
   include DeletedFilterConcern
@@ -36,6 +37,8 @@ class Customer < ApplicationRecord
   has_one :profile_customer, dependent: :destroy
 
   delegate :full_name, to: :profile_customer, prefix: true, allow_nil: true
+
+  scope :by_team, ->(team) { where(team_id: team&.id) }
 
   before_validation :setup_password, if: :new_record?
 
