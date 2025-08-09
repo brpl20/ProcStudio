@@ -133,6 +133,5 @@ class Work < ApplicationRecord
     return unless team.present?
 
     documents.where(team: nil).update_all(team_id: team.id)
-    pending_documents.where(team_id: nil).update_all(team_id: team.id) if respond_to?(:pending_documents)
   end
 end

@@ -107,7 +107,8 @@ module Api
           :comment,
           :profile_customer_id,
           :profile_admin_id,
-          :work_id
+          :work_id,
+          :team_id
         )
       end
 

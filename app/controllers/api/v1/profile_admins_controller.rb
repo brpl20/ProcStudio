@@ -22,7 +22,7 @@ module Api
       end
 
       def index
-        profile_admins = ProfileAdmin.all
+        profile_admins = current_team ? ProfileAdmin.by_team(current_team) : ProfileAdmin.all
 
         filter_by_deleted_params.each do |key, value|
           next unless value.present?

@@ -105,7 +105,7 @@ module Api
 
       def customers_params
         params.require(:customer).permit(
-          :email, :access_email, :password, :password_confirmation, :status
+          :email, :access_email, :password, :password_confirmation, :status, :team_id
         )
       end
 

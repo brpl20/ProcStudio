@@ -87,6 +87,11 @@ class ProfileAdmin < ApplicationRecord
 
   accepts_nested_attributes_for :admin, :addresses, :phones, :emails, :bank_accounts, reject_if: :all_blank
 
+  scope :by_team, ->(team) { 
+    joins(admin: :team_memberships)
+    .where(team_memberships: { team_id: team.id, status: 'active' })
+  }
+
   with_options presence: true do
     validates :civil_status
     validates :cpf
