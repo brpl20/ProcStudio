@@ -17,12 +17,14 @@
 #  profile_customer_id :bigint(8)
 #  created_by_id       :bigint(8)
 #  deleted_at          :datetime
+#  team_id             :bigint(8)
 #
 class Job < ApplicationRecord
   include DeletedFilterConcern
 
   acts_as_paranoid
 
+  belongs_to :team, optional: true
   belongs_to :work, optional: true
   belongs_to :profile_customer, optional: true
   belongs_to :profile_admin
@@ -32,6 +34,8 @@ class Job < ApplicationRecord
     delayed: 'delayed',
     finished: 'finished'
   }
+
+  scope :by_team, ->(team) { where(team: team) }
 
   after_find :check_and_update_status
 

@@ -21,7 +21,7 @@ module Api
       private
 
       def set_work
-        @work = Work.find(params[:work_id])
+        @work = current_team ? Work.by_team(current_team).find(params[:work_id]) : Work.find(params[:work_id])
       end
 
       def set_document

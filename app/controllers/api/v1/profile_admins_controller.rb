@@ -6,8 +6,20 @@ module Api
       before_action :retrieve_profile_admin, only: %i[update show]
       before_action :retrieve_deleted_profile_admin, only: %i[restore]
       before_action :perform_authorization
+      skip_before_action :perform_authorization, only: %i[me create]
 
       after_action :verify_authorized
+      skip_after_action :verify_authorized, only: %i[me create]
+
+      def me
+        profile_admin = current_admin.profile_admin
+        
+        if profile_admin
+          render json: ProfileAdminSerializer.new(profile_admin), status: :ok
+        else
+          render json: { error: 'Profile not found' }, status: :not_found
+        end
+      end
 
       def index
         profile_admins = ProfileAdmin.all
@@ -28,6 +40,8 @@ module Api
 
       def create
         profile_admin = ProfileAdmin.new(profile_admins_params)
+        profile_admin.admin = current_admin
+        
         if profile_admin.save
           render json: ProfileAdminSerializer.new(
             profile_admin,

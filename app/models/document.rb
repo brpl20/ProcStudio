@@ -14,10 +14,12 @@
 #  format              :integer          default("docx"), not null
 #  status              :integer          default("pending_review"), not null
 #  sign_source         :integer          default("no_signature"), not null
+#  team_id             :bigint(8)
 #
 class Document < ApplicationRecord
   acts_as_paranoid
 
+  belongs_to :team, optional: true
   belongs_to :profile_customer
   belongs_to :work
 
@@ -42,6 +44,7 @@ class Document < ApplicationRecord
   enum sign_source: [:no_signature, :manual_signature, :zapsign]
 
   scope :procurations, -> { where(document_type: 'procuration') }
+  scope :by_team, ->(team) { where(team: team) }
 
   def mark_as_pdf_and_approved
     update(format: :pdf, status: :approved)

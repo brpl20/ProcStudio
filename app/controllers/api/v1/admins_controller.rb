@@ -5,8 +5,18 @@ module Api
     class AdminsController < BackofficeController
       before_action :retrieve_admin, only: %i[update show]
       before_action :perform_authorization
+      skip_before_action :perform_authorization, only: %i[current]
 
       after_action :verify_authorized
+      skip_after_action :verify_authorized, only: %i[current]
+
+      def current
+        render json: {
+          id: current_admin.id,
+          email: current_admin.email,
+          jwt_token: current_admin.jwt_token
+        }
+      end
 
       def index
         admins = Admin.includes(:profile_admin).all

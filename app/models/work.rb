@@ -30,15 +30,18 @@
 #  bachelor                 :integer
 #  initial_atendee          :integer
 #  procedures               :text             default([]), is an Array
-#  status                   :string           default("in_progress")
 #  created_by_id            :bigint(8)
+#  status                   :string           default("in_progress")
 #  deleted_at               :datetime
+#  team_id                  :bigint(8)
 #
 class Work < ApplicationRecord
   include DeletedFilterConcern
 
   acts_as_paranoid
 
+  belongs_to :team, optional: true
+  
   has_many :customer_works, -> { with_deleted }, dependent: :destroy
   has_many :profile_customers, -> { with_deleted }, through: :customer_works
 
@@ -119,4 +122,17 @@ class Work < ApplicationRecord
   accepts_nested_attributes_for :documents, :pending_documents, :recommendations, :honorary, reject_if: :all_blank, allow_destroy: true
 
   scope :filter_by_customer_id, ->(customer_id) { joins(:profile_customers).where(profile_customers: { id: customer_id }) }
+  scope :by_team, ->(team) { where(team: team) }
+
+  after_create :set_team_on_associations
+  after_update :set_team_on_associations
+
+  private
+
+  def set_team_on_associations
+    return unless team.present?
+
+    documents.where(team: nil).update_all(team_id: team.id)
+    pending_documents.where(team_id: nil).update_all(team_id: team.id) if respond_to?(:pending_documents)
+  end
 end

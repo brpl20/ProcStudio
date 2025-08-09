@@ -9,7 +9,8 @@ module Api
       after_action :verify_authorized
 
       def index
-        jobs = JobFilter.retrieve_jobs
+        jobs = current_team ? Job.by_team(current_team) : Job.all
+        # jobs = JobFilter.retrieve_jobs # Comentando temporariamente para usar filtro por team
 
         filter_by_deleted_params.each do |key, value|
           next unless value.present?
@@ -35,6 +36,7 @@ module Api
       def create
         job = Job.new(jobs_params)
         job.created_by_id = current_user.id
+        job.team = current_team
         if job.save
           render json: job, status: :created
         else

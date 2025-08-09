@@ -2,18 +2,21 @@
 
 module JwtAuth
   def authenticate_admin
-    # Skip authentication in development mode for localhost
-    if Rails.env.development? && development_bypass_enabled?
+    # Try normal JWT authentication first
+    if token.present?
+      head :unauthorized and return unless payload.key?('admin_id')
+
+      @current_admin ||= Admin.find(payload['admin_id'])
+      head :unauthorized unless @current_admin&.jwt_token == token
+      head :unauthorized unless valid_token?
+    elsif Rails.env.development? && development_bypass_enabled?
+      # Only use bypass if no token is provided
       @current_admin ||= Admin.first || create_dev_admin
       set_current_team_for_dev if @current_admin
       return
+    else
+      head :unauthorized and return
     end
-
-    head :unauthorized and return unless payload.key?('admin_id')
-
-    @current_admin ||= Admin.find(payload['admin_id'])
-    head :unauthorized unless @current_admin&.jwt_token == token
-    head :unauthorized unless valid_token?
     
     # Set current team from JWT payload or default to first active team
     set_current_team_from_payload

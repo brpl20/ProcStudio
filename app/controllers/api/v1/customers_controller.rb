@@ -9,7 +9,7 @@ module Api
       after_action :verify_authorized
 
       def index
-        customers = ::Customer.all
+        customers = current_team ? ::Customer.by_team(current_team) : ::Customer.all
 
         filter_by_deleted_params.each do |key, value|
           next unless value.present?
@@ -28,6 +28,7 @@ module Api
       def create
         customer = ::Customer.new(customers_params)
         customer.created_by_id = current_user.id
+        customer.team = current_team
         if customer.save
 
           render json: CustomerSerializer.new(

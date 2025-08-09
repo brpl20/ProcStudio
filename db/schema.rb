@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_08_03_132717) do
+ActiveRecord::Schema[7.0].define(version: 2025_08_09_004313) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -109,6 +109,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_03_132717) do
     t.string "jwt_token"
     t.datetime "deleted_at"
     t.string "status", default: "active", null: false
+    t.string "temp_oab"
     t.index ["deleted_at"], name: "index_admins_on_deleted_at"
     t.index ["email"], name: "index_admins_on_email", unique: true
     t.index ["jwt_token"], name: "index_admins_on_jwt_token", unique: true
@@ -223,11 +224,13 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_03_132717) do
     t.datetime "confirmation_sent_at"
     t.datetime "unconfirmed_email"
     t.string "status", default: "active", null: false
+    t.bigint "team_id"
     t.index ["confirmation_token"], name: "index_customers_on_confirmation_token", unique: true
     t.index ["created_by_id"], name: "index_customers_on_created_by_id"
     t.index ["deleted_at"], name: "index_customers_on_deleted_at"
     t.index ["email"], name: "index_customers_on_email_where_not_deleted", unique: true, where: "(deleted_at IS NULL)"
     t.index ["reset_password_token"], name: "index_customers_on_reset_password_token", unique: true
+    t.index ["team_id"], name: "index_customers_on_team_id"
   end
 
   create_table "documents", force: :cascade do |t|
@@ -240,8 +243,10 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_03_132717) do
     t.integer "format", default: 0, null: false
     t.integer "status", default: 0, null: false
     t.integer "sign_source", default: 0, null: false
+    t.bigint "team_id"
     t.index ["deleted_at"], name: "index_documents_on_deleted_at"
     t.index ["profile_customer_id"], name: "index_documents_on_profile_customer_id"
+    t.index ["team_id"], name: "index_documents_on_team_id"
     t.index ["work_id"], name: "index_documents_on_work_id"
   end
 
@@ -325,10 +330,12 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_03_132717) do
     t.bigint "profile_customer_id"
     t.bigint "created_by_id"
     t.datetime "deleted_at"
+    t.bigint "team_id"
     t.index ["created_by_id"], name: "index_jobs_on_created_by_id"
     t.index ["deleted_at"], name: "index_jobs_on_deleted_at"
     t.index ["profile_admin_id"], name: "index_jobs_on_profile_admin_id"
     t.index ["profile_customer_id"], name: "index_jobs_on_profile_customer_id"
+    t.index ["team_id"], name: "index_jobs_on_team_id"
     t.index ["work_id"], name: "index_jobs_on_work_id"
   end
 
@@ -703,8 +710,10 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_03_132717) do
     t.bigint "created_by_id"
     t.string "status", default: "in_progress"
     t.datetime "deleted_at"
+    t.bigint "team_id"
     t.index ["created_by_id"], name: "index_works_on_created_by_id"
     t.index ["deleted_at"], name: "index_works_on_deleted_at"
+    t.index ["team_id"], name: "index_works_on_team_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -729,7 +738,9 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_03_132717) do
   add_foreign_key "customer_works", "profile_customers"
   add_foreign_key "customer_works", "works"
   add_foreign_key "customers", "admins", column: "created_by_id"
+  add_foreign_key "customers", "teams"
   add_foreign_key "documents", "profile_customers"
+  add_foreign_key "documents", "teams"
   add_foreign_key "documents", "works"
   add_foreign_key "draft_works", "works"
   add_foreign_key "honoraries", "works"
@@ -738,6 +749,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_03_132717) do
   add_foreign_key "job_works", "profile_customers"
   add_foreign_key "job_works", "works"
   add_foreign_key "jobs", "admins", column: "created_by_id"
+  add_foreign_key "jobs", "teams"
   add_foreign_key "legal_entities", "individual_entities", column: "legal_representative_id"
   add_foreign_key "office_bank_accounts", "bank_accounts"
   add_foreign_key "office_bank_accounts", "offices"
@@ -778,4 +790,5 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_03_132717) do
   add_foreign_key "teams", "admins", column: "owner_admin_id"
   add_foreign_key "work_events", "works"
   add_foreign_key "works", "admins", column: "created_by_id"
+  add_foreign_key "works", "teams"
 end

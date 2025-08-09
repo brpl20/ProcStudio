@@ -11,7 +11,8 @@ module Api
       after_action :verify_authorized
 
       def index
-        works = Work.includes(
+        works = current_team ? Work.by_team(current_team) : Work.all
+        works = works.includes(
           :profile_customers,
           :profile_admins,
           :powers,
@@ -19,7 +20,7 @@ module Api
           :jobs,
           :documents,
           :pending_documents
-        ).all
+        )
 
         filtering_params.each do |key, value|
           next unless value.present?
@@ -40,6 +41,7 @@ module Api
       def create
         work = Work.new(work_params)
         work.created_by_id = current_user.id
+        work.team = current_team
 
         if work.save
           Works::CreateDocumentService.call(work)

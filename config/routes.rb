@@ -9,6 +9,9 @@ Rails.application.routes.draw do
     namespace :v1 do
       get '/offices/with_lawyers', to: 'offices#with_lawyers'
       resources :admins do
+        collection do
+          get :current
+        end
         member do
           post :restore
         end
@@ -40,6 +43,9 @@ Rails.application.routes.draw do
       end
 
       resources :profile_admins do
+        collection do
+          get :me
+        end
         member do
           post :restore
         end
@@ -98,6 +104,7 @@ Rails.application.routes.draw do
       end
 
       post '/login', to: 'auth#authenticate'
+      post '/register', to: 'registration#create'
       delete '/logout', to: 'auth#destroy'
 
       namespace :customer do
