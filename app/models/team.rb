@@ -77,15 +77,15 @@ class Team < ApplicationRecord
   end
   
   def admin_role(admin)
-    team_memberships.find_by(admin: admin)&.role
+    team_memberships.find_by(admin_id: admin.id)&.role
   end
   
   def owner?(admin)
-    owner_admin == admin
+    owner_admin_id == admin.id
   end
   
   def main_admin?(admin)
-    main_admin == admin
+    main_admin_id == admin.id
   end
   
   def admin?(admin)
@@ -93,7 +93,7 @@ class Team < ApplicationRecord
   end
   
   def member?(admin)
-    team_memberships.active.exists?(admin: admin)
+    team_memberships.active.exists?(admin_id: admin.id)
   end
   
   private
