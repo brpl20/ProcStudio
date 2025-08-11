@@ -47,6 +47,40 @@ module Api
         )
       end
 
+      def create_with_profile
+        ActiveRecord::Base.transaction do
+          # Determine if it's individual or legal entity
+          profile_type = customer_profile_params[:customer_type] == 'legal_person' ? 'LegalEntity' : 'IndividualEntity'
+          
+          # Create the entity first
+          if profile_type == 'IndividualEntity'
+            entity = IndividualEntity.create!(individual_entity_params)
+          else
+            entity = LegalEntity.create!(legal_entity_params)
+          end
+          
+          # Create customer with polymorphic reference
+          customer = ::Customer.new(customers_params)
+          customer.created_by_id = current_user.id
+          customer.team = current_team
+          customer.profile = entity
+          
+          if customer.save
+            render json: CustomerSerializer.new(customer), status: :created
+          else
+            render(
+              status: :bad_request,
+              json: { errors: [{ code: customer.errors.full_messages }] }
+            )
+          end
+        end
+      rescue StandardError => e
+        render(
+          status: :bad_request,
+          json: { errors: [{ code: e.message }] }
+        )
+      end
+
       def resend_confirmation
         @customer.update(confirmed_at: nil)
         @customer.send_confirmation_instructions
@@ -106,6 +140,33 @@ module Api
       def customers_params
         params.require(:customer).permit(
           :email, :access_email, :password, :password_confirmation, :status, :team_id
+        )
+      end
+
+      def customer_profile_params
+        params.require(:profile).permit(:customer_type)
+      end
+
+      def individual_entity_params
+        params.require(:profile).permit(
+          :name, :last_name, :cpf, :rg, :birth, :gender, :nationality,
+          :civil_status, :capacity, :mother_name, :profession,
+          :number_benefit, :nit, :inss_password, :team_id,
+          contact_addresses_attributes: [:street, :number, :neighborhood, :city, :state, :zip_code, :complement, :address_type, :is_primary],
+          contact_phones_attributes: [:number, :phone_type, :is_whatsapp, :is_primary],
+          contact_emails_attributes: [:address, :email_type, :is_verified, :is_primary],
+          contact_bank_accounts_attributes: [:bank_name, :bank_code, :agency, :account_number, :account_type, :operation, :pix_key]
+        )
+      end
+
+      def legal_entity_params
+        params.require(:profile).permit(
+          :name, :trade_name, :cnpj, :registration_number, :registration_date,
+          :legal_nature, :size, :team_id,
+          contact_addresses_attributes: [:street, :number, :neighborhood, :city, :state, :zip_code, :complement, :address_type, :is_primary],
+          contact_phones_attributes: [:number, :phone_type, :is_whatsapp, :is_primary],
+          contact_emails_attributes: [:address, :email_type, :is_verified, :is_primary],
+          contact_bank_accounts_attributes: [:bank_name, :bank_code, :agency, :account_number, :account_type, :operation, :pix_key]
         )
       end
 

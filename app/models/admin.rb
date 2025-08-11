@@ -16,6 +16,7 @@
 #  deleted_at             :datetime
 #  status                 :string           default("active"), not null
 #  temp_oab               :string
+#  role                   :string           default("admin")
 #
 class Admin < ApplicationRecord
   include DeletedFilterConcern
@@ -30,6 +31,11 @@ class Admin < ApplicationRecord
   enum status: {
     active: 'active',
     inactive: 'inactive'
+  }
+  
+  enum role: {
+    admin: 'admin',
+    super_admin: 'super_admin'
   }
 
   alias_attribute :access_email, :email
@@ -60,9 +66,11 @@ class Admin < ApplicationRecord
 
   validates :email, presence: true
   validates :status, inclusion: { in: %w[active inactive suspended] }
+  validates :role, inclusion: { in: %w[admin super_admin] }
   accepts_nested_attributes_for :profile_admin, reject_if: :all_blank
-
-  delegate :role, to: :profile_admin, allow_nil: true
+  
+  scope :super_admins, -> { where(role: 'super_admin') }
+  scope :regular_admins, -> { where(role: 'admin') }
 
   before_destroy :update_created_by_records
 

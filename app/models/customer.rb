@@ -21,9 +21,12 @@
 #  unconfirmed_email      :datetime
 #  status                 :string           default("active"), not null
 #  team_id                :bigint(8)
+#  profile_type           :string
+#  profile_id             :integer
 #
 class Customer < ApplicationRecord
   include DeletedFilterConcern
+  include CustomerDetailDisplay
 
   acts_as_paranoid
 
@@ -36,8 +39,30 @@ class Customer < ApplicationRecord
 
   belongs_to :team, optional: true
   has_one :profile_customer, dependent: :destroy
+  
+  # Polymorphic association to either IndividualEntity or LegalEntity
+  belongs_to :profile, polymorphic: true, optional: true
 
   delegate :full_name, to: :profile_customer, prefix: true, allow_nil: true
+  
+  # Helper methods for profile access
+  def individual_entity?
+    profile_type == 'IndividualEntity'
+  end
+  
+  def legal_entity?
+    profile_type == 'LegalEntity'
+  end
+  
+  def entity_name
+    return nil unless profile
+    
+    if individual_entity?
+      "#{profile.name} #{profile.last_name}".strip
+    elsif legal_entity?
+      profile.name
+    end
+  end
 
   scope :by_team, ->(team) { where(team_id: team&.id) }
 

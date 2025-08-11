@@ -33,6 +33,8 @@ class ProfileAdmin < ApplicationRecord
 
   belongs_to :admin
   belongs_to :office, optional: true
+  belongs_to :individual_entity, optional: true
+  belongs_to :legal_entity, optional: true
 
   enum role: {
     lawyer: 'lawyer',
@@ -68,48 +70,31 @@ class ProfileAdmin < ApplicationRecord
     foreigner: 'foreigner'
   }
 
-  has_many :admin_addresses, dependent: :destroy
-  has_many :addresses, through: :admin_addresses
-
-  has_many :admin_phones, dependent: :destroy
-  has_many :phones, through: :admin_phones
-
-  has_many :admin_emails, dependent: :destroy
-  has_many :emails, through: :admin_emails
-
-  has_many :admin_bank_accounts, dependent: :destroy
-  has_many :bank_accounts, through: :admin_bank_accounts
-
   has_many :profile_admin_works, dependent: :destroy
   has_many :works, through: :profile_admin_works
 
   has_many :jobs, dependent: :destroy
 
-  accepts_nested_attributes_for :admin, :addresses, :phones, :emails, :bank_accounts, reject_if: :all_blank
+  accepts_nested_attributes_for :admin, reject_if: :all_blank
+  accepts_nested_attributes_for :individual_entity, reject_if: :all_blank
 
   scope :by_team, ->(team) { 
     joins(admin: :team_memberships)
     .where(team_memberships: { team_id: team.id, status: 'active' })
   }
 
-  with_options presence: true do
-    validates :civil_status
-    validates :cpf
-    validates :gender
-    validates :name
-    validates :nationality
-    validates :oab, if: :lawyer?
-    validates :rg
-  end
+  # Only validate ProfileAdmin-specific fields, personal data is validated in IndividualEntity
+  validates :oab, presence: true, if: :lawyer?
+  validates :role, presence: true
 
   def full_name
-    "#{name} #{last_name}".squish
+    individual_entity&.full_name || "#{name} #{last_name}".squish
   end
 
   def last_email
-    return I18n.t('general.without_email') unless emails.present?
+    return I18n.t('general.without_email') unless individual_entity&.emails&.present?
 
-    emails.last.email
+    individual_entity.emails.last.address
   end
 
   def emails_attributes=(attributes)

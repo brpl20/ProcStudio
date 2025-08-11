@@ -22,6 +22,8 @@
 #  deleted_at           :datetime
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
+#  capacity             :string           default("able")
+#  number_benefit       :string
 #
 class IndividualEntity < ApplicationRecord
   include DeletedFilterConcern
@@ -33,23 +35,34 @@ class IndividualEntity < ApplicationRecord
   has_many :legal_entities_as_representative, class_name: 'LegalEntity',
            foreign_key: 'legal_representative_id'
   
-  # Polymorphic contact info
-  has_many :contact_infos, as: :contactable, dependent: :destroy
-  has_many :addresses, -> { where(contact_type: 'address') }, 
-           class_name: 'ContactInfo', as: :contactable
-  has_many :emails, -> { where(contact_type: 'email') }, 
-           class_name: 'ContactInfo', as: :contactable
-  has_many :phones, -> { where(contact_type: 'phone') }, 
-           class_name: 'ContactInfo', as: :contactable
-  has_many :bank_accounts, -> { where(contact_type: 'bank_account') }, 
-           class_name: 'ContactInfo', as: :contactable
+  # Law office relationships
+  has_many :legal_entity_office_relationships, foreign_key: :lawyer_id, dependent: :destroy
+  has_many :legal_entity_offices, through: :legal_entity_office_relationships
   
+  # Polymorphic association for Customer
+  has_many :customers, as: :profile, dependent: :nullify
+  
+  # Polymorphic contact system
+  include Contactable
+  
+  # Nested attributes for contact system
+  accepts_nested_attributes_for :contact_addresses, :contact_phones, 
+                                :contact_emails, :contact_bank_accounts, 
+                                reject_if: :all_blank, allow_destroy: true
+  
+  enum capacity: {
+    able: 'able',                      # Capaz
+    relatively: 'relatively',          # Relativamente Incapaz  
+    absolutely: 'absolutely'           # Absolutamente Incapaz
+  }
+
   validates :name, presence: true
   validates :cpf, presence: true, uniqueness: true
   validates :gender, inclusion: { in: %w[M F O], allow_blank: true }
   validates :civil_status, inclusion: { 
     in: %w[single married divorced widowed separated], allow_blank: true 
   }
+  validates :capacity, presence: true
   
   scope :by_cpf, ->(cpf) { where(cpf: cpf) }
   scope :by_name, ->(name) { where('name ILIKE ?', "%#{name}%") }
@@ -67,15 +80,22 @@ class IndividualEntity < ApplicationRecord
     age
   end
   
-  def primary_email
-    emails.primary.first&.display_value
+  # Contact info methods are now provided by Contactable concern
+  
+  # Law office specific methods
+  def law_offices
+    legal_entity_offices.includes(:legal_entity)
   end
   
-  def primary_phone
-    phones.primary.first&.display_value
+  def is_lawyer?
+    legal_entity_office_relationships.any?
   end
   
-  def primary_address
-    addresses.primary.first&.display_value
+  def partnerships
+    legal_entity_office_relationships.includes(:legal_entity_office)
+  end
+  
+  def partner_offices
+    legal_entity_office_relationships.partners.includes(legal_entity_office: :legal_entity)
   end
 end

@@ -7,6 +7,12 @@ class ApplicationController < ActionController::API
     head :not_found
   end
 
+  def require_super_admin!
+    unless current_admin&.super_admin?
+      render json: { error: 'Super admin access required' }, status: :forbidden
+    end
+  end
+
   protected
 
   def truthy_param?(key)

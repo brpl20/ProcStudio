@@ -49,9 +49,6 @@ class Office < ApplicationRecord
     presumed_profit: 'presumed_profit' # lucro presumido
   }
 
-  has_many :office_phones, dependent: :destroy
-  has_many :phones, through: :office_phones
-
   has_many :office_emails, dependent: :destroy
   has_many :emails, through: :office_emails
 
@@ -61,7 +58,7 @@ class Office < ApplicationRecord
   has_many :office_works, dependent: :destroy
   has_many :works, through: :office_works
 
-  accepts_nested_attributes_for :phones, :emails, :bank_accounts, reject_if: :all_blank
+  accepts_nested_attributes_for :emails, :bank_accounts, reject_if: :all_blank
 
   with_options presence: true do
     validates :name

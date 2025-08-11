@@ -7,6 +7,15 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
+      namespace :super_admin do
+        get 'dashboard', to: 'dashboard#index'
+        resources :system_settings, only: [:index, :update]
+      end
+      resources :system_settings, only: [:index] do
+        collection do
+          get ':key', action: :show, as: :show_key
+        end
+      end
       get '/offices/with_lawyers', to: 'offices#with_lawyers'
       resources :admins do
         collection do
@@ -22,6 +31,16 @@ Rails.application.routes.draw do
           post :resend_confirmation
           post :restore
         end
+        collection do
+          post :create_with_profile
+        end
+      end
+
+      resources :individual_entities, only: [:create, :show, :update, :destroy]
+      resources :legal_entities, only: [:create, :show, :update, :destroy]
+      
+      resources :legal_entity_offices, only: [:index, :create, :show, :update, :destroy] do
+        resources :legal_entity_office_relationships, only: [:create, :update, :destroy], path: 'partnerships'
       end
 
       resources :jobs do

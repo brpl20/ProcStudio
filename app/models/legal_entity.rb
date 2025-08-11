@@ -7,10 +7,7 @@
 #  id                      :bigint(8)        not null, primary key
 #  name                    :string           not null
 #  cnpj                    :string
-#  inscription_number      :string
 #  state_registration      :string
-#  oab_id                  :string
-#  society_link            :string
 #  number_of_partners      :integer
 #  status                  :string           default("active")
 #  accounting_type         :string
@@ -29,16 +26,16 @@ class LegalEntity < ApplicationRecord
   has_many :profile_admins, dependent: :nullify
   has_many :profile_customers, dependent: :nullify
   
-  # Polymorphic contact info
-  has_many :contact_infos, as: :contactable, dependent: :destroy
-  has_many :addresses, -> { where(contact_type: 'address') }, 
-           class_name: 'ContactInfo', as: :contactable
-  has_many :emails, -> { where(contact_type: 'email') }, 
-           class_name: 'ContactInfo', as: :contactable
-  has_many :phones, -> { where(contact_type: 'phone') }, 
-           class_name: 'ContactInfo', as: :contactable
-  has_many :bank_accounts, -> { where(contact_type: 'bank_account') }, 
-           class_name: 'ContactInfo', as: :contactable
+  # New associations for law office functionality
+  has_one :legal_entity_office, dependent: :destroy
+  has_many :legal_entity_office_relationships, through: :legal_entity_office
+  has_many :lawyers, through: :legal_entity_office_relationships, source: :lawyer, class_name: 'IndividualEntity'
+  
+  # Polymorphic association for Customer
+  has_many :customers, as: :profile, dependent: :nullify
+  
+  # Polymorphic contact system
+  include Contactable
   
   validates :name, presence: true
   validates :cnpj, uniqueness: true, allow_blank: true
@@ -67,17 +64,7 @@ class LegalEntity < ApplicationRecord
     legal_representative&.full_name
   end
   
-  def primary_email
-    emails.primary.first&.display_value
-  end
-  
-  def primary_phone
-    phones.primary.first&.display_value
-  end
-  
-  def primary_address
-    addresses.primary.first&.display_value
-  end
+  # Contact info methods are now provided by Contactable concern
   
   def law_firm?
     entity_type == 'law_firm'
@@ -89,5 +76,22 @@ class LegalEntity < ApplicationRecord
   
   def office?
     entity_type == 'office'
+  end
+  
+  # Law office specific methods
+  def is_law_office?
+    legal_entity_office.present?
+  end
+  
+  def office_oab_id
+    legal_entity_office&.oab_id
+  end
+  
+  def office_partners
+    legal_entity_office&.partners || []
+  end
+  
+  def office_associates
+    legal_entity_office&.associates || []
   end
 end
