@@ -38,7 +38,7 @@ Rails.application.routes.draw do
 
       resources :individual_entities, only: [:create, :show, :update, :destroy]
       resources :legal_entities, only: [:create, :show, :update, :destroy]
-      
+
       resources :legal_entity_offices, only: [:index, :create, :show, :update, :destroy] do
         resources :legal_entity_office_relationships, only: [:create, :update, :destroy], path: 'partnerships'
       end
@@ -101,7 +101,7 @@ Rails.application.routes.draw do
 
       resources :office_types
       resources :powers
-      
+
       # Team management routes
       resources :teams do
         member do
@@ -109,7 +109,7 @@ Rails.application.routes.draw do
           delete 'members/:admin_id', to: 'teams#remove_member'
           patch 'members/:admin_id', to: 'teams#update_member'
         end
-        
+
         # Wiki routes nested under teams
         resources :wiki_pages do
           member do
@@ -121,10 +121,10 @@ Rails.application.routes.draw do
             post :revert
           end
         end
-        
+
         resources :wiki_categories
       end
-      
+
       # Subscription management routes
       resources :subscriptions, only: %i[show create update] do
         collection do

@@ -4,7 +4,7 @@ class Api::V1::SuperAdmin::SystemSettingsController < BackofficeController
 
   def index
     settings = SystemSetting.active.order(:year, :key)
-    
+
     render json: {
       settings: settings.map do |setting|
         {
@@ -35,8 +35,8 @@ class Api::V1::SuperAdmin::SystemSettingsController < BackofficeController
         active: @setting.active
       }, status: :ok
     else
-      render json: { 
-        errors: @setting.errors.full_messages 
+      render json: {
+        errors: @setting.errors.full_messages
       }, status: :bad_request
     end
   end

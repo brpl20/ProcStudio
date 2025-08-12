@@ -1,0 +1,880 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2025-08-11T02:00:00.000Z",
+  "__export_source": "insomnia.desktop.app:v2023.5.8",
+  "resources": [
+    {
+      "_id": "req_0",
+      "parentId": "fld_auth",
+      "_type": "request",
+      "modified": 1691759400000,
+      "created": 1691759400000,
+      "url": "{{ _.base_url }}/api/v1/login",
+      "name": "Login Admin",
+      "description": "Authenticate admin and get JWT token",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password123\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1691759400000,
+      "isPrivate": false
+    },
+    {
+      "_id": "fld_auth",
+      "_type": "request_group",
+      "parentId": "wrk_main",
+      "modified": 1691759400001,
+      "created": 1691759400001,
+      "name": "🔐 Authentication",
+      "description": "Admin authentication endpoints",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1691759400001
+    },
+    {
+      "_id": "wrk_main",
+      "_type": "workspace",
+      "parentId": null,
+      "modified": 1691759400002,
+      "created": 1691759400002,
+      "name": "PRC API - Pro Labore System",
+      "description": "Complete API collection for Pro Labore and Super Admin system testing"
+    },
+    {
+      "_id": "req_1",
+      "parentId": "fld_auth",
+      "_type": "request",
+      "modified": 1691759401000,
+      "created": 1691759401000,
+      "url": "{{ _.base_url }}/api/v1/logout",
+      "name": "Logout Admin",
+      "description": "Logout current admin",
+      "method": "DELETE",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.auth_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1691759401000,
+      "isPrivate": false
+    },
+    {
+      "_id": "fld_customers",
+      "_type": "request_group",
+      "parentId": "wrk_main",
+      "modified": 1691759402000,
+      "created": 1691759402000,
+      "name": "👥 Customers with Polymorphic Profiles",
+      "description": "Customer management with new profile system",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1691759402000
+    },
+    {
+      "_id": "req_2",
+      "parentId": "fld_customers",
+      "_type": "request",
+      "modified": 1691759402001,
+      "created": 1691759402001,
+      "url": "{{ _.base_url }}/api/v1/customers",
+      "name": "List Customers",
+      "description": "Get all customers for current team",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.auth_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1691759402001,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_3",
+      "parentId": "fld_customers",
+      "_type": "request",
+      "modified": 1691759402002,
+      "created": 1691759402002,
+      "url": "{{ _.base_url }}/api/v1/customers/create_with_profile",
+      "name": "Create Customer - Individual Profile",
+      "description": "Create customer with individual entity profile and contacts",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"customer\": {\n    \"email\": \"joao.silva@example.com\",\n    \"password\": \"password123\",\n    \"customer_type\": \"individual\"\n  },\n  \"profile\": {\n    \"customer_type\": \"natural_person\",\n    \"name\": \"João\",\n    \"last_name\": \"Silva\",\n    \"cpf\": \"123.456.789-00\",\n    \"rg\": \"12.345.678-9\",\n    \"birth\": \"1990-05-15\",\n    \"gender\": \"male\",\n    \"nationality\": \"Brasileira\",\n    \"civil_status\": \"single\",\n    \"capacity\": \"able\",\n    \"mother_name\": \"Maria Silva\",\n    \"profession\": \"Desenvolvedor\",\n    \"contact_addresses_attributes\": [\n      {\n        \"street\": \"Rua das Flores\",\n        \"number\": \"123\",\n        \"neighborhood\": \"Centro\",\n        \"city\": \"São Paulo\",\n        \"state\": \"SP\",\n        \"zip_code\": \"01234567\",\n        \"complement\": \"Apto 101\",\n        \"is_primary\": true\n      }\n    ],\n    \"contact_phones_attributes\": [\n      {\n        \"number\": \"11987654321\",\n        \"phone_type\": \"mobile\",\n        \"is_whatsapp\": true,\n        \"is_primary\": true\n      }\n    ],\n    \"contact_emails_attributes\": [\n      {\n        \"address\": \"joao.contato@email.com\",\n        \"email_type\": \"personal\",\n        \"is_verified\": false,\n        \"is_primary\": true\n      }\n    ]\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.auth_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1691759402002,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_4",
+      "parentId": "fld_customers",
+      "_type": "request",
+      "modified": 1691759402003,
+      "created": 1691759402003,
+      "url": "{{ _.base_url }}/api/v1/customers/create_with_profile",
+      "name": "Create Customer - Legal Entity Profile",
+      "description": "Create customer with legal entity profile and business contacts",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"customer\": {\n    \"email\": \"contato@techsolutions.com.br\",\n    \"password\": \"password123\",\n    \"customer_type\": \"company\"\n  },\n  \"profile\": {\n    \"customer_type\": \"legal_person\",\n    \"name\": \"Tech Solutions LTDA\",\n    \"trade_name\": \"TechSol\",\n    \"cnpj\": \"12.345.678/0001-90\",\n    \"registration_number\": \"123456789\",\n    \"registration_date\": \"2020-01-15\",\n    \"legal_nature\": \"Sociedade Limitada\",\n    \"size\": \"small\",\n    \"contact_addresses_attributes\": [\n      {\n        \"street\": \"Avenida Paulista\",\n        \"number\": \"1000\",\n        \"neighborhood\": \"Bela Vista\",\n        \"city\": \"São Paulo\",\n        \"state\": \"SP\",\n        \"zip_code\": \"01310100\",\n        \"complement\": \"Sala 1001\",\n        \"is_primary\": true\n      }\n    ],\n    \"contact_phones_attributes\": [\n      {\n        \"number\": \"1133334444\",\n        \"phone_type\": \"commercial\",\n        \"is_whatsapp\": false,\n        \"is_primary\": true\n      }\n    ],\n    \"contact_emails_attributes\": [\n      {\n        \"address\": \"contato@techsol.com.br\",\n        \"email_type\": \"commercial\",\n        \"is_verified\": false,\n        \"is_primary\": true\n      }\n    ]\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.auth_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1691759402003,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_5",
+      "parentId": "fld_customers",
+      "_type": "request",
+      "modified": 1691759402004,
+      "created": 1691759402004,
+      "url": "{{ _.base_url }}/api/v1/customers/1",
+      "name": "Show Customer",
+      "description": "Get customer details with profile",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.auth_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1691759402004,
+      "isPrivate": false
+    },
+    {
+      "_id": "fld_entities",
+      "_type": "request_group",
+      "parentId": "wrk_main",
+      "modified": 1691759403000,
+      "created": 1691759403000,
+      "name": "🏢 Entity Management",
+      "description": "Direct Individual and Legal Entity management",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1691759403000
+    },
+    {
+      "_id": "req_6",
+      "parentId": "fld_entities",
+      "_type": "request",
+      "modified": 1691759403001,
+      "created": 1691759403001,
+      "url": "{{ _.base_url }}/api/v1/individual_entities",
+      "name": "Create Individual Entity (Lawyer)",
+      "description": "Create individual entity that can become a lawyer",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"individual_entity\": {\n    \"name\": \"Maria\",\n    \"last_name\": \"Santos\",\n    \"cpf\": \"987.654.321-00\",\n    \"rg\": \"98.765.432-1\",\n    \"birth\": \"1985-03-20\",\n    \"gender\": \"female\",\n    \"nationality\": \"Brasileira\",\n    \"civil_status\": \"married\",\n    \"capacity\": \"able\",\n    \"mother_name\": \"Ana Santos\",\n    \"profession\": \"Advogada\",\n    \"contact_addresses_attributes\": [\n      {\n        \"street\": \"Rua dos Advogados\",\n        \"number\": \"456\",\n        \"neighborhood\": \"Jardins\",\n        \"city\": \"São Paulo\",\n        \"state\": \"SP\",\n        \"zip_code\": \"01234567\",\n        \"is_primary\": true\n      }\n    ],\n    \"contact_phones_attributes\": [\n      {\n        \"number\": \"11999887766\",\n        \"phone_type\": \"mobile\",\n        \"is_whatsapp\": true,\n        \"is_primary\": true\n      }\n    ],\n    \"contact_emails_attributes\": [\n      {\n        \"address\": \"maria.santos@advocacia.com\",\n        \"email_type\": \"professional\",\n        \"is_primary\": true\n      }\n    ]\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.auth_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1691759403001,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_7",
+      "parentId": "fld_entities",
+      "_type": "request",
+      "modified": 1691759403002,
+      "created": 1691759403002,
+      "url": "{{ _.base_url }}/api/v1/individual_entities/1",
+      "name": "Show Individual Entity",
+      "description": "Get individual entity details",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.auth_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1691759403002,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_8",
+      "parentId": "fld_entities",
+      "_type": "request",
+      "modified": 1691759403003,
+      "created": 1691759403003,
+      "url": "{{ _.base_url }}/api/v1/legal_entities",
+      "name": "Create Legal Entity (Law Firm)",
+      "description": "Create legal entity that can become a law office",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"legal_entity\": {\n    \"name\": \"Santos & Associados Advocacia\",\n    \"trade_name\": \"Santos Advocacia\",\n    \"cnpj\": \"98.765.432/0001-10\",\n    \"registration_number\": \"987654321\",\n    \"registration_date\": \"2018-06-10\",\n    \"legal_nature\": \"Sociedade de Advogados\",\n    \"size\": \"medium\",\n    \"contact_addresses_attributes\": [\n      {\n        \"street\": \"Rua da Liberdade\",\n        \"number\": \"789\",\n        \"neighborhood\": \"Liberdade\",\n        \"city\": \"São Paulo\",\n        \"state\": \"SP\",\n        \"zip_code\": \"01503000\",\n        \"complement\": \"15º andar\",\n        \"is_primary\": true\n      }\n    ],\n    \"contact_phones_attributes\": [\n      {\n        \"number\": \"1140004000\",\n        \"phone_type\": \"commercial\",\n        \"is_primary\": true\n      }\n    ],\n    \"contact_emails_attributes\": [\n      {\n        \"address\": \"contato@santosadvocacia.com.br\",\n        \"email_type\": \"commercial\",\n        \"is_primary\": true\n      }\n    ]\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.auth_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1691759403003,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_9",
+      "parentId": "fld_entities",
+      "_type": "request",
+      "modified": 1691759403004,
+      "created": 1691759403004,
+      "url": "{{ _.base_url }}/api/v1/legal_entities/1",
+      "name": "Show Legal Entity",
+      "description": "Get legal entity details",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.auth_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1691759403004,
+      "isPrivate": false
+    },
+    {
+      "_id": "fld_law_offices",
+      "_type": "request_group",
+      "parentId": "wrk_main",
+      "modified": 1691759404000,
+      "created": 1691759404000,
+      "name": "⚖️ Law Office Management",
+      "description": "Law office creation and lawyer partnership management",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1691759404000
+    },
+    {
+      "_id": "req_10",
+      "parentId": "fld_law_offices",
+      "_type": "request",
+      "modified": 1691759404001,
+      "created": 1691759404001,
+      "url": "{{ _.base_url }}/api/v1/legal_entity_offices",
+      "name": "List Law Offices",
+      "description": "Get all legal entity offices",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.auth_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1691759404001,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_11",
+      "parentId": "fld_law_offices",
+      "_type": "request",
+      "modified": 1691759404002,
+      "created": 1691759404002,
+      "url": "{{ _.base_url }}/api/v1/legal_entity_offices",
+      "name": "Create Law Office",
+      "description": "Convert legal entity to registered law office",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"legal_entity_office\": {\n    \"legal_entity_id\": 1,\n    \"oab_id\": \"SP123456\",\n    \"inscription_number\": \"OAB-SP-123456\",\n    \"society_link\": \"https://oab-sp.jusbrasil.com.br/sociedades/santos-advocacia\"\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.auth_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1691759404002,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_12",
+      "parentId": "fld_law_offices",
+      "_type": "request",
+      "modified": 1691759404003,
+      "created": 1691759404003,
+      "url": "{{ _.base_url }}/api/v1/legal_entity_offices/1",
+      "name": "Show Law Office",
+      "description": "Get law office details with partnerships",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.auth_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1691759404003,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_13",
+      "parentId": "fld_law_offices",
+      "_type": "request",
+      "modified": 1691759404004,
+      "created": 1691759404004,
+      "url": "{{ _.base_url }}/api/v1/legal_entity_offices/1/partnerships",
+      "name": "Add Partner Lawyer (Sócio)",
+      "description": "Add lawyer as full partner with ownership",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"legal_entity_office_relationship\": {\n    \"lawyer_id\": 1,\n    \"partnership_type\": \"socio\",\n    \"ownership_percentage\": 50.0\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.auth_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1691759404004,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_14",
+      "parentId": "fld_law_offices",
+      "_type": "request",
+      "modified": 1691759404005,
+      "created": 1691759404005,
+      "url": "{{ _.base_url }}/api/v1/legal_entity_offices/1/partnerships",
+      "name": "Add Associate Lawyer (Associado)",
+      "description": "Add lawyer as associate",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"legal_entity_office_relationship\": {\n    \"lawyer_id\": 2,\n    \"partnership_type\": \"associado\",\n    \"ownership_percentage\": 25.0\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.auth_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1691759404005,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_15",
+      "parentId": "fld_law_offices",
+      "_type": "request",
+      "modified": 1691759404006,
+      "created": 1691759404006,
+      "url": "{{ _.base_url }}/api/v1/legal_entity_offices/1/partnerships",
+      "name": "Add Service Partner (Sócio de Serviço)",
+      "description": "Add lawyer as service partner",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"legal_entity_office_relationship\": {\n    \"lawyer_id\": 3,\n    \"partnership_type\": \"socio_de_servico\",\n    \"ownership_percentage\": 15.0\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.auth_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1691759404006,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_16",
+      "parentId": "fld_law_offices",
+      "_type": "request",
+      "modified": 1691759404007,
+      "created": 1691759404007,
+      "url": "{{ _.base_url }}/api/v1/legal_entity_offices/1/partnerships/1",
+      "name": "Update Partnership",
+      "description": "Update partnership details and ownership",
+      "method": "PATCH",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"legal_entity_office_relationship\": {\n    \"partnership_type\": \"socio\",\n    \"ownership_percentage\": 60.0\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.auth_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1691759404007,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_17",
+      "parentId": "fld_law_offices",
+      "_type": "request",
+      "modified": 1691759404008,
+      "created": 1691759404008,
+      "url": "{{ _.base_url }}/api/v1/legal_entity_offices/1/partnerships/1",
+      "name": "Remove Partnership",
+      "description": "Remove lawyer from office",
+      "method": "DELETE",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.auth_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1691759404008,
+      "isPrivate": false
+    },
+    {
+      "_id": "fld_super_admin",
+      "_type": "request_group",
+      "parentId": "wrk_main",
+      "modified": 1691759405000,
+      "created": 1691759405000,
+      "name": "🔧 Super Admin Dashboard",
+      "description": "Super admin system management (requires super_admin role)",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1691759405000
+    },
+    {
+      "_id": "req_18",
+      "parentId": "fld_super_admin",
+      "_type": "request",
+      "modified": 1691759405001,
+      "created": 1691759405001,
+      "url": "{{ _.base_url }}/api/v1/super_admin/dashboard",
+      "name": "Super Admin Dashboard",
+      "description": "Get system overview and statistics",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.auth_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1691759405001,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_19",
+      "parentId": "fld_super_admin",
+      "_type": "request",
+      "modified": 1691759405002,
+      "created": 1691759405002,
+      "url": "{{ _.base_url }}/api/v1/super_admin/system_settings",
+      "name": "List System Settings",
+      "description": "Get all system settings for management",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.auth_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1691759405002,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_20",
+      "parentId": "fld_super_admin",
+      "_type": "request",
+      "modified": 1691759405003,
+      "created": 1691759405003,
+      "url": "{{ _.base_url }}/api/v1/super_admin/system_settings/1",
+      "name": "Update System Setting",
+      "description": "Update government values (minimum wage, INSS ceiling)",
+      "method": "PATCH",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"system_setting\": {\n    \"value\": \"1320.00\",\n    \"description\": \"Salário mínimo vigente para 2025\",\n    \"active\": true\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.auth_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1691759405003,
+      "isPrivate": false
+    },
+    {
+      "_id": "fld_public_api",
+      "_type": "request_group",
+      "parentId": "wrk_main",
+      "modified": 1691759406000,
+      "created": 1691759406000,
+      "name": "🌐 Public API",
+      "description": "Public endpoints for government values consultation",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1691759406000
+    },
+    {
+      "_id": "req_21",
+      "parentId": "fld_public_api",
+      "_type": "request",
+      "modified": 1691759406001,
+      "created": 1691759406001,
+      "url": "{{ _.base_url }}/api/v1/system_settings",
+      "name": "List Public System Settings",
+      "description": "Get active system settings (public access)",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1691759406001,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_22",
+      "parentId": "fld_public_api",
+      "_type": "request",
+      "modified": 1691759406002,
+      "created": 1691759406002,
+      "url": "{{ _.base_url }}/api/v1/system_settings/minimum_wage",
+      "name": "Get Current Minimum Wage",
+      "description": "Get current minimum wage value",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1691759406002,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_23",
+      "parentId": "fld_public_api",
+      "_type": "request",
+      "modified": 1691759406003,
+      "created": 1691759406003,
+      "url": "{{ _.base_url }}/api/v1/system_settings/inss_ceiling",
+      "name": "Get Current INSS Ceiling",
+      "description": "Get current INSS contribution ceiling",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1691759406003,
+      "isPrivate": false
+    },
+    {
+      "_id": "fld_admin_management",
+      "_type": "request_group",
+      "parentId": "wrk_main",
+      "modified": 1691759407000,
+      "created": 1691759407000,
+      "name": "👨‍💼 Admin Management",
+      "description": "Admin user CRUD operations",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1691759407000
+    },
+    {
+      "_id": "req_24",
+      "parentId": "fld_admin_management",
+      "_type": "request",
+      "modified": 1691759407001,
+      "created": 1691759407001,
+      "url": "{{ _.base_url }}/api/v1/admins/current",
+      "name": "Get Current Admin",
+      "description": "Get current authenticated admin details",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.auth_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1691759407001,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_25",
+      "parentId": "fld_admin_management",
+      "_type": "request",
+      "modified": 1691759407002,
+      "created": 1691759407002,
+      "url": "{{ _.base_url }}/api/v1/admins",
+      "name": "List Admins",
+      "description": "Get all admins",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.auth_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1691759407002,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_26",
+      "parentId": "fld_admin_management",
+      "_type": "request",
+      "modified": 1691759407003,
+      "created": 1691759407003,
+      "url": "{{ _.base_url }}/api/v1/admins",
+      "name": "Create Admin",
+      "description": "Create new admin user",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"admin\": {\n    \"email\": \"newadmin@example.com\",\n    \"password\": \"password123\",\n    \"role\": \"admin\"\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.auth_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1691759407003,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_27",
+      "parentId": "fld_admin_management",
+      "_type": "request",
+      "modified": 1691759407004,
+      "created": 1691759407004,
+      "url": "{{ _.base_url }}/api/v1/admins/1",
+      "name": "Show Admin",
+      "description": "Get admin details by ID",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.auth_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1691759407004,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_28",
+      "parentId": "fld_admin_management",
+      "_type": "request",
+      "modified": 1691759407005,
+      "created": 1691759407005,
+      "url": "{{ _.base_url }}/api/v1/admins/2",
+      "name": "Update Admin",
+      "description": "Update admin details and role",
+      "method": "PATCH",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"admin\": {\n    \"email\": \"updated.admin@example.com\",\n    \"role\": \"super_admin\"\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.auth_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1691759407005,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_29",
+      "parentId": "fld_admin_management",
+      "_type": "request",
+      "modified": 1691759407006,
+      "created": 1691759407006,
+      "url": "{{ _.base_url }}/api/v1/admins/2",
+      "name": "Delete Admin",
+      "description": "Soft delete admin user",
+      "method": "DELETE",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.auth_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1691759407006,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_30",
+      "parentId": "fld_admin_management",
+      "_type": "request",
+      "modified": 1691759407007,
+      "created": 1691759407007,
+      "url": "{{ _.base_url }}/api/v1/admins/2/restore",
+      "name": "Restore Admin",
+      "description": "Restore soft deleted admin",
+      "method": "POST",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.auth_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1691759407007,
+      "isPrivate": false
+    },
+    {
+      "_id": "env_base",
+      "_type": "environment",
+      "parentId": "wrk_main",
+      "modified": 1691759408000,
+      "created": 1691759408000,
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://localhost:3000",
+        "auth_token": "",
+        "admin_id": "",
+        "team_id": ""
+      },
+      "dataPropertyOrder": {
+        "&": [
+          "base_url",
+          "auth_token", 
+          "admin_id",
+          "team_id"
+        ]
+      },
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 1691759408000
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 class Api::V1::SystemSettingsController < ApplicationController
   def index
     settings = SystemSetting.active.current_year
-    
+
     render json: {
       minimum_wage: SystemSetting.current_minimum_wage,
       inss_ceiling: SystemSetting.current_inss_ceiling,
@@ -19,7 +19,7 @@ class Api::V1::SystemSettingsController < ApplicationController
   def show
     key = params[:key]
     setting = SystemSetting.active.current_year.by_key(key).first
-    
+
     if setting
       render json: {
         key: setting.key,
