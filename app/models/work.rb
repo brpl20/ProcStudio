@@ -40,13 +40,16 @@ class Work < ApplicationRecord
 
   acts_as_paranoid
 
-  belongs_to :team, optional: true
-  
+  belongs_to :team
+
   has_many :customer_works, -> { with_deleted }, dependent: :destroy
   has_many :profile_customers, -> { with_deleted }, through: :customer_works
 
-  has_many :profile_admin_works, dependent: :destroy
-  has_many :profile_admins, through: :profile_admin_works
+  # Work configuration for tracking offices and lawyers
+  has_many :work_configurations, dependent: :destroy
+  has_one :current_configuration, 
+          -> { where(status: 'active').order(version: :desc) }, 
+          class_name: 'WorkConfiguration'
 
   has_many :power_works, dependent: :destroy
   has_many :powers, through: :power_works
@@ -54,9 +57,6 @@ class Work < ApplicationRecord
   has_many :documents, dependent: :destroy
 
   has_many :pending_documents, dependent: :destroy
-
-  has_many :office_works, dependent: :destroy
-  has_many :offices, through: :office_works
 
   has_many :recommendations, dependent: :destroy
   has_many :work_events, dependent: :destroy
@@ -127,7 +127,121 @@ class Work < ApplicationRecord
   after_create :set_team_on_associations
   after_update :set_team_on_associations
 
+  # Helper methods for accessing configuration data
+  def participating_offices
+    current_configuration&.participating_offices || []
+  end
+  
+  def participating_lawyers
+    current_configuration&.participating_lawyers || []
+  end
+  
+  def offices
+    participating_offices
+  end
+  
+  def profile_admins
+    participating_lawyers
+  end
+  
+  def lead_lawyer
+    current_configuration&.lead_lawyer
+  end
+  
+  def responsible_lawyer
+    current_configuration&.responsible_lawyer
+  end
+  
+  def assistant_lawyers
+    current_configuration&.assistant_lawyers || []
+  end
+  
+  def all_participants
+    current_configuration&.all_participants || { offices: [], lawyers: [] }
+  end
+  
+  def has_configuration?
+    current_configuration.present?
+  end
+  
+  def configuration_version
+    current_configuration&.version || 0
+  end
+  
+  def configuration_history
+    work_configurations.order(version: :desc)
+  end
+  
+  def add_office(office, lawyers = [], admin = nil)
+    return false unless office.present?
+    
+    config = current_configuration || build_initial_configuration
+    offices_data = config.configuration['offices'] || []
+    
+    office_data = {
+      'office_id' => office.id,
+      'office_name' => office.name,
+      'cnpj' => office.cnpj,
+      'oab' => office.oab_number,
+      'lawyers' => lawyers.map { |lawyer|
+        {
+          'admin_id' => lawyer.admin_id,
+          'profile_admin_id' => lawyer.id,
+          'name' => lawyer.name,
+          'oab' => lawyer.oab
+        }
+      }
+    }
+    
+    offices_data << office_data
+    config.configuration['offices'] = offices_data
+    
+    if config.persisted?
+      config.create_new_version(config.configuration, admin)
+    else
+      config.save
+    end
+  end
+  
+  def add_independent_lawyer(profile_admin, role = nil, admin = nil)
+    return false unless profile_admin.present?
+    
+    config = current_configuration || build_initial_configuration
+    lawyers_data = config.configuration['independent_lawyers'] || []
+    
+    lawyer_data = {
+      'admin_id' => profile_admin.admin_id,
+      'profile_admin_id' => profile_admin.id,
+      'name' => profile_admin.name,
+      'oab' => profile_admin.oab,
+      'role' => role
+    }
+    
+    lawyers_data << lawyer_data
+    config.configuration['independent_lawyers'] = lawyers_data
+    
+    if config.persisted?
+      config.create_new_version(config.configuration, admin)
+    else
+      config.save
+    end
+  end
+
   private
+  
+  def build_initial_configuration
+    work_configurations.build(
+      team: team,
+      configuration: {
+        'offices' => [],
+        'independent_lawyers' => [],
+        'roles' => {},
+        'fee_distribution' => {}
+      },
+      status: 'active',
+      effective_from: Time.current
+    )
+  end
 
   def set_team_on_associations
     return unless team.present?

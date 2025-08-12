@@ -14,7 +14,7 @@ class WorkSerializer
   end
 
   attribute :offices do |object|
-    object.offices.map do |office|
+    object.participating_offices.map do |office|
       {
         id: office.id,
         name: office.name,
@@ -34,13 +34,34 @@ class WorkSerializer
   end
 
   attribute :profile_admins do |object|
-    object.profile_admins.map do |profile|
+    object.participating_lawyers.map do |profile|
       {
         id: profile.id,
         name: profile.name,
         email: profile.admin.email
       }
     end
+  end
+  
+  attribute :work_configuration do |object|
+    config = object.current_configuration
+    return nil unless config
+    
+    {
+      version: config.version,
+      status: config.status,
+      effective_from: config.effective_from,
+      offices: config.configuration['offices'] || [],
+      independent_lawyers: config.configuration['independent_lawyers'] || [],
+      roles: config.configuration['roles'] || {},
+      fee_distribution: config.configuration['fee_distribution'] || {},
+      lead_lawyer: object.lead_lawyer&.as_json(only: [:id, :name, :oab]),
+      responsible_lawyer: object.responsible_lawyer&.as_json(only: [:id, :name, :oab])
+    }
+  end
+  
+  attribute :configuration_version do |object|
+    object.configuration_version
   end
 
   attribute :powers do |object|

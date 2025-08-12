@@ -70,8 +70,34 @@ class ProfileAdmin < ApplicationRecord
     foreigner: 'foreigner'
   }
 
-  has_many :profile_admin_works, dependent: :destroy
-  has_many :works, through: :profile_admin_works
+  # Works are now associated through WorkConfiguration snapshots
+  def works
+    # Find works where this lawyer is configured as a participating lawyer
+    office_works = WorkConfiguration.joins(:work)
+                                  .where(status: 'active')
+                                  .where('configuration @> ?', { offices: [{ lawyers: [{ profile_admin_id: id }] }] }.to_json)
+                                  .includes(:work)
+                                  .map(&:work)
+    
+    independent_works = WorkConfiguration.joins(:work)
+                                       .where(status: 'active')
+                                       .where('configuration @> ?', { independent_lawyers: [{ profile_admin_id: id }] }.to_json)
+                                       .includes(:work)
+                                       .map(&:work)
+    
+    (office_works + independent_works).uniq
+  end
+  
+  def work_configurations
+    # Find all configurations where this lawyer participates (either through office or independently)
+    office_configs = WorkConfiguration.where(status: 'active')
+                                    .where('configuration @> ?', { offices: [{ lawyers: [{ profile_admin_id: id }] }] }.to_json)
+    
+    independent_configs = WorkConfiguration.where(status: 'active')
+                                         .where('configuration @> ?', { independent_lawyers: [{ profile_admin_id: id }] }.to_json)
+    
+    WorkConfiguration.where(id: (office_configs.pluck(:id) + independent_configs.pluck(:id)).uniq)
+  end
 
   has_many :jobs, dependent: :destroy
 

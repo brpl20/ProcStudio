@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_08_10_234154) do
+ActiveRecord::Schema[7.0].define(version: 2025_08_12_103448) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -64,8 +64,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_10_234154) do
     t.datetime "updated_at", null: false
     t.string "jwt_token"
     t.datetime "deleted_at"
-    t.string "status", default: "active", null: false
-    t.string "temp_oab"
     t.string "role", default: "admin"
     t.index ["deleted_at"], name: "index_admins_on_deleted_at"
     t.index ["email"], name: "index_admins_on_email", unique: true
@@ -356,17 +354,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_10_234154) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "office_works", force: :cascade do |t|
-    t.bigint "work_id", null: false
-    t.bigint "office_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "deleted_at"
-    t.index ["deleted_at"], name: "index_office_works_on_deleted_at"
-    t.index ["office_id"], name: "index_office_works_on_office_id"
-    t.index ["work_id"], name: "index_office_works_on_work_id"
-  end
-
   create_table "offices", force: :cascade do |t|
     t.string "name"
     t.string "cnpj"
@@ -439,17 +426,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_10_234154) do
     t.integer "category", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-  end
-
-  create_table "profile_admin_works", force: :cascade do |t|
-    t.bigint "profile_admin_id", null: false
-    t.bigint "work_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "deleted_at"
-    t.index ["deleted_at"], name: "index_profile_admin_works_on_deleted_at"
-    t.index ["profile_admin_id"], name: "index_profile_admin_works_on_profile_admin_id"
-    t.index ["work_id"], name: "index_profile_admin_works_on_work_id"
   end
 
   create_table "profile_admins", force: :cascade do |t|
@@ -708,6 +684,29 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_10_234154) do
     t.index ["updated_by_id"], name: "index_wiki_pages_on_updated_by_id"
   end
 
+  create_table "work_configurations", force: :cascade do |t|
+    t.bigint "work_id", null: false
+    t.bigint "team_id", null: false
+    t.jsonb "configuration", default: {}, null: false
+    t.integer "version", default: 1, null: false
+    t.string "status", default: "active"
+    t.text "notes"
+    t.bigint "created_by_id"
+    t.bigint "updated_by_id"
+    t.datetime "effective_from", null: false
+    t.datetime "effective_until"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["configuration"], name: "index_work_configurations_on_configuration", using: :gin
+    t.index ["created_by_id"], name: "index_work_configurations_on_created_by_id"
+    t.index ["team_id"], name: "index_work_configurations_on_team_id"
+    t.index ["updated_by_id"], name: "index_work_configurations_on_updated_by_id"
+    t.index ["work_id", "effective_from"], name: "index_work_configurations_on_work_id_and_effective_from"
+    t.index ["work_id", "status"], name: "index_work_configurations_on_work_id_and_status"
+    t.index ["work_id", "version"], name: "index_work_configurations_on_work_id_and_version", unique: true
+    t.index ["work_id"], name: "index_work_configurations_on_work_id"
+  end
+
   create_table "work_events", force: :cascade do |t|
     t.string "description"
     t.datetime "date"
@@ -779,8 +778,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_10_234154) do
   add_foreign_key "legal_entity_offices", "teams"
   add_foreign_key "office_bank_accounts", "offices"
   add_foreign_key "office_emails", "offices"
-  add_foreign_key "office_works", "offices"
-  add_foreign_key "office_works", "works"
   add_foreign_key "offices", "office_types"
   add_foreign_key "offices", "teams"
   add_foreign_key "payment_transactions", "subscriptions"
@@ -788,8 +785,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_10_234154) do
   add_foreign_key "pending_documents", "works"
   add_foreign_key "power_works", "powers"
   add_foreign_key "power_works", "works"
-  add_foreign_key "profile_admin_works", "profile_admins"
-  add_foreign_key "profile_admin_works", "works"
   add_foreign_key "profile_admins", "admins"
   add_foreign_key "profile_admins", "individual_entities"
   add_foreign_key "profile_admins", "legal_entities"
@@ -821,6 +816,10 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_10_234154) do
   add_foreign_key "wiki_pages", "admins", column: "updated_by_id"
   add_foreign_key "wiki_pages", "teams"
   add_foreign_key "wiki_pages", "wiki_pages", column: "parent_id"
+  add_foreign_key "work_configurations", "admins", column: "created_by_id"
+  add_foreign_key "work_configurations", "admins", column: "updated_by_id"
+  add_foreign_key "work_configurations", "teams"
+  add_foreign_key "work_configurations", "works"
   add_foreign_key "work_events", "works"
   add_foreign_key "works", "admins", column: "created_by_id"
   add_foreign_key "works", "teams"

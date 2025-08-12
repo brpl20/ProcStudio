@@ -1,0 +1,603 @@
+{
+  "info": {
+    "name": "Work Configuration API Tests",
+    "description": "Complete API test collection for the new team-centric WorkConfiguration system",
+    "version": "1.0.0"
+  },
+  "baseUrl": "{{base_url}}/api/v1",
+  "auth": {
+    "bearer_token": "{{admin_jwt_token}}"
+  },
+  "variables": {
+    "base_url": "http://localhost:3000",
+    "admin_jwt_token": "your_admin_jwt_token_here",
+    "team_id": 1,
+    "office_id_1": 1,
+    "office_id_2": 2,
+    "profile_admin_id_1": 1,
+    "profile_admin_id_2": 2,
+    "profile_admin_id_3": 3,
+    "profile_customer_id": 1,
+    "work_id": "{{created_work_id}}"
+  },
+  "tests": [
+    {
+      "name": "Create Work - Simple (No Configuration)",
+      "method": "POST",
+      "url": "{{base_url}}/works",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{admin_jwt_token}}"
+      },
+      "body": {
+        "work": {
+          "subject": "civil",
+          "procedure": "judicial",
+          "folder": "CASE-2025-001",
+          "note": "Simple work without initial configuration",
+          "civel_area": "family",
+          "profile_customer_ids": [1]
+        }
+      },
+      "expected_status": 201,
+      "save_response": {
+        "created_work_id": "data.id"
+      }
+    },
+    {
+      "name": "Create Work - With Office and Lawyers (New Format)",
+      "method": "POST",
+      "url": "{{base_url}}/works",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{admin_jwt_token}}"
+      },
+      "body": {
+        "work": {
+          "subject": "social_security",
+          "procedure": "administrative",
+          "folder": "CASE-2025-002",
+          "note": "Work with office and multiple lawyers",
+          "social_security_areas": "retirement_by_time",
+          "profile_customer_ids": [1],
+          "work_configuration": {
+            "offices": [
+              {
+                "id": 1,
+                "lawyers": [1, 2]
+              }
+            ],
+            "independent_lawyers": [
+              {
+                "id": 3,
+                "role": "consultant"
+              }
+            ],
+            "roles": {
+              "lead_lawyer_id": 1,
+              "responsible_lawyer_id": 1,
+              "assistant_lawyer_ids": [2, 3]
+            },
+            "fee_distribution": {
+              "office_1": 70,
+              "admin_3": 30
+            }
+          }
+        }
+      },
+      "expected_status": 201,
+      "save_response": {
+        "configured_work_id": "data.id"
+      }
+    },
+    {
+      "name": "Create Work - Legacy Format Support",
+      "method": "POST",
+      "url": "{{base_url}}/works",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{admin_jwt_token}}"
+      },
+      "body": {
+        "work": {
+          "subject": "tributary",
+          "procedure": "extrajudicial",
+          "folder": "CASE-2025-003",
+          "note": "Work using legacy format",
+          "tributary_areas": "license",
+          "profile_customer_ids": [1],
+          "office_ids": [1],
+          "profile_admin_ids": [1, 2]
+        }
+      },
+      "expected_status": 201,
+      "save_response": {
+        "legacy_work_id": "data.id"
+      }
+    },
+    {
+      "name": "Create Work - Only Independent Lawyers",
+      "method": "POST",
+      "url": "{{base_url}}/works",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{admin_jwt_token}}"
+      },
+      "body": {
+        "work": {
+          "subject": "criminal",
+          "procedure": "judicial",
+          "folder": "CASE-2025-004",
+          "note": "Work with only independent lawyers, no office",
+          "profile_customer_ids": [1],
+          "work_configuration": {
+            "independent_lawyers": [
+              {
+                "id": 1,
+                "role": "lead"
+              },
+              {
+                "id": 3,
+                "role": "assistant"
+              }
+            ],
+            "roles": {
+              "lead_lawyer_id": 1,
+              "responsible_lawyer_id": 1
+            },
+            "fee_distribution": {
+              "admin_1": 60,
+              "admin_3": 40
+            }
+          }
+        }
+      },
+      "expected_status": 201,
+      "save_response": {
+        "independent_work_id": "data.id"
+      }
+    },
+    {
+      "name": "Create Work - Multiple Offices Scenario",
+      "method": "POST",
+      "url": "{{base_url}}/works",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{admin_jwt_token}}"
+      },
+      "body": {
+        "work": {
+          "subject": "laborite",
+          "procedure": "judicial",
+          "folder": "CASE-2025-005",
+          "note": "Complex work with multiple offices and independent lawyer",
+          "laborite_areas": "labor_claim",
+          "profile_customer_ids": [1],
+          "work_configuration": {
+            "offices": [
+              {
+                "id": 1,
+                "lawyers": [1]
+              },
+              {
+                "id": 2,
+                "lawyers": [2]
+              }
+            ],
+            "independent_lawyers": [
+              {
+                "id": 3,
+                "role": "specialist"
+              }
+            ],
+            "roles": {
+              "lead_lawyer_id": 1,
+              "responsible_lawyer_id": 2,
+              "assistant_lawyer_ids": [3]
+            },
+            "fee_distribution": {
+              "office_1": 40,
+              "office_2": 35,
+              "admin_3": 25
+            }
+          }
+        }
+      },
+      "expected_status": 201,
+      "save_response": {
+        "complex_work_id": "data.id"
+      }
+    },
+    {
+      "name": "Get Work with Configuration",
+      "method": "GET",
+      "url": "{{base_url}}/works/{{configured_work_id}}",
+      "headers": {
+        "Authorization": "Bearer {{admin_jwt_token}}"
+      },
+      "expected_status": 200,
+      "expected_response": {
+        "data": {
+          "attributes": {
+            "work_configuration": {
+              "version": 1,
+              "status": "active",
+              "offices": "array",
+              "independent_lawyers": "array",
+              "roles": "object",
+              "fee_distribution": "object"
+            },
+            "configuration_version": 1
+          }
+        }
+      }
+    },
+    {
+      "name": "Update Work Configuration - Add Lawyer",
+      "method": "PUT",
+      "url": "{{base_url}}/works/{{configured_work_id}}",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{admin_jwt_token}}"
+      },
+      "body": {
+        "work": {
+          "note": "Updated work with additional lawyer",
+          "work_configuration": {
+            "offices": [
+              {
+                "id": 1,
+                "lawyers": [1, 2]
+              }
+            ],
+            "independent_lawyers": [
+              {
+                "id": 3,
+                "role": "consultant"
+              },
+              {
+                "id": 2,
+                "role": "associate"
+              }
+            ],
+            "roles": {
+              "lead_lawyer_id": 1,
+              "responsible_lawyer_id": 1,
+              "assistant_lawyer_ids": [2, 3]
+            },
+            "fee_distribution": {
+              "office_1": 50,
+              "admin_2": 25,
+              "admin_3": 25
+            }
+          }
+        }
+      },
+      "expected_status": 200
+    },
+    {
+      "name": "List Works with Configurations",
+      "method": "GET",
+      "url": "{{base_url}}/works",
+      "headers": {
+        "Authorization": "Bearer {{admin_jwt_token}}"
+      },
+      "query_params": {
+        "limit": 10
+      },
+      "expected_status": 200,
+      "expected_response": {
+        "data": "array",
+        "meta": {
+          "total_count": "number"
+        }
+      }
+    },
+    {
+      "name": "Filter Works by Customer",
+      "method": "GET",
+      "url": "{{base_url}}/works",
+      "headers": {
+        "Authorization": "Bearer {{admin_jwt_token}}"
+      },
+      "query_params": {
+        "customer_id": 1,
+        "limit": 5
+      },
+      "expected_status": 200
+    }
+  ],
+  "test_data_setup": {
+    "description": "Required test data that should exist before running tests",
+    "requirements": [
+      {
+        "model": "Team",
+        "data": {
+          "id": 1,
+          "name": "Test Law Firm",
+          "subdomain": "testfirm",
+          "status": "active"
+        }
+      },
+      {
+        "model": "Admin",
+        "data": [
+          {
+            "id": 1,
+            "email": "admin@testfirm.com",
+            "role": "admin"
+          },
+          {
+            "id": 2,
+            "email": "lawyer1@testfirm.com",
+            "role": "admin"
+          }
+        ]
+      },
+      {
+        "model": "Office",
+        "data": [
+          {
+            "id": 1,
+            "name": "São Paulo Office",
+            "cnpj": "12.345.678/0001-90",
+            "oab": "SP12345",
+            "team_id": 1,
+            "city": "São Paulo",
+            "state": "SP"
+          },
+          {
+            "id": 2,
+            "name": "Rio Office",
+            "cnpj": "98.765.432/0001-10",
+            "oab": "RJ67890",
+            "team_id": 1,
+            "city": "Rio de Janeiro",
+            "state": "RJ"
+          }
+        ]
+      },
+      {
+        "model": "ProfileAdmin",
+        "data": [
+          {
+            "id": 1,
+            "name": "Dr. João Silva",
+            "oab": "SP123456",
+            "role": "lawyer",
+            "admin_id": 1,
+            "office_id": 1
+          },
+          {
+            "id": 2,
+            "name": "Dr. Maria Santos",
+            "oab": "SP789012",
+            "role": "lawyer",
+            "admin_id": 2,
+            "office_id": 1
+          },
+          {
+            "id": 3,
+            "name": "Dr. Pedro Oliveira",
+            "oab": "RJ456789",
+            "role": "lawyer",
+            "admin_id": 1,
+            "office_id": null
+          }
+        ]
+      },
+      {
+        "model": "Customer",
+        "data": {
+          "id": 1,
+          "email": "customer@example.com",
+          "team_id": 1
+        }
+      },
+      {
+        "model": "ProfileCustomer",
+        "data": {
+          "id": 1,
+          "name": "Cliente Teste",
+          "customer_id": 1,
+          "customer_type": "individual",
+          "cpf": "123.456.789-00"
+        }
+      }
+    ]
+  },
+  "rails_console_setup": {
+    "description": "Run these commands in Rails console to set up test data",
+    "commands": [
+      "# Create Team",
+      "team = Team.create!(name: 'Test Law Firm', subdomain: 'testfirm', main_admin_id: 1, owner_admin_id: 1, status: 'active')",
+      "",
+      "# Create Admins",
+      "admin1 = Admin.create!(email: 'admin@testfirm.com', password: 'password', role: 'admin')",
+      "admin2 = Admin.create!(email: 'lawyer1@testfirm.com', password: 'password', role: 'admin')",
+      "",
+      "# Create Team Memberships",
+      "TeamMembership.create!(team: team, admin: admin1, role: 'owner', status: 'active')",
+      "TeamMembership.create!(team: team, admin: admin2, role: 'member', status: 'active')",
+      "",
+      "# Create Office Type",
+      "office_type = OfficeType.create!(description: 'Advocacia')",
+      "",
+      "# Create Offices",
+      "office1 = Office.create!(name: 'São Paulo Office', cnpj: '12.345.678/0001-90', oab: 'SP12345', team: team, office_type: office_type, city: 'São Paulo', state: 'SP', cep: '01000-000', street: 'Rua Teste', number: 123, neighborhood: 'Centro')",
+      "office2 = Office.create!(name: 'Rio Office', cnpj: '98.765.432/0001-10', oab: 'RJ67890', team: team, office_type: office_type, city: 'Rio de Janeiro', state: 'RJ', cep: '20000-000', street: 'Av Teste', number: 456, neighborhood: 'Centro')",
+      "",
+      "# Create Individual Entities",
+      "entity1 = IndividualEntity.create!(name: 'João', last_name: 'Silva', cpf: '111.222.333-44', nationality: 'brazilian')",
+      "entity2 = IndividualEntity.create!(name: 'Maria', last_name: 'Santos', cpf: '555.666.777-88', nationality: 'brazilian')",
+      "entity3 = IndividualEntity.create!(name: 'Pedro', last_name: 'Oliveira', cpf: '999.000.111-22', nationality: 'brazilian')",
+      "customer_entity = IndividualEntity.create!(name: 'Cliente', last_name: 'Teste', cpf: '123.456.789-00', nationality: 'brazilian')",
+      "",
+      "# Create Profile Admins",
+      "profile1 = ProfileAdmin.create!(name: 'Dr. João Silva', oab: 'SP123456', role: 'lawyer', admin: admin1, office: office1, individual_entity: entity1)",
+      "profile2 = ProfileAdmin.create!(name: 'Dr. Maria Santos', oab: 'SP789012', role: 'lawyer', admin: admin2, office: office1, individual_entity: entity2)",
+      "profile3 = ProfileAdmin.create!(name: 'Dr. Pedro Oliveira', oab: 'RJ456789', role: 'lawyer', admin: admin1, individual_entity: entity3)",
+      "",
+      "# Create Customer",
+      "customer = Customer.create!(email: 'customer@example.com', password: 'password', team: team, status: 'active')",
+      "profile_customer = ProfileCustomer.create!(name: 'Cliente Teste', customer: customer, customer_type: 'individual', cpf: '123.456.789-00', individual_entity: customer_entity, team: team)",
+      "",
+      "# Generate JWT tokens (if needed)",
+      "puts \"Admin 1 ID: #{admin1.id}\"",
+      "puts \"Admin 2 ID: #{admin2.id}\"",
+      "puts \"Team ID: #{team.id}\"",
+      "puts \"Office 1 ID: #{office1.id}\"",
+      "puts \"Office 2 ID: #{office2.id}\"",
+      "puts \"ProfileAdmin IDs: #{profile1.id}, #{profile2.id}, #{profile3.id}\"",
+      "puts \"ProfileCustomer ID: #{profile_customer.id}\""
+    ]
+  },
+  "postman_collection": {
+    "info": {
+      "name": "Work Configuration API",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+      {
+        "key": "baseUrl",
+        "value": "http://localhost:3000/api/v1"
+      },
+      {
+        "key": "adminToken",
+        "value": "your_jwt_token_here"
+      }
+    ],
+    "auth": {
+      "type": "bearer",
+      "bearer": [
+        {
+          "key": "token",
+          "value": "{{adminToken}}",
+          "type": "string"
+        }
+      ]
+    }
+  },
+  "insomnia_environment": {
+    "name": "Work Configuration Tests",
+    "data": {
+      "base_url": "http://localhost:3000/api/v1",
+      "admin_token": "your_jwt_token_here",
+      "team_id": 1,
+      "office_id_1": 1,
+      "office_id_2": 2,
+      "profile_admin_id_1": 1,
+      "profile_admin_id_2": 2,
+      "profile_admin_id_3": 3,
+      "profile_customer_id": 1
+    }
+  },
+  "example_responses": {
+    "create_work_with_configuration": {
+      "data": {
+        "id": "123",
+        "type": "work",
+        "attributes": {
+          "subject": "social_security",
+          "procedure": "administrative",
+          "folder": "CASE-2025-002",
+          "status": "in_progress",
+          "work_configuration": {
+            "version": 1,
+            "status": "active",
+            "effective_from": "2025-08-12T10:34:26.000Z",
+            "offices": [
+              {
+                "office_id": 1,
+                "office_name": "São Paulo Office",
+                "cnpj": "12.345.678/0001-90",
+                "oab": "SP12345",
+                "lawyers": [
+                  {
+                    "admin_id": 1,
+                    "profile_admin_id": 1,
+                    "name": "Dr. João Silva",
+                    "oab": "SP123456"
+                  },
+                  {
+                    "admin_id": 2,
+                    "profile_admin_id": 2,
+                    "name": "Dr. Maria Santos",
+                    "oab": "SP789012"
+                  }
+                ]
+              }
+            ],
+            "independent_lawyers": [
+              {
+                "admin_id": 1,
+                "profile_admin_id": 3,
+                "name": "Dr. Pedro Oliveira",
+                "oab": "RJ456789",
+                "role": "consultant"
+              }
+            ],
+            "roles": {
+              "lead_lawyer_id": 1,
+              "responsible_lawyer_id": 1,
+              "assistant_lawyer_ids": [2, 3]
+            },
+            "fee_distribution": {
+              "office_1": 70,
+              "admin_3": 30
+            },
+            "lead_lawyer": {
+              "id": 1,
+              "name": "Dr. João Silva",
+              "oab": "SP123456"
+            },
+            "responsible_lawyer": {
+              "id": 1,
+              "name": "Dr. João Silva",
+              "oab": "SP123456"
+            }
+          },
+          "configuration_version": 1,
+          "offices": [
+            {
+              "id": 1,
+              "name": "São Paulo Office",
+              "cnpj": "12.345.678/0001-90"
+            }
+          ],
+          "profile_admins": [
+            {
+              "id": 1,
+              "name": "Dr. João Silva",
+              "email": "admin@testfirm.com"
+            },
+            {
+              "id": 2,
+              "name": "Dr. Maria Santos",
+              "email": "lawyer1@testfirm.com"
+            },
+            {
+              "id": 3,
+              "name": "Dr. Pedro Oliveira",
+              "email": "admin@testfirm.com"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "curl_examples": [
+    {
+      "name": "Create Work with Configuration",
+      "curl": "curl -X POST http://localhost:3000/api/v1/works \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: Bearer YOUR_JWT_TOKEN\" \\\n  -d '{\n    \"work\": {\n      \"subject\": \"civil\",\n      \"procedure\": \"judicial\",\n      \"folder\": \"CASE-2025-001\",\n      \"profile_customer_ids\": [1],\n      \"work_configuration\": {\n        \"offices\": [{\n          \"id\": 1,\n          \"lawyers\": [1, 2]\n        }],\n        \"independent_lawyers\": [{\n          \"id\": 3,\n          \"role\": \"consultant\"\n        }],\n        \"roles\": {\n          \"lead_lawyer_id\": 1\n        }\n      }\n    }\n  }'"
+    },
+    {
+      "name": "Get Work with Configuration",
+      "curl": "curl -X GET http://localhost:3000/api/v1/works/123 \\\n  -H \"Authorization: Bearer YOUR_JWT_TOKEN\""
+    },
+    {
+      "name": "Update Work Configuration",
+      "curl": "curl -X PUT http://localhost:3000/api/v1/works/123 \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: Bearer YOUR_JWT_TOKEN\" \\\n  -d '{\n    \"work\": {\n      \"work_configuration\": {\n        \"offices\": [{\n          \"id\": 1,\n          \"lawyers\": [1, 2, 3]\n        }],\n        \"roles\": {\n          \"lead_lawyer_id\": 1,\n          \"assistant_lawyer_ids\": [2, 3]\n        }\n      }\n    }\n  }'"
+    }
+  ]
+}

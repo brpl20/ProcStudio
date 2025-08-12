@@ -55,8 +55,21 @@ class Office < ApplicationRecord
   has_many :office_bank_accounts, dependent: :destroy
   has_many :bank_accounts, through: :office_bank_accounts
 
-  has_many :office_works, dependent: :destroy
-  has_many :works, through: :office_works
+  # Works are now associated through WorkConfiguration snapshots
+  def works
+    # Find works where this office is configured as a participating office
+    WorkConfiguration.joins(:work)
+                     .where(status: 'active')
+                     .where('configuration @> ?', { offices: [{ office_id: id }] }.to_json)
+                     .includes(:work)
+                     .map(&:work)
+  end
+  
+  def work_configurations
+    # Find all configurations where this office participates
+    WorkConfiguration.where(status: 'active')
+                     .where('configuration @> ?', { offices: [{ office_id: id }] }.to_json)
+  end
 
   accepts_nested_attributes_for :emails, :bank_accounts, reject_if: :all_blank
 

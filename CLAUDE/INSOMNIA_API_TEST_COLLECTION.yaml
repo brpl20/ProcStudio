@@ -1,0 +1,1126 @@
+_type: export
+__export_format: 4
+__export_date: 2025-08-11T02:00:00.000Z
+__export_source: insomnia.desktop.app:v8.6.1
+resources:
+  - _id: env_base_environment
+    _type: environment
+    name: Base Environment
+    data:
+      base_url: "http://localhost:3000"
+      auth_token: ""
+      admin_id: ""
+      team_id: ""
+    dataPropertyOrder:
+      "&":
+        - base_url
+        - auth_token
+        - admin_id
+        - team_id
+    color: null
+    isPrivate: false
+    metaSortKey: 1628097183038
+    modified: 1691743200000
+    created: 1628097183038
+
+  - _id: fld_auth
+    _type: request_group
+    name: "🔐 Authentication"
+    description: "Admin authentication endpoints"
+    environment: {}
+    environmentPropertyOrder: null
+    metaSortKey: -1628097183020
+    modified: 1691743200000
+    created: 1628097183020
+    parentId: null
+
+  - _id: req_login
+    _type: request
+    parentId: fld_auth
+    modified: 1691743200000
+    created: 1628097183021
+    url: "{{ _.base_url }}/api/v1/login"
+    name: "Login Admin"
+    description: "Authenticate admin user and get JWT token"
+    method: POST
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "email": "admin@example.com",
+          "password": "password123"
+        }
+    parameters: []
+    headers:
+      - name: Content-Type
+        value: application/json
+    authentication: {}
+    metaSortKey: -1628097183021
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+
+  - _id: req_logout
+    _type: request
+    parentId: fld_auth
+    modified: 1691743200000
+    created: 1628097183022
+    url: "{{ _.base_url }}/api/v1/logout"
+    name: "Logout Admin"
+    description: "Logout current admin"
+    method: DELETE
+    body: {}
+    parameters: []
+    headers:
+      - name: Authorization
+        value: "Bearer {{ _.auth_token }}"
+    authentication: {}
+    metaSortKey: -1628097183022
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+
+  - _id: fld_customers
+    _type: request_group
+    name: "👥 Customers with New Profile System"
+    description: "Customer management with polymorphic profiles"
+    environment: {}
+    environmentPropertyOrder: null
+    metaSortKey: -1628097183010
+    modified: 1691743200000
+    created: 1628097183010
+    parentId: null
+
+  - _id: req_customers_list
+    _type: request
+    parentId: fld_customers
+    modified: 1691743200000
+    created: 1628097183011
+    url: "{{ _.base_url }}/api/v1/customers"
+    name: "List Customers"
+    description: "Get all customers for current team"
+    method: GET
+    body: {}
+    parameters: []
+    headers:
+      - name: Authorization
+        value: "Bearer {{ _.auth_token }}"
+    authentication: {}
+    metaSortKey: -1628097183011
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+
+  - _id: req_customer_create_individual
+    _type: request
+    parentId: fld_customers
+    modified: 1691743200000
+    created: 1628097183012
+    url: "{{ _.base_url }}/api/v1/customers/create_with_profile"
+    name: "Create Customer with Individual Profile"
+    description: "Create customer with individual entity profile"
+    method: POST
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "customer": {
+            "email": "customer.individual@example.com",
+            "password": "password123",
+            "customer_type": "individual"
+          },
+          "profile": {
+            "customer_type": "natural_person",
+            "name": "João",
+            "last_name": "Silva",
+            "cpf": "123.456.789-00",
+            "rg": "12.345.678-9",
+            "birth": "1990-05-15",
+            "gender": "male",
+            "nationality": "Brasileira",
+            "civil_status": "single",
+            "capacity": "able",
+            "mother_name": "Maria Silva",
+            "profession": "Desenvolvedor",
+            "contact_addresses_attributes": [
+              {
+                "street": "Rua das Flores",
+                "number": "123",
+                "neighborhood": "Centro",
+                "city": "São Paulo",
+                "state": "SP",
+                "zip_code": "01234567",
+                "complement": "Apto 101",
+                "is_primary": true
+              }
+            ],
+            "contact_phones_attributes": [
+              {
+                "number": "11987654321",
+                "phone_type": "mobile",
+                "is_whatsapp": true,
+                "is_primary": true
+              }
+            ],
+            "contact_emails_attributes": [
+              {
+                "address": "joao.contato@email.com",
+                "email_type": "personal",
+                "is_verified": false,
+                "is_primary": true
+              }
+            ]
+          }
+        }
+    parameters: []
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: Authorization
+        value: "Bearer {{ _.auth_token }}"
+    authentication: {}
+    metaSortKey: -1628097183012
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+
+  - _id: req_customer_create_legal
+    _type: request
+    parentId: fld_customers
+    modified: 1691743200000
+    created: 1628097183013
+    url: "{{ _.base_url }}/api/v1/customers/create_with_profile"
+    name: "Create Customer with Legal Entity Profile"
+    description: "Create customer with legal entity profile"
+    method: POST
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "customer": {
+            "email": "customer.company@example.com",
+            "password": "password123",
+            "customer_type": "company"
+          },
+          "profile": {
+            "customer_type": "legal_person",
+            "name": "Tech Solutions LTDA",
+            "trade_name": "TechSol",
+            "cnpj": "12.345.678/0001-90",
+            "registration_number": "123456789",
+            "registration_date": "2020-01-15",
+            "legal_nature": "Sociedade Limitada",
+            "size": "small",
+            "contact_addresses_attributes": [
+              {
+                "street": "Avenida Paulista",
+                "number": "1000",
+                "neighborhood": "Bela Vista",
+                "city": "São Paulo",
+                "state": "SP",
+                "zip_code": "01310100",
+                "complement": "Sala 1001",
+                "is_primary": true
+              }
+            ],
+            "contact_phones_attributes": [
+              {
+                "number": "1133334444",
+                "phone_type": "commercial",
+                "is_whatsapp": false,
+                "is_primary": true
+              }
+            ],
+            "contact_emails_attributes": [
+              {
+                "address": "contato@techsol.com.br",
+                "email_type": "commercial",
+                "is_verified": false,
+                "is_primary": true
+              }
+            ]
+          }
+        }
+    parameters: []
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: Authorization
+        value: "Bearer {{ _.auth_token }}"
+    authentication: {}
+    metaSortKey: -1628097183013
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+
+  - _id: req_customer_show
+    _type: request
+    parentId: fld_customers
+    modified: 1691743200000
+    created: 1628097183014
+    url: "{{ _.base_url }}/api/v1/customers/1"
+    name: "Show Customer"
+    description: "Get customer details by ID"
+    method: GET
+    body: {}
+    parameters: []
+    headers:
+      - name: Authorization
+        value: "Bearer {{ _.auth_token }}"
+    authentication: {}
+    metaSortKey: -1628097183014
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+
+  - _id: fld_entities
+    _type: request_group
+    name: "🏢 Entity Management (Individual & Legal)"
+    description: "Direct entity management endpoints"
+    environment: {}
+    environmentPropertyOrder: null
+    metaSortKey: -1628097183000
+    modified: 1691743200000
+    created: 1628097183000
+    parentId: null
+
+  - _id: req_individual_entity_create
+    _type: request
+    parentId: fld_entities
+    modified: 1691743200000
+    created: 1628097183001
+    url: "{{ _.base_url }}/api/v1/individual_entities"
+    name: "Create Individual Entity"
+    description: "Create individual entity (person)"
+    method: POST
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "individual_entity": {
+            "name": "Maria",
+            "last_name": "Santos",
+            "cpf": "987.654.321-00",
+            "rg": "98.765.432-1",
+            "birth": "1985-03-20",
+            "gender": "female",
+            "nationality": "Brasileira",
+            "civil_status": "married",
+            "capacity": "able",
+            "mother_name": "Ana Santos",
+            "profession": "Advogada",
+            "contact_addresses_attributes": [
+              {
+                "street": "Rua dos Advogados",
+                "number": "456",
+                "neighborhood": "Jardins",
+                "city": "São Paulo",
+                "state": "SP",
+                "zip_code": "01234567",
+                "is_primary": true
+              }
+            ],
+            "contact_phones_attributes": [
+              {
+                "number": "11999887766",
+                "phone_type": "mobile",
+                "is_whatsapp": true,
+                "is_primary": true
+              }
+            ],
+            "contact_emails_attributes": [
+              {
+                "address": "maria.santos@advocacia.com",
+                "email_type": "professional",
+                "is_primary": true
+              }
+            ]
+          }
+        }
+    parameters: []
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: Authorization
+        value: "Bearer {{ _.auth_token }}"
+    authentication: {}
+    metaSortKey: -1628097183001
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+
+  - _id: req_legal_entity_create
+    _type: request
+    parentId: fld_entities
+    modified: 1691743200000
+    created: 1628097183002
+    url: "{{ _.base_url }}/api/v1/legal_entities"
+    name: "Create Legal Entity"
+    description: "Create legal entity (company)"
+    method: POST
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "legal_entity": {
+            "name": "Santos & Associados Advocacia",
+            "trade_name": "Santos Advocacia",
+            "cnpj": "98.765.432/0001-10",
+            "registration_number": "987654321",
+            "registration_date": "2018-06-10",
+            "legal_nature": "Sociedade de Advogados",
+            "size": "medium",
+            "contact_addresses_attributes": [
+              {
+                "street": "Rua da Liberdade",
+                "number": "789",
+                "neighborhood": "Liberdade",
+                "city": "São Paulo",
+                "state": "SP",
+                "zip_code": "01503000",
+                "complement": "15º andar",
+                "is_primary": true
+              }
+            ],
+            "contact_phones_attributes": [
+              {
+                "number": "1140004000",
+                "phone_type": "commercial",
+                "is_primary": true
+              }
+            ],
+            "contact_emails_attributes": [
+              {
+                "address": "contato@santosadvocacia.com.br",
+                "email_type": "commercial",
+                "is_primary": true
+              }
+            ]
+          }
+        }
+    parameters: []
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: Authorization
+        value: "Bearer {{ _.auth_token }}"
+    authentication: {}
+    metaSortKey: -1628097183002
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+
+  - _id: fld_law_offices
+    _type: request_group
+    name: "⚖️ Law Office Management"
+    description: "Legal entity office management with lawyer partnerships"
+    environment: {}
+    environmentPropertyOrder: null
+    metaSortKey: -1628097182990
+    modified: 1691743200000
+    created: 1628097182990
+    parentId: null
+
+  - _id: req_legal_entity_office_list
+    _type: request
+    parentId: fld_law_offices
+    modified: 1691743200000
+    created: 1628097182991
+    url: "{{ _.base_url }}/api/v1/legal_entity_offices"
+    name: "List Legal Entity Offices"
+    description: "Get all legal entity offices"
+    method: GET
+    body: {}
+    parameters: []
+    headers:
+      - name: Authorization
+        value: "Bearer {{ _.auth_token }}"
+    authentication: {}
+    metaSortKey: -1628097182991
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+
+  - _id: req_legal_entity_office_create
+    _type: request
+    parentId: fld_law_offices
+    modified: 1691743200000
+    created: 1628097182992
+    url: "{{ _.base_url }}/api/v1/legal_entity_offices"
+    name: "Create Legal Entity Office"
+    description: "Create new law office from legal entity"
+    method: POST
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "legal_entity_office": {
+            "legal_entity_id": 1,
+            "oab_id": "SP123456",
+            "inscription_number": "OAB-SP-123456",
+            "society_link": "https://oab-sp.jusbrasil.com.br/sociedades/santos-advocacia"
+          }
+        }
+    parameters: []
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: Authorization
+        value: "Bearer {{ _.auth_token }}"
+    authentication: {}
+    metaSortKey: -1628097182992
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+
+  - _id: req_legal_entity_office_show
+    _type: request
+    parentId: fld_law_offices
+    modified: 1691743200000
+    created: 1628097182993
+    url: "{{ _.base_url }}/api/v1/legal_entity_offices/1"
+    name: "Show Legal Entity Office"
+    description: "Get office details by ID"
+    method: GET
+    body: {}
+    parameters: []
+    headers:
+      - name: Authorization
+        value: "Bearer {{ _.auth_token }}"
+    authentication: {}
+    metaSortKey: -1628097182993
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+
+  - _id: req_add_partner_lawyer
+    _type: request
+    parentId: fld_law_offices
+    modified: 1691743200000
+    created: 1628097182994
+    url: "{{ _.base_url }}/api/v1/legal_entity_offices/1/partnerships"
+    name: "Add Partner Lawyer"
+    description: "Associate lawyer as partner to law office"
+    method: POST
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "legal_entity_office_relationship": {
+            "lawyer_id": 1,
+            "partnership_type": "socio",
+            "ownership_percentage": 50.0
+          }
+        }
+    parameters: []
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: Authorization
+        value: "Bearer {{ _.auth_token }}"
+    authentication: {}
+    metaSortKey: -1628097182994
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+
+  - _id: req_add_associate_lawyer
+    _type: request
+    parentId: fld_law_offices
+    modified: 1691743200000
+    created: 1628097182995
+    url: "{{ _.base_url }}/api/v1/legal_entity_offices/1/partnerships"
+    name: "Add Associate Lawyer"
+    description: "Associate lawyer as associate to law office"
+    method: POST
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "legal_entity_office_relationship": {
+            "lawyer_id": 2,
+            "partnership_type": "associado",
+            "ownership_percentage": 25.0
+          }
+        }
+    parameters: []
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: Authorization
+        value: "Bearer {{ _.auth_token }}"
+    authentication: {}
+    metaSortKey: -1628097182995
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+
+  - _id: req_add_service_partner
+    _type: request
+    parentId: fld_law_offices
+    modified: 1691743200000
+    created: 1628097182996
+    url: "{{ _.base_url }}/api/v1/legal_entity_offices/1/partnerships"
+    name: "Add Service Partner"
+    description: "Associate lawyer as service partner"
+    method: POST
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "legal_entity_office_relationship": {
+            "lawyer_id": 3,
+            "partnership_type": "socio_de_servico",
+            "ownership_percentage": 15.0
+          }
+        }
+    parameters: []
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: Authorization
+        value: "Bearer {{ _.auth_token }}"
+    authentication: {}
+    metaSortKey: -1628097182996
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+
+  - _id: req_update_partnership
+    _type: request
+    parentId: fld_law_offices
+    modified: 1691743200000
+    created: 1628097182997
+    url: "{{ _.base_url }}/api/v1/legal_entity_offices/1/partnerships/1"
+    name: "Update Partnership"
+    description: "Update lawyer partnership details"
+    method: PATCH
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "legal_entity_office_relationship": {
+            "partnership_type": "socio",
+            "ownership_percentage": 60.0
+          }
+        }
+    parameters: []
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: Authorization
+        value: "Bearer {{ _.auth_token }}"
+    authentication: {}
+    metaSortKey: -1628097182997
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+
+  - _id: req_remove_partnership
+    _type: request
+    parentId: fld_law_offices
+    modified: 1691743200000
+    created: 1628097182998
+    url: "{{ _.base_url }}/api/v1/legal_entity_offices/1/partnerships/1"
+    name: "Remove Partnership"
+    description: "Remove lawyer from office partnership"
+    method: DELETE
+    body: {}
+    parameters: []
+    headers:
+      - name: Authorization
+        value: "Bearer {{ _.auth_token }}"
+    authentication: {}
+    metaSortKey: -1628097182998
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+
+  - _id: fld_super_admin
+    _type: request_group
+    name: "🔧 Super Admin Dashboard"
+    description: "Super admin system management endpoints"
+    environment: {}
+    environmentPropertyOrder: null
+    metaSortKey: -1628097182980
+    modified: 1691743200000
+    created: 1628097182980
+    parentId: null
+
+  - _id: req_super_admin_dashboard
+    _type: request
+    parentId: fld_super_admin
+    modified: 1691743200000
+    created: 1628097182981
+    url: "{{ _.base_url }}/api/v1/super_admin/dashboard"
+    name: "Super Admin Dashboard"
+    description: "Get super admin dashboard data"
+    method: GET
+    body: {}
+    parameters: []
+    headers:
+      - name: Authorization
+        value: "Bearer {{ _.auth_token }}"
+    authentication: {}
+    metaSortKey: -1628097182981
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+
+  - _id: req_super_admin_system_settings_list
+    _type: request
+    parentId: fld_super_admin
+    modified: 1691743200000
+    created: 1628097182982
+    url: "{{ _.base_url }}/api/v1/super_admin/system_settings"
+    name: "List System Settings"
+    description: "Get all system settings (super admin only)"
+    method: GET
+    body: {}
+    parameters: []
+    headers:
+      - name: Authorization
+        value: "Bearer {{ _.auth_token }}"
+    authentication: {}
+    metaSortKey: -1628097182982
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+
+  - _id: req_super_admin_update_system_setting
+    _type: request
+    parentId: fld_super_admin
+    modified: 1691743200000
+    created: 1628097182983
+    url: "{{ _.base_url }}/api/v1/super_admin/system_settings/1"
+    name: "Update System Setting"
+    description: "Update government values and system settings"
+    method: PATCH
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "system_setting": {
+            "value": "1320.00",
+            "description": "Salário mínimo vigente para 2025",
+            "active": true
+          }
+        }
+    parameters: []
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: Authorization
+        value: "Bearer {{ _.auth_token }}"
+    authentication: {}
+    metaSortKey: -1628097182983
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+
+  - _id: fld_public_system
+    _type: request_group
+    name: "🌐 Public System Settings"
+    description: "Public API endpoints for government values consultation"
+    environment: {}
+    environmentPropertyOrder: null
+    metaSortKey: -1628097182970
+    modified: 1691743200000
+    created: 1628097182970
+    parentId: null
+
+  - _id: req_public_system_settings_list
+    _type: request
+    parentId: fld_public_system
+    modified: 1691743200000
+    created: 1628097182971
+    url: "{{ _.base_url }}/api/v1/system_settings"
+    name: "List Public System Settings"
+    description: "Get active system settings (public access)"
+    method: GET
+    body: {}
+    parameters: []
+    headers: []
+    authentication: {}
+    metaSortKey: -1628097182971
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+
+  - _id: req_public_get_minimum_wage
+    _type: request
+    parentId: fld_public_system
+    modified: 1691743200000
+    created: 1628097182972
+    url: "{{ _.base_url }}/api/v1/system_settings/minimum_wage"
+    name: "Get Minimum Wage"
+    description: "Get current minimum wage value"
+    method: GET
+    body: {}
+    parameters: []
+    headers: []
+    authentication: {}
+    metaSortKey: -1628097182972
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+
+  - _id: req_public_get_inss_ceiling
+    _type: request
+    parentId: fld_public_system
+    modified: 1691743200000
+    created: 1628097182973
+    url: "{{ _.base_url }}/api/v1/system_settings/inss_ceiling"
+    name: "Get INSS Ceiling"
+    description: "Get current INSS contribution ceiling"
+    method: GET
+    body: {}
+    parameters: []
+    headers: []
+    authentication: {}
+    metaSortKey: -1628097182973
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+
+  - _id: fld_admins
+    _type: request_group
+    name: "👨‍💼 Admin Management"
+    description: "Admin user management endpoints"
+    environment: {}
+    environmentPropertyOrder: null
+    metaSortKey: -1628097182960
+    modified: 1691743200000
+    created: 1628097182960
+    parentId: null
+
+  - _id: req_admin_current
+    _type: request
+    parentId: fld_admins
+    modified: 1691743200000
+    created: 1628097182961
+    url: "{{ _.base_url }}/api/v1/admins/current"
+    name: "Get Current Admin"
+    description: "Get current authenticated admin details"
+    method: GET
+    body: {}
+    parameters: []
+    headers:
+      - name: Authorization
+        value: "Bearer {{ _.auth_token }}"
+    authentication: {}
+    metaSortKey: -1628097182961
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+
+  - _id: req_admin_list
+    _type: request
+    parentId: fld_admins
+    modified: 1691743200000
+    created: 1628097182962
+    url: "{{ _.base_url }}/api/v1/admins"
+    name: "List Admins"
+    description: "Get all admins"
+    method: GET
+    body: {}
+    parameters: []
+    headers:
+      - name: Authorization
+        value: "Bearer {{ _.auth_token }}"
+    authentication: {}
+    metaSortKey: -1628097182962
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+
+  - _id: req_admin_create
+    _type: request
+    parentId: fld_admins
+    modified: 1691743200000
+    created: 1628097182963
+    url: "{{ _.base_url }}/api/v1/admins"
+    name: "Create Admin"
+    description: "Create new admin user"
+    method: POST
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "admin": {
+            "email": "newadmin@example.com",
+            "password": "password123",
+            "role": "admin"
+          }
+        }
+    parameters: []
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: Authorization
+        value: "Bearer {{ _.auth_token }}"
+    authentication: {}
+    metaSortKey: -1628097182963
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+
+  - _id: req_admin_show
+    _type: request
+    parentId: fld_admins
+    modified: 1691743200000
+    created: 1628097182964
+    url: "{{ _.base_url }}/api/v1/admins/1"
+    name: "Show Admin"
+    description: "Get admin details by ID"
+    method: GET
+    body: {}
+    parameters: []
+    headers:
+      - name: Authorization
+        value: "Bearer {{ _.auth_token }}"
+    authentication: {}
+    metaSortKey: -1628097182964
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+
+  - _id: req_admin_update
+    _type: request
+    parentId: fld_admins
+    modified: 1691743200000
+    created: 1628097182965
+    url: "{{ _.base_url }}/api/v1/admins/1"
+    name: "Update Admin"
+    description: "Update admin details"
+    method: PATCH
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "admin": {
+            "email": "updated.admin@example.com",
+            "role": "super_admin"
+          }
+        }
+    parameters: []
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: Authorization
+        value: "Bearer {{ _.auth_token }}"
+    authentication: {}
+    metaSortKey: -1628097182965
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+
+  - _id: req_admin_delete
+    _type: request
+    parentId: fld_admins
+    modified: 1691743200000
+    created: 1628097182966
+    url: "{{ _.base_url }}/api/v1/admins/1"
+    name: "Delete Admin"
+    description: "Soft delete admin user"
+    method: DELETE
+    body: {}
+    parameters: []
+    headers:
+      - name: Authorization
+        value: "Bearer {{ _.auth_token }}"
+    authentication: {}
+    metaSortKey: -1628097182966
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+
+  - _id: req_admin_restore
+    _type: request
+    parentId: fld_admins
+    modified: 1691743200000
+    created: 1628097182967
+    url: "{{ _.base_url }}/api/v1/admins/1/restore"
+    name: "Restore Admin"
+    description: "Restore soft deleted admin"
+    method: POST
+    body: {}
+    parameters: []
+    headers:
+      - name: Authorization
+        value: "Bearer {{ _.auth_token }}"
+    authentication: {}
+    metaSortKey: -1628097182967
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+
+  - _id: fld_setup_guide
+    _type: request_group
+    name: "📋 Setup Guide"
+    description: "Step-by-step setup instructions"
+    environment: {}
+    environmentPropertyOrder: null
+    metaSortKey: -1628097182950
+    modified: 1691743200000
+    created: 1628097182950
+    parentId: null
+
+  - _id: req_setup_instructions
+    _type: request
+    parentId: fld_setup_guide
+    modified: 1691743200000
+    created: 1628097182951
+    url: "about:blank"
+    name: "🚀 SETUP INSTRUCTIONS"
+    description: |
+      ## Getting Started with PRC API Testing
+
+      ### 1. **Authentication Setup**
+      - First, run the **"Login Admin"** request
+      - Copy the JWT token from the response
+      - Update the `auth_token` environment variable with this token
+      - All subsequent requests will use this token for authentication
+
+      ### 2. **Environment Variables**
+      Update these in your Insomnia environment:
+      - `base_url`: Your API base URL (default: http://localhost:3000)
+      - `auth_token`: JWT token from login response
+      - `admin_id`: Admin ID from login response
+      - `team_id`: Team ID from current admin response
+
+      ### 3. **Testing Flow**
+      **Step 1:** Login and get authentication token
+      **Step 2:** Test Customer creation with new polymorphic profiles
+      **Step 3:** Create Individual and Legal Entities
+      **Step 4:** Set up Law Office with multiple lawyer partnerships
+      **Step 5:** Test Super Admin system settings management
+
+      ### 4. **New Features Included**
+      ✅ **Polymorphic Customer Profiles** - Customers can have Individual or Legal Entity profiles
+      ✅ **Enhanced Contact System** - Addresses, phones, emails with proper validation
+      ✅ **Law Office Management** - Legal entities can become law offices with OAB registration
+      ✅ **Lawyer Partnerships** - Multiple partnership types (sócio, associado, sócio de serviço)
+      ✅ **Super Admin Dashboard** - System-wide administration and government value management
+      ✅ **Public API Endpoints** - Government values consultation (minimum wage, INSS ceiling)
+
+      ### 5. **Important Notes**
+      - All protected endpoints require valid JWT authentication
+      - Super Admin endpoints require `super_admin` role
+      - Entity operations are team-scoped for security
+      - Contact information uses polymorphic associations
+
+      ### 6. **Response Examples**
+      Most successful responses follow this pattern:
+      ```json
+      {
+        "data": { /* resource data */ },
+        "meta": { /* pagination/metadata */ }
+      }
+      ```
+
+      Error responses:
+      ```json
+      {
+        "errors": [{ "code": "error message" }]
+      }
+      ```
+    method: GET
+    body: {}
+    parameters: []
+    headers: []
+    authentication: {}
+    metaSortKey: -1628097182951
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true

@@ -14,7 +14,7 @@ module Api
         works = current_team ? Work.by_team(current_team) : Work.all
         works = works.includes(
           :profile_customers,
-          :profile_admins,
+          :current_configuration,
           :powers,
           :recommendations,
           :jobs,
@@ -39,11 +39,16 @@ module Api
       end
 
       def create
-        work = Work.new(work_params)
+        work = Work.new(work_params.except(:office_ids, :profile_admin_ids, :work_configuration))
         work.created_by_id = current_user.id
         work.team = current_team
 
         if work.save
+          # Create initial configuration if offices or lawyers are provided
+          if params[:work][:office_ids].present? || params[:work][:profile_admin_ids].present? || params[:work][:work_configuration].present?
+            create_work_configuration(work)
+          end
+          
           Works::CreateDocumentService.call(work)
 
           render json: WorkSerializer.new(work), status: :created
@@ -63,7 +68,12 @@ module Api
       def update
         authorize @work, :update?, policy_class: Admin::WorkPolicy
 
-        if @work.update(work_params)
+        if @work.update(work_params.except(:office_ids, :profile_admin_ids, :work_configuration))
+          # Update configuration if offices or lawyers are provided
+          if params[:work][:office_ids].present? || params[:work][:profile_admin_ids].present? || params[:work][:work_configuration].present?
+            update_work_configuration(@work)
+          end
+          
           Works::CreateDocumentService.call(@work) if truthy_param?(:regenerate_documents)
           render json: WorkSerializer.new(
             @work
@@ -141,10 +151,53 @@ module Api
           honorary_attributes: %i[id fixed_honorary_value parcelling_value honorary_type percent_honorary_value parcelling work_prev],
           power_ids: [],
           profile_customer_ids: [],
-          profile_admin_ids: [],
-          office_ids: [],
-          procedures: []
+          profile_admin_ids: [], # Keep for backwards compatibility
+          office_ids: [], # Keep for backwards compatibility
+          procedures: [],
+          work_configuration: [
+            offices: [:id, lawyers: []],
+            independent_lawyers: [:id, :role],
+            roles: {},
+            fee_distribution: {}
+          ]
         )
+      end
+      
+      def create_work_configuration(work)
+        config_params = configuration_params
+        WorkConfigurationService.create_initial_configuration(
+          work,
+          offices: config_params[:offices],
+          lawyers: config_params[:independent_lawyers],
+          roles: config_params[:roles],
+          fee_distribution: config_params[:fee_distribution],
+          admin: current_user
+        )
+      end
+      
+      def update_work_configuration(work)
+        config_params = configuration_params
+        WorkConfigurationService.update_configuration(
+          work,
+          offices: config_params[:offices],
+          lawyers: config_params[:independent_lawyers],
+          roles: config_params[:roles],
+          fee_distribution: config_params[:fee_distribution],
+          admin: current_user
+        )
+      end
+      
+      def configuration_params
+        # Support both new format and legacy format
+        if params[:work][:work_configuration].present?
+          params[:work][:work_configuration]
+        else
+          # Legacy format support
+          {
+            offices: params[:work][:office_ids]&.map { |id| { id: id } },
+            independent_lawyers: params[:work][:profile_admin_ids]&.map { |id| { id: id } }
+          }
+        end
       end
 
       def filtering_params

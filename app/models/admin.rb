@@ -14,8 +14,6 @@
 #  updated_at             :datetime         not null
 #  jwt_token              :string
 #  deleted_at             :datetime
-#  status                 :string           default("active"), not null
-#  temp_oab               :string
 #  role                   :string           default("admin")
 #
 class Admin < ApplicationRecord
@@ -28,11 +26,6 @@ class Admin < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
-  enum status: {
-    active: 'active',
-    inactive: 'inactive'
-  }
-  
   enum role: {
     admin: 'admin',
     super_admin: 'super_admin'
@@ -41,61 +34,27 @@ class Admin < ApplicationRecord
   alias_attribute :access_email, :email
 
   has_one :profile_admin, dependent: :destroy
-  
+
   # Team relationships
-  has_many :team_memberships, dependent: :destroy
-  has_many :teams, through: :team_memberships
-  has_many :owned_teams, class_name: 'Team', foreign_key: 'owner_admin_id'
-  has_many :main_teams, class_name: 'Team', foreign_key: 'main_admin_id'
-  
-  # Contact info through polymorphic relationship
-  has_many :contact_infos, as: :contactable, dependent: :destroy
-  has_many :addresses, -> { where(contact_type: 'address') }, 
-           class_name: 'ContactInfo', as: :contactable
-  has_many :emails, -> { where(contact_type: 'email') }, 
-           class_name: 'ContactInfo', as: :contactable
-  has_many :phones, -> { where(contact_type: 'phone') }, 
-           class_name: 'ContactInfo', as: :contactable
-  has_many :bank_accounts, -> { where(contact_type: 'bank_account') }, 
-           class_name: 'ContactInfo', as: :contactable
-  
+  has_one :team, through: :team_memberships
+  has_one :team_membership, dependent: :destroy
+
   # Wiki relationships
-  has_many :created_wiki_pages, class_name: 'WikiPage', foreign_key: 'created_by_id'
-  has_many :updated_wiki_pages, class_name: 'WikiPage', foreign_key: 'updated_by_id'
-  has_many :wiki_revisions, class_name: 'WikiPageRevision', foreign_key: 'created_by_id'
+  # has_many :created_wiki_pages, class_name: 'WikiPage', foreign_key: 'created_by_id'
+  # has_many :updated_wiki_pages, class_name: 'WikiPage', foreign_key: 'updated_by_id'
+  # has_many :wiki_revisions, class_name: 'WikiPageRevision', foreign_key: 'created_by_id'
 
   validates :email, presence: true
-  validates :status, inclusion: { in: %w[active inactive suspended] }
-  validates :role, inclusion: { in: %w[admin super_admin] }
   accepts_nested_attributes_for :profile_admin, reject_if: :all_blank
-  
-  scope :super_admins, -> { where(role: 'super_admin') }
-  scope :regular_admins, -> { where(role: 'admin') }
 
   before_destroy :update_created_by_records
 
   def current_team
-    team_memberships.active.first&.team
+    team_membership.active.first&.team
   end
-  
-  def team_role(team)
-    team_memberships.find_by(team: team)&.role
-  end
-  
+
   def can_access_team?(team)
     team_memberships.active.exists?(team: team)
-  end
-  
-  def primary_email
-    emails.primary.first&.display_value || email
-  end
-  
-  def primary_phone
-    phones.primary.first&.display_value
-  end
-  
-  def primary_address
-    addresses.primary.first&.display_value
   end
 
   private
