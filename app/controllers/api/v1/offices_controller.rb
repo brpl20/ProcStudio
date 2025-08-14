@@ -107,7 +107,7 @@ module Api
           :name, :cnpj,
           :oab, :society,
           :foundation, :site,
-          :cep, :street,
+          :zip_code, :street,
           :number, :neighborhood,
           :city, :state,
           :logo,

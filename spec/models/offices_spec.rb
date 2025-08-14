@@ -13,7 +13,7 @@ RSpec.describe Office, type: :model do
         society: nil,
         foundation: nil,
         site: nil,
-        cep: nil,
+        zip_code: nil,
         street: nil,
         number: nil,
         neighborhood: nil,
@@ -57,7 +57,7 @@ RSpec.describe Office, type: :model do
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_presence_of(:cnpj) }
     it { is_expected.to validate_presence_of(:city) }
-    it { is_expected.to validate_presence_of(:cep) }
+    it { is_expected.to validate_presence_of(:zip_code) }
     it { is_expected.to validate_presence_of(:street) }
     it { is_expected.to validate_presence_of(:number) }
     it { is_expected.to validate_presence_of(:neighborhood) }
