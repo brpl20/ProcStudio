@@ -4,7 +4,7 @@ class OfficeSerializer
   include JSONAPI::Serializer
   attributes :name, :cnpj, :city, :site, :responsible_lawyer_id
 
-  attributes :oab, :society, :foundation, :cep, :street, :number, :neighborhood,
+  attributes :oab, :society, :foundation, :zip_code, :street, :number, :neighborhood,
              :state, :profile_admins, :phones, :emails, :bank_accounts, :works,
              :accounting_type, if: proc { |_, options| options[:action] == 'show' }
 

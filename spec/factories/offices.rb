@@ -9,7 +9,7 @@ FactoryBot.define do
     accounting_type { 'simple' }
     foundation { Faker::Date.birthday(min_age: 18, max_age: 65) }
     site { Faker::Internet.url }
-    cep { Faker::Address.postcode }
+    zip_code { Faker::Address.postcode }
     street { Faker::Address.street_name }
     number { Faker::Number.number(digits: 3) }
     neighborhood { Faker::Address.street_address }

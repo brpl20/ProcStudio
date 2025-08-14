@@ -11,7 +11,7 @@
 #  society               :string
 #  foundation            :date
 #  site                  :string
-#  cep                   :string
+#  zip_code              :string
 #  street                :string
 #  number                :integer
 #  neighborhood          :string
@@ -65,7 +65,7 @@ class Office < ApplicationRecord
     validates :name
     validates :cnpj
     validates :city
-    validates :cep
+    validates :zip_code
     validates :street
     validates :number
     validates :neighborhood

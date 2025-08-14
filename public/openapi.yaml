@@ -209,7 +209,7 @@ components:
               format: date
             site:
               type: string
-            cep:
+            zip_code:
               type: string
             street:
               type: string
@@ -259,7 +259,7 @@ components:
         - society
         - foundation
         - site
-        - cep
+        - zip_code
         - street
         - number
         - neighborhood
@@ -274,7 +274,7 @@ components:
           society: 1
           foundation: '2021-01-01'
           site: 'https://mylawoffice.com.br'
-          cep: '01234567'
+          zip_code: '01234567'
           street: Rua dos Advogados
           number: 123
           neighborhood: Bela Vista
