@@ -7,6 +7,11 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
+      # Public routes (no authentication required)
+      namespace :public do
+        post 'admin_registration', to: 'admin_registration#create'
+      end
+
       get '/offices/with_lawyers', to: 'offices#with_lawyers'
       resources :admins do
         member do

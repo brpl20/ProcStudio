@@ -1,4 +1,4 @@
-'pt-BR':
+"pt-BR":
   general:
     without_email: sem e-mail cadastrado
     without_phone: sem telefone cadastrado
@@ -238,7 +238,7 @@
           zapsign: "Assinatura digital (Zap Sign)"
     errors:
       messages:
-        record_invalid: 'A validação falhou: %{errors}'
+        record_invalid: "A validação falhou: %{errors}"
         restrict_dependent_destroy:
           has_one: Não é possível excluir o registro pois existe um %{record} dependente
           has_many: Não é possível excluir o registro pois existem %{record} dependentes
@@ -253,58 +253,58 @@
               taken: contém contatos duplicados
   date:
     abbr_day_names:
-    - dom
-    - seg
-    - ter
-    - qua
-    - qui
-    - sex
-    - sáb
+      - dom
+      - seg
+      - ter
+      - qua
+      - qui
+      - sex
+      - sáb
     abbr_month_names:
-    -
-    - jan
-    - fev
-    - mar
-    - abr
-    - mai
-    - jun
-    - jul
-    - ago
-    - set
-    - out
-    - nov
-    - dez
+      -
+      - jan
+      - fev
+      - mar
+      - abr
+      - mai
+      - jun
+      - jul
+      - ago
+      - set
+      - out
+      - nov
+      - dez
     day_names:
-    - domingo
-    - segunda-feira
-    - terça-feira
-    - quarta-feira
-    - quinta-feira
-    - sexta-feira
-    - sábado
+      - domingo
+      - segunda-feira
+      - terça-feira
+      - quarta-feira
+      - quinta-feira
+      - sexta-feira
+      - sábado
     formats:
       default: "%d/%m/%Y"
       long: "%d de %B de %Y"
       short: "%d de %B"
       updating: "Atualizado em: %A %d %B, %Y"
     month_names:
-    -
-    - janeiro
-    - fevereiro
-    - março
-    - abril
-    - maio
-    - junho
-    - julho
-    - agosto
-    - setembro
-    - outubro
-    - novembro
-    - dezembro
+      -
+      - janeiro
+      - fevereiro
+      - março
+      - abril
+      - maio
+      - junho
+      - julho
+      - agosto
+      - setembro
+      - outubro
+      - novembro
+      - dezembro
     order:
-    - :day
-    - :month
-    - :year
+      - :day
+      - :month
+      - :year
   datetime:
     distance_in_words:
       about_x_hours:
@@ -354,6 +354,19 @@
   errors:
     format: "%{attribute} %{message}"
     messages:
+      authentication:
+        unauthorized: "Usuário não autorizado, por favor verifique seu login e senha."
+        logout_success: "Saiu com sucesso"
+        google_failure: "Falha na autenticação com Google"
+      profile:
+        incomplete: "Perfil incompleto. Por favor complete as informações necessárias."
+        missing_oab: "Número OAB é obrigatório para advogados."
+        invalid_role: "Função inválida para este usuário."
+      general:
+        not_found: "Recurso não encontrado."
+        server_error: "Erro interno do servidor. Por favor, tente novamente mais tarde."
+        validation_error: "Erro de validação. Verifique os dados fornecidos."
+        access_denied: "Acesso negado. Você não tem permissão para realizar esta operação."
       accepted: deve ser aceito
       blank: não pode ficar em branco
       confirmation: não é igual a %{attribute}
@@ -367,7 +380,7 @@
       invalid: não é válido
       less_than: deve ser menor que %{count}
       less_than_or_equal_to: deve ser menor ou igual a %{count}
-      model_invalid: 'A validação falhou: %{errors}'
+      model_invalid: "A validação falhou: %{errors}"
       not_a_number: não é um número
       not_an_integer: não é um número inteiro
       odd: deve ser ímpar
@@ -376,19 +389,19 @@
       required: é obrigatório(a)
       taken: já está em uso
       too_long:
-        one: 'é muito longo (máximo: 1 caracter)'
-        other: 'é muito longo (máximo: %{count} caracteres)'
+        one: "é muito longo (máximo: 1 caracter)"
+        other: "é muito longo (máximo: %{count} caracteres)"
       too_short:
-        one: 'é muito curto (mínimo: 1 caracter)'
-        other: 'é muito curto (mínimo: %{count} caracteres)'
+        one: "é muito curto (mínimo: 1 caracter)"
+        other: "é muito curto (mínimo: %{count} caracteres)"
       wrong_length:
         one: não possui o tamanho esperado (1 caracter)
         other: não possui o tamanho esperado (%{count} caracteres)
     template:
-      body: 'Por favor, verifique o(s) seguinte(s) campo(s):'
+      body: "Por favor, verifique o(s) seguinte(s) campo(s):"
       header:
-        one: 'Não foi possível gravar %{model}: 1 erro'
-        other: 'Não foi possível gravar %{model}: %{count} erros'
+        one: "Não foi possível gravar %{model}: 1 erro"
+        other: "Não foi possível gravar %{model}: %{count} erros"
   helpers:
     select:
       prompt: Por favor selecione
@@ -429,9 +442,9 @@
           trillion:
             one: trilhão
             other: trilhões
-          unit: ''
+          unit: ""
       format:
-        delimiter: ''
+        delimiter: ""
         precision: 3
         significant: true
         strip_insignificant_zeros: true
@@ -460,24 +473,24 @@
       two_words_connector: " e "
       words_connector: ", "
   time:
-    am: ''
+    am: ""
     formats:
       default: "%a, %d de %B de %Y, %H:%M:%S %z"
       long: "%d de %B de %Y, %H:%M"
       short: "%d de %B, %H:%M"
       updating: "Atualizado em: %A, %d de %B de %Y"
-    pm: ''
+    pm: ""
   pundit:
-    default: 'Não autorizado.'
+    default: "Não autorizado."
     admin:
-      index?: 'Não autorizado a listar registros'
-      show?: 'Não autorizado a listar registros'
-      create?: 'Não autorizado a criar registros'
-      update?: 'Não autorizado a atualizar registros'
-      destroy?: 'Não autorizado a remover registros'
+      index?: "Não autorizado a listar registros"
+      show?: "Não autorizado a listar registros"
+      create?: "Não autorizado a criar registros"
+      update?: "Não autorizado a atualizar registros"
+      destroy?: "Não autorizado a remover registros"
     customer:
-      index?: 'Não autorizado a listar registros'
-      show?: 'Não autorizado a listar registros'
-      create?: 'Não autorizado a criar registros'
-      update?: 'Não autorizado a atualizar registros'
-      destroy?: 'Não autorizado a remover registros'
+      index?: "Não autorizado a listar registros"
+      show?: "Não autorizado a listar registros"
+      create?: "Não autorizado a criar registros"
+      update?: "Não autorizado a atualizar registros"
+      destroy?: "Não autorizado a remover registros"

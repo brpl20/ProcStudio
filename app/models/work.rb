@@ -30,8 +30,8 @@
 #  bachelor                 :integer
 #  initial_atendee          :integer
 #  procedures               :text             default([]), is an Array
-#  status                   :string           default("in_progress")
 #  created_by_id            :bigint(8)
+#  status                   :string           default("in_progress")
 #  deleted_at               :datetime
 #
 class Work < ApplicationRecord

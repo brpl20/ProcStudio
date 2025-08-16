@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_05_30_021552) do
+ActiveRecord::Schema[7.0].define(version: 2025_08_15_233706) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -109,6 +109,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_30_021552) do
     t.string "jwt_token"
     t.datetime "deleted_at"
     t.string "status", default: "active", null: false
+    t.string "oab"
     t.index ["deleted_at"], name: "index_admins_on_deleted_at"
     t.index ["email"], name: "index_admins_on_email", unique: true
     t.index ["jwt_token"], name: "index_admins_on_jwt_token", unique: true
@@ -350,7 +351,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_30_021552) do
     t.string "society"
     t.date "foundation"
     t.string "site"
-    t.string "cep"
+    t.string "zip_code"
     t.string "street"
     t.integer "number"
     t.string "neighborhood"

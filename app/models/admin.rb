@@ -15,6 +15,7 @@
 #  jwt_token              :string
 #  deleted_at             :datetime
 #  status                 :string           default("active"), not null
+#  oab                    :string
 #
 class Admin < ApplicationRecord
   include DeletedFilterConcern

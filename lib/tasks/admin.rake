@@ -13,10 +13,10 @@ namespace :cad do
       password: 'Galego123',
       password_confirmation: 'Galego123'
     )
-    
+
     ProfileAdmin.create!(
       role: 'lawyer',
-      status: 'active', 
+      status: 'active',
       name: 'Bruno',
       last_name: 'Pellizzetti',
       gender: 'male',
@@ -28,12 +28,12 @@ namespace :cad do
       birth: '01-01-1986',
       mother_name: 'Ivete Goinski Pellizzetti',
       admin: Admin.last,
-      addresses_attributes: [ 
+      addresses_attributes: [
         {
           description: '14 Andar',
-          zip_code: '85810-010', 
+          zip_code: '85810-010',
           number: '3033',
-          street: 'Rua Paraná', 
+          street: 'Rua Paraná',
           neighborhood: "Centro",
           city: "Cascavel",
           state: "PR"
@@ -60,16 +60,16 @@ namespace :cad do
         }
       ]
     )
-    
+
     Admin.create!(
       email: 'eduardo@pellizzetti.adv.br',
       password: 'Galego123',
       password_confirmation: 'Galego123'
     )
-    
+
     ProfileAdmin.create!(
       role: 'lawyer',
-      status: 'active', 
+      status: 'active',
       name: 'Eduardo',
       last_name: 'Walber',
       gender: 'male',
@@ -81,12 +81,12 @@ namespace :cad do
       birth: '13-03-1998',
       mother_name: 'Cleide Bertolin Walber',
       admin: Admin.last,
-      addresses_attributes: [ 
+      addresses_attributes: [
         {
           description: '14 Andar',
-          zip_code: '85810-010', 
+          zip_code: '85810-010',
           number: '3033',
-          street: 'Rua Paraná', 
+          street: 'Rua Paraná',
           neighborhood: "Centro",
           city: "Cascavel",
           state: "PR"
@@ -113,59 +113,7 @@ namespace :cad do
         }
       ]
     )
-    
-    Admin.create!(
-      email: 'joao@pellizzetti.adv.br',
-      password: 'Galego123',
-      password_confirmation: 'Galego123'
-    )
-    
-    ProfileAdmin.create!(
-      role: 'lawyer',
-      status: 'active', 
-      name: 'Jaão Augusto',
-      last_name: 'Prado',
-      gender: 'male',
-      oab: '110.025 PR',
-      rg: '998979601 SESP PR',
-      cpf: '080.391.959-00',
-      nationality: 'brazilian',
-      civil_status: 'married',
-      birth: '16-10-1991',
-      mother_name: 'Rosinha Mendes Prado',
-      admin: Admin.last,
-      addresses_attributes: [ 
-        {
-          description: '14 Andar',
-          zip_code: '85810-010', 
-          number: '3033',
-          street: 'Rua Paraná', 
-          neighborhood: "Centro",
-          city: "Cascavel",
-          state: "PR"
-        }
-      ],
-      bank_accounts_attributes: [
-        {
-          bank_name: "Nu Pagamentos",
-          type_account: "Pagamentos",
-          agency: "000-1",
-          account: "40249656-0",
-          operation: "0",
-          pix: "08039195900"
-        }
-      ],
-      phones_attributes: [
-        {
-          phone_number: "45 9853-4569"
-        }
-      ],
-      emails_attributes: [
-        {
-          email: "joao@pellizzetti.adv.br"
-        }
-      ]
-    )
+
 
 
   end
