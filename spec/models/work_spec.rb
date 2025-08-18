@@ -57,70 +57,70 @@ RSpec.describe Work do
   describe 'Enums' do
     it do
       is_expected.to define_enum_for(:procedure)
-        .with_values(
-          administrative: 'administrativo',
-          judicial: 'judicial',
-          extrajudicial: 'extrajudicial'
-        ).backed_by_column_of_type(:string)
+                       .with_values(
+                         administrative: 'administrativo',
+                         judicial: 'judicial',
+                         extrajudicial: 'extrajudicial'
+                       ).backed_by_column_of_type(:string)
     end
 
     it do
       is_expected.to define_enum_for(:subject)
-        .with_values(
-          administrative_subject: 'administrativo',
-          civil: 'civel',
-          criminal: 'criminal',
-          social_security: 'previdenciario',
-          laborite: 'trabalhista',
-          tributary: 'tributario',
-          tributary_pis: 'tributario_pis_confins',
-          others: 'outros'
-        ).backed_by_column_of_type(:string)
+                       .with_values(
+                         administrative_subject: 'administrativo',
+                         civil: 'civel',
+                         criminal: 'criminal',
+                         social_security: 'previdenciario',
+                         laborite: 'trabalhista',
+                         tributary: 'tributario',
+                         tributary_pis: 'tributario_pis_confins',
+                         others: 'outros'
+                       ).backed_by_column_of_type(:string)
     end
 
     it do
       is_expected.to define_enum_for(:civel_area)
-        .with_values(
-          family: 'familia',
-          consumer: 'consumidor',
-          moral_damages: 'danos morais'
-        ).backed_by_column_of_type(:string)
+                       .with_values(
+                         family: 'familia',
+                         consumer: 'consumidor',
+                         moral_damages: 'danos morais'
+                       ).backed_by_column_of_type(:string)
     end
 
     it do
       is_expected.to define_enum_for(:tributary_areas)
-        .with_values(
-          asphalt: 'asfalto',
-          license: 'alvara',
-          others_tributary: 'outros'
-        ).backed_by_column_of_type(:string)
+                       .with_values(
+                         asphalt: 'asfalto',
+                         license: 'alvara',
+                         others_tributary: 'outros'
+                       ).backed_by_column_of_type(:string)
     end
 
     it do
       is_expected.to define_enum_for(:social_security_areas)
-        .with_values(
-          retirement_by_time: 'aposentadoria_contribuicao',
-          retirement_by_age: 'aposentadoria_idade',
-          retirement_by_rural: 'aposentadoria_rural',
-          disablement: 'invalidez',
-          benefit_review: 'revisão_beneficio',
-          administrative_services: 'servicos_administrativos'
-        ).backed_by_column_of_type(:string)
+                       .with_values(
+                         retirement_by_time: 'aposentadoria_contribuicao',
+                         retirement_by_age: 'aposentadoria_idade',
+                         retirement_by_rural: 'aposentadoria_rural',
+                         disablement: 'invalidez',
+                         benefit_review: 'revisão_beneficio',
+                         administrative_services: 'servicos_administrativos'
+                       ).backed_by_column_of_type(:string)
     end
 
     it do
       is_expected.to define_enum_for(:laborite_areas)
-        .with_values(labor_claim: 'reclamatoria_trabalhista')
-        .backed_by_column_of_type(:string)
+                       .with_values(labor_claim: 'reclamatoria_trabalhista')
+                       .backed_by_column_of_type(:string)
     end
 
     it do
       is_expected.to define_enum_for(:status)
-        .with_values(
-          in_progress: 'in_progress',
-          paused: 'paused',
-          completed: 'completed'
-        ).backed_by_column_of_type(:string)
+                       .with_values(
+                         in_progress: 'in_progress',
+                         paused: 'paused',
+                         completed: 'completed'
+                       ).backed_by_column_of_type(:string)
     end
   end
 
@@ -129,7 +129,7 @@ RSpec.describe Work do
   end
 
   describe 'Nested Attributes' do
-    %i[documents pending_documents honorary recommendations].each do |association|
+    [:documents, :pending_documents, :honorary, :recommendations].each do |association|
       it { is_expected.to accept_nested_attributes_for(association).allow_destroy(true) }
     end
   end

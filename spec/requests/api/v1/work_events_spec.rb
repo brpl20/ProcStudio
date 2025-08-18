@@ -10,7 +10,7 @@ RSpec.describe '/api/v1/work_events', type: :request do
   let(:valid_attributes) do
     {
       work_id: work.id,
-      date: Time.now.to_fs(:db),
+      date: Time.zone.now.to_fs(:db),
       description: 'Teste'
     }
   end

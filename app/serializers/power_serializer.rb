@@ -2,5 +2,6 @@
 
 class PowerSerializer
   include JSONAPI::Serializer
+
   attributes :id, :description, :category
 end

@@ -2,6 +2,7 @@
 
 class OfficeSerializer
   include JSONAPI::Serializer
+
   attributes :name, :cnpj, :city, :site, :responsible_lawyer_id
 
   attributes :oab, :society, :foundation, :zip_code, :street, :number, :neighborhood,

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_08_15_233706) do
+ActiveRecord::Schema[7.0].define(version: 2025_08_18_065550) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -110,10 +110,12 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_15_233706) do
     t.datetime "deleted_at"
     t.string "status", default: "active", null: false
     t.string "oab"
+    t.bigint "team_id", null: false
     t.index ["deleted_at"], name: "index_admins_on_deleted_at"
     t.index ["email"], name: "index_admins_on_email", unique: true
     t.index ["jwt_token"], name: "index_admins_on_jwt_token", unique: true
     t.index ["reset_password_token"], name: "index_admins_on_reset_password_token", unique: true
+    t.index ["team_id"], name: "index_admins_on_team_id"
   end
 
   create_table "bank_accounts", force: :cascade do |t|
@@ -287,10 +289,12 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_15_233706) do
     t.bigint "profile_customer_id"
     t.bigint "created_by_id"
     t.datetime "deleted_at"
+    t.bigint "team_id", null: false
     t.index ["created_by_id"], name: "index_jobs_on_created_by_id"
     t.index ["deleted_at"], name: "index_jobs_on_deleted_at"
     t.index ["profile_admin_id"], name: "index_jobs_on_profile_admin_id"
     t.index ["profile_customer_id"], name: "index_jobs_on_profile_customer_id"
+    t.index ["team_id"], name: "index_jobs_on_team_id"
     t.index ["work_id"], name: "index_jobs_on_work_id"
   end
 
@@ -363,10 +367,12 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_15_233706) do
     t.integer "responsible_lawyer_id"
     t.string "accounting_type"
     t.datetime "deleted_at"
+    t.bigint "team_id", null: false
     t.index ["accounting_type"], name: "index_offices_on_accounting_type"
     t.index ["deleted_at"], name: "index_offices_on_deleted_at"
     t.index ["office_type_id"], name: "index_offices_on_office_type_id"
     t.index ["responsible_lawyer_id"], name: "index_offices_on_responsible_lawyer_id"
+    t.index ["team_id"], name: "index_offices_on_team_id"
   end
 
   create_table "pending_documents", force: :cascade do |t|
@@ -495,6 +501,31 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_15_233706) do
     t.index ["representor_id"], name: "index_represents_on_representor_id"
   end
 
+  create_table "team_customers", force: :cascade do |t|
+    t.bigint "team_id", null: false
+    t.bigint "customer_id", null: false
+    t.string "customer_email", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_id"], name: "index_team_customers_on_customer_id"
+    t.index ["deleted_at"], name: "index_team_customers_on_deleted_at"
+    t.index ["team_id", "customer_email"], name: "index_team_customers_on_team_id_and_customer_email", unique: true
+    t.index ["team_id", "customer_id"], name: "index_team_customers_on_team_id_and_customer_id", unique: true
+    t.index ["team_id"], name: "index_team_customers_on_team_id"
+  end
+
+  create_table "teams", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "subdomain", null: false
+    t.jsonb "settings", default: {}
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deleted_at"], name: "index_teams_on_deleted_at"
+    t.index ["subdomain"], name: "index_teams_on_subdomain", unique: true
+  end
+
   create_table "work_events", force: :cascade do |t|
     t.string "description"
     t.datetime "date"
@@ -535,8 +566,10 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_15_233706) do
     t.bigint "created_by_id"
     t.string "status", default: "in_progress"
     t.datetime "deleted_at"
+    t.bigint "team_id", null: false
     t.index ["created_by_id"], name: "index_works_on_created_by_id"
     t.index ["deleted_at"], name: "index_works_on_deleted_at"
+    t.index ["team_id"], name: "index_works_on_team_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -549,6 +582,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_15_233706) do
   add_foreign_key "admin_emails", "profile_admins"
   add_foreign_key "admin_phones", "phones"
   add_foreign_key "admin_phones", "profile_admins"
+  add_foreign_key "admins", "teams"
   add_foreign_key "customer_addresses", "addresses"
   add_foreign_key "customer_addresses", "profile_customers"
   add_foreign_key "customer_bank_accounts", "bank_accounts"
@@ -570,6 +604,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_15_233706) do
   add_foreign_key "job_works", "profile_customers"
   add_foreign_key "job_works", "works"
   add_foreign_key "jobs", "admins", column: "created_by_id"
+  add_foreign_key "jobs", "teams"
   add_foreign_key "office_bank_accounts", "bank_accounts"
   add_foreign_key "office_bank_accounts", "offices"
   add_foreign_key "office_emails", "emails"
@@ -579,6 +614,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_15_233706) do
   add_foreign_key "office_works", "offices"
   add_foreign_key "office_works", "works"
   add_foreign_key "offices", "office_types"
+  add_foreign_key "offices", "teams"
   add_foreign_key "pending_documents", "profile_customers"
   add_foreign_key "pending_documents", "works"
   add_foreign_key "power_works", "powers"
@@ -593,6 +629,9 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_15_233706) do
   add_foreign_key "recommendations", "works"
   add_foreign_key "represents", "profile_customers"
   add_foreign_key "represents", "profile_customers", column: "representor_id"
+  add_foreign_key "team_customers", "customers"
+  add_foreign_key "team_customers", "teams"
   add_foreign_key "work_events", "works"
   add_foreign_key "works", "admins", column: "created_by_id"
+  add_foreign_key "works", "teams"
 end

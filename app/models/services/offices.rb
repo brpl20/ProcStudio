@@ -3,7 +3,7 @@
 class Offices
   class << self
     def create_office(params)
-      p params
+      Rails.logger.debug params
     end
   end
 end

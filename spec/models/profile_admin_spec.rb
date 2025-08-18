@@ -53,51 +53,51 @@ RSpec.describe ProfileAdmin, type: :model do
   describe 'Enums' do
     it do
       is_expected.to define_enum_for(:status)
-        .with_values(
-          active: 'active',
-          inactive: 'inactive'
-        ).backed_by_column_of_type(:string)
+                       .with_values(
+                         active: 'active',
+                         inactive: 'inactive'
+                       ).backed_by_column_of_type(:string)
     end
 
     it do
       is_expected.to define_enum_for(:civil_status)
-        .with_values(
-          single: 'single',
-          married: 'married',
-          divorced: 'divorced',
-          widower: 'widower',
-          union: 'union'
-        ).backed_by_column_of_type(:string)
+                       .with_values(
+                         single: 'single',
+                         married: 'married',
+                         divorced: 'divorced',
+                         widower: 'widower',
+                         union: 'union'
+                       ).backed_by_column_of_type(:string)
     end
 
     it do
       is_expected.to define_enum_for(:gender)
-        .with_values(
-          male: 'male',
-          female: 'female',
-          other: 'other'
-        ).backed_by_column_of_type(:string)
+                       .with_values(
+                         male: 'male',
+                         female: 'female',
+                         other: 'other'
+                       ).backed_by_column_of_type(:string)
     end
 
     it do
       is_expected.to define_enum_for(:nationality)
-        .with_values(
-          brazilian: 'brazilian',
-          foreigner: 'foreigner'
-        ).backed_by_column_of_type(:string)
+                       .with_values(
+                         brazilian: 'brazilian',
+                         foreigner: 'foreigner'
+                       ).backed_by_column_of_type(:string)
     end
 
     it do
       is_expected.to define_enum_for(:role)
-        .with_values(
-          lawyer: 'lawyer',
-          paralegal: 'paralegal',
-          trainee: 'trainee',
-          secretary: 'secretary',
-          counter: 'counter',
-          excounter: 'excounter',
-          representant: 'representant'
-        ).backed_by_column_of_type(:string)
+                       .with_values(
+                         lawyer: 'lawyer',
+                         paralegal: 'paralegal',
+                         trainee: 'trainee',
+                         secretary: 'secretary',
+                         counter: 'counter',
+                         excounter: 'excounter',
+                         representant: 'representant'
+                       ).backed_by_column_of_type(:string)
     end
   end
 

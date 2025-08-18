@@ -2,5 +2,6 @@
 
 class EmailSerializer
   include JSONAPI::Serializer
+
   attributes :id, :email
 end

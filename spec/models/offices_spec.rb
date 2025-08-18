@@ -67,20 +67,20 @@ RSpec.describe Office, type: :model do
   describe 'Enums' do
     it do
       is_expected.to define_enum_for(:society)
-        .with_values(
-          sole_proprietorship: 'sole_proprietorship',
-          company: 'company',
-          individual: 'individual'
-        ).backed_by_column_of_type(:string)
+                       .with_values(
+                         sole_proprietorship: 'sole_proprietorship',
+                         company: 'company',
+                         individual: 'individual'
+                       ).backed_by_column_of_type(:string)
     end
 
     it do
       is_expected.to define_enum_for(:accounting_type)
-        .with_values(
-          simple: 'simple',
-          real_profit: 'real_profit',
-          presumed_profit: 'presumed_profit'
-        ).backed_by_column_of_type(:string)
+                       .with_values(
+                         simple: 'simple',
+                         real_profit: 'real_profit',
+                         presumed_profit: 'presumed_profit'
+                       ).backed_by_column_of_type(:string)
     end
   end
 end

@@ -1,34 +1,282 @@
+plugins:
+  - rubocop-rails
+  - rubocop-performance
+
 inherit_from: .rubocop_todo.yml
 
 AllCops:
   NewCops: enable
   TargetRubyVersion: 3.0.0
+  SuggestExtensions: false
   Exclude:
     - db/**/*
     - vendor/**/*
     - log/**/*
     - tmp/**/*
     - storage/**/*
-    - lib/tasks/**/*
     - bin/*
+    - node_modules/**/*
+    - frontend/**/*
 
+# Layout Cops
+Layout/LineLength:
+  Max: 120
+  Exclude:
+    - config/**/*
+    - spec/**/*
+
+Layout/EmptyLinesAroundAttributeAccessor:
+  Enabled: true
+
+Layout/SpaceAroundMethodCallOperator:
+  Enabled: true
+
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented_relative_to_receiver
+
+Layout/EmptyLinesAroundAccessModifier:
+  EnforcedStyle: around
+
+Layout/IndentationConsistency:
+  Enabled: true
+
+Layout/IndentationWidth:
+  Width: 2
+
+Layout/SpaceInsideHashLiteralBraces:
+  EnforcedStyle: space
+
+# Style Cops
 Style/Documentation:
   Enabled: false
 
 Style/ClassAndModuleChildren:
   Enabled: false
 
+Style/FrozenStringLiteralComment:
+  Enabled: true
+  EnforcedStyle: always
+
+Style/StringLiterals:
+  Enabled: true
+  EnforcedStyle: single_quotes
+
+Style/StringLiteralsInInterpolation:
+  Enabled: true
+  EnforcedStyle: single_quotes
+
+Style/HashSyntax:
+  Enabled: true
+  EnforcedStyle: ruby19_no_mixed_keys
+
+Style/SymbolArray:
+  Enabled: true
+  EnforcedStyle: brackets
+
+Style/WordArray:
+  Enabled: true
+  EnforcedStyle: brackets
+
+Style/AndOr:
+  Enabled: true
+  EnforcedStyle: conditionals
+
+Style/RedundantReturn:
+  Enabled: true
+
+Style/RedundantSelf:
+  Enabled: true
+
+Style/RedundantParentheses:
+  Enabled: true
+
+Style/TernaryParentheses:
+  Enabled: true
+  EnforcedStyle: require_no_parentheses
+
+Style/GuardClause:
+  Enabled: true
+
+Style/IfUnlessModifier:
+  Enabled: true
+
+Style/NegatedIf:
+  Enabled: true
+
+Style/ConditionalAssignment:
+  Enabled: true
+
+Style/EmptyMethod:
+  Enabled: true
+  EnforcedStyle: compact
+
+Style/TrailingCommaInArrayLiteral:
+  Enabled: true
+  EnforcedStyleForMultiline: no_comma
+
+Style/TrailingCommaInHashLiteral:
+  Enabled: true
+  EnforcedStyleForMultiline: no_comma
+
+Style/TrailingCommaInArguments:
+  Enabled: true
+  EnforcedStyleForMultiline: no_comma
+
+Style/RescueStandardError:
+  Enabled: true
+
+Style/Semicolon:
+  Enabled: true
+
+Style/SingleLineMethods:
+  Enabled: true
+
+Style/ClassVars:
+  Enabled: true
+
+Style/GlobalVars:
+  Enabled: true
+  Exclude:
+    - spec/**/*
+
+# Metrics Cops
+Metrics/MethodLength:
+  Max: 20
+  Exclude:
+    - db/migrate/*
+    - spec/**/*
+
 Metrics/ClassLength:
-  Enabled: false
-
-Metrics/CyclomaticComplexity:
-  Enabled: false
-
-Metrics/PerceivedComplexity:
-  Enabled: false
-
-Layout/LineLength:
-  Enabled: false
+  Max: 200
+  Exclude:
+    - spec/**/*
 
 Metrics/ModuleLength:
-  Max: 150
+  Max: 200
+  Exclude:
+    - spec/**/*
+
+Metrics/BlockLength:
+  Max: 25
+  Exclude:
+    - spec/**/*
+    - config/**/*
+    - db/migrate/*
+    - lib/tasks/**/*
+
+Metrics/AbcSize:
+  Max: 20
+  Exclude:
+    - db/migrate/*
+
+Metrics/CyclomaticComplexity:
+  Max: 10
+
+Metrics/PerceivedComplexity:
+  Max: 10
+
+Metrics/ParameterLists:
+  Max: 5
+
+# Naming Cops
+Naming/PredicatePrefix:
+  Enabled: true
+  ForbiddenPrefixes:
+    - is_
+
+Naming/VariableName:
+  Enabled: true
+
+Naming/MethodName:
+  Enabled: true
+
+Naming/ConstantName:
+  Enabled: true
+
+# Rails Cops
+Rails:
+  Enabled: true
+
+Rails/HasManyOrHasOneDependent:
+  Enabled: true
+
+Rails/InverseOf:
+  Enabled: true
+
+Rails/Validation:
+  Enabled: true
+
+Rails/IndexBy:
+  Enabled: true
+
+Rails/IndexWith:
+  Enabled: true
+
+Rails/Output:
+  Enabled: true
+  Exclude:
+    - db/seeds.rb
+
+Rails/SkipsModelValidations:
+  Enabled: true
+  Exclude:
+    - spec/**/*
+    - db/migrate/*
+
+Rails/TimeZone:
+  Enabled: true
+
+Rails/Date:
+  Enabled: true
+
+Rails/Pluck:
+  Enabled: true
+
+Rails/ActiveRecordCallbacksOrder:
+  Enabled: true
+
+Rails/FindById:
+  Enabled: true
+
+Rails/Inquiry:
+  Enabled: true
+
+Rails/MailerName:
+  Enabled: true
+
+Rails/MatchRoute:
+  Enabled: true
+
+Rails/NegateInclude:
+  Enabled: true
+
+Rails/PluckInWhere:
+  Enabled: true
+
+Rails/RenderInline:
+  Enabled: true
+
+Rails/RenderPlainText:
+  Enabled: true
+
+Rails/ShortI18n:
+  Enabled: true
+
+Rails/WhereExists:
+  Enabled: true
+
+# RSpec configuration removed for now due to compatibility issues
+# Can be re-added when using a compatible version
+
+# Performance Cops
+Performance:
+  Enabled: true
+
+Performance/RedundantBlockCall:
+  Enabled: true
+
+Performance/RedundantMatch:
+  Enabled: true
+
+Performance/StringReplacement:
+  Enabled: true

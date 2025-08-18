@@ -2,6 +2,7 @@
 
 class ProfileAdminSerializer
   include JSONAPI::Serializer
+
   attributes :role, :name, :last_name, :status
 
   attribute :access_email do |object|

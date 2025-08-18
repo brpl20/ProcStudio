@@ -140,7 +140,7 @@ namespace :cad do
     )
 
     create_powers(
-      'Procedimento Judicial - Assunto: Criminal', 
+      'Procedimento Judicial - Assunto: Criminal',
       [
         'Acompanhamento em Inquérito Policial',
         'Defesa Criminal',
@@ -153,7 +153,7 @@ namespace :cad do
     )
 
     create_powers(
-      'Procedimento Extrajudicial - Geral', 
+      'Procedimento Extrajudicial - Geral',
       [
         'peticionar',
         'solicitar',

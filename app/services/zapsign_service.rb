@@ -5,6 +5,7 @@ require 'down'
 
 class ZapsignService
   include HTTParty
+
   base_uri CredentialsHelper.get(:zapsign, :base_url, 'ZAPSIGN_BASE_URL')
   # TODO: Remover
   # base_uri Rails.application.credentials.dig(Rails.env.to_sym, :zapsign, :base_url) || 'https://sandbox.api.zapsign.com.br/api'

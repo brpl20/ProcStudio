@@ -2,6 +2,7 @@
 
 class OfficeWithLawyersSerializer
   include JSONAPI::Serializer
+
   attributes :name
 
   attribute :lawyers do |object|

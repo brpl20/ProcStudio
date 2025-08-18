@@ -31,7 +31,7 @@ RSpec.describe Api::V1::DocumentsController, type: :request do
               }
 
           expect(response).to have_http_status(:ok)
-          expect(JSON.parse(response.body)['message']).to eq('Documento atualizado com sucesso!')
+          expect(response.parsed_body['message']).to eq('Documento atualizado com sucesso!')
         end
       end
 
@@ -54,7 +54,7 @@ RSpec.describe Api::V1::DocumentsController, type: :request do
           expect(response).to have_http_status(:ok)
           expect(document.reload.status).to eq('signed')
           expect(document.reload.sign_source).to eq('manual_signature')
-          expect(JSON.parse(response.body)['message']).to eq('Documento assinado atualizado com sucesso!')
+          expect(response.parsed_body['message']).to eq('Documento assinado atualizado com sucesso!')
         end
       end
 
@@ -72,7 +72,7 @@ RSpec.describe Api::V1::DocumentsController, type: :request do
               }
 
           expect(response).to have_http_status(:unprocessable_entity)
-          expect(JSON.parse(response.body)['error']).to eq('O arquivo deve ser um DOCX')
+          expect(response.parsed_body['error']).to eq('O arquivo deve ser um DOCX')
         end
       end
 
@@ -91,7 +91,7 @@ RSpec.describe Api::V1::DocumentsController, type: :request do
               }
 
           expect(response).to have_http_status(:unprocessable_entity)
-          expect(JSON.parse(response.body)['error']).to eq('O arquivo deve ser um PDF')
+          expect(response.parsed_body['error']).to eq('O arquivo deve ser um PDF')
         end
       end
     end
@@ -106,7 +106,7 @@ RSpec.describe Api::V1::DocumentsController, type: :request do
             }
 
         expect(response).to have_http_status(:unprocessable_entity)
-        expect(JSON.parse(response.body)['error']).to eq('Arquivo não fornecido')
+        expect(response.parsed_body['error']).to eq('Arquivo não fornecido')
       end
     end
 
@@ -126,7 +126,7 @@ RSpec.describe Api::V1::DocumentsController, type: :request do
             }
 
         expect(response).to have_http_status(:not_found)
-        expect(JSON.parse(response.body)['error']).to eq('Documento não encontrado')
+        expect(response.parsed_body['error']).to eq('Documento não encontrado')
       end
     end
 

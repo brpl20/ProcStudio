@@ -17,7 +17,7 @@ class CustomerFile < ApplicationRecord
   belongs_to :profile_customer
   has_one_attached :file
 
-  enum file_description: {
+  enum :file_description, {
     simple_procuration: 'simple procuration', # procuracao simples
     rg: 'rg',
     cpf: 'cpf',

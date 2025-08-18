@@ -21,7 +21,7 @@ class Honorary < ApplicationRecord
 
   belongs_to :work
 
-  enum honorary_type: {
+  enum :honorary_type, {
     work: 'trabalho',
     success: 'exito',
     both: 'ambos',

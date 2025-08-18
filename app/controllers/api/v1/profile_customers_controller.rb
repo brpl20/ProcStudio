@@ -7,8 +7,8 @@ module Api
     class ProfileCustomersController < BackofficeController
       before_action :load_active_storage_url_options unless Rails.env.production?
 
-      before_action :profile_customer, only: %i[update show]
-      before_action :perform_authorization, except: %i[update]
+      before_action :profile_customer, only: [:update, :show]
+      before_action :perform_authorization, except: [:update]
 
       after_action :verify_authorized
 
@@ -16,7 +16,7 @@ module Api
         profile_customers = ProfileCustomerFilter.retrieve_customers
 
         filter_by_deleted_params.each do |key, value|
-          next unless value.present?
+          next if value.blank?
 
           profile_customers = profile_customers.public_send("filter_by_#{key}", value.strip)
         end
@@ -29,11 +29,21 @@ module Api
         ), status: :ok
       end
 
+      def show
+        render json: ProfileCustomerSerializer.new(
+          @profile_customer,
+          { params: { action: 'show' } }
+        ), status: :ok
+      end
+
       def create
         profile_customer = ProfileCustomer.new(profile_customers_params)
         profile_customer.created_by_id = current_user.id
         if profile_customer.save
-          ProfileCustomers::CreateDocumentService.call(profile_customer, current_user) if truthy_param?(:issue_documents)
+          if truthy_param?(:issue_documents)
+            ProfileCustomers::CreateDocumentService.call(profile_customer,
+                                                         current_user)
+          end
 
           render json: ProfileCustomerSerializer.new(
             profile_customer,
@@ -56,9 +66,14 @@ module Api
         authorize @profile_customer, :update?, policy_class: Admin::CustomerPolicy
 
         if @profile_customer.update(profile_customers_params)
-          ProfileCustomers::CreateDocumentService.call(@profile_customer, @current_admin) if truthy_param?(:regenerate_documents)
+          if truthy_param?(:regenerate_documents)
+            ProfileCustomers::CreateDocumentService.call(@profile_customer,
+                                                         @current_admin)
+          end
 
-          @profile_customer.customer.send_confirmation_instructions if @profile_customer.customer&.saved_change_to_email?
+          if @profile_customer.customer&.saved_change_to_email?
+            @profile_customer.customer.send_confirmation_instructions
+          end
 
           render json: ProfileCustomerSerializer.new(
             @profile_customer,
@@ -70,13 +85,6 @@ module Api
             json: { errors: [{ code: @profile_customer.errors.full_messages }] }
           )
         end
-      end
-
-      def show
-        render json: ProfileCustomerSerializer.new(
-          @profile_customer,
-          { params: { action: 'show' } }
-        ), status: :ok
       end
 
       def destroy
@@ -123,18 +131,18 @@ module Api
           :nit, :mother_name,
           :inss_password,
           :accountant_id,
-          addresses_attributes: %i[id description zip_code street number neighborhood city state],
-          bank_accounts_attributes: %i[id bank_name type_account agency account operation pix],
-          customer_attributes: %i[id email access_email password password_confirmation],
-          phones_attributes: %i[id phone_number],
-          emails_attributes: %i[id email],
-          represent_attributes: %i[id representor_id],
-          customer_files_attributes: %i[id file_description]
+          addresses_attributes: [:id, :description, :zip_code, :street, :number, :neighborhood, :city, :state],
+          bank_accounts_attributes: [:id, :bank_name, :type_account, :agency, :account, :operation, :pix],
+          customer_attributes: [:id, :email, :access_email, :password, :password_confirmation],
+          phones_attributes: [:id, :phone_number],
+          emails_attributes: [:id, :email],
+          represent_attributes: [:id, :representor_id],
+          customer_files_attributes: [:id, :file_description]
         )
       end
 
       def perform_authorization
-        authorize [:admin, :work], "#{action_name}?".to_sym
+        authorize [:admin, :work], :"#{action_name}?"
       end
     end
   end

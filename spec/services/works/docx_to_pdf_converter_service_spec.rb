@@ -7,8 +7,8 @@ RSpec.describe Works::DocxToPdfConverterService, type: :service do
   let(:service) { described_class.new(document) }
 
   before(:all) do
-    @docx_file_path = Rails.root.join('spec', 'fixtures', 'files', 'test_document.docx')
-    @pdf_file_path = Rails.root.join('spec', 'fixtures', 'files', 'test_document.pdf')
+    @docx_file_path = Rails.root.join('spec/fixtures/files/test_document.docx')
+    @pdf_file_path = Rails.root.join('spec/fixtures/files/test_document.pdf')
   end
 
   describe '#call' do

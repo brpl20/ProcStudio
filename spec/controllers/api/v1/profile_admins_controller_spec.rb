@@ -18,7 +18,7 @@ RSpec.describe Api::V1::ProfileAdminsController, type: :request do
       end
 
       it 'returns all profile_admins' do
-        expect(JSON.parse(response.body)).to eq(
+        expect(response.parsed_body).to eq(
           'data' => [{
             'id' => profile_admin.id.to_s,
             'type' => 'profile_admin',

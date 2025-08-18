@@ -28,18 +28,18 @@ class Document < ApplicationRecord
 
   validate :sign_source_restriction
 
-  enum document_type: {
+  enum :document_type, {
     procuration: 'procuration',
     waiver: 'waiver',
     deficiency_statement: 'deficiency statement',
     honorary: 'honorary'
   }
 
-  enum format: [:docx, :pdf]
+  enum :format, { docx: 0, pdf: 1 }
 
-  enum status: [:pending_review, :approved, :pending_external_signature, :signed]
+  enum :status, { pending_review: 0, approved: 1, pending_external_signature: 2, signed: 3 }
 
-  enum sign_source: [:no_signature, :manual_signature, :zapsign]
+  enum :sign_source, { no_signature: 0, manual_signature: 1, zapsign: 2 }
 
   scope :procurations, -> { where(document_type: 'procuration') }
 
@@ -64,11 +64,11 @@ class Document < ApplicationRecord
 
   def document_name_parsed
     document_name.to_s
-                 .unicode_normalize(:nfkd)
-                 .gsub(/[^\x00-\x7F]/, '')
-                 .gsub(/[^a-zA-Z0-9\s]/, '')
-                 .gsub(/\s+/, '_')
-                 .downcase
+      .unicode_normalize(:nfkd)
+      .gsub(/[^\x00-\x7F]/, '')
+      .gsub(/[^a-zA-Z0-9\s]/, '')
+      .gsub(/\s+/, '_')
+      .downcase
   end
 
   private
@@ -77,9 +77,17 @@ class Document < ApplicationRecord
     return unless will_save_change_to_sign_source?
 
     if status.to_sym == :signed
-      errors.add(:sign_source, 'deve ser "manual_signature" ou "zapsign" quando o status for "signed"') unless sign_source.in?(%w[manual_signature zapsign])
+      unless sign_source.in?([
+                               'manual_signature', 'zapsign'
+                             ])
+        errors.add(:sign_source,
+                   'deve ser "manual_signature" ou "zapsign" quando o status for "signed"')
+      end
     else
-      errors.add(:sign_source, 'deve ser "no_signature" quando o status não for "signed"') unless sign_source == 'no_signature'
+      unless sign_source == 'no_signature'
+        errors.add(:sign_source,
+                   'deve ser "no_signature" quando o status não for "signed"')
+      end
     end
   end
 end

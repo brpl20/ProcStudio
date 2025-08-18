@@ -61,12 +61,11 @@ namespace :cad do
             type_account: 'Conta Corrente',
             agency: Faker::Bank.routing_number,
             account: Faker::Bank.account_number,
-            operation: "0",
+            operation: '0',
             pix: Faker::Number.number(digits: 11)
           }
         ]
       )
     end
-
   end
 end

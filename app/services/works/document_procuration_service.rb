@@ -70,7 +70,7 @@ module Works
     end
 
     def substitute_word(text)
-      proc_date = I18n.l(Time.now, format: '%d de %B de %Y')
+      proc_date = I18n.l(Time.zone.now, format: '%d de %B de %Y')
       substitute_client_info(text)
       substitute_justice_agents(text)
       substitute_job(text)
@@ -79,7 +79,7 @@ module Works
       text.substitute('_proc_today_', "#{address.city&.strip}, #{address.state&.strip}, #{proc_date}")
       text.substitute('_proc_date_', proc_date)
       text.substitute('_proc_full_name_', customer.full_name.upcase)
-      text.substitute('_proc_represent_full_name_', representor&.full_name&.upcase) if representor&.present?
+      text.substitute('_proc_represent_full_name_', representor&.full_name&.upcase) if representor.present?
     end
   end
 end

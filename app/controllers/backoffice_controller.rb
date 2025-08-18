@@ -3,14 +3,17 @@
 class BackofficeController < ApplicationController
   include JwtAuth
   include Pundit::Authorization
+  include TeamScoped
 
   before_action :authenticate_admin
+  before_action :set_current_team
 
   rescue_from Pundit::NotAuthorizedError, with: :unauthorized
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
-  def current_user
-    @current_user ||= @current_admin
+  # Pundit usa current_user por padrão, mas podemos sobrescrever com pundit_user
+  def pundit_user
+    @current_admin
   end
 
   def unauthorized(exception)
@@ -39,7 +42,13 @@ class BackofficeController < ApplicationController
   end
 
   def record_not_found(exception)
-    model_name = exception.model || 'Registro'
-    render json: { error: "#{model_name} não encontrado" }, status: :not_found
+    # Quando é um Admin não encontrado por scoping de team,
+    # é na verdade um problema de autorização, não de recurso inexistente
+    if exception.model == 'Admin'
+      render json: { error: I18n.t('errors.messages.general.unauthorized_access') }, status: :forbidden
+    else
+      model_name = exception.model || 'Registro'
+      render json: { error: "#{model_name} não encontrado" }, status: :not_found
+    end
   end
 end

@@ -2,5 +2,6 @@
 
 class OfficeTypeSerializer
   include JSONAPI::Serializer
+
   attributes :description
 end

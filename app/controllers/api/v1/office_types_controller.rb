@@ -3,7 +3,7 @@
 module Api
   module V1
     class OfficeTypesController < BackofficeController
-      before_action :retrieve_office_type, only: %i[update show destroy]
+      before_action :retrieve_office_type, only: [:update, :show, :destroy]
       before_action :perform_authorization
 
       after_action :verify_authorized
@@ -73,7 +73,7 @@ module Api
       end
 
       def perform_authorization
-        authorize [:admin, :office], "#{action_name}?".to_sym
+        authorize [:admin, :office], :"#{action_name}?"
       end
     end
   end

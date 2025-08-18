@@ -11,7 +11,7 @@
 #  updated_at  :datetime         not null
 #
 class Power < ApplicationRecord
-  enum category: {
+  enum :category, {
     # Poderes em Geral Administrativo
     admgeneral: 0,
     admspecific: 1,

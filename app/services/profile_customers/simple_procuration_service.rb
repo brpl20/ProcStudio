@@ -43,7 +43,7 @@ module ProfileCustomers
 
     # main function
     def substitute_word(text)
-      proc_date = I18n.l(Time.now, format: '%d de %B de %Y')
+      proc_date = I18n.l(Time.zone.now, format: '%d de %B de %Y')
       substitute_client_info(text)
       substitute_justice_agents(text)
       substitute_job(text)
@@ -52,7 +52,10 @@ module ProfileCustomers
       text.substitute('_proc_today_', "#{@address.city&.strip} - #{@address.state&.strip}, #{proc_date}")
       text.substitute('_proc_date_', proc_date)
       text.substitute('_proc_full_name_', @customer.full_name.downcase.titleize&.strip) unless @customer.unable?
-      text.substitute('_proc_represent_full_name_', @represent.representor.full_name&.strip) if @represent&.representor&.present?
+      return if @represent&.representor.blank?
+
+      text.substitute('_proc_represent_full_name_',
+                      @represent.representor.full_name&.strip)
     end
 
     # outorgante paragraph
@@ -67,7 +70,7 @@ module ProfileCustomers
         @customer.last_email&.strip, "residente e #{word_for_gender('live', @customer.gender)} à #{@address.street.to_s.downcase.titleize&.strip}, n° #{@address.number}",
         @address.description.to_s.downcase.titleize&.strip, "#{@address.city&.strip} - #{@address.state}, CEP #{@address.zip_code&.strip}",
         responsable
-      ].reject(&:blank?).join(', ')
+      ].compact_blank.join(', ')
 
       text.substitute('_proc_outorgante_', translated_text)
     end
@@ -98,7 +101,7 @@ module ProfileCustomers
 
     def responsable
       return nil if @customer.able?
-      return nil unless @represent&.representor&.present?
+      return nil if @represent&.representor.blank?
 
       representor = @customer.represent.representor
       representor_address = representor.addresses.first
@@ -112,9 +115,12 @@ module ProfileCustomers
       [
         "#{representor_text} #{representor.full_name.downcase.titleize&.strip}",
         word_for_gender(representor.civil_status, representor.gender),
-        "#{word_for_gender('owner', representor.gender)} do RG n° #{representor.rg} e #{word_for_gender('subscribe', representor.gender)} no CPF sob o n° #{representor.cpf}",
+        "#{word_for_gender('owner',
+                           representor.gender)} do RG n° #{representor.rg} e #{word_for_gender('subscribe',
+                                                                                               representor.gender)} no CPF sob o n° #{representor.cpf}",
         representor.last_email,
-        "residente e #{word_for_gender('live', representor.gender)} à #{representor_address.street.to_s.downcase.titleize&.strip}, n° #{representor_address.number}",
+        "residente e #{word_for_gender('live',
+                                       representor.gender)} à #{representor_address.street.to_s.downcase.titleize&.strip}, n° #{representor_address.number}",
         representor_address.description.to_s.downcase.titleize&.strip,
         "#{representor_address.city&.strip} - #{representor_address.state&.strip}, CEP #{representor_address.zip_code&.strip}"
       ].join(', ')

@@ -364,6 +364,7 @@
         invalid_role: "Função inválida para este usuário."
       general:
         not_found: "Recurso não encontrado."
+        unauthorized_access: "Não autorizado a acessar o registro solicitado."
         server_error: "Erro interno do servidor. Por favor, tente novamente mais tarde."
         validation_error: "Erro de validação. Verifique os dados fornecidos."
         access_denied: "Acesso negado. Você não tem permissão para realizar esta operação."
@@ -494,3 +495,9 @@
       create?: "Não autorizado a criar registros"
       update?: "Não autorizado a atualizar registros"
       destroy?: "Não autorizado a remover registros"
+    team:
+      index?: "Não autorizado a listar teams. Apenas administradores com role super_admin podem executar esta ação."
+      show?: "Não autorizado a visualizar este team. Você só pode visualizar informações do seu próprio team."
+      create?: "Não autorizado a criar teams. Apenas administradores com role super_admin podem executar esta ação."
+      update?: "Não autorizado a atualizar teams. Apenas administradores com role super_admin podem executar esta ação."
+      destroy?: "Não autorizado a remover teams. Apenas administradores com role super_admin podem executar esta ação."

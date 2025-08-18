@@ -33,11 +33,14 @@
 #  created_by_id            :bigint(8)
 #  status                   :string           default("in_progress")
 #  deleted_at               :datetime
+#  team_id                  :bigint(8)        not null
 #
 class Work < ApplicationRecord
   include DeletedFilterConcern
 
   acts_as_paranoid
+
+  belongs_to :team
 
   has_many :customer_works, -> { with_deleted }, dependent: :destroy
   has_many :profile_customers, -> { with_deleted }, through: :customer_works
@@ -65,13 +68,13 @@ class Work < ApplicationRecord
   has_one :honorary, dependent: :destroy
   has_one :draft_work, class_name: 'Draft::Work', dependent: :destroy
 
-  enum procedure: {
+  enum :procedure, {
     administrative: 'administrativo',
     judicial: 'judicial',
     extrajudicial: 'extrajudicial'
   }
 
-  enum subject: {
+  enum :subject, {
     administrative_subject: 'administrativo',
     civil: 'civel',
     criminal: 'criminal',
@@ -82,19 +85,19 @@ class Work < ApplicationRecord
     others: 'outros'
   }
 
-  enum civel_area: {
+  enum :civel_area, {
     family: 'familia',
     consumer: 'consumidor',
     moral_damages: 'danos morais'
   }
 
-  enum tributary_areas: {
+  enum :tributary_areas, {
     asphalt: 'asfalto',
     license: 'alvara',
     others_tributary: 'outros'
   }
 
-  enum social_security_areas: {
+  enum :social_security_areas, {
     retirement_by_time: 'aposentadoria_contribuicao',
     retirement_by_age: 'aposentadoria_idade',
     retirement_by_rural: 'aposentadoria_rural',
@@ -103,11 +106,11 @@ class Work < ApplicationRecord
     administrative_services: 'servicos_administrativos'
   }
 
-  enum laborite_areas: {
+  enum :laborite_areas, {
     labor_claim: 'reclamatoria_trabalhista'
   }
 
-  enum status: {
+  enum :status, {
     in_progress: 'in_progress',
     paused: 'paused',
     completed: 'completed'
@@ -116,7 +119,10 @@ class Work < ApplicationRecord
   validates :subject, presence: true
   validates_with WorkAddressesValidator
 
-  accepts_nested_attributes_for :documents, :pending_documents, :recommendations, :honorary, reject_if: :all_blank, allow_destroy: true
+  accepts_nested_attributes_for :documents, :pending_documents, :recommendations, :honorary, reject_if: :all_blank,
+                                                                                             allow_destroy: true
 
-  scope :filter_by_customer_id, ->(customer_id) { joins(:profile_customers).where(profile_customers: { id: customer_id }) }
+  scope :filter_by_customer_id, lambda { |customer_id|
+    joins(:profile_customers).where(profile_customers: { id: customer_id })
+  }
 end

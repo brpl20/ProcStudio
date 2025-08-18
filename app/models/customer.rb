@@ -34,23 +34,28 @@ class Customer < ApplicationRecord
   alias_attribute :access_email, :email
 
   has_one :profile_customer, dependent: :destroy
+  has_many :team_customers, dependent: :destroy
+  has_many :teams, through: :team_customers
 
   delegate :full_name, to: :profile_customer, prefix: true, allow_nil: true
 
   before_validation :setup_password, if: :new_record?
 
-  validates_uniqueness_of :email, conditions: -> { where(deleted_at: nil) }
+  validates :email, uniqueness: { conditions: -> { where(deleted_at: nil) } }
 
   # From Devise module Validatable
-  validates_presence_of     :email, if: :email_required?
-  validates_format_of       :email, with: Devise.email_regexp, allow_blank: true, if: :email_changed?
-  validates_presence_of     :password, if: :password_required?
-  validates_confirmation_of :password, if: :password_required?
-  validates_length_of       :password, minimum: proc { Devise.password_length.min }, maximum: proc { Devise.password_length.max }, allow_blank: true
+  validates :email, presence: { if: :email_required? }
+  validates :email, format: { with: Devise.email_regexp, allow_blank: true, if: :email_changed? }
+  validates :password, presence: { if: :password_required? }
+  validates :password, confirmation: { if: :password_required? }
+  validates       :password, length: { minimum: proc { Devise.password_length.min }, maximum: proc {
+    Devise.password_length.max
+  }, allow_blank: true }
 
-  enum status: {
+  enum :status, {
     active: 'active',
-    inactive: 'inactive'
+    inactive: 'inactive',
+    deceased: 'deceased'
   }
 
   # Setup a random password for the customer if such is not present. This is

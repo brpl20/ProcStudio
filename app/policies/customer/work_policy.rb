@@ -2,7 +2,7 @@
 
 class Customer::WorkPolicy < ApplicationPolicy
   def index?
-    user.confirmed? && user&.profile_customer&.present?
+    user.confirmed? && user&.profile_customer.present?
   end
 
   def show?

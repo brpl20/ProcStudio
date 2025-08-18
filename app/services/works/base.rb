@@ -12,7 +12,7 @@ module Works
     end
 
     def responsable_company
-      return nil unless @customer&.represent&.representor&.present?
+      return nil if @customer&.represent&.representor.blank?
 
       representor = @customer.represent.representor
       representor_address = representor.addresses.first
@@ -21,12 +21,15 @@ module Works
         "neste ato representado por seu sócio administrador #{representor.full_name.upcase}",
         word_for_gender(representor.nationality, representor.gender),
         word_for_gender(representor.civil_status, representor.gender),
-        "#{word_for_gender('owner', representor.gender)} do RG n° #{representor.rg} e #{word_for_gender('subscribe', representor.gender)} no CPF sob o n° #{representor.cpf}",
+        "#{word_for_gender('owner',
+                           representor.gender)} do RG n° #{representor.rg} e #{word_for_gender('subscribe',
+                                                                                               representor.gender)} no CPF sob o n° #{representor.cpf}",
         representor.last_email,
-        "residente e #{word_for_gender('live', representor.gender)} à #{representor_address.street.to_s.downcase.titleize}, n° #{representor_address.number}",
+        "residente e #{word_for_gender('live',
+                                       representor.gender)} à #{representor_address.street.to_s.downcase.titleize}, n° #{representor_address.number}",
         representor_address.description.to_s.downcase.titleize,
         "#{representor_address.city} - #{representor_address.state}, CEP #{representor_address.zip_code}"
-      ].reject(&:blank?).join(', ')
+      ].compact_blank.join(', ')
     end
 
     def mask_cnpj(cnpj)
@@ -54,7 +57,7 @@ module Works
           address.description.to_s.downcase.titleize&.strip,
           "#{address.neighborhood&.strip}, #{address.city&.strip} - #{address.state&.strip}, CEP #{address.zip_code&.strip}",
           responsable.to_s
-        ].reject(&:blank?).join(', ')
+        ].compact_blank.join(', ')
         # responsable_company
       else
         # Original code for individual persons
@@ -64,13 +67,16 @@ module Works
           word_for_gender(customer.civil_status, customer.gender),
           capacity,
           customer.profession.downcase&.strip,
-          "#{word_for_gender('owner', customer.gender)} do RG n° #{customer.rg} e #{word_for_gender('subscribe', customer.gender)} no CPF sob o n° #{customer.cpf}",
+          "#{word_for_gender('owner',
+                             customer.gender)} do RG n° #{customer.rg} e #{word_for_gender('subscribe',
+                                                                                           customer.gender)} no CPF sob o n° #{customer.cpf}",
           customer.last_email&.strip,
-          "residente e #{word_for_gender('live', customer.gender)}: #{address.street.to_s.downcase.titleize&.strip}, n° #{address.number}",
+          "residente e #{word_for_gender('live',
+                                         customer.gender)}: #{address.street.to_s.downcase.titleize&.strip}, n° #{address.number}",
           address.description.to_s.downcase.titleize&.strip,
           "#{address.city&.strip} - #{address.state&.strip}, CEP #{address.zip_code&.strip}",
           responsable
-        ].reject(&:blank?).join(', ')
+        ].compact_blank.join(', ')
       end
 
       text.substitute('_proc_outorgante_', translated_text)
@@ -82,7 +88,7 @@ module Works
 
     def responsable
       return nil if @customer.able?
-      return nil unless @customer&.represent&.representor&.present?
+      return nil if @customer&.represent&.representor.blank?
 
       representor = @customer.represent.representor
       representor_address = representor.addresses.first
@@ -96,9 +102,12 @@ module Works
       [
         "#{representor_text} #{representor.full_name.upcase}",
         word_for_gender(representor.civil_status, representor.gender),
-        "#{word_for_gender('owner', representor.gender)} do RG n° #{representor.rg} e #{word_for_gender('subscribe', representor.gender)} no CPF sob o n° #{representor.cpf}",
+        "#{word_for_gender('owner',
+                           representor.gender)} do RG n° #{representor.rg} e #{word_for_gender('subscribe',
+                                                                                               representor.gender)} no CPF sob o n° #{representor.cpf}",
         representor.last_email,
-        "residente e #{word_for_gender('live', representor.gender)} à #{representor_address.street.to_s.downcase.titleize}, n° #{representor_address.number}",
+        "residente e #{word_for_gender('live',
+                                       representor.gender)} à #{representor_address.street.to_s.downcase.titleize}, n° #{representor_address.number}",
         representor_address.description.to_s.downcase.titleize,
         "#{representor_address.city} - #{representor_address.state}, CEP #{representor_address.zip_code}"
       ].join(', ')
@@ -161,7 +170,9 @@ module Works
       translated_text[-1] = "#{translated_text[-1]}: "
       translated_text = translated_text.join(', ')
       translated_text << if work.social_security_areas.present?
-                           "#{Work.human_enum_name(:subject, work.subject).downcase.titleize} - #{Work.human_enum_name(:social_security_areas, work.social_security_areas).downcase.titleize}"
+                           "#{Work.human_enum_name(:subject,
+                                                   work.subject).downcase.titleize} - #{Work.human_enum_name(:social_security_areas,
+                                                                                                             work.social_security_areas).downcase.titleize}"
                          else
                            Work.human_enum_name(:subject, work.subject).downcase.titleize
                          end

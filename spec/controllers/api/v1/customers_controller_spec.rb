@@ -18,7 +18,7 @@ RSpec.describe Api::V1::CustomersController, type: :request do
       end
 
       it 'returns all customers' do
-        expect(JSON.parse(response.body)).to eq(
+        expect(response.parsed_body).to eq(
           'data' => [{
             'id' => customer.id.to_s,
             'type' => 'customer',
@@ -80,7 +80,7 @@ RSpec.describe Api::V1::CustomersController, type: :request do
         }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 
         expect(response).to have_http_status(:ok)
-        expect(JSON.parse(response.body)).to eq(
+        expect(response.parsed_body).to eq(
           'data' => {
             'id' => customer.id.to_s,
             'type' => 'customer',
@@ -112,7 +112,7 @@ RSpec.describe Api::V1::CustomersController, type: :request do
         get '/api/v1/customers/5',
             headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         expect(response).to have_http_status(:ok)
-        expect(JSON.parse(response.body)).to eq(
+        expect(response.parsed_body).to eq(
           'data' => {
             'id' => customer.id.to_s,
             'type' => 'customer',

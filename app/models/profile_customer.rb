@@ -40,29 +40,30 @@ class ProfileCustomer < ApplicationRecord
   belongs_to :customer, -> { with_deleted }, optional: true
   belongs_to :accountant, class_name: 'ProfileCustomer', optional: true
 
-  enum gender: {
+  enum :gender, {
     male: 'male',
     female: 'female',
     other: 'other'
   }
 
-  enum nationality: {
+  enum :nationality, {
     brazilian: 'brazilian',
     foreigner: 'foreigner'
   }
 
-  enum capacity: {
+  enum :capacity, {
     able: 'able',
     relatively: 'relatively',
     unable: 'unable'
   }
 
-  enum status: {
+  enum :status, {
     active: 'active',
-    inactive: 'inactive'
+    inactive: 'inactive',
+    deceased: 'deceased'
   }
 
-  enum civil_status: {
+  enum :civil_status, {
     single: 'single',
     married: 'married',
     divorced: 'divorced',
@@ -70,7 +71,7 @@ class ProfileCustomer < ApplicationRecord
     union: 'union'
   }
 
-  enum customer_type: {
+  enum :customer_type, {
     physical_person: 'physical_person',
     legal_person: 'legal_person',
     representative: 'representative',
@@ -126,13 +127,13 @@ class ProfileCustomer < ApplicationRecord
   end
 
   def last_email
-    return I18n.t('general.without_email') unless emails.present?
+    return I18n.t('general.without_email') if emails.blank?
 
     emails.last.email
   end
 
   def last_phone
-    return I18n.t('general.without_phone') unless phones.present?
+    return I18n.t('general.without_phone') if phones.blank?
 
     phones.last.phone_number
   end
@@ -142,18 +143,18 @@ class ProfileCustomer < ApplicationRecord
   end
 
   def emails_attributes=(attributes)
-    current_email_ids = attributes.map { |attr| attr[:id].to_i }.compact
+    current_email_ids = attributes.filter_map { |attr| attr[:id].to_i }
 
     customer_emails.where.not(email_id: current_email_ids).destroy_all
 
-    super(attributes)
+    super
   end
 
   def phones_attributes=(attributes)
-    current_phone_ids = attributes.map { |attr| attr[:id].to_i }.compact
+    current_phone_ids = attributes.filter_map { |attr| attr[:id].to_i }
 
     customer_phones.where.not(phone_id: current_phone_ids).destroy_all
 
-    super(attributes)
+    super
   end
 end

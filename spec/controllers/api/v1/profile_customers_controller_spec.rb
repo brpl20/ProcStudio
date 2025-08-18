@@ -31,7 +31,7 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
           }
         end
 
-        expect(JSON.parse(response.body)).to eq(
+        expect(response.parsed_body).to eq(
           'data' => [{
             'id' => profile_customer.id.to_s,
             'type' => 'profile_customer',
@@ -221,7 +221,7 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               nationality: 'brazilian',
               profession: Faker::Job.title,
               customer_files_attributes: [file_description: 'simple_procuration',
-                                          file: Rack::Test::UploadedFile.new(Rails.root.join('spec', 'factories', 'images', 'Ruby.jpg'), 'image/jpg')]
+                                          file: Rack::Test::UploadedFile.new(Rails.root.join('spec/factories/images/Ruby.jpg'), 'image/jpg')]
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         end.to change(CustomerFile, :count).by(1)
@@ -264,7 +264,7 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
         get '/api/v1/profile_customers/5',
             headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         expect(response).to have_http_status(:ok)
-        expect(JSON.parse(response.body)).to eq(
+        expect(response.parsed_body).to eq(
           'data' => {
             'id' => profile_customer.id.to_s,
             'type' => 'profile_customer',

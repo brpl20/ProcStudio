@@ -12,7 +12,7 @@
 #
 class Represent < ApplicationRecord
   belongs_to :profile_customer
-  belongs_to :representor, class_name: 'ProfileCustomer', optional: true, foreign_key: 'representor_id'
+  belongs_to :representor, class_name: 'ProfileCustomer', optional: true
 
   before_destroy :clear_representor
 
