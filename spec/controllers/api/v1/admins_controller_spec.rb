@@ -17,7 +17,7 @@ RSpec.describe Api::V1::AdminsController, type: :request do
       end
 
       it 'returns all admins' do
-        expect(JSON.parse(response.body)).to eq(
+        expect(response.parsed_body).to eq(
           'data' => [{
             'id' => admin.id.to_s,
             'type' => 'admin',
@@ -125,7 +125,7 @@ RSpec.describe Api::V1::AdminsController, type: :request do
         }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 
         expect(response).to have_http_status(:ok)
-        expect(JSON.parse(response.body)).to eq(
+        expect(response.parsed_body).to eq(
           'data' => {
             'id' => admin.id.to_s,
             'type' => 'admin',
@@ -162,7 +162,7 @@ RSpec.describe Api::V1::AdminsController, type: :request do
           Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json'
         }
         expect(response).to have_http_status(:ok)
-        expect(JSON.parse(response.body)).to eq(
+        expect(response.parsed_body).to eq(
           'data' => {
             'id' => admin.id.to_s,
             'type' => 'admin',

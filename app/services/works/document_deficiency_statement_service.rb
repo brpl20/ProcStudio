@@ -52,7 +52,7 @@ module Works
     end
 
     def substitute_word(text)
-      proc_date = I18n.l(Time.now, format: '%d de %B de %Y')
+      proc_date = I18n.l(Time.zone.now, format: '%d de %B de %Y')
       substitute_client_info(text)
 
       text.substitute('_proc_today_', "#{address.city&.strip}, #{address.state&.strip}, #{proc_date}")

@@ -14,7 +14,10 @@ class WorkAddressesValidator < ActiveModel::Validator
 
   def validate_profile_customers_addresses
     @work.profile_customers.each do |profile_customer|
-      @work.errors.add(:profile_customers, 'endereço do cliente deve ser preenchido') if profile_customer.addresses.blank?
+      if profile_customer.addresses.blank?
+        @work.errors.add(:profile_customers,
+                         'endereço do cliente deve ser preenchido')
+      end
     end
   end
 
@@ -28,7 +31,7 @@ class WorkAddressesValidator < ActiveModel::Validator
     @work.profile_customers.each do |profile_customer|
       representor = profile_customer.represent&.representor
 
-      @work.errors.add(:represent, 'endereço do representante deve ser preenchido') if representor&.addresses&.blank?
+      @work.errors.add(:represent, 'endereço do representante deve ser preenchido') if representor&.addresses.blank?
     end
   end
 

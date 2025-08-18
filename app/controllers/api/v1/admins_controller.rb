@@ -3,16 +3,21 @@
 module Api
   module V1
     class AdminsController < BackofficeController
-      before_action :retrieve_admin, only: %i[update show]
-      before_action :perform_authorization
+      before_action :retrieve_admin, only: [:update, :show]
+      before_action :perform_authorization, unless: -> { Rails.env.development? && params[:all_teams] == 'true' }
 
-      after_action :verify_authorized
+      after_action :verify_authorized, unless: -> { Rails.env.development? && params[:all_teams] == 'true' }
 
       def index
-        admins = Admin.includes(:profile_admin).all
+        # Super admin bypass em dev mode
+        admins = if Rails.env.development? && params[:all_teams] == 'true'
+                   Admin.includes(:profile_admin, :team)
+                 else
+                   team_scoped(Admin).includes(:profile_admin)
+                 end
 
         filter_by_deleted_params.each do |key, value|
-          next unless value.present?
+          next if value.blank?
 
           admins = admins.public_send("filter_by_#{key}", value.strip)
         end
@@ -22,7 +27,14 @@ module Api
           meta: {
             total_count: admins.offset(nil).limit(nil).count
           },
-          include: %i[profile_admin]
+          include: [:profile_admin]
+        ), status: :ok
+      end
+
+      def show
+        render json: AdminSerializer.new(
+          @admin,
+          include: [:profile_admin]
         ), status: :ok
       end
 
@@ -58,13 +70,6 @@ module Api
         end
       end
 
-      def show
-        render json: AdminSerializer.new(
-          @admin,
-          include: %i[profile_admin]
-        ), status: :ok
-      end
-
       def destroy
         if destroy_fully?
           Admin.with_deleted.find(params[:id]).destroy_fully!
@@ -94,19 +99,18 @@ module Api
         params.require(:admin).permit(
           :email, :access_email, :password,
           :password_confirmation, :status,
-          profile_admin_attributes: %i[
-            role status admin_id office_id name last_name gender oab
-            rg cpf nationality civil_status birth mother_name
+          profile_admin_attributes: [
+            :role, :status, :admin_id, :office_id, :name, :last_name, :gender, :oab, :rg, :cpf, :nationality, :civil_status, :birth, :mother_name
           ]
         )
       end
 
       def retrieve_admin
-        @admin = Admin.find(params[:id])
+        @admin = team_scoped(Admin).find(params[:id])
       end
 
       def perform_authorization
-        authorize [:admin, :admin], "#{action_name}?".to_sym
+        authorize [:admin, :admin], :"#{action_name}?"
       end
     end
   end

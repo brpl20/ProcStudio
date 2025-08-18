@@ -2,5 +2,6 @@
 
 class OfficePhoneSerializer
   include JSONAPI::Serializer
+
   attributes :office_id, :phone_id
 end

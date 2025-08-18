@@ -16,7 +16,7 @@ class Draft::Work < ApplicationRecord
 
   acts_as_paranoid
 
-  belongs_to :work, class_name: '::Work', foreign_key: 'work_id'
+  belongs_to :work, class_name: '::Work'
 
   validates :name, uniqueness: { case_sensitive: false }, presence: true
 

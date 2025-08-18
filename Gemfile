@@ -21,8 +21,11 @@ gem 'puma', '~> 5.0'
 gem 'pundit'
 gem 'rack-cors'
 gem 'rails', '~> 7.0.4', '>= 7.0.4.2'
-gem 'rubocop', '~> 1.48', require: false
-gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
+gem 'rubocop', '~> 1.50', require: false
+gem 'rubocop-performance', '~> 1.17', require: false
+gem 'rubocop-rails', '~> 2.19', require: false
+gem 'rubocop-rspec', '~> 2.20', require: false
+gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 group :development, :test, :staging do
   gem 'faker'
@@ -34,7 +37,7 @@ end
 group :development, :test do
   gem 'annotate', '~> 3.2'
   gem 'database_cleaner'
-  gem 'debug', platforms: %i[mri mingw x64_mingw]
+  gem 'debug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'dotenv-rails'
   gem 'factory_bot_rails'
   gem 'rspec-rails', '~> 6.0.0'

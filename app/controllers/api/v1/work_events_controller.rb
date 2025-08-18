@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class Api::V1::WorkEventsController < BackofficeController
-  before_action :set_work_event, only: %i[show update]
-  before_action :set_deleted_work_event, only: %i[restore]
+  before_action :set_work_event, only: [:show, :update]
+  before_action :set_deleted_work_event, only: [:restore]
   before_action :perform_authorization
 
   # GET api/v1/work_events
@@ -10,7 +10,7 @@ class Api::V1::WorkEventsController < BackofficeController
     work_events = WorkEvent.all
 
     filter_by_deleted_params.each do |key, value|
-      next unless value.present?
+      next if value.blank?
 
       work_events = work_events.public_send("filter_by_#{key}", value.strip)
     end
@@ -108,6 +108,6 @@ class Api::V1::WorkEventsController < BackofficeController
   end
 
   def perform_authorization
-    authorize [:admin, :work_event], "#{action_name}?".to_sym
+    authorize [:admin, :work_event], :"#{action_name}?"
   end
 end

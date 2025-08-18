@@ -2,26 +2,26 @@
 
 class Admin::AdminPolicy < Admin::BasePolicy
   def index?
-    lawyer? || secretary?
+    super_admin? || lawyer? || secretary?
   end
 
   def show?
-    lawyer? || secretary?
+    super_admin? || lawyer? || secretary?
   end
 
   def create?
-    lawyer?
+    super_admin? || lawyer?
   end
 
   def update?
-    lawyer?
+    super_admin? || lawyer?
   end
 
   def destroy?
-    lawyer?
+    super_admin? || lawyer?
   end
 
   def restore?
-    lawyer?
+    super_admin? || lawyer?
   end
 end

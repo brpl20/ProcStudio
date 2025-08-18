@@ -23,25 +23,29 @@
 #  responsible_lawyer_id :integer
 #  accounting_type       :string
 #  deleted_at            :datetime
+#  team_id               :bigint(8)        not null
 #
 class Office < ApplicationRecord
   include DeletedFilterConcern
 
   acts_as_paranoid
 
+  belongs_to :team
   belongs_to :office_type
   belongs_to :responsible_lawyer, class_name: 'ProfileAdmin', optional: true
 
   has_many :profile_admins, dependent: :destroy
+
+  validate :responsible_lawyer_same_team, if: -> { responsible_lawyer.present? }
   has_one_attached :logo
 
-  enum society: {
+  enum :society, {
     sole_proprietorship: 'sole_proprietorship',
     company: 'company',
     individual: 'individual'
   }
 
-  enum accounting_type: {              # enquadramento contabil
+  enum :accounting_type, { # enquadramento contabil
     simple: 'simple',                  # simples
     real_profit: 'real_profit',        # lucro real
     presumed_profit: 'presumed_profit' # lucro presumido
@@ -70,5 +74,11 @@ class Office < ApplicationRecord
     validates :number
     validates :neighborhood
     validates :state
+  end
+
+  private
+
+  def responsible_lawyer_same_team
+    errors.add(:responsible_lawyer, 'deve pertencer ao mesmo team') unless responsible_lawyer.admin.team == team
   end
 end

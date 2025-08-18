@@ -114,7 +114,7 @@ class Api::V1::Customer::AuthController < ApplicationController
   end
 
   def update_user_token(customer)
-    exp = (Time.now + 24.hours).to_i
+    exp = 24.hours.from_now.to_i
     token = JWT.encode({ customer_id: customer.id, exp: exp }, Rails.application.secret_key_base)
     customer.update(jwt_token: token)
     token
@@ -127,17 +127,17 @@ class Api::V1::Customer::AuthController < ApplicationController
   def decode_jwt_token(token)
     secret_key = Rails.application.secrets.secret_key_base
     decoded_token = JWT.decode(token, secret_key)[0]
-    HashWithIndifferentAccess.new decoded_token
+    ActiveSupport::HashWithIndifferentAccess.new decoded_token
   rescue JWT::DecodeError
     # puts "Error decoding JWT token: #{e.message}"
     nil
   end
 
   def reset_password_params
-    params.require(:user).permit(:email)
+    params.require(:customer).permit(:email)
   end
 
   def update_password_params
-    params.require(:user).permit(:password, :password_confirmation, :reset_password_token)
+    params.require(:customer).permit(:password, :password_confirmation, :reset_password_token)
   end
 end

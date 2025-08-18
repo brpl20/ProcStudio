@@ -16,7 +16,7 @@ RSpec.describe Api::V1::JobsController, type: :request do
         expect(response).to have_http_status(:ok)
       end
       it 'returns all jobs' do
-        expect(JSON.parse(response.body)).to eq(
+        expect(response.parsed_body).to eq(
           'data' => [{
             'id' => job.id.to_s,
             'type' => 'job',
@@ -117,7 +117,7 @@ RSpec.describe Api::V1::JobsController, type: :request do
         get '/api/v1/jobs/5',
             headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         expect(response).to have_http_status(:ok)
-        expect(JSON.parse(response.body)).to eq(
+        expect(response.parsed_body).to eq(
           'data' => {
             'id' => job.id.to_s,
             'type' => 'job',

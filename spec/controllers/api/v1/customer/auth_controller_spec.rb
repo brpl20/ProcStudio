@@ -21,7 +21,7 @@ RSpec.describe Api::V1::Customer::AuthController, type: :request do
         }
         expect(response).to have_http_status(:ok)
 
-        json_response = JSON.parse(response.body)
+        json_response = response.parsed_body
         expect(json_response['token']).not_to be_empty
 
         token_payload, _token_header = JWT.decode(json_response['token'], Rails.application.secret_key_base, true, algorithm: 'HS256')
@@ -56,7 +56,7 @@ RSpec.describe Api::V1::Customer::AuthController, type: :request do
         }
         expect(response).to have_http_status(:unauthorized)
         begin
-          json_response = JSON.parse(response.body)
+          json_response = response.parsed_body
         rescue JSON::ParserError
           json_response = {}
         end
@@ -83,7 +83,7 @@ RSpec.describe Api::V1::Customer::AuthController, type: :request do
         delete '/api/v1/customer/logout', headers: headers
         expect(response).to have_http_status(:success)
         expect(customer.reload.jwt_token).to be_nil
-        response_body = JSON.parse(response.body)
+        response_body = response.parsed_body
         expect(response_body['success']).to eq(true)
         expect(response_body['message']).to eq('Saiu com successo')
       end
@@ -100,7 +100,7 @@ RSpec.describe Api::V1::Customer::AuthController, type: :request do
         expect(response).to have_http_status(:unauthorized)
         expect(customer.reload.jwt_token).not_to be_nil
 
-        response_body = JSON.parse(response.body)
+        response_body = response.parsed_body
         expect(response_body['success']).to eq(false)
         expect(response_body['message']).to eq('Usuário não autorizado')
       end
@@ -118,7 +118,7 @@ RSpec.describe Api::V1::Customer::AuthController, type: :request do
         expect(response).to have_http_status(:unauthorized)
         expect(customer.reload.jwt_token).not_to be_nil
 
-        response_body = JSON.parse(response.body)
+        response_body = response.parsed_body
         expect(response_body['success']).to eq(false)
         expect(response_body['message']).to eq('Usuário não autorizado')
       end

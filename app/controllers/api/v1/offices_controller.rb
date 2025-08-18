@@ -3,9 +3,9 @@
 module Api
   module V1
     class OfficesController < BackofficeController
-      before_action :retrieve_office, only: %i[show update]
-      before_action :retrieve_deleted_office, only: %i[restore]
-      before_action :perform_authorization, except: %i[with_lawyers]
+      before_action :retrieve_office, only: [:show, :update]
+      before_action :retrieve_deleted_office, only: [:restore]
+      before_action :perform_authorization, except: [:with_lawyers]
 
       after_action :verify_authorized
 
@@ -13,7 +13,7 @@ module Api
         @offices = OfficeFilter.retrieve_offices
 
         filter_by_deleted_params.each do |key, value|
-          next unless value.present?
+          next if value.blank?
 
           @offices = @offices.public_send("filter_by_#{key}", value.strip)
         end
@@ -114,14 +114,14 @@ module Api
           :accounting_type,
           :office_type_id,
           :responsible_lawyer_id,
-          phones_attributes: %i[id phone_number],
-          emails_attributes: %i[id email],
-          bank_accounts_attributes: %i[id bank_name type_account agency account operation pix]
+          phones_attributes: [:id, :phone_number],
+          emails_attributes: [:id, :email],
+          bank_accounts_attributes: [:id, :bank_name, :type_account, :agency, :account, :operation, :pix]
         )
       end
 
       def perform_authorization
-        authorize [:admin, :office], "#{action_name}?".to_sym
+        authorize [:admin, :office], :"#{action_name}?"
       end
     end
   end

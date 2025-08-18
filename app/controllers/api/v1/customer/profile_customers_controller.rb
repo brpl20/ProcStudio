@@ -52,13 +52,13 @@ class Api::V1::Customer::ProfileCustomersController < FrontofficeController
       :nit, :mother_name,
       :inss_password,
       :accountant_id,
-      addresses_attributes: %i[id description zip_code street number neighborhood city state],
-      bank_accounts_attributes: %i[id bank_name type_account agency account operation pix],
-      customer_attributes: %i[id email password password_confirmation],
-      phones_attributes: %i[id phone_number],
-      emails_attributes: %i[id email],
-      represent_attributes: %i[id representor_id],
-      customer_files_attributes: %i[id file_description]
+      addresses_attributes: [:id, :description, :zip_code, :street, :number, :neighborhood, :city, :state],
+      bank_accounts_attributes: [:id, :bank_name, :type_account, :agency, :account, :operation, :pix],
+      customer_attributes: [:id, :email, :password, :password_confirmation],
+      phones_attributes: [:id, :phone_number],
+      emails_attributes: [:id, :email],
+      represent_attributes: [:id, :representor_id],
+      customer_files_attributes: [:id, :file_description]
     )
   end
 end

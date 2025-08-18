@@ -3,7 +3,7 @@
 module Api
   module V1
     class PowersController < BackofficeController
-      before_action :retrieve_power, only: %i[update show destroy]
+      before_action :retrieve_power, only: [:update, :show, :destroy]
       before_action :perform_authorization
 
       after_action :verify_authorized
@@ -15,6 +15,12 @@ module Api
           meta: {
             total_count: powers.offset(nil).limit(nil).count
           }
+        ), status: :ok
+      end
+
+      def show
+        render json: PowerSerializer.new(
+          @power
         ), status: :ok
       end
 
@@ -50,12 +56,6 @@ module Api
         end
       end
 
-      def show
-        render json: PowerSerializer.new(
-          @power
-        ), status: :ok
-      end
-
       def destroy
         @power.destroy
       end
@@ -73,7 +73,7 @@ module Api
       end
 
       def perform_authorization
-        authorize [:admin, :power], "#{action_name}?".to_sym
+        authorize [:admin, :power], :"#{action_name}?"
       end
     end
   end

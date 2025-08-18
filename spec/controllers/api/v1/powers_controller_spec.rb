@@ -18,7 +18,7 @@ RSpec.describe Api::V1::PowersController, type: :request do
       end
 
       it 'returns all powers' do
-        expect(JSON.parse(response.body)).to eq(
+        expect(response.parsed_body).to eq(
           'data' => [{
             'id' => power.id.to_s,
             'type' => 'power',
@@ -75,7 +75,7 @@ RSpec.describe Api::V1::PowersController, type: :request do
         }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 
         expect(response).to have_http_status(:ok)
-        expect(JSON.parse(response.body)).to eq(
+        expect(response.parsed_body).to eq(
           'data' => {
             'id' => power.id.to_s,
             'type' => 'power',
@@ -103,7 +103,7 @@ RSpec.describe Api::V1::PowersController, type: :request do
         get '/api/v1/powers/5',
             headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         expect(response).to have_http_status(:ok)
-        expect(JSON.parse(response.body)).to eq(
+        expect(response.parsed_body).to eq(
           'data' => {
             'id' => power.id.to_s,
             'type' => 'power',

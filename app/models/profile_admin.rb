@@ -32,22 +32,27 @@ class ProfileAdmin < ApplicationRecord
   belongs_to :admin
   belongs_to :office, optional: true
 
-  enum role: {
+  delegate :team, to: :admin
+
+  validate :office_same_team, if: -> { office.present? }
+
+  enum :role, {
     lawyer: 'lawyer',
     paralegal: 'paralegal',
     trainee: 'trainee',
     secretary: 'secretary',
     counter: 'counter',
     excounter: 'excounter',
-    representant: 'representant'
+    representant: 'representant',
+    super_admin: 'super_admin'
   }
 
-  enum status: {
+  enum :status, {
     active: 'active',
     inactive: 'inactive'
   }
 
-  enum civil_status: {
+  enum :civil_status, {
     single: 'single',
     married: 'married',
     divorced: 'divorced',
@@ -55,13 +60,13 @@ class ProfileAdmin < ApplicationRecord
     union: 'union'
   }
 
-  enum gender: {
+  enum :gender, {
     male: 'male',
     female: 'female',
     other: 'other'
   }
 
-  enum nationality: {
+  enum :nationality, {
     brazilian: 'brazilian',
     foreigner: 'foreigner'
   }
@@ -86,37 +91,46 @@ class ProfileAdmin < ApplicationRecord
   accepts_nested_attributes_for :admin, :addresses, :phones, :emails, :bank_accounts, reject_if: :all_blank
 
   with_options presence: true do
-    validates :civil_status
-    validates :cpf
-    validates :gender
     validates :name
-    validates :nationality
     validates :oab, if: :lawyer?
-    validates :rg
   end
+
+  # Validações opcionais - não obrigatórias para criação inicial
+  # Serão preenchidas pelo usuário via modal no frontend
+  # validates :civil_status, presence: true
+  # validates :cpf, presence: true
+  # validates :gender, presence: true
+  # validates :nationality, presence: true
+  # validates :rg, presence: true
 
   def full_name
     "#{name} #{last_name}".squish
   end
 
   def last_email
-    return I18n.t('general.without_email') unless emails.present?
+    return I18n.t('general.without_email') if emails.blank?
 
     emails.last.email
   end
 
   def emails_attributes=(attributes)
-    current_email_ids = attributes.map { |attr| attr[:id].to_i }.compact
+    current_email_ids = attributes.filter_map { |attr| attr[:id].to_i }
     admin_emails.where.not(email_id: current_email_ids).destroy_all
 
-    super(attributes)
+    super
   end
 
   def phones_attributes=(attributes)
-    current_phone_ids = attributes.map { |attr| attr[:id].to_i }.compact
+    current_phone_ids = attributes.filter_map { |attr| attr[:id].to_i }
 
     admin_phones.where.not(phone_id: current_phone_ids).destroy_all
 
-    super(attributes)
+    super
+  end
+
+  private
+
+  def office_same_team
+    errors.add(:office, 'deve pertencer ao mesmo team') unless office.team == admin.team
   end
 end

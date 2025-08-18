@@ -18,7 +18,7 @@ class PendingDocument < ApplicationRecord
   belongs_to :work
   belongs_to :profile_customer
 
-  enum description: {
+  enum :description, {
     rg: 'documento_identidade',
     proof_of_address: 'comprovante_residência',
     inss_password: 'senha_inss',

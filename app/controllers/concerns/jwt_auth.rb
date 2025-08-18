@@ -24,7 +24,7 @@ module JwtAuth
   private
 
   def token
-    @token ||= request.headers['Authorization']&.split(' ')&.last
+    @token ||= request.headers['Authorization']&.split&.last
   end
 
   def decode_token

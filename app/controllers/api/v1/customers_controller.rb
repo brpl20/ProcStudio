@@ -3,16 +3,16 @@
 module Api
   module V1
     class CustomersController < BackofficeController
-      before_action :retrieve_customer, only: %i[update show resend_confirmation]
-      before_action :perform_authorization, except: %i[update]
+      before_action :retrieve_customer, only: [:update, :show, :resend_confirmation]
+      before_action :perform_authorization, except: [:update]
 
       after_action :verify_authorized
 
       def index
-        customers = ::Customer.all
+        customers = current_team.customers
 
         filter_by_deleted_params.each do |key, value|
-          next unless value.present?
+          next if value.blank?
 
           customers = customers.public_send("filter_by_#{key}", value.strip)
         end
@@ -25,10 +25,23 @@ module Api
         ), status: :ok
       end
 
+      def show
+        render json: CustomerSerializer.new(
+          @customer
+        ), status: :ok
+      end
+
       def create
         customer = ::Customer.new(customers_params)
-        customer.created_by_id = current_user.id
+        customer.created_by_id = current_user&.id
+
         if customer.save
+          # Associar customer ao team atual
+          TeamCustomer.create!(
+            team: current_team,
+            customer: customer,
+            customer_email: customer.email
+          )
 
           render json: CustomerSerializer.new(
             customer
@@ -69,15 +82,10 @@ module Api
         end
       end
 
-      def show
-        render json: CustomerSerializer.new(
-          @customer
-        ), status: :ok
-      end
-
       def destroy
         if destroy_fully?
-          ::Customer.with_deleted.find(params[:id]).destroy_fully!
+          customer = current_team.customers.with_deleted.find(params[:id])
+          customer.destroy_fully!
         else
           retrieve_customer
           @customer.destroy
@@ -85,7 +93,7 @@ module Api
       end
 
       def restore
-        customer = ::Customer.with_deleted.find(params[:id])
+        customer = current_team.customers.with_deleted.find(params[:id])
         authorize customer, :restore?, policy_class: Admin::CustomerPolicy
 
         if customer.recover
@@ -109,11 +117,11 @@ module Api
       end
 
       def retrieve_customer
-        @customer = ::Customer.find(params[:id])
+        @customer = current_team.customers.find(params[:id])
       end
 
       def perform_authorization
-        authorize [:admin, :customer], "#{action_name}?".to_sym
+        authorize [:admin, :customer], :"#{action_name}?"
       end
 
       def normalize_email_param

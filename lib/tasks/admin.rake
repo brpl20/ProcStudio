@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'bundler/setup'
 require 'faker'
 
@@ -34,29 +35,29 @@ namespace :cad do
           zip_code: '85810-010',
           number: '3033',
           street: 'Rua Paraná',
-          neighborhood: "Centro",
-          city: "Cascavel",
-          state: "PR"
+          neighborhood: 'Centro',
+          city: 'Cascavel',
+          state: 'PR'
         }
       ],
       bank_accounts_attributes: [
         {
-          bank_name: "Nu Pagamentos",
-          type_account: "Pagamentos",
-          agency: "000-1",
-          account: "40249656-0",
-          operation: "0",
-          pix: "05880253996"
+          bank_name: 'Nu Pagamentos',
+          type_account: 'Pagamentos',
+          agency: '000-1',
+          account: '40249656-0',
+          operation: '0',
+          pix: '05880253996'
         }
       ],
       phones_attributes: [
         {
-          phone_number: "45 98405-5504"
+          phone_number: '45 98405-5504'
         }
       ],
       emails_attributes: [
         {
-          email: "bruno@pellizzetti.adv.br"
+          email: 'bruno@pellizzetti.adv.br'
         }
       ]
     )
@@ -87,34 +88,31 @@ namespace :cad do
           zip_code: '85810-010',
           number: '3033',
           street: 'Rua Paraná',
-          neighborhood: "Centro",
-          city: "Cascavel",
-          state: "PR"
+          neighborhood: 'Centro',
+          city: 'Cascavel',
+          state: 'PR'
         }
       ],
       bank_accounts_attributes: [
         {
-          bank_name: "Nu Pagamentos",
-          type_account: "Pagamentos",
-          agency: "000-1",
-          account: "40249656-0",
-          operation: "0",
-          pix: "05880253996"
+          bank_name: 'Nu Pagamentos',
+          type_account: 'Pagamentos',
+          agency: '000-1',
+          account: '40249656-0',
+          operation: '0',
+          pix: '05880253996'
         }
       ],
       phones_attributes: [
         {
-          phone_number: "45 9845-2869"
+          phone_number: '45 9845-2869'
         }
       ],
       emails_attributes: [
         {
-          email: "eduardo@pellizzetti.adv.br"
+          email: 'eduardo@pellizzetti.adv.br'
         }
       ]
     )
-
-
-
   end
 end

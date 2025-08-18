@@ -9,8 +9,8 @@ FactoryBot.define do
     status { :pending_review }
 
     transient do
-      original_file { Rack::Test::UploadedFile.new(Rails.root.join('spec', 'fixtures', 'files', 'test_document.docx'), 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') }
-      signed_file { Rack::Test::UploadedFile.new(Rails.root.join('spec', 'fixtures', 'files', 'test_document.pdf'), 'application/pdf') }
+      original_file { Rack::Test::UploadedFile.new(Rails.root.join('spec/fixtures/files/test_document.docx'), 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') }
+      signed_file { Rack::Test::UploadedFile.new(Rails.root.join('spec/fixtures/files/test_document.pdf'), 'application/pdf') }
     end
 
     after(:create) do |document, evaluator|

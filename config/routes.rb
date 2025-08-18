@@ -73,7 +73,7 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :zapsign, only: %i[create] do
+      resources :zapsign, only: [:create] do
         collection do
           post 'webhook'
         end
@@ -81,6 +81,19 @@ Rails.application.routes.draw do
 
       resources :office_types
       resources :powers
+      resources :teams
+
+      # My Team routes
+      get 'my_team', to: 'my_team#show'
+      put 'my_team', to: 'my_team#update'
+      patch 'my_team', to: 'my_team#update'
+      get 'my_team/members', to: 'my_team#members'
+
+      # Super admin routes (acesso total ao sistema)
+      namespace :super_admin do
+        get 'admins'
+        get 'teams'
+      end
 
       post '/login', to: 'auth#authenticate'
       delete '/logout', to: 'auth#destroy'
@@ -93,9 +106,9 @@ Rails.application.routes.draw do
         patch :password, to: 'auth#update_password'
         delete :logout, to: 'auth#destroy'
 
-        resources :customers, only: %i[update show]
-        resources :profile_customers, only: %i[update show]
-        resources :works, only: %i[index show]
+        resources :customers, only: [:update, :show]
+        resources :profile_customers, only: [:update, :show]
+        resources :works, only: [:index, :show]
       end
     end
   end

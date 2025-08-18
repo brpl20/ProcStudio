@@ -3,8 +3,8 @@
 module Api
   module V1
     class ProfileAdminsController < BackofficeController
-      before_action :retrieve_profile_admin, only: %i[update show]
-      before_action :retrieve_deleted_profile_admin, only: %i[restore]
+      before_action :retrieve_profile_admin, only: [:update, :show]
+      before_action :retrieve_deleted_profile_admin, only: [:restore]
       before_action :perform_authorization
 
       after_action :verify_authorized
@@ -13,7 +13,7 @@ module Api
         profile_admins = ProfileAdmin.all
 
         filter_by_deleted_params.each do |key, value|
-          next unless value.present?
+          next if value.blank?
 
           profile_admins = profile_admins.public_send("filter_by_#{key}", value.strip)
         end
@@ -23,6 +23,13 @@ module Api
           meta: {
             total_count: profile_admins.offset(nil).limit(nil).count
           }
+        ), status: :ok
+      end
+
+      def show
+        render json: ProfileAdminSerializer.new(
+          @profile_admin,
+          params: { action: 'show' }
         ), status: :ok
       end
 
@@ -59,13 +66,6 @@ module Api
         end
       end
 
-      def show
-        render json: ProfileAdminSerializer.new(
-          @profile_admin,
-          params: { action: 'show' }
-        ), status: :ok
-      end
-
       def destroy
         if destroy_fully?
           ProfileAdmin.with_deleted.find(params[:id]).destroy_fully!
@@ -94,12 +94,12 @@ module Api
         params.require(:profile_admin).permit(
           :role, :status, :admin_id, :office_id, :name, :last_name, :gender, :oab,
           :rg, :cpf, :nationality, :civil_status, :birth, :mother_name, :origin,
-          admin_attributes: %i[id email access_email password password_confirmation],
-          office_attributes: %i[name cnpj],
-          addresses_attributes: %i[id description zip_code street number neighborhood city state],
-          bank_accounts_attributes: %i[id bank_name type_account agency account operation pix],
-          phones_attributes: %i[id phone_number],
-          emails_attributes: %i[id email]
+          admin_attributes: [:id, :email, :access_email, :password, :password_confirmation],
+          office_attributes: [:name, :cnpj],
+          addresses_attributes: [:id, :description, :zip_code, :street, :number, :neighborhood, :city, :state],
+          bank_accounts_attributes: [:id, :bank_name, :type_account, :agency, :account, :operation, :pix],
+          phones_attributes: [:id, :phone_number],
+          emails_attributes: [:id, :email]
         )
       end
 
@@ -112,7 +112,7 @@ module Api
       end
 
       def perform_authorization
-        authorize [:admin, :work], "#{action_name}?".to_sym
+        authorize [:admin, :work], :"#{action_name}?"
       end
     end
   end

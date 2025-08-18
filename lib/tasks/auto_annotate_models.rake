@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 if Rails.env.development?
-  task :set_annotation_options do
+  task set_annotation_options: :environment do
     Annotate.set_defaults(
       'routes' => 'false',
       'models' => 'true',

@@ -6,7 +6,7 @@ RSpec.describe Job, type: :model do
   describe 'Attributes' do
     it 'has default attributes' do
       job = described_class.new(
-        deadline: Date.today,
+        deadline: Time.zone.today,
         status: 'pending',
         profile_admin: create(:profile_admin)
       )
@@ -14,7 +14,7 @@ RSpec.describe Job, type: :model do
       expect(job.description).to be_nil
       expect(job.priority).to be_nil
       expect(job.comment).to be_nil
-      expect(job.deadline).to eq(Date.today)
+      expect(job.deadline).to eq(Time.zone.today)
       expect(job.status).to eq('pending')
     end
   end
@@ -61,7 +61,7 @@ RSpec.describe Job, type: :model do
     it 'does not change status if deadline is today or in the future' do
       job = described_class.create!(
         description: 'Tarefa atual',
-        deadline: Date.today,
+        deadline: Time.zone.today,
         status: 'pending',
         profile_admin: create(:profile_admin)
       )

@@ -5,13 +5,13 @@ module Api
     class WorksController < BackofficeController
       before_action :load_active_storage_url_options unless Rails.env.production?
 
-      before_action :set_work, only: %i[show update convert_documents_to_pdf]
-      before_action :perform_authorization, except: %i[update restore]
+      before_action :set_work, only: [:show, :update, :convert_documents_to_pdf]
+      before_action :perform_authorization, except: [:update, :restore]
 
       after_action :verify_authorized
 
       def index
-        works = Work.includes(
+        works = team_scoped(Work).includes(
           :profile_customers,
           :profile_admins,
           :powers,
@@ -22,7 +22,7 @@ module Api
         ).all
 
         filtering_params.each do |key, value|
-          next unless value.present?
+          next if value.blank?
 
           works = works.public_send("filter_by_#{key}", value)
         end
@@ -37,9 +37,17 @@ module Api
         ), status: :ok
       end
 
+      def show
+        render json: WorkSerializer.new(
+          @work,
+          params: { action: 'show' }
+        ), status: :ok
+      end
+
       def create
         work = Work.new(work_params)
-        work.created_by_id = current_user.id
+        work.team = current_team
+        work.created_by_id = current_user&.id
 
         if work.save
           Works::CreateDocumentService.call(work)
@@ -74,16 +82,10 @@ module Api
         end
       end
 
-      def show
-        render json: WorkSerializer.new(
-          @work,
-          params: { action: 'show' }
-        ), status: :ok
-      end
-
       def destroy
         if destroy_fully?
-          Work.with_deleted.find(params[:id]).destroy_fully!
+          work = team_scoped(Work).with_deleted.find(params[:id])
+          work.destroy_fully!
         else
           set_work
           @work.destroy
@@ -91,7 +93,7 @@ module Api
       end
 
       def restore
-        work = Work.with_deleted.find(params[:id])
+        work = team_scoped(Work).with_deleted.find(params[:id])
         authorize work, :restore?, policy_class: Admin::WorkPolicy
 
         if work.recover
@@ -122,7 +124,7 @@ module Api
       private
 
       def set_work
-        @work = Work.find(params[:id])
+        @work = team_scoped(Work).find(params[:id])
       rescue ActiveRecord::RecordNotFound
         head :not_found
       end
@@ -133,10 +135,10 @@ module Api
           :civel_area, :social_security_areas, :laborite_areas, :tributary_areas, :other_description,
           :compensations_five_years, :compensations_service, :lawsuit, :gain_projection, :physical_lawyer,
           :responsible_lawyer, :partner_lawyer, :intern, :bachelor, :rate_parceled_exfield, :status,
-          documents_attributes: %i[id document_type profile_customer_id],
-          pending_documents_attributes: %i[id description profile_customer_id],
-          recommendations_attributes: %i[id percentage commission profile_customer_id],
-          honorary_attributes: %i[id fixed_honorary_value parcelling_value honorary_type percent_honorary_value parcelling work_prev],
+          documents_attributes: [:id, :document_type, :profile_customer_id],
+          pending_documents_attributes: [:id, :description, :profile_customer_id],
+          recommendations_attributes: [:id, :percentage, :commission, :profile_customer_id],
+          honorary_attributes: [:id, :fixed_honorary_value, :parcelling_value, :honorary_type, :percent_honorary_value, :parcelling, :work_prev],
           power_ids: [],
           profile_customer_ids: [],
           profile_admin_ids: [],
@@ -154,7 +156,7 @@ module Api
       end
 
       def perform_authorization
-        authorize [:admin, :work], "#{action_name}?".to_sym
+        authorize [:admin, :work], :"#{action_name}?"
       end
     end
   end

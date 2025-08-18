@@ -5,6 +5,15 @@ class Api::V1::Customer::CustomersController < FrontofficeController
 
   after_action :verify_authorized
 
+  # GET /api/v1/customer/customers/id
+  def show
+    authorize @customer, :show?, policy_class: Customer::CustomerPolicy
+
+    render json: CustomerSerializer.new(
+      @customer
+    ), status: :ok
+  end
+
   # PATCH /api/v1/customer/customers/id
   def update
     authorize @customer, :update?, policy_class: Customer::CustomerPolicy
@@ -19,15 +28,6 @@ class Api::V1::Customer::CustomersController < FrontofficeController
         json: { errors: [{ code: @customer.errors.full_messages }] }
       )
     end
-  end
-
-  # GET /api/v1/customer/customers/id
-  def show
-    authorize @customer, :show?, policy_class: Customer::CustomerPolicy
-
-    render json: CustomerSerializer.new(
-      @customer
-    ), status: :ok
   end
 
   private

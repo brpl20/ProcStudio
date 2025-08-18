@@ -18,7 +18,7 @@ RSpec.describe Api::V1::OfficesController, type: :request do
       end
 
       it 'returns all offices' do
-        expect(JSON.parse(response.body)).to eq(
+        expect(response.parsed_body).to eq(
           'data' => [{
             'id' => office.id.to_s,
             'type' => 'office',
@@ -111,7 +111,7 @@ RSpec.describe Api::V1::OfficesController, type: :request do
               city: 'Nova Andradina',
               state: 'MS',
               office_type_id: FactoryBot.create(:office_type).id,
-              logo: Rack::Test::UploadedFile.new(Rails.root.join('spec', 'factories', 'images', 'Ruby.jpg'), 'image/jpg')
+              logo: Rack::Test::UploadedFile.new(Rails.root.join('spec/factories/images/Ruby.jpg'), 'image/jpg')
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         end.to change(ActiveStorage::Attachment, :count).by(1)
@@ -224,7 +224,7 @@ RSpec.describe Api::V1::OfficesController, type: :request do
         get '/api/v1/offices/5',
             headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         expect(response).to have_http_status(:ok)
-        expect(JSON.parse(response.body)).to eq(
+        expect(response.parsed_body).to eq(
           'data' => {
             'id' => office.id.to_s,
             'type' => 'office',
@@ -284,7 +284,7 @@ RSpec.describe Api::V1::OfficesController, type: :request do
       end
 
       it 'returns lawyer attributes' do
-        lawyers = JSON.parse(response.body)['data'][0]['attributes']['lawyers']
+        lawyers = response.parsed_body['data'][0]['attributes']['lawyers']
         lawyers.each do |lawyer|
           expect(lawyer['id']).to eq(profile_admin.id)
           expect(lawyer['name']).to eq(profile_admin.name)

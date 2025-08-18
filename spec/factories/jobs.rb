@@ -3,7 +3,7 @@
 FactoryBot.define do
   factory :job do
     description { 'MyString' }
-    deadline { Date.today + 1 }
+    deadline { Time.zone.today + 1 }
     status { 'pending' }
     priority { 'MyString' }
     comment { 'MyString' }

@@ -16,6 +16,7 @@
 #  deleted_at             :datetime
 #  status                 :string           default("active"), not null
 #  oab                    :string
+#  team_id                :bigint(8)        not null
 #
 class Admin < ApplicationRecord
   include DeletedFilterConcern
@@ -27,13 +28,14 @@ class Admin < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
-  enum status: {
+  enum :status, {
     active: 'active',
     inactive: 'inactive'
   }
 
   alias_attribute :access_email, :email
 
+  belongs_to :team
   has_one :profile_admin, dependent: :destroy
 
   validates :email, presence: true
