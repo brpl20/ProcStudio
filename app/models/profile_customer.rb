@@ -59,7 +59,8 @@ class ProfileCustomer < ApplicationRecord
 
   enum status: {
     active: 'active',
-    inactive: 'inactive'
+    inactive: 'inactive',
+    deceased: 'deceased'
   }
 
   enum civil_status: {

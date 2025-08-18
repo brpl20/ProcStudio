@@ -50,7 +50,8 @@ class Customer < ApplicationRecord
 
   enum status: {
     active: 'active',
-    inactive: 'inactive'
+    inactive: 'inactive',
+    deceased: 'deceased'
   }
 
   # Setup a random password for the customer if such is not present. This is
