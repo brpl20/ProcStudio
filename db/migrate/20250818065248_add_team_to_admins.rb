@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddTeamToAdmins < ActiveRecord::Migration[7.0]
   def up
     # Primeiro criar team padrão
