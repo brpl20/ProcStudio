@@ -18,20 +18,20 @@ module TeamScoped
   end
 
   def detect_team_from_request
-    # Priority order: header, subdomain, admin's team
-    team_from_header || team_from_subdomain || current_admin_team
+    # Priority order: header, subdomain, user's team
+    team_from_header || team_from_subdomain || current_user_team
   end
 
   def team_from_header
     team_id = request.headers['X-Team-Id']
     return nil if team_id.blank?
 
-    # SEGURANÇA: Validar se o admin tem acesso ao team solicitado
+    # SEGURANÇA: Validar se o usuário tem acesso ao team solicitado
     requested_team = Team.find_by(id: team_id)
     return nil unless requested_team
 
-    # Permitir apenas se for o team do admin atual
-    if @current_admin.present? && @current_admin.respond_to?(:team) && (requested_team == @current_admin.team)
+    # Permitir apenas se for o team do usuário atual
+    if @current_user.present? && @current_user.respond_to?(:team) && (requested_team == @current_user.team)
       return requested_team
     end
 
@@ -42,23 +42,23 @@ module TeamScoped
     subdomain = request.subdomain
     return nil if subdomain.blank?
 
-    # SEGURANÇA: Validar se o admin tem acesso ao team do subdomain
+    # SEGURANÇA: Validar se o usuário tem acesso ao team do subdomain
     requested_team = Team.find_by(subdomain: subdomain)
     return nil unless requested_team
 
-    # Permitir apenas se for o team do admin atual
-    if @current_admin.present? && @current_admin.respond_to?(:team) && (requested_team == @current_admin.team)
+    # Permitir apenas se for o team do usuário atual
+    if @current_user.present? && @current_user.respond_to?(:team) && (requested_team == @current_user.team)
       return requested_team
     end
 
     nil
   end
 
-  def current_admin_team
-    return if @current_admin.blank?
-    return unless @current_admin.respond_to?(:team)
+  def current_user_team
+    return if @current_user.blank?
+    return unless @current_user.respond_to?(:team)
 
-    @current_admin.team
+    @current_user.team
   end
 
   def ensure_team_access
@@ -93,9 +93,9 @@ module TeamScoped
   end
 
   def super_admin_access?
-    # Verifica se o admin atual tem role de super_admin
-    @current_admin.present? &&
-      @current_admin.respond_to?(:profile_admin) &&
-      @current_admin.profile_admin&.role == 'super_admin'
+    # Verifica se o usuário atual tem role de super_admin
+    @current_user.present? &&
+      @current_user.respond_to?(:user_profile) &&
+      @current_user.user_profile&.role == 'super_admin'
   end
 end

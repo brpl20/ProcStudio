@@ -4,36 +4,47 @@
 #
 # Table name: works
 #
-#  id                       :bigint(8)        not null, primary key
-#  procedure                :string
-#  subject                  :string
-#  number                   :integer
-#  rate_parceled_exfield    :string
-#  folder                   :string
-#  note                     :string
-#  extra_pending_document   :string
-#  created_at               :datetime         not null
-#  updated_at               :datetime         not null
-#  civel_area               :string
-#  social_security_areas    :string
-#  laborite_areas           :string
-#  tributary_areas          :string
-#  other_description        :text
-#  compensations_five_years :boolean
-#  compensations_service    :boolean
-#  lawsuit                  :boolean
-#  gain_projection          :string
-#  physical_lawyer          :integer
-#  responsible_lawyer       :integer
-#  partner_lawyer           :integer
-#  intern                   :integer
-#  bachelor                 :integer
-#  initial_atendee          :integer
-#  procedures               :text             default([]), is an Array
-#  created_by_id            :bigint(8)
-#  status                   :string           default("in_progress")
-#  deleted_at               :datetime
-#  team_id                  :bigint(8)        not null
+#  id                                                                   :bigint           not null, primary key
+#  bachelor                                                             :integer
+#  civel_area(Civil aréas)                                              :string
+#  compensations_five_years(Compensações realizadas nos últimos 5 anos) :boolean
+#  compensations_service(Compensações de oficio)                        :boolean
+#  deleted_at                                                           :datetime
+#  extra_pending_document                                               :string
+#  folder                                                               :string
+#  gain_projection(Projeção de ganho)                                   :string
+#  initial_atendee                                                      :integer
+#  intern                                                               :integer
+#  laborite_areas(Trabalhista aréas)                                    :string
+#  lawsuit(Possui ação Judicial)                                        :boolean
+#  note                                                                 :string
+#  number                                                               :integer
+#  other_description(Descrição do outro tipo de assunto)                :text
+#  partner_lawyer                                                       :integer
+#  physical_lawyer                                                      :integer
+#  procedure                                                            :string
+#  procedures                                                           :text             default([]), is an Array
+#  rate_parceled_exfield                                                :string
+#  responsible_lawyer                                                   :integer
+#  social_security_areas(Previdênciário aréas)                          :string
+#  status                                                               :string           default("in_progress")
+#  subject                                                              :string
+#  tributary_areas(Tributário aréas)                                    :string
+#  created_at                                                           :datetime         not null
+#  updated_at                                                           :datetime         not null
+#  created_by_id                                                        :bigint
+#  team_id                                                              :bigint           not null
+#
+# Indexes
+#
+#  index_works_on_created_by_id  (created_by_id)
+#  index_works_on_deleted_at     (deleted_at)
+#  index_works_on_team_id        (team_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (created_by_id => users.id)
+#  fk_rails_...  (team_id => teams.id)
 #
 class Work < ApplicationRecord
   include DeletedFilterConcern

@@ -4,12 +4,13 @@
 #
 # Table name: powers
 #
-#  id          :bigint(8)        not null, primary key
-#  description :string           not null
+#  id          :bigint           not null, primary key
 #  category    :integer          not null
+#  description :string           not null
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #
+
 class Power < ApplicationRecord
   enum :category, {
     # Poderes em Geral Administrativo

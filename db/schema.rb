@@ -10,9 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_08_18_065550) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_18_233629) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
+  enable_extension "pg_catalog.plpgsql"
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -21,8 +21,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_18_065550) do
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
     t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
-    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness",
-                                                             unique: true
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
   end
 
   create_table "active_storage_blobs", force: :cascade do |t|
@@ -53,70 +52,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_18_065550) do
     t.string "state"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-  end
-
-  create_table "admin_addresses", force: :cascade do |t|
-    t.bigint "address_id", null: false
-    t.bigint "profile_admin_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "deleted_at"
-    t.index ["address_id"], name: "index_admin_addresses_on_address_id"
-    t.index ["deleted_at"], name: "index_admin_addresses_on_deleted_at"
-    t.index ["profile_admin_id"], name: "index_admin_addresses_on_profile_admin_id"
-  end
-
-  create_table "admin_bank_accounts", force: :cascade do |t|
-    t.bigint "bank_account_id", null: false
-    t.bigint "profile_admin_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "deleted_at"
-    t.index ["bank_account_id"], name: "index_admin_bank_accounts_on_bank_account_id"
-    t.index ["deleted_at"], name: "index_admin_bank_accounts_on_deleted_at"
-    t.index ["profile_admin_id"], name: "index_admin_bank_accounts_on_profile_admin_id"
-  end
-
-  create_table "admin_emails", force: :cascade do |t|
-    t.bigint "email_id", null: false
-    t.bigint "profile_admin_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "deleted_at"
-    t.index ["deleted_at"], name: "index_admin_emails_on_deleted_at"
-    t.index ["email_id"], name: "index_admin_emails_on_email_id"
-    t.index ["profile_admin_id"], name: "index_admin_emails_on_profile_admin_id"
-  end
-
-  create_table "admin_phones", force: :cascade do |t|
-    t.bigint "phone_id", null: false
-    t.bigint "profile_admin_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "deleted_at"
-    t.index ["deleted_at"], name: "index_admin_phones_on_deleted_at"
-    t.index ["phone_id"], name: "index_admin_phones_on_phone_id"
-    t.index ["profile_admin_id"], name: "index_admin_phones_on_profile_admin_id"
-  end
-
-  create_table "admins", force: :cascade do |t|
-    t.string "email", default: "", null: false
-    t.string "encrypted_password", default: "", null: false
-    t.string "reset_password_token"
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "jwt_token"
-    t.datetime "deleted_at"
-    t.string "status", default: "active", null: false
-    t.string "oab"
-    t.bigint "team_id", null: false
-    t.index ["deleted_at"], name: "index_admins_on_deleted_at"
-    t.index ["email"], name: "index_admins_on_email", unique: true
-    t.index ["jwt_token"], name: "index_admins_on_jwt_token", unique: true
-    t.index ["reset_password_token"], name: "index_admins_on_reset_password_token", unique: true
-    t.index ["team_id"], name: "index_admins_on_team_id"
   end
 
   create_table "bank_accounts", force: :cascade do |t|
@@ -264,16 +199,29 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_18_065550) do
     t.index ["work_id"], name: "index_honoraries_on_work_id"
   end
 
+  create_table "job_user_profiles", force: :cascade do |t|
+    t.bigint "job_id", null: false
+    t.bigint "user_profile_id", null: false
+    t.string "role", default: "assignee"
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deleted_at"], name: "index_job_user_profiles_on_deleted_at"
+    t.index ["job_id", "user_profile_id"], name: "index_job_user_profiles_on_job_id_and_user_profile_id", unique: true
+    t.index ["job_id"], name: "index_job_user_profiles_on_job_id"
+    t.index ["user_profile_id"], name: "index_job_user_profiles_on_user_profile_id"
+  end
+
   create_table "job_works", force: :cascade do |t|
     t.bigint "job_id", null: false
     t.bigint "work_id", null: false
-    t.bigint "profile_admin_id", null: false
+    t.bigint "user_profile_id", null: false
     t.bigint "profile_customer_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["job_id"], name: "index_job_works_on_job_id"
-    t.index ["profile_admin_id"], name: "index_job_works_on_profile_admin_id"
     t.index ["profile_customer_id"], name: "index_job_works_on_profile_customer_id"
+    t.index ["user_profile_id"], name: "index_job_works_on_user_profile_id"
     t.index ["work_id"], name: "index_job_works_on_work_id"
   end
 
@@ -285,7 +233,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_18_065550) do
     t.string "comment"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "profile_admin_id"
     t.bigint "work_id"
     t.bigint "profile_customer_id"
     t.bigint "created_by_id"
@@ -293,7 +240,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_18_065550) do
     t.bigint "team_id", null: false
     t.index ["created_by_id"], name: "index_jobs_on_created_by_id"
     t.index ["deleted_at"], name: "index_jobs_on_deleted_at"
-    t.index ["profile_admin_id"], name: "index_jobs_on_profile_admin_id"
     t.index ["profile_customer_id"], name: "index_jobs_on_profile_customer_id"
     t.index ["team_id"], name: "index_jobs_on_team_id"
     t.index ["work_id"], name: "index_jobs_on_work_id"
@@ -412,41 +358,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_18_065550) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "profile_admin_works", force: :cascade do |t|
-    t.bigint "profile_admin_id", null: false
-    t.bigint "work_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "deleted_at"
-    t.index ["deleted_at"], name: "index_profile_admin_works_on_deleted_at"
-    t.index ["profile_admin_id"], name: "index_profile_admin_works_on_profile_admin_id"
-    t.index ["work_id"], name: "index_profile_admin_works_on_work_id"
-  end
-
-  create_table "profile_admins", force: :cascade do |t|
-    t.string "role"
-    t.string "name"
-    t.string "last_name"
-    t.string "gender"
-    t.string "oab"
-    t.string "rg"
-    t.string "cpf"
-    t.string "nationality"
-    t.string "civil_status"
-    t.date "birth"
-    t.string "mother_name"
-    t.string "status"
-    t.bigint "admin_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "office_id"
-    t.string "origin"
-    t.datetime "deleted_at"
-    t.index ["admin_id"], name: "index_profile_admins_on_admin_id"
-    t.index ["deleted_at"], name: "index_profile_admins_on_deleted_at"
-    t.index ["office_id"], name: "index_profile_admins_on_office_id"
-  end
-
   create_table "profile_customers", force: :cascade do |t|
     t.string "customer_type"
     t.string "name"
@@ -527,6 +438,105 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_18_065550) do
     t.index ["subdomain"], name: "index_teams_on_subdomain", unique: true
   end
 
+  create_table "user_addresses", force: :cascade do |t|
+    t.bigint "address_id", null: false
+    t.bigint "user_profile_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["address_id"], name: "index_user_addresses_on_address_id"
+    t.index ["deleted_at"], name: "index_user_addresses_on_deleted_at"
+    t.index ["user_profile_id"], name: "index_user_addresses_on_user_profile_id"
+  end
+
+  create_table "user_bank_accounts", force: :cascade do |t|
+    t.bigint "bank_account_id", null: false
+    t.bigint "user_profile_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["bank_account_id"], name: "index_user_bank_accounts_on_bank_account_id"
+    t.index ["deleted_at"], name: "index_user_bank_accounts_on_deleted_at"
+    t.index ["user_profile_id"], name: "index_user_bank_accounts_on_user_profile_id"
+  end
+
+  create_table "user_emails", force: :cascade do |t|
+    t.bigint "email_id", null: false
+    t.bigint "user_profile_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_user_emails_on_deleted_at"
+    t.index ["email_id"], name: "index_user_emails_on_email_id"
+    t.index ["user_profile_id"], name: "index_user_emails_on_user_profile_id"
+  end
+
+  create_table "user_phones", force: :cascade do |t|
+    t.bigint "phone_id", null: false
+    t.bigint "user_profile_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_user_phones_on_deleted_at"
+    t.index ["phone_id"], name: "index_user_phones_on_phone_id"
+    t.index ["user_profile_id"], name: "index_user_phones_on_user_profile_id"
+  end
+
+  create_table "user_profile_works", force: :cascade do |t|
+    t.bigint "user_profile_id", null: false
+    t.bigint "work_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_user_profile_works_on_deleted_at"
+    t.index ["user_profile_id"], name: "index_user_profile_works_on_user_profile_id"
+    t.index ["work_id"], name: "index_user_profile_works_on_work_id"
+  end
+
+  create_table "user_profiles", force: :cascade do |t|
+    t.string "role"
+    t.string "name"
+    t.string "last_name"
+    t.string "gender"
+    t.string "oab"
+    t.string "rg"
+    t.string "cpf"
+    t.string "nationality"
+    t.string "civil_status"
+    t.date "birth"
+    t.string "mother_name"
+    t.string "status"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "office_id"
+    t.string "origin"
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_user_profiles_on_deleted_at"
+    t.index ["office_id"], name: "index_user_profiles_on_office_id"
+    t.index ["user_id"], name: "index_user_profiles_on_user_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "jwt_token"
+    t.datetime "deleted_at"
+    t.string "status", default: "active", null: false
+    t.string "oab"
+    t.bigint "team_id", null: false
+    t.index ["deleted_at"], name: "index_users_on_deleted_at"
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["jwt_token"], name: "index_users_on_jwt_token", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["team_id"], name: "index_users_on_team_id"
+  end
+
   create_table "work_events", force: :cascade do |t|
     t.string "description"
     t.datetime "date"
@@ -575,15 +585,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_18_065550) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "admin_addresses", "addresses"
-  add_foreign_key "admin_addresses", "profile_admins"
-  add_foreign_key "admin_bank_accounts", "bank_accounts"
-  add_foreign_key "admin_bank_accounts", "profile_admins"
-  add_foreign_key "admin_emails", "emails"
-  add_foreign_key "admin_emails", "profile_admins"
-  add_foreign_key "admin_phones", "phones"
-  add_foreign_key "admin_phones", "profile_admins"
-  add_foreign_key "admins", "teams"
   add_foreign_key "customer_addresses", "addresses"
   add_foreign_key "customer_addresses", "profile_customers"
   add_foreign_key "customer_bank_accounts", "bank_accounts"
@@ -595,17 +596,19 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_18_065550) do
   add_foreign_key "customer_phones", "profile_customers"
   add_foreign_key "customer_works", "profile_customers"
   add_foreign_key "customer_works", "works"
-  add_foreign_key "customers", "admins", column: "created_by_id"
+  add_foreign_key "customers", "users", column: "created_by_id"
   add_foreign_key "documents", "profile_customers"
   add_foreign_key "documents", "works"
   add_foreign_key "draft_works", "works"
   add_foreign_key "honoraries", "works"
+  add_foreign_key "job_user_profiles", "jobs"
+  add_foreign_key "job_user_profiles", "user_profiles"
   add_foreign_key "job_works", "jobs"
-  add_foreign_key "job_works", "profile_admins"
   add_foreign_key "job_works", "profile_customers"
+  add_foreign_key "job_works", "user_profiles"
   add_foreign_key "job_works", "works"
-  add_foreign_key "jobs", "admins", column: "created_by_id"
   add_foreign_key "jobs", "teams"
+  add_foreign_key "jobs", "users", column: "created_by_id"
   add_foreign_key "office_bank_accounts", "bank_accounts"
   add_foreign_key "office_bank_accounts", "offices"
   add_foreign_key "office_emails", "emails"
@@ -620,19 +623,28 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_18_065550) do
   add_foreign_key "pending_documents", "works"
   add_foreign_key "power_works", "powers"
   add_foreign_key "power_works", "works"
-  add_foreign_key "profile_admin_works", "profile_admins"
-  add_foreign_key "profile_admin_works", "works"
-  add_foreign_key "profile_admins", "admins"
-  add_foreign_key "profile_admins", "offices"
-  add_foreign_key "profile_customers", "admins", column: "created_by_id"
   add_foreign_key "profile_customers", "customers"
+  add_foreign_key "profile_customers", "users", column: "created_by_id"
   add_foreign_key "recommendations", "profile_customers"
   add_foreign_key "recommendations", "works"
   add_foreign_key "represents", "profile_customers"
   add_foreign_key "represents", "profile_customers", column: "representor_id"
   add_foreign_key "team_customers", "customers"
   add_foreign_key "team_customers", "teams"
+  add_foreign_key "user_addresses", "addresses"
+  add_foreign_key "user_addresses", "user_profiles"
+  add_foreign_key "user_bank_accounts", "bank_accounts"
+  add_foreign_key "user_bank_accounts", "user_profiles"
+  add_foreign_key "user_emails", "emails"
+  add_foreign_key "user_emails", "user_profiles"
+  add_foreign_key "user_phones", "phones"
+  add_foreign_key "user_phones", "user_profiles"
+  add_foreign_key "user_profile_works", "user_profiles"
+  add_foreign_key "user_profile_works", "works"
+  add_foreign_key "user_profiles", "offices"
+  add_foreign_key "user_profiles", "users"
+  add_foreign_key "users", "teams"
   add_foreign_key "work_events", "works"
-  add_foreign_key "works", "admins", column: "created_by_id"
   add_foreign_key "works", "teams"
+  add_foreign_key "works", "users", column: "created_by_id"
 end

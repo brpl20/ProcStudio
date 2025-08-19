@@ -35,9 +35,13 @@ module Api
       def create
         job = Job.new(jobs_params)
         job.team = current_team
-        job.created_by_id = current_user&.id
+        job.created_by = @current_user
+
         if job.save
-          render json: job, status: :created
+          # Processar diferentes tipos de assignees após salvar
+          assign_users_to_job(job, params[:job])
+
+          render json: JobSerializer.new(job), status: :created
         else
           render(
             status: :bad_request,
@@ -55,6 +59,9 @@ module Api
         authorize @job, :update?, policy_class: Admin::WorkPolicy
 
         if @job.update(jobs_params)
+          # Atualizar assignees se fornecidos
+          assign_users_to_job(@job, params[:job], update: true)
+
           render json: JobSerializer.new(
             @job
           ), status: :ok
@@ -99,20 +106,79 @@ module Api
       end
 
       def jobs_params
-        params.require(:job).permit(
-          :description,
-          :deadline,
-          :status,
-          :priority,
-          :comment,
-          :profile_customer_id,
-          :profile_admin_id,
-          :work_id
+        params.expect(
+          job: [:description,
+                :deadline,
+                :status,
+                :priority,
+                :comment,
+                :profile_customer_id,
+                :work_id]
         )
       end
 
       def perform_authorization
         authorize [:admin, :job], :"#{action_name}?"
+      end
+
+      def assign_users_to_job(job, job_params, update: false)
+        # Se é update, remove assignees existentes apenas dos tipos que estão sendo atualizados
+        if update
+          job.job_user_profiles.where(role: 'assignee').destroy_all if job_params[:assignee_ids].present?
+          job.job_user_profiles.where(role: 'supervisor').destroy_all if job_params[:supervisor_ids].present?
+          job.job_user_profiles.where(role: 'collaborator').destroy_all if job_params[:collaborator_ids].present?
+        end
+
+        # Adicionar assignees (com validação de team)
+        if job_params[:assignee_ids].present?
+          team_user_profiles = UserProfile.joins(:user).where(
+            id: job_params[:assignee_ids],
+            users: { team_id: job.team_id }
+          )
+
+          team_user_profiles.each do |user_profile|
+            job.job_user_profiles.find_or_create_by(
+              user_profile: user_profile,
+              role: 'assignee'
+            )
+          end
+
+          # Verificar se algum ID foi ignorado (não pertence ao team)
+          invalid_ids = job_params[:assignee_ids].map(&:to_i) - team_user_profiles.pluck(:id)
+          if invalid_ids.any?
+            Rails.logger.warn "UserProfile IDs #{invalid_ids} ignorados: não pertencem ao team #{job.team&.name}"
+          end
+        end
+
+        # Adicionar supervisors (com validação de team)
+        if job_params[:supervisor_ids].present?
+          team_user_profiles = UserProfile.joins(:user).where(
+            id: job_params[:supervisor_ids],
+            users: { team_id: job.team_id }
+          )
+
+          team_user_profiles.each do |user_profile|
+            job.job_user_profiles.find_or_create_by(
+              user_profile: user_profile,
+              role: 'supervisor'
+            )
+          end
+        end
+
+        # Adicionar collaborators (com validação de team)
+        return if job_params[:collaborator_ids].blank?
+
+        team_user_profiles = UserProfile.joins(:user).where(
+          id: job_params[:collaborator_ids],
+          users: { team_id: job.team_id }
+        )
+
+        team_user_profiles.each do |user_profile|
+          job.job_user_profiles.find_or_create_by(
+            user_profile: user_profile,
+            role: 'collaborator'
+          )
+        end
       end
     end
   end

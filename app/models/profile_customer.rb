@@ -4,33 +4,45 @@
 #
 # Table name: profile_customers
 #
-#  id             :bigint(8)        not null, primary key
-#  customer_type  :string
-#  name           :string
-#  last_name      :string
-#  gender         :string
-#  rg             :string
-#  cpf            :string
-#  cnpj           :string
-#  nationality    :string
-#  civil_status   :string
-#  capacity       :string
-#  profession     :string
-#  company        :string
+#  id             :bigint           not null, primary key
 #  birth          :date
-#  mother_name    :string
-#  number_benefit :string
+#  capacity       :string
+#  civil_status   :string
+#  cnpj           :string
+#  company        :string
+#  cpf            :string
+#  customer_type  :string
+#  deleted_at     :datetime
 #  document       :json
-#  nit            :string
+#  gender         :string
 #  inss_password  :string
 #  invalid_person :integer
-#  customer_id    :bigint(8)        not null
+#  last_name      :string
+#  mother_name    :string
+#  name           :string
+#  nationality    :string
+#  nit            :string
+#  number_benefit :string
+#  profession     :string
+#  rg             :string
+#  status         :string           default("active"), not null
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #  accountant_id  :integer
-#  deleted_at     :datetime
-#  created_by_id  :bigint(8)
-#  status         :string           default("active"), not null
+#  created_by_id  :bigint
+#  customer_id    :bigint           not null
+#
+# Indexes
+#
+#  index_profile_customers_on_accountant_id  (accountant_id)
+#  index_profile_customers_on_created_by_id  (created_by_id)
+#  index_profile_customers_on_customer_id    (customer_id)
+#  index_profile_customers_on_deleted_at     (deleted_at)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (created_by_id => users.id)
+#  fk_rails_...  (customer_id => customers.id)
 #
 class ProfileCustomer < ApplicationRecord
   include DeletedFilterConcern

@@ -9,11 +9,11 @@ Rails.application.routes.draw do
     namespace :v1 do
       # Public routes (no authentication required)
       namespace :public do
-        post 'admin_registration', to: 'admin_registration#create'
+        post 'user_registration', to: 'user_registration#create'
       end
 
       get '/offices/with_lawyers', to: 'offices#with_lawyers'
-      resources :admins do
+      resources :users do
         member do
           post :restore
         end
@@ -44,7 +44,7 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :profile_admins do
+      resources :user_profiles do
         member do
           post :restore
         end
@@ -91,7 +91,7 @@ Rails.application.routes.draw do
 
       # Super admin routes (acesso total ao sistema)
       namespace :super_admin do
-        get 'admins'
+        get 'users'
         get 'teams'
       end
 

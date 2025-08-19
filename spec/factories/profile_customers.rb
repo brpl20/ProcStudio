@@ -1,5 +1,49 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: profile_customers
+#
+#  id             :bigint           not null, primary key
+#  birth          :date
+#  capacity       :string
+#  civil_status   :string
+#  cnpj           :string
+#  company        :string
+#  cpf            :string
+#  customer_type  :string
+#  deleted_at     :datetime
+#  document       :json
+#  gender         :string
+#  inss_password  :string
+#  invalid_person :integer
+#  last_name      :string
+#  mother_name    :string
+#  name           :string
+#  nationality    :string
+#  nit            :string
+#  number_benefit :string
+#  profession     :string
+#  rg             :string
+#  status         :string           default("active"), not null
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  accountant_id  :integer
+#  created_by_id  :bigint
+#  customer_id    :bigint           not null
+#
+# Indexes
+#
+#  index_profile_customers_on_accountant_id  (accountant_id)
+#  index_profile_customers_on_created_by_id  (created_by_id)
+#  index_profile_customers_on_customer_id    (customer_id)
+#  index_profile_customers_on_deleted_at     (deleted_at)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (created_by_id => users.id)
+#  fk_rails_...  (customer_id => customers.id)
+#
 FactoryBot.define do
   factory :profile_customer do
     name { Faker::Name.name }

@@ -4,13 +4,23 @@
 #
 # Table name: customer_files
 #
-#  id                  :bigint(8)        not null, primary key
+#  id                  :bigint           not null, primary key
+#  deleted_at          :datetime
 #  file_description    :string
-#  profile_customer_id :bigint(8)        not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
-#  deleted_at          :datetime
+#  profile_customer_id :bigint           not null
 #
+# Indexes
+#
+#  index_customer_files_on_deleted_at           (deleted_at)
+#  index_customer_files_on_profile_customer_id  (profile_customer_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (profile_customer_id => profile_customers.id)
+#
+
 class CustomerFile < ApplicationRecord
   acts_as_paranoid
 

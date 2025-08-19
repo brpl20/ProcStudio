@@ -2,23 +2,35 @@
 
 # == Schema Information
 #
-# Table name: admins
+# Table name: users
 #
-#  id                     :bigint(8)        not null, primary key
+#  id                     :bigint           not null, primary key
+#  deleted_at             :datetime
 #  email                  :string           default(""), not null
 #  encrypted_password     :string           default(""), not null
-#  reset_password_token   :string
-#  reset_password_sent_at :datetime
+#  jwt_token              :string
+#  oab                    :string
 #  remember_created_at    :datetime
+#  reset_password_sent_at :datetime
+#  reset_password_token   :string
+#  status                 :string           default("active"), not null
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
-#  jwt_token              :string
-#  deleted_at             :datetime
-#  status                 :string           default("active"), not null
-#  oab                    :string
-#  team_id                :bigint(8)        not null
+#  team_id                :bigint           not null
 #
-class Admin < ApplicationRecord
+# Indexes
+#
+#  index_users_on_deleted_at            (deleted_at)
+#  index_users_on_email                 (email) UNIQUE
+#  index_users_on_jwt_token             (jwt_token) UNIQUE
+#  index_users_on_reset_password_token  (reset_password_token) UNIQUE
+#  index_users_on_team_id               (team_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (team_id => teams.id)
+#
+class User < ApplicationRecord
   include DeletedFilterConcern
 
   acts_as_paranoid
@@ -36,12 +48,12 @@ class Admin < ApplicationRecord
   alias_attribute :access_email, :email
 
   belongs_to :team
-  has_one :profile_admin, dependent: :destroy
+  has_one :user_profile, dependent: :destroy
 
   validates :email, presence: true
-  accepts_nested_attributes_for :profile_admin, reject_if: :all_blank
+  accepts_nested_attributes_for :user_profile, reject_if: :all_blank
 
-  delegate :role, to: :profile_admin, allow_nil: true
+  delegate :role, to: :user_profile, allow_nil: true
 
   before_destroy :update_created_by_records
 

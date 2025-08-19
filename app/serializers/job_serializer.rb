@@ -1,5 +1,36 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: jobs
+#
+#  id                  :bigint           not null, primary key
+#  comment             :string
+#  deadline            :date             not null
+#  deleted_at          :datetime
+#  description         :string
+#  priority            :string
+#  status              :string
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
+#  created_by_id       :bigint
+#  profile_customer_id :bigint
+#  team_id             :bigint           not null
+#  work_id             :bigint
+#
+# Indexes
+#
+#  index_jobs_on_created_by_id        (created_by_id)
+#  index_jobs_on_deleted_at           (deleted_at)
+#  index_jobs_on_profile_customer_id  (profile_customer_id)
+#  index_jobs_on_team_id              (team_id)
+#  index_jobs_on_work_id              (work_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (created_by_id => users.id)
+#  fk_rails_...  (team_id => teams.id)
+#
 class JobSerializer
   include JSONAPI::Serializer
 
@@ -10,14 +41,34 @@ class JobSerializer
   end
 
   attribute :responsible do |object|
-    object&.profile_admin&.name
+    object&.assignees&.first&.name
   end
 
   attribute :work_number do |object|
     object.work.number if object.work.present?
   end
 
-  attributes :profile_admin_id, if: proc { |_, options| options[:action] == 'show' }
+  attribute :assignees, if: proc { |_, options| options[:action] == 'show' } do |object|
+    object.assignees.map do |assignee|
+      {
+        id: assignee.id,
+        name: assignee.name,
+        last_name: assignee.last_name,
+        role: object.job_user_profiles.find_by(user_profile: assignee)&.role
+      }
+    end
+  end
+
+  attribute :all_members, if: proc { |_, options| options[:action] == 'show' } do |object|
+    object.user_profiles.map do |user_profile|
+      {
+        id: user_profile.id,
+        name: user_profile.name,
+        last_name: user_profile.last_name,
+        role: object.job_user_profiles.find_by(user_profile: user_profile)&.role
+      }
+    end
+  end
 
   attribute :profile_customer, if: proc { |_, options| options[:action] == 'show' } do |object|
     next unless object.profile_customer

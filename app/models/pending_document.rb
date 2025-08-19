@@ -4,14 +4,26 @@
 #
 # Table name: pending_documents
 #
-#  id                  :bigint(8)        not null, primary key
+#  id                  :bigint           not null, primary key
+#  deleted_at          :datetime
 #  description         :string
-#  work_id             :bigint(8)        not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
-#  profile_customer_id :bigint(8)
-#  deleted_at          :datetime
+#  profile_customer_id :bigint
+#  work_id             :bigint           not null
 #
+# Indexes
+#
+#  index_pending_documents_on_deleted_at           (deleted_at)
+#  index_pending_documents_on_profile_customer_id  (profile_customer_id)
+#  index_pending_documents_on_work_id              (work_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (profile_customer_id => profile_customers.id)
+#  fk_rails_...  (work_id => works.id)
+#
+
 class PendingDocument < ApplicationRecord
   acts_as_paranoid
 

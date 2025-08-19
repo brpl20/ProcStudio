@@ -4,14 +4,24 @@
 #
 # Table name: work_events
 #
-#  id          :bigint(8)        not null, primary key
-#  description :string
+#  id          :bigint           not null, primary key
 #  date        :datetime
-#  work_id     :bigint(8)        not null
+#  deleted_at  :datetime
+#  description :string
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
-#  deleted_at  :datetime
+#  work_id     :bigint           not null
 #
+# Indexes
+#
+#  index_work_events_on_deleted_at  (deleted_at)
+#  index_work_events_on_work_id     (work_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (work_id => works.id)
+#
+
 class WorkEvent < ApplicationRecord
   include DeletedFilterConcern
 

@@ -64,11 +64,11 @@ module Api
 
       def team_params
         # Não permitir alteração de subdomain por questões de segurança
-        params.require(:team).permit(:name, settings: {})
+        params.expect(team: [:name, { settings: {} }])
       end
 
       def authorize_super_admin!
-        return if @current_admin&.profile_admin&.super_admin?
+        return if @current_user&.user_profile&.super_admin?
 
         action_map = {
           'index' => 'index?',
@@ -81,24 +81,24 @@ module Api
       end
 
       def check_team_access!
-        # Admins com role super_admin podem acessar qualquer team
-        return if @current_admin&.profile_admin&.super_admin?
+        # Usuários com role super_admin podem acessar qualquer team
+        return if @current_user&.user_profile&.super_admin?
 
         # Para update, verificar se é o próprio team e se tem role lawyer
         if action_name == 'update'
           # Permitir update apenas se for o próprio team e tiver role lawyer
-          if @team != @current_admin.team
+          if @team != @current_user.team
             render json: { error: 'Não autorizado a atualizar este team. Você só pode atualizar o seu próprio team.' },
                    status: :forbidden
             nil
-          elsif !@current_admin.profile_admin&.lawyer?
-            render json: { error: 'Não autorizado a atualizar teams. Apenas administradores com role lawyer ou super_admin podem executar esta ação.' },
+          elsif !@current_user.user_profile&.lawyer?
+            render json: { error: 'Não autorizado a atualizar teams. Apenas usuários com role lawyer ou super_admin podem executar esta ação.' },
                    status: :forbidden
             nil
           end
         else
-          # Para show, qualquer admin pode ver o próprio team
-          unless @team == @current_admin.team
+          # Para show, qualquer usuário pode ver o próprio team
+          unless @team == @current_user.team
             render json: { error: I18n.t('pundit.team.show?') }, status: :forbidden
             nil
           end

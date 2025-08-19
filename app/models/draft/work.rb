@@ -4,13 +4,23 @@
 #
 # Table name: draft_works
 #
-#  id         :bigint(8)        not null, primary key
+#  id         :bigint           not null, primary key
+#  deleted_at :datetime
 #  name       :string
-#  work_id    :bigint(8)        not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  deleted_at :datetime
+#  work_id    :bigint           not null
 #
+# Indexes
+#
+#  index_draft_works_on_deleted_at  (deleted_at)
+#  index_draft_works_on_work_id     (work_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (work_id => works.id)
+#
+
 class Draft::Work < ApplicationRecord
   include DeletedFilterConcern
 

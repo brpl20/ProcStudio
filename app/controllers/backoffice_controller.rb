@@ -5,7 +5,7 @@ class BackofficeController < ApplicationController
   include Pundit::Authorization
   include TeamScoped
 
-  before_action :authenticate_admin
+  before_action :authenticate_user
   before_action :set_current_team
 
   rescue_from Pundit::NotAuthorizedError, with: :unauthorized
@@ -13,7 +13,7 @@ class BackofficeController < ApplicationController
 
   # Pundit usa current_user por padrão, mas podemos sobrescrever com pundit_user
   def pundit_user
-    @current_admin
+    @current_user
   end
 
   def unauthorized(exception)
@@ -42,9 +42,9 @@ class BackofficeController < ApplicationController
   end
 
   def record_not_found(exception)
-    # Quando é um Admin não encontrado por scoping de team,
+    # Quando é um User não encontrado por scoping de team,
     # é na verdade um problema de autorização, não de recurso inexistente
-    if exception.model == 'Admin'
+    if exception.model == 'User'
       render json: { error: I18n.t('errors.messages.general.unauthorized_access') }, status: :forbidden
     else
       model_name = exception.model || 'Registro'

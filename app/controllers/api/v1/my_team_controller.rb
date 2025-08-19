@@ -4,7 +4,7 @@ module Api
   module V1
     class MyTeamController < BackofficeController
       def show
-        team = @current_admin.team
+        team = @current_user.team
 
         render json: {
           team: {
@@ -14,25 +14,25 @@ module Api
             settings: team.settings,
             created_at: team.created_at,
             stats: {
-              admins_count: team.admins.count,
+              users_count: team.users.count,
               customers_count: team.customers.count,
               works_count: team.works.count,
               jobs_count: team.jobs.count,
               offices_count: team.offices.count
             }
           },
-          current_admin: {
-            id: @current_admin.id,
-            email: @current_admin.email,
-            role: @current_admin.profile_admin&.role,
-            name: @current_admin.profile_admin&.name,
-            last_name: @current_admin.profile_admin&.last_name
+          current_user: {
+            id: @current_user.id,
+            email: @current_user.email,
+            role: @current_user.user_profile&.role,
+            name: @current_user.user_profile&.name,
+            last_name: @current_user.user_profile&.last_name
           }
         }
       end
 
       def update
-        team = @current_admin.team
+        team = @current_user.team
 
         if team.update(team_params)
           render json: {
@@ -54,33 +54,33 @@ module Api
       end
 
       def members
-        admins = @current_admin.team.admins.includes(:profile_admin)
+        users = @current_user.team.users.includes(:user_profile)
 
         render json: {
-          members: admins.map do |admin|
+          members: users.map do |user|
             {
-              id: admin.id,
-              email: admin.email,
-              status: admin.status,
-              profile: if admin.profile_admin
+              id: user.id,
+              email: user.email,
+              status: user.status,
+              profile: if user.user_profile
                          {
-                           name: admin.profile_admin.name,
-                           last_name: admin.profile_admin.last_name,
-                           role: admin.profile_admin.role,
-                           oab: admin.profile_admin.oab
+                           name: user.user_profile.name,
+                           last_name: user.user_profile.last_name,
+                           role: user.user_profile.role,
+                           oab: user.user_profile.oab
                          }
                        end,
-              joined_at: admin.created_at
+              joined_at: user.created_at
             }
           end,
-          total_count: admins.count
+          total_count: users.count
         }
       end
 
       private
 
       def team_params
-        params.require(:team).permit(:name, settings: {})
+        params.expect(team: [:name, { settings: {} }])
         # Não permitir alterar subdomain por questões de segurança
       end
     end

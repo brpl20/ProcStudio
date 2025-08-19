@@ -1,15 +1,20 @@
 # frozen_string_literal: true
 
 module JwtAuth
-  def authenticate_admin
-    head :unauthorized and return unless payload.key?('admin_id')
+  def authenticate_user
+    # Support both new user_id and legacy admin_id for backward compatibility
+    user_id = payload['user_id'] || payload['admin_id']
+    head :unauthorized and return unless user_id
 
-    @current_admin ||= Admin.find(payload['admin_id'])
-    head :unauthorized unless @current_admin&.jwt_token == token
+    @current_user ||= User.find(user_id)
+    head :unauthorized unless @current_user&.jwt_token == token
     head :unauthorized unless valid_token?
   rescue JWT::DecodeError
     head :unauthorized
   end
+
+  # Legacy method for backward compatibility
+  alias authenticate_admin authenticate_user
 
   def authenticate_customer
     head :unauthorized and return unless payload.key?('customer_id')
