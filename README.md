@@ -240,14 +240,15 @@ O projeto utiliza Husky para executar verificações antes dos commits:
   "data": { ... },
   "message": "Optional success message"
 }
-
-# Resposta de erro
 ```
-  {
-    "success": false,
-    "message": "Email já está em uso",  # Single user-friendly message
-    "errors": ["Email já está em uso"]   # Array for detailed errors
-  }
+
+```ruby
+# Resposta de erro
+{
+  "success": false,
+  "message": "Email já está em uso",  # Single user-friendly message
+  "errors": ["Email já está em uso"]   # Array for detailed errors
+}
 ```
 
 ### Ambientes
