@@ -1,0 +1,9 @@
+/**
+ * Central export point for all API services
+ */
+
+export { AuthService } from './auth.service';
+export { UserService } from './user.service';
+export { TeamService } from './team.service';
+export { LawAreaService } from './law-area.service';
+export { PowerService } from './power.service';

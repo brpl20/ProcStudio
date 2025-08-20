@@ -1,11 +1,36 @@
 <script lang="ts">
-  import { api } from './api';
+  import api from './api';
+  import type { TeamData, MyTeamResponse, TeamResponse, UpdateTeamResponse, TeamMembersResponse } from './api';
 
   // Estados para renderização de dados
-  let myTeamResult = null;
-  let teamByIdResult = null;
-  let updateTeamResult = null;
-  let teamMembersResult = null;
+  let myTeamResult: {
+    success: boolean;
+    data?: MyTeamResponse;
+    error?: string;
+    message: string;
+  } | null = null;
+  
+  let teamByIdResult: {
+    success: boolean;
+    data?: TeamResponse;
+    error?: string;
+    message: string;
+  } | null = null;
+  
+  let updateTeamResult: {
+    success: boolean;
+    data?: UpdateTeamResponse;
+    error?: string;
+    message: string;
+  } | null = null;
+  
+  let teamMembersResult: {
+    success: boolean;
+    data?: TeamMembersResponse;
+    error?: string;
+    message: string;
+    count?: number;
+  } | null = null;
 
   // Estados de loading
   let isTestingMyTeam = false;
@@ -25,7 +50,7 @@
     myTeamResult = null;
 
     try {
-      const data = await api.getMyTeam();
+      const data = await api.teams.getMyTeam();
       myTeamResult = {
         success: true,
         data: data,
@@ -38,10 +63,11 @@
         updateTeamName = data.data.attributes?.name || '';
         updateTeamDescription = data.data.attributes?.description || '';
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Get my team error:', error);
       myTeamResult = {
         success: false,
-        error: error.message,
+        error: error?.message || error?.data?.message || 'Erro desconhecido',
         message: 'Erro ao buscar meu time'
       };
     } finally {
@@ -64,16 +90,17 @@
     teamByIdResult = null;
 
     try {
-      const data = await api.getTeamById(teamIdInput.trim());
+      const data = await api.teams.getTeam(teamIdInput.trim());
       teamByIdResult = {
         success: true,
         data: data,
         message: `Time #${teamIdInput} carregado com sucesso!`
       };
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Get team by ID error:', error);
       teamByIdResult = {
         success: false,
-        error: error.message,
+        error: error?.message || error?.data?.message || 'Erro desconhecido',
         message: `Erro ao buscar time #${teamIdInput}`
       };
     } finally {
@@ -105,19 +132,22 @@
     updateTeamResult = null;
 
     try {
-      const data = await api.updateTeam(currentTeamId, {
-        name: updateTeamName.trim(),
-        description: updateTeamDescription.trim()
+      const data = await api.teams.updateMyTeam({
+        team: {
+          name: updateTeamName.trim(),
+          description: updateTeamDescription.trim()
+        }
       });
       updateTeamResult = {
         success: true,
         data: data,
         message: 'Time atualizado com sucesso!'
       };
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Update team error:', error);
       updateTeamResult = {
         success: false,
-        error: error.message,
+        error: error?.message || error?.data?.message || 'Erro desconhecido',
         message: 'Erro ao atualizar time'
       };
     } finally {
@@ -131,17 +161,18 @@
     teamMembersResult = null;
 
     try {
-      const data = await api.getMyTeamMembers();
+      const data = await api.teams.getMyTeamMembers();
       teamMembersResult = {
         success: true,
         data: data,
         count: Array.isArray(data) ? data.length : data.data ? data.data.length : 0,
         message: 'Membros do time carregados com sucesso!'
       };
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Get team members error:', error);
       teamMembersResult = {
         success: false,
-        error: error.message,
+        error: error?.message || error?.data?.message || 'Erro desconhecido',
         message: 'Erro ao buscar membros do time'
       };
     } finally {
@@ -183,17 +214,19 @@
       <h4>Atualizar Meu Time</h4>
       <p>Current Team ID: {currentTeamId || 'Busque seu time primeiro'}</p>
       <div>
-        <label>Nome:</label>
+        <label for="update-team-name">Nome:</label>
         <input
           type="text"
+          id="update-team-name"
           bind:value={updateTeamName}
           placeholder="Nome do time"
           disabled={isUpdatingTeam}
         />
       </div>
       <div>
-        <label>Descrição:</label>
+        <label for="update-team-description">Descrição:</label>
         <textarea
+          id="update-team-description"
           bind:value={updateTeamDescription}
           placeholder="Descrição do time"
           disabled={isUpdatingTeam}

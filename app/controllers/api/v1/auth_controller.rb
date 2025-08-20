@@ -21,9 +21,9 @@ module Api
             render json: { success: false, message: I18n.t('errors.messages.authentication.unauthorized') },
                    status: :unauthorized
           else
-            admin_id = decoded_token['admin_id']
-            current_admin = Admin.find(admin_id)
-            current_admin.update_attribute(:jwt_token, nil)
+            user_id = decoded_token['user_id'] || decoded_token['admin_id'] # backward compatibility
+            current_user = User.find(user_id)
+            current_user.update(jwt_token: nil)
             render json: { success: true, message: I18n.t('errors.messages.authentication.logout_success') }
           end
         end
@@ -32,43 +32,53 @@ module Api
       private
 
       def authenticate_with_email_and_password
-        admin = Admin.find_for_authentication(email: auth_params[:email])
-        if admin&.valid_password?(auth_params[:password])
-          profile_admin = admin.profile_admin
-          token = update_user_token(admin, profile_admin)
+        user = User.find_for_authentication(email: auth_params[:email])
+        if user&.valid_password?(auth_params[:password])
+          # Recarregar user para garantir que temos a versão mais atual com user_profile
+          user.reload
+          user_profile = user.user_profile
+          token = update_user_token(user, user_profile)
 
-          response_data = build_auth_response(token, profile_admin)
-          render json: response_data
+          response_data = build_auth_response(token, user_profile)
+          render json: {
+            success: true,
+            message: response_data[:message] || 'Login realizado com sucesso',
+            data: response_data
+          }
         else
-          render json: { success: false, message: I18n.t('errors.messages.authentication.unauthorized') },
-                 status: :unauthorized
+          render json: {
+            success: false,
+            message: I18n.t('errors.messages.authentication.unauthorized'),
+            errors: [I18n.t('errors.messages.authentication.unauthorized')]
+          }, status: :unauthorized
         end
       end
 
-      def update_user_token(admin, profile_admin)
+      def update_user_token(user, user_profile)
         exp = Time.now.to_i + (24 * 3600)
         token_data = {
-          admin_id: admin.id,
+          user_id: user.id,
+          admin_id: user.id, # backward compatibility
           exp: exp
         }
 
-        if profile_admin
-          token_data[:name] = profile_admin.name
-          token_data[:last_name] = profile_admin.last_name
-          token_data[:role] = profile_admin.role
+        if user_profile
+          token_data[:name] = user_profile.name
+          token_data[:last_name] = user_profile.last_name
+          token_data[:role] = user_profile.role
         end
 
         token = JWT.encode(token_data, Rails.application.secret_key_base)
-        admin.update(jwt_token: token)
+        user.update(jwt_token: token)
         token
       end
 
       def auth_params
-        params.require(:auth).permit(:email, :password)
+        params.expect(auth: [:email, :password])
       end
 
       def decode_jwt_token(token)
-        secret_key = Rails.application.secrets.secret_key_base
+        secret_key = Rails.application.secret_key_base
         decoded_token = JWT.decode(token, secret_key)[0]
         ActiveSupport::HashWithIndifferentAccess.new decoded_token
       rescue JWT::DecodeError
@@ -76,19 +86,20 @@ module Api
         nil
       end
 
-      def build_auth_response(token, profile_admin)
+      def build_auth_response(token, user_profile)
         response = { token: token }
 
-        # Pega o admin do token decodificado
-        admin = Admin.find(decode_jwt_token(token)['admin_id'])
+        # Pega o user do token decodificado
+        user_id = decode_jwt_token(token)['user_id'] || decode_jwt_token(token)['admin_id']
+        user = User.find(user_id)
 
-        if profile_admin.nil?
+        if user_profile.nil?
           response[:needs_profile_completion] = true
           response[:missing_fields] = required_profile_fields
-          response[:oab] = admin.oab if admin.oab.present?
+          response[:oab] = user.oab if user.oab.present?
           response[:message] = I18n.t('errors.messages.profile.incomplete')
         else
-          incomplete_fields = check_profile_completeness(profile_admin)
+          incomplete_fields = check_profile_completeness(user_profile)
 
           if incomplete_fields.any?
             response[:needs_profile_completion] = true
@@ -96,37 +107,39 @@ module Api
             response[:message] = I18n.t('errors.messages.profile.incomplete')
           else
             response[:needs_profile_completion] = false
+            response[:message] = 'Login realizado com sucesso'
           end
 
-          response[:role] = profile_admin.role
-          response[:name] = profile_admin.name
-          response[:last_name] = profile_admin.last_name
-          response[:oab] = profile_admin.oab if profile_admin.lawyer? && profile_admin.oab.present?
+          response[:role] = user_profile.role
+          response[:name] = user_profile.name
+          response[:last_name] = user_profile.last_name
+          response[:oab] = user_profile.oab if user_profile.lawyer? && user_profile.oab.present?
+          response[:gender] = user_profile.gender if user_profile.gender.present?
         end
 
         response
       end
 
-      def check_profile_completeness(profile_admin)
+      def check_profile_completeness(user_profile)
         missing_fields = []
 
         # Campos obrigatórios básicos
-        missing_fields << :name if profile_admin.name.blank?
-        missing_fields << :last_name if profile_admin.last_name.blank?
-        missing_fields << :cpf if profile_admin.cpf.blank?
-        missing_fields << :rg if profile_admin.rg.blank?
-        missing_fields << :role if profile_admin.role.blank?
-        missing_fields << :gender if profile_admin.gender.blank?
-        missing_fields << :civil_status if profile_admin.civil_status.blank?
-        missing_fields << :nationality if profile_admin.nationality.blank?
-        missing_fields << :birth if profile_admin.birth.blank?
+        missing_fields << :name if user_profile.name.blank?
+        missing_fields << :last_name if user_profile.last_name.blank?
+        missing_fields << :cpf if user_profile.cpf.blank?
+        missing_fields << :rg if user_profile.rg.blank?
+        missing_fields << :role if user_profile.role.blank?
+        missing_fields << :gender if user_profile.gender.blank?
+        missing_fields << :civil_status if user_profile.civil_status.blank?
+        missing_fields << :nationality if user_profile.nationality.blank?
+        missing_fields << :birth if user_profile.birth.blank?
 
         # OAB obrigatório apenas para advogados
-        missing_fields << :oab if profile_admin.lawyer? && profile_admin.oab.blank?
+        missing_fields << :oab if user_profile.lawyer? && user_profile.oab.blank?
 
         # Verificar se tem pelo menos um telefone e email
-        missing_fields << :phone if profile_admin.phones.empty?
-        missing_fields << :address if profile_admin.addresses.empty?
+        missing_fields << :phone if user_profile.phones.empty?
+        missing_fields << :address if user_profile.addresses.empty?
 
         missing_fields
       end
@@ -136,104 +149,4 @@ module Api
       end
     end
   end
-end
-
-def authenticate_with_email_and_password
-  admin = Admin.find_for_authentication(email: auth_params[:email])
-  if admin&.valid_password?(auth_params[:password])
-    profile_admin = admin.profile_admin
-    token = update_user_token(admin, profile_admin)
-
-    response_data = build_auth_response(token, profile_admin)
-    render json: response_data
-  else
-    render json: { success: false, message: I18n.t('errors.messages.authentication.unauthorized') },
-           status: :unauthorized
-  end
-end
-
-def update_user_token(admin, profile_admin)
-  exp = Time.now.to_i + (24 * 3600)
-  token_data = {
-    admin_id: admin.id,
-    exp: exp
-  }
-
-  if profile_admin
-    token_data[:name] = profile_admin.name
-    token_data[:last_name] = profile_admin.last_name
-    token_data[:role] = profile_admin.role
-  end
-
-  token = JWT.encode(token_data, Rails.application.secret_key_base)
-  admin.update(jwt_token: token)
-  token
-end
-
-def auth_params
-  params.require(:auth).permit(:email, :password)
-end
-
-def decode_jwt_token(token)
-  secret_key = Rails.application.secrets.secret_key_base
-  decoded_token = JWT.decode(token, secret_key)[0]
-  ActiveSupport::HashWithIndifferentAccess.new decoded_token
-rescue JWT::DecodeError
-  # puts "Error decoding JWT token: #{e.message}"
-  nil
-end
-
-def build_auth_response(token, profile_admin)
-  response = { token: token }
-
-  # Pega o admin do token decodificado
-  admin = Admin.find(decode_jwt_token(token)['admin_id'])
-
-  if profile_admin.nil?
-    response[:needs_profile_completion] = true
-    response[:missing_fields] = required_profile_fields
-    response[:oab] = admin.oab if admin.oab.present?
-    response[:message] = I18n.t('errors.messages.profile.incomplete')
-  else
-    incomplete_fields = check_profile_completeness(profile_admin)
-
-    if incomplete_fields.any?
-      response[:needs_profile_completion] = true
-      response[:missing_fields] = incomplete_fields
-      response[:message] = I18n.t('errors.messages.profile.incomplete')
-    else
-      response[:needs_profile_completion] = false
-    end
-
-    response[:role] = profile_admin.role
-    response[:name] = profile_admin.name
-    response[:last_name] = profile_admin.last_name
-    response[:oab] = profile_admin.oab if profile_admin.lawyer? && profile_admin.oab.present?
-  end
-
-  response
-end
-
-def check_profile_completeness(profile_admin)
-  missing_fields = []
-
-  # Campos obrigatórios básicos
-  missing_fields << :name if profile_admin.name.blank?
-  missing_fields << :last_name if profile_admin.last_name.blank?
-  missing_fields << :cpf if profile_admin.cpf.blank?
-  missing_fields << :rg if profile_admin.rg.blank?
-  missing_fields << :role if profile_admin.role.blank?
-  missing_fields << :gender if profile_admin.gender.blank?
-  missing_fields << :civil_status if profile_admin.civil_status.blank?
-  missing_fields << :nationality if profile_admin.nationality.blank?
-  missing_fields << :birth if profile_admin.birth.blank?
-
-  # OAB obrigatório apenas para advogados
-  missing_fields << :oab if profile_admin.lawyer? && profile_admin.oab.blank?
-
-  # Verificar se tem pelo menos um telefone e email
-  missing_fields << :phone if profile_admin.phones.empty?
-  missing_fields << :address if profile_admin.addresses.empty?
-
-  missing_fields
 end

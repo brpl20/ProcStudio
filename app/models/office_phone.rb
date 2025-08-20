@@ -4,13 +4,25 @@
 #
 # Table name: office_phones
 #
-#  id         :bigint(8)        not null, primary key
-#  office_id  :bigint(8)        not null
-#  phone_id   :bigint(8)        not null
+#  id         :bigint           not null, primary key
+#  deleted_at :datetime
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  deleted_at :datetime
+#  office_id  :bigint           not null
+#  phone_id   :bigint           not null
 #
+# Indexes
+#
+#  index_office_phones_on_deleted_at  (deleted_at)
+#  index_office_phones_on_office_id   (office_id)
+#  index_office_phones_on_phone_id    (phone_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (office_id => offices.id)
+#  fk_rails_...  (phone_id => phones.id)
+#
+
 class OfficePhone < ApplicationRecord
   acts_as_paranoid
 

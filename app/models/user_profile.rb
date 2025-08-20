@@ -2,37 +2,49 @@
 
 # == Schema Information
 #
-# Table name: profile_admins
+# Table name: user_profiles
 #
-#  id           :bigint(8)        not null, primary key
-#  role         :string
-#  name         :string
-#  last_name    :string
-#  gender       :string
-#  oab          :string
-#  rg           :string
-#  cpf          :string
-#  nationality  :string
-#  civil_status :string
+#  id           :bigint           not null, primary key
 #  birth        :date
+#  civil_status :string
+#  cpf          :string
+#  deleted_at   :datetime
+#  gender       :string
+#  last_name    :string
 #  mother_name  :string
+#  name         :string
+#  nationality  :string
+#  oab          :string
+#  origin       :string
+#  rg           :string
+#  role         :string
 #  status       :string
-#  admin_id     :bigint(8)        not null
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
-#  office_id    :bigint(8)
-#  origin       :string
-#  deleted_at   :datetime
+#  office_id    :bigint
+#  user_id      :bigint           not null
 #
-class ProfileAdmin < ApplicationRecord
+# Indexes
+#
+#  index_user_profiles_on_deleted_at  (deleted_at)
+#  index_user_profiles_on_office_id   (office_id)
+#  index_user_profiles_on_user_id     (user_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (office_id => offices.id)
+#  fk_rails_...  (user_id => users.id)
+#
+
+class UserProfile < ApplicationRecord
   include DeletedFilterConcern
 
   acts_as_paranoid
 
-  belongs_to :admin
+  belongs_to :user
   belongs_to :office, optional: true
 
-  delegate :team, to: :admin
+  delegate :team, to: :user
 
   validate :office_same_team, if: -> { office.present? }
 
@@ -71,24 +83,24 @@ class ProfileAdmin < ApplicationRecord
     foreigner: 'foreigner'
   }
 
-  has_many :admin_addresses, dependent: :destroy
-  has_many :addresses, through: :admin_addresses
+  has_many :user_addresses, dependent: :destroy
+  has_many :addresses, through: :user_addresses
 
-  has_many :admin_phones, dependent: :destroy
-  has_many :phones, through: :admin_phones
+  has_many :user_phones, dependent: :destroy
+  has_many :phones, through: :user_phones
 
-  has_many :admin_emails, dependent: :destroy
-  has_many :emails, through: :admin_emails
+  has_many :user_emails, dependent: :destroy
+  has_many :emails, through: :user_emails
 
-  has_many :admin_bank_accounts, dependent: :destroy
-  has_many :bank_accounts, through: :admin_bank_accounts
+  has_many :user_bank_accounts, dependent: :destroy
+  has_many :bank_accounts, through: :user_bank_accounts
 
-  has_many :profile_admin_works, dependent: :destroy
-  has_many :works, through: :profile_admin_works
+  has_many :user_profile_works, dependent: :destroy
+  has_many :works, through: :user_profile_works
 
   has_many :jobs, dependent: :destroy
 
-  accepts_nested_attributes_for :admin, :addresses, :phones, :emails, :bank_accounts, reject_if: :all_blank
+  accepts_nested_attributes_for :user, :addresses, :phones, :emails, :bank_accounts, reject_if: :all_blank
 
   with_options presence: true do
     validates :name
@@ -115,7 +127,7 @@ class ProfileAdmin < ApplicationRecord
 
   def emails_attributes=(attributes)
     current_email_ids = attributes.filter_map { |attr| attr[:id].to_i }
-    admin_emails.where.not(email_id: current_email_ids).destroy_all
+    user_emails.where.not(email_id: current_email_ids).destroy_all
 
     super
   end
@@ -123,7 +135,7 @@ class ProfileAdmin < ApplicationRecord
   def phones_attributes=(attributes)
     current_phone_ids = attributes.filter_map { |attr| attr[:id].to_i }
 
-    admin_phones.where.not(phone_id: current_phone_ids).destroy_all
+    user_phones.where.not(phone_id: current_phone_ids).destroy_all
 
     super
   end
@@ -131,6 +143,6 @@ class ProfileAdmin < ApplicationRecord
   private
 
   def office_same_team
-    errors.add(:office, 'deve pertencer ao mesmo team') unless office.team == admin.team
+    errors.add(:office, 'deve pertencer ao mesmo team') unless office.team == user.team
   end
 end

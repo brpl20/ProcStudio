@@ -2,7 +2,7 @@
 
 class Admin::BasePolicy < ApplicationPolicy
   def role
-    @role ||= user&.profile_admin&.role
+    @role ||= user&.user_profile&.role
   end
 
   def owner?
@@ -14,7 +14,7 @@ class Admin::BasePolicy < ApplicationPolicy
   # def lawyer?
   #  self.role == 'lawyer'
   # end
-  ProfileAdmin.roles.each_key do |role|
+  UserProfile.roles.each_key do |role|
     define_method("#{role}?") do
       self.role == role
     end

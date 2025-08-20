@@ -4,15 +4,27 @@
 #
 # Table name: recommendations
 #
-#  id                  :bigint(8)        not null, primary key
-#  percentage          :decimal(, )
+#  id                  :bigint           not null, primary key
 #  commission          :decimal(, )
-#  profile_customer_id :bigint(8)        not null
-#  work_id             :bigint(8)        not null
+#  deleted_at          :datetime
+#  percentage          :decimal(, )
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
-#  deleted_at          :datetime
+#  profile_customer_id :bigint           not null
+#  work_id             :bigint           not null
 #
+# Indexes
+#
+#  index_recommendations_on_deleted_at           (deleted_at)
+#  index_recommendations_on_profile_customer_id  (profile_customer_id)
+#  index_recommendations_on_work_id              (work_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (profile_customer_id => profile_customers.id)
+#  fk_rails_...  (work_id => works.id)
+#
+
 class Recommendation < ApplicationRecord
   acts_as_paranoid
 

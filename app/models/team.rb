@@ -4,13 +4,18 @@
 #
 # Table name: teams
 #
-#  id         :bigint(8)        not null, primary key
-#  name       :string           not null
-#  subdomain  :string           not null
-#  settings   :jsonb
+#  id         :bigint           not null, primary key
 #  deleted_at :datetime
+#  name       :string           not null
+#  settings   :jsonb
+#  subdomain  :string           not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#
+# Indexes
+#
+#  index_teams_on_deleted_at  (deleted_at)
+#  index_teams_on_subdomain   (subdomain) UNIQUE
 #
 class Team < ApplicationRecord
   include DeletedFilterConcern
@@ -20,7 +25,7 @@ class Team < ApplicationRecord
   validates :name, presence: true
   validates :subdomain, presence: true, uniqueness: true, format: { with: /\A[a-z0-9-]+\z/ }
 
-  has_many :admins, dependent: :destroy
+  has_many :users, dependent: :destroy
   has_many :offices, dependent: :destroy
   has_many :works, dependent: :destroy
   has_many :jobs, dependent: :destroy

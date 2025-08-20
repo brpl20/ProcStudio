@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { api } from './api';
+  import api from './api';
+  import type { RegisterResponse } from './api';
   import { validateAndNormalizeOab } from './oabValidator';
 
   let email = '';
@@ -10,6 +11,8 @@
   let message = '';
   let isSuccess = false;
 
+  export let onRegisterSuccess: (result: RegisterResponse) => void = () => {};
+
   async function handleSubmit() {
     if (!email || !password || !passwordConfirmation || !oab) {
       message = 'Todos os campos são obrigatórios';
@@ -19,6 +22,12 @@
 
     if (password !== passwordConfirmation) {
       message = 'As senhas não coincidem';
+      isSuccess = false;
+      return;
+    }
+
+    if (password.length < 6) {
+      message = 'A senha deve ter pelo menos 6 caracteres';
       isSuccess = false;
       return;
     }
@@ -35,17 +44,26 @@
     message = '';
 
     try {
-      const result = await api.register(email, password, oabValidation.normalizedOab as string);
-      message = 'Registro realizado com sucesso!';
-      isSuccess = true;
+      const result = await api.auth.register(email, password, oabValidation.normalizedOab as string);
+      
+      if (result.success) {
+        message = 'Registro realizado com sucesso! Você pode fazer login agora.';
+        isSuccess = true;
+        onRegisterSuccess(result);
 
-      // Limpa o formulário
-      email = '';
-      password = '';
-      passwordConfirmation = '';
-      oab = '';
+        // Limpa o formulário
+        email = '';
+        password = '';
+        passwordConfirmation = '';
+        oab = '';
+      } else {
+        message = result.message || 'Erro no registro';
+        isSuccess = false;
+      }
     } catch (error: any) {
-      message = error.message;
+      console.error('Registration error:', error);
+      const errorMessage = error?.message || error?.data?.message || 'Erro no registro. Tente novamente.';
+      message = errorMessage;
       isSuccess = false;
     } finally {
       loading = false;

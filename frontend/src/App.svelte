@@ -1,37 +1,42 @@
-<script>
+<script lang="ts">
   import Register from './lib/Register.svelte';
   import Login from './lib/Login.svelte';
   import ProfileCompletion from './lib/ProfileCompletion.svelte';
   import Teams from './lib/Teams.svelte';
-  import { api } from './lib/api';
+  import api from './lib/api';
+  import type { LoginResponse, RegisterResponse, UsersListResponse } from './lib/api';
 
   let isAuthenticated = false;
-  let user = null;
+  let user: LoginResponse | null = null;
   let currentView = 'login'; // 'login' ou 'register'
   let currentPage = 'home'; // 'home' ou 'teams'
   let showProfileCompletion = false;
-  let profileData = null;
-  let missingFields = [];
+  let profileData: any = null;
+  let missingFields: string[] = [];
 
   // Verifica se já está logado ao carregar a página
   function checkAuth() {
-    isAuthenticated = api.isAuthenticated();
+    isAuthenticated = api.auth.isAuthenticated();
   }
 
-  function handleLoginSuccess(userData) {
+  function handleLoginSuccess(userData: LoginResponse) {
     isAuthenticated = true;
     user = userData;
     // Verifica se precisa completar o perfil
-    // Desabilitado por enquanto TD: Reabilitar no futuro quando
-    // Trabalhar com a rota de registro/login
-    // if (userData.needs_profile_completion) {
-    //     showProfileCompletion = true;
-    //     profileData = userData;
-    //     missingFields = userData.missing_fields || [];
-    // }
+    if (userData.data.needs_profile_completion) {
+      showProfileCompletion = true;
+      profileData = userData.data;
+      missingFields = userData.data.missing_fields || [];
+    }
   }
 
-  function handleProfileCompletion(completionResult) {
+  function handleRegisterSuccess(registerData: RegisterResponse) {
+    console.log('Registration successful:', registerData);
+    // Após registro, volta para login
+    currentView = 'login';
+  }
+
+  function handleProfileCompletion(completionResult: any) {
     showProfileCompletion = false;
     profileData = null;
     missingFields = [];
@@ -46,13 +51,18 @@
     handleLogout();
   }
 
-  function handleLogout() {
-    api.logout();
-    isAuthenticated = false;
-    user = null;
-    showProfileCompletion = false;
-    profileData = null;
-    missingFields = [];
+  async function handleLogout() {
+    try {
+      await api.auth.logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      isAuthenticated = false;
+      user = null;
+      showProfileCompletion = false;
+      profileData = null;
+      missingFields = [];
+    }
   }
 
   function switchView() {
@@ -69,10 +79,10 @@
   }
 
   // Estados para renderização de dados
-  let connectionTestResult = null;
-  let adminsListResult = null;
+  let connectionTestResult: any = null;
+  let usersListResult: any = null;
   let isTestingConnection = false;
-  let isTestingAdmins = false;
+  let isTestingUsers = false;
 
   // Função para testar conexão com API
   async function testApiConnection() {
@@ -86,10 +96,11 @@
         data: data,
         message: 'API está funcionando!'
       };
-    } catch (error) {
+    } catch (error: any) {
+      console.error('API connection test error:', error);
       connectionTestResult = {
         success: false,
-        error: error.message,
+        error: error?.message || error?.data?.message || 'Erro desconhecido',
         message: 'Erro ao conectar com API'
       };
     } finally {
@@ -97,27 +108,28 @@
     }
   }
 
-  // Função para testar endpoint de listar admins
-  async function testListAdmins() {
-    isTestingAdmins = true;
-    adminsListResult = null;
+  // Função para testar endpoint de listar usuários (formerly admins)
+  async function testListUsers() {
+    isTestingUsers = true;
+    usersListResult = null;
 
     try {
-      const data = await api.getAdmins();
-      adminsListResult = {
+      const data: UsersListResponse = await api.users.getUsers();
+      usersListResult = {
         success: true,
         data: data,
-        count: Array.isArray(data) ? data.length : data.data ? data.data.length : 0,
-        message: 'Lista de admins carregada com sucesso!'
+        count: data.data ? data.data.length : 0,
+        message: 'Lista de usuários carregada com sucesso!'
       };
-    } catch (error) {
-      adminsListResult = {
+    } catch (error: any) {
+      console.error('Users list error:', error);
+      usersListResult = {
         success: false,
-        error: error.message,
-        message: 'Erro ao buscar admins'
+        error: error?.message || error?.data?.message || 'Erro desconhecido',
+        message: 'Erro ao buscar usuários'
       };
     } finally {
-      isTestingAdmins = false;
+      isTestingUsers = false;
     }
   }
 
@@ -145,14 +157,16 @@
       <div>
         <h2>Bem-vindo!</h2>
         <p>Você está logado com sucesso.</p>
-        {#if user}
-          <p>E-mail: {user.email || 'N/A'}</p>
-          <p>Tipo: Admin</p>
-          {#if user.name}
-            <p>Nome: {user.name} {user.last_name || ''}</p>
+        {#if user && user.data}
+          <p>Tipo: Usuário</p>
+          {#if user.data.name}
+            <p>Nome: {user.data.name} {user.data.last_name || ''}</p>
           {/if}
-          {#if user.oab}
-            <p>OAB: {user.oab}</p>
+          {#if user.data.role}
+            <p>Role: {user.data.role}</p>
+          {/if}
+          {#if user.data.oab}
+            <p>OAB: {user.data.oab}</p>
           {/if}
         {/if}
 
@@ -166,15 +180,15 @@
         </div>
 
         <div>
-          <h4>Métodos de Usuários: Admins</h4>
-          <button on:click={testListAdmins} disabled={isTestingAdmins}>
-            {isTestingAdmins ? 'Carregando...' : 'Listar Admins'}
+          <h4>Métodos de Usuários</h4>
+          <button on:click={testListUsers} disabled={isTestingUsers}>
+            {isTestingUsers ? 'Carregando...' : 'Listar Usuários'}
           </button>
         </div>
 
         <div>
-          <h4>Métodos de Super Admins</h4>
-          <p>Em desenvolvimento...</p>
+          <h4>Métodos de Law Areas e Powers</h4>
+          <p>Em desenvolvimento... (disponível na nova API modular)</p>
         </div>
 
         <hr />
@@ -190,28 +204,26 @@
           </div>
         {/if}
 
-        {#if adminsListResult}
+        {#if usersListResult}
           <div>
-            <h4>{adminsListResult.success ? 'OK' : 'ERRO'} - {adminsListResult.message}</h4>
-            {#if adminsListResult.success}
-              <p>Total: {adminsListResult.count}</p>
+            <h4>{usersListResult.success ? 'OK' : 'ERRO'} - {usersListResult.message}</h4>
+            {#if usersListResult.success}
+              <p>Total: {usersListResult.count}</p>
 
               <h5>DEBUG - Resposta Completa:</h5>
-              <pre>{JSON.stringify(adminsListResult.data, null, 2)}</pre>
+              <pre>{JSON.stringify(usersListResult.data, null, 2)}</pre>
 
-              {#if adminsListResult.data && (Array.isArray(adminsListResult.data) ? adminsListResult.data : adminsListResult.data.data)}
-                <h5>Admins Processados:</h5>
-                {#each Array.isArray(adminsListResult.data) ? adminsListResult.data : adminsListResult.data.data || [] as admin}
-                  {@const profileId = admin.relationships?.profile_admin?.data?.id}
-                  {@const included = Array.isArray(adminsListResult.data)
-                    ? null
-                    : adminsListResult.data.included}
+              {#if usersListResult.data && usersListResult.data.data}
+                <h5>Usuários Processados:</h5>
+                {#each usersListResult.data.data as user}
+                  {@const profileId = user.relationships?.user_profile?.data?.id}
+                  {@const included = usersListResult.data.included}
                   {@const profile = included?.find((p) => p.id === profileId)}
                   <div>
-                    <h5>Admin #{admin.id}</h5>
-                    <p>Email: {admin.attributes?.access_email || 'N/A'}</p>
-                    <p>Status: {admin.attributes?.status || 'N/A'}</p>
-                    <p>Deleted (Admin): {String(admin.attributes?.deleted)}</p>
+                    <h5>Usuário #{user.id}</h5>
+                    <p>Email: {user.attributes?.access_email || 'N/A'}</p>
+                    <p>Status: {user.attributes?.status || 'N/A'}</p>
+                    <p>Deleted (User): {String(user.attributes?.deleted)}</p>
                     <p>Profile ID: {profileId || 'N/A'}</p>
 
                     {#if profile}
@@ -234,8 +246,8 @@
                   </div>
                 {/each}
               {/if}
-            {:else if adminsListResult.error}
-              <p>Erro: {adminsListResult.error}</p>
+            {:else if usersListResult.error}
+              <p>Erro: {usersListResult.error}</p>
             {/if}
           </div>
         {/if}
@@ -251,7 +263,7 @@
           <button on:click={switchView}>Registrar-se</button>
         </p>
       {:else}
-        <Register />
+        <Register onRegisterSuccess={handleRegisterSuccess} />
         <p>
           Já tem conta?
           <button on:click={switchView}>Fazer login</button>
@@ -264,8 +276,8 @@
           <button on:click={testApiConnection} disabled={isTestingConnection}>
             {isTestingConnection ? 'Testando...' : 'Testar Conexão API'}
           </button>
-          <button on:click={testListAdmins} disabled={isTestingAdmins}>
-            {isTestingAdmins ? 'Carregando...' : 'Listar Admins'}
+          <button on:click={testListUsers} disabled={isTestingUsers}>
+            {isTestingUsers ? 'Carregando...' : 'Listar Usuários'}
           </button>
         </div>
 
@@ -280,28 +292,26 @@
           </div>
         {/if}
 
-        {#if adminsListResult}
+        {#if usersListResult}
           <div>
-            <h4>{adminsListResult.success ? 'OK' : 'ERRO'} - {adminsListResult.message}</h4>
-            {#if adminsListResult.success}
-              <p>Total: {adminsListResult.count}</p>
+            <h4>{usersListResult.success ? 'OK' : 'ERRO'} - {usersListResult.message}</h4>
+            {#if usersListResult.success}
+              <p>Total: {usersListResult.count}</p>
 
               <h5>DEBUG - Resposta Completa:</h5>
-              <pre>{JSON.stringify(adminsListResult.data, null, 2)}</pre>
+              <pre>{JSON.stringify(usersListResult.data, null, 2)}</pre>
 
-              {#if adminsListResult.data && (Array.isArray(adminsListResult.data) ? adminsListResult.data : adminsListResult.data.data)}
-                <h5>Admins Processados:</h5>
-                {#each Array.isArray(adminsListResult.data) ? adminsListResult.data : adminsListResult.data.data || [] as admin}
-                  {@const profileId = admin.relationships?.profile_admin?.data?.id}
-                  {@const included = Array.isArray(adminsListResult.data)
-                    ? null
-                    : adminsListResult.data.included}
+              {#if usersListResult.data && usersListResult.data.data}
+                <h5>Usuários Processados:</h5>
+                {#each usersListResult.data.data as user}
+                  {@const profileId = user.relationships?.user_profile?.data?.id}
+                  {@const included = usersListResult.data.included}
                   {@const profile = included?.find((p) => p.id === profileId)}
                   <div>
-                    <h5>Admin #{admin.id}</h5>
-                    <p>Email: {admin.attributes?.access_email || 'N/A'}</p>
-                    <p>Status: {admin.attributes?.status || 'N/A'}</p>
-                    <p>Deleted (Admin): {String(admin.attributes?.deleted)}</p>
+                    <h5>Usuário #{user.id}</h5>
+                    <p>Email: {user.attributes?.access_email || 'N/A'}</p>
+                    <p>Status: {user.attributes?.status || 'N/A'}</p>
+                    <p>Deleted (User): {String(user.attributes?.deleted)}</p>
                     <p>Profile ID: {profileId || 'N/A'}</p>
 
                     {#if profile}
@@ -324,8 +334,8 @@
                   </div>
                 {/each}
               {/if}
-            {:else if adminsListResult.error}
-              <p>Erro: {adminsListResult.error}</p>
+            {:else if usersListResult.error}
+              <p>Erro: {usersListResult.error}</p>
             {/if}
           </div>
         {/if}

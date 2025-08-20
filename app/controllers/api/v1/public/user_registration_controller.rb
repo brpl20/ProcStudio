@@ -3,63 +3,70 @@
 module Api
   module V1
     module Public
-      class AdminRegistrationController < ApplicationController
+      class UserRegistrationController < ApplicationController
         def create
           ActiveRecord::Base.transaction do
             # Primeiro criar o team
-            team = create_team_for_admin
+            team = create_team_for_user
 
-            # Depois criar o admin associado ao team
-            admin = Admin.new(admin_params.merge(team: team))
+            # Depois criar o user associado ao team
+            user = User.new(user_params.merge(team: team))
 
             # Usar save! para garantir rollback automático se falhar
-            admin.save!
+            user.save!
 
-            # Se OAB foi fornecida, consultar API e criar ProfileAdmin
-            create_profile_from_oab(admin) if admin.oab.present?
+            # Se OAB foi fornecida, consultar API e criar UserProfile
+            create_profile_from_oab(user) if user.oab.present?
+
+            # Recarregar user para pegar o user_profile que foi criado
+            user.reload
 
             render json: {
               success: true,
-              message: 'Admin and team created successfully',
-              data: build_response_data(admin)
+              message: 'User and team created successfully',
+              data: build_response_data(user)
             }, status: :created
           end
         rescue ActiveRecord::RecordInvalid => e
-          Rails.logger.error "Validation error creating admin: #{e.message}"
+          Rails.logger.error "Validation error creating user: #{e.message}"
+          error_messages = e.record.errors.full_messages
           render json: {
             success: false,
-            errors: e.record.errors.full_messages
+            message: error_messages.first, # Single user-friendly message
+            errors: error_messages # Array for detailed errors
           }, status: :unprocessable_entity
         rescue StandardError => e
-          Rails.logger.error "Error creating admin and team: #{e.message}"
+          Rails.logger.error "Error creating user and team: #{e.message}"
+          error_message = 'Erro interno do servidor. Tente novamente.'
           render json: {
             success: false,
-            errors: ['Erro interno do servidor. Tente novamente.']
+            message: error_message,
+            errors: [error_message]
           }, status: :internal_server_error
         end
 
         private
 
-        def admin_params
-          params.require(:admin).permit(:email, :password, :password_confirmation, :oab)
+        def user_params
+          params.expect(user: [:email, :password, :password_confirmation, :oab])
         end
 
-        def create_team_for_admin
+        def create_team_for_user
           # Buscar dados do advogado se OAB foi fornecida
           lawyer_name = nil
-          if params.dig(:admin, :oab).present?
-            lawyer_data = fetch_lawyer_data_from_oab(params[:admin][:oab])
+          if params.dig(:user, :oab).present?
+            lawyer_data = fetch_lawyer_data_from_oab(params[:user][:oab])
             lawyer_name = build_full_name(lawyer_data) if lawyer_data
           end
 
           # Gerar subdomain baseado no nome do advogado ou email
           subdomain = TeamSubdomainGenerator.generate(
             name: lawyer_name,
-            email: params.dig(:admin, :email)
+            email: params.dig(:user, :email)
           )
 
           # Gerar nome do team
-          team_name = generate_team_name(lawyer_name, params.dig(:admin, :email))
+          team_name = generate_team_name(lawyer_name, params.dig(:user, :email))
 
           Team.create!(
             name: team_name,
@@ -93,31 +100,36 @@ module Api
           end
         end
 
-        def create_profile_from_oab(admin)
+        def create_profile_from_oab(user)
           oab_service = OabApiService.new
-          lawyer_data = oab_service.find_lawyer(admin.oab)
+          lawyer_data = oab_service.find_lawyer(user.oab)
+
+          Rails.logger.info "OAB API returned data: #{lawyer_data.inspect}" if Rails.env.development?
 
           return unless lawyer_data
 
           ActiveRecord::Base.transaction do
-            profile_admin = admin.create_profile_admin!(
+            user_profile = user.create_user_profile!(
               name: lawyer_data[:name],
               last_name: lawyer_data[:last_name],
               oab: lawyer_data[:oab],
               role: 'lawyer',
-              status: 'active'
+              status: 'active',
+              gender: lawyer_data[:gender]
               # Campos opcionais deixados em branco para serem preenchidos via modal
-              # civil_status, cpf, gender, nationality, rg, birth serão nil
+              # civil_status, cpf, nationality, rg, birth serão nil
             )
 
+            Rails.logger.info "Created UserProfile: #{user_profile.inspect}" if Rails.env.development?
+
             # Criar endereço se dados estiverem disponíveis
-            create_address_from_data(profile_admin, lawyer_data) if has_address_data?(lawyer_data)
+            create_address_from_data(user_profile, lawyer_data) if has_address_data?(lawyer_data)
 
             # Criar telefone se disponível
-            create_phone_from_data(profile_admin, lawyer_data) if lawyer_data[:phone].present?
+            create_phone_from_data(user_profile, lawyer_data) if lawyer_data[:phone].present?
 
             # Salvar URL da foto do perfil como atributo temporário
-            profile_admin.update_column(:origin, lawyer_data[:profile_picture_url]) if lawyer_data[:profile_picture_url]
+            user_profile.update(origin: lawyer_data[:profile_picture_url]) if lawyer_data[:profile_picture_url]
           end
         rescue StandardError => e
           Rails.logger.error "Error creating profile from OAB: #{e.message}"
@@ -128,7 +140,7 @@ module Api
           lawyer_data[:address].present? || lawyer_data[:city].present?
         end
 
-        def create_address_from_data(profile_admin, lawyer_data)
+        def create_address_from_data(user_profile, lawyer_data)
           address = Address.create!(
             description: 'Endereço Principal',
             zip_code: lawyer_data[:zip_code],
@@ -139,20 +151,20 @@ module Api
             state: lawyer_data[:state]
           )
 
-          AdminAddress.create!(
-            profile_admin: profile_admin,
+          UserAddress.create!(
+            user_profile: user_profile,
             address: address
           )
         end
 
-        def create_phone_from_data(profile_admin, lawyer_data)
+        def create_phone_from_data(user_profile, lawyer_data)
           phone = Phone.create!(
             phone_type: 'mobile',
             number: lawyer_data[:phone]
           )
 
-          AdminPhone.create!(
-            profile_admin: profile_admin,
+          UserPhone.create!(
+            user_profile: user_profile,
             phone: phone
           )
         end
@@ -183,26 +195,26 @@ module Api
           parts.last&.strip
         end
 
-        def build_response_data(admin)
+        def build_response_data(user)
           # Response simples para registro - lógica de completeness vai para o login
           data = {
-            id: admin.id,
-            email: admin.email,
-            oab: admin.oab,
+            id: user.id,
+            email: user.email,
+            oab: user.oab,
             team: {
-              id: admin.team.id,
-              name: admin.team.name,
-              subdomain: admin.team.subdomain
+              id: user.team.id,
+              name: user.team.name,
+              subdomain: user.team.subdomain
             }
           }
 
-          # Informar se ProfileAdmin foi criado com dados da OAB
-          if admin.profile_admin.present?
+          # Informar se UserProfile foi criado com dados da OAB
+          if user.user_profile.present?
             data[:profile_created] = true
             data[:profile] = {
-              name: admin.profile_admin.name,
-              last_name: admin.profile_admin.last_name,
-              role: admin.profile_admin.role
+              name: user.user_profile.name,
+              last_name: user.user_profile.last_name,
+              role: user.user_profile.role
             }
           else
             data[:profile_created] = false

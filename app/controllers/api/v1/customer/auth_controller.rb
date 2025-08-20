@@ -121,11 +121,11 @@ class Api::V1::Customer::AuthController < ApplicationController
   end
 
   def auth_params
-    params.require(:auth).permit(:email, :password)
+    params.expect(auth: [:email, :password])
   end
 
   def decode_jwt_token(token)
-    secret_key = Rails.application.secrets.secret_key_base
+    secret_key = Rails.application.secret_key_base
     decoded_token = JWT.decode(token, secret_key)[0]
     ActiveSupport::HashWithIndifferentAccess.new decoded_token
   rescue JWT::DecodeError
@@ -134,10 +134,10 @@ class Api::V1::Customer::AuthController < ApplicationController
   end
 
   def reset_password_params
-    params.require(:customer).permit(:email)
+    params.expect(customer: [:email])
   end
 
   def update_password_params
-    params.require(:customer).permit(:password, :password_confirmation, :reset_password_token)
+    params.expect(customer: [:password, :password_confirmation, :reset_password_token])
   end
 end

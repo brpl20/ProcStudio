@@ -17,10 +17,10 @@ gem 'libreconv', '~> 0.9.5'
 gem 'mailjet'
 gem 'pg'
 gem 'prawn'
-gem 'puma', '~> 5.0'
+gem 'puma', '~> 6.0'
 gem 'pundit'
 gem 'rack-cors'
-gem 'rails', '~> 7.0.4', '>= 7.0.4.2'
+gem 'rails', '~> 8.0.0'
 gem 'rubocop', '~> 1.50', require: false
 gem 'rubocop-performance', '~> 1.17', require: false
 gem 'rubocop-rails', '~> 2.19', require: false
@@ -35,7 +35,7 @@ group :development, :test, :staging do
 end
 
 group :development, :test do
-  gem 'annotate', '~> 3.2'
+  gem 'annotaterb'
   gem 'database_cleaner'
   gem 'debug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'dotenv-rails'

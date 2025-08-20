@@ -1,24 +1,24 @@
 # frozen_string_literal: true
+
 require 'faker'
 
 # Set Faker locale
 Faker::Config.locale = 'pt-BR'
 
-puts "Starting seed process..."
+puts 'Starting seed process...'
 
 # First: Create/Update Office Types
-puts "Creating/Updating Office Types..."
-types = %w[Advocacia Consultoria Contabilidade]
+puts 'Creating/Updating Office Types...'
+types = ['Advocacia', 'Consultoria', 'Contabilidade']
 types.each do |t|
   OfficeType.find_or_create_by(description: t.to_s) do |office_type|
     puts "Created office type: #{office_type.description}"
   end
 end
-puts "Office types processed successfully!"
-
+puts 'Office types processed successfully!'
 
 # Second: Create Office
-puts "Creating Office..."
+puts 'Creating Office...'
 office = Office.create!(
   name: 'João Augusto Prado Sociedade Unipessoal de Advocacia',
   cnpj: '49.609.519/0001-60',
@@ -35,24 +35,24 @@ office = Office.create!(
   office_type_id: 1,
   bank_accounts_attributes: [
     {
-      bank_name: "Sicredi",
-      type_account: "Pagamentos",
-      agency: "0710",
-      account: "5445109",
-      operation: "0",
-      pix: "49609519000160"
+      bank_name: 'Sicredi',
+      type_account: 'Pagamentos',
+      agency: '0710',
+      account: '5445109',
+      operation: '0',
+      pix: '49609519000160'
     }
   ],
   phones_attributes: [
     {
-      phone_number: "45 3038-5898"
+      phone_number: '45 3038-5898'
     }
   ]
 )
 puts "Office created successfully: #{office.name}"
 
 # Third: Create Admin and ProfileAdmin
-puts "Creating Admin and ProfileAdmin..."
+puts 'Creating Admin and ProfileAdmin...'
 admin = Admin.create!(
   email: 'joao@pellizzetti.adv.br',
   password: 'Galego123',
@@ -80,32 +80,37 @@ profile = ProfileAdmin.create!(
       zip_code: '85810-010',
       number: '3033',
       street: 'Rua Paraná',
-      neighborhood: "Centro",
-      city: "Cascavel",
-      state: "PR"
+      neighborhood: 'Centro',
+      city: 'Cascavel',
+      state: 'PR'
     }
   ],
   bank_accounts_attributes: [
     {
-      bank_name: "Nu Pagamentos",
-      type_account: "Pagamentos",
-      agency: "000-1",
-      account: "40249656-0",
-      operation: "0",
-      pix: "08039195900"
+      bank_name: 'Nu Pagamentos',
+      type_account: 'Pagamentos',
+      agency: '000-1',
+      account: '40249656-0',
+      operation: '0',
+      pix: '08039195900'
     }
   ],
   phones_attributes: [
     {
-      phone_number: "45 9853-4569"
+      phone_number: '45 9853-4569'
     }
   ],
   emails_attributes: [
     {
-      email: "joao@pellizzetti.adv.br"
+      email: 'joao@pellizzetti.adv.br'
     }
   ]
 )
 
 puts "Admin and ProfileAdmin created successfully: #{profile.name} #{profile.last_name}"
-puts "Seed process completed!"
+
+# Load Law Areas and Powers seeds
+puts 'Loading Law Areas and Powers seeds...'
+load Rails.root.join('db/seeds/law_areas_and_powers.rb')
+
+puts 'Seed process completed!'

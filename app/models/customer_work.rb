@@ -4,13 +4,25 @@
 #
 # Table name: customer_works
 #
-#  id                  :bigint(8)        not null, primary key
-#  profile_customer_id :bigint(8)        not null
-#  work_id             :bigint(8)        not null
+#  id                  :bigint           not null, primary key
+#  deleted_at          :datetime
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
-#  deleted_at          :datetime
+#  profile_customer_id :bigint           not null
+#  work_id             :bigint           not null
 #
+# Indexes
+#
+#  index_customer_works_on_deleted_at           (deleted_at)
+#  index_customer_works_on_profile_customer_id  (profile_customer_id)
+#  index_customer_works_on_work_id              (work_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (profile_customer_id => profile_customers.id)
+#  fk_rails_...  (work_id => works.id)
+#
+
 class CustomerWork < ApplicationRecord
   acts_as_paranoid
 

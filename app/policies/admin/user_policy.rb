@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Admin::AdminPolicy < Admin::BasePolicy
+class Admin::UserPolicy < Admin::BasePolicy
   def index?
     super_admin? || lawyer? || secretary?
   end

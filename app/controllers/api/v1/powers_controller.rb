@@ -3,17 +3,21 @@
 module Api
   module V1
     class PowersController < BackofficeController
+      include TeamScoped
+
       before_action :retrieve_power, only: [:update, :show, :destroy]
       before_action :perform_authorization
 
       after_action :verify_authorized
 
       def index
-        powers = Power.all
+        # System powers (available to all) + custom powers from current team
+        powers = Power.system_powers.or(Power.where(created_by_team: @current_user.team))
+
         render json: PowerSerializer.new(
-          powers,
+          powers.includes(:law_area).order(:category, :law_area_id, :description),
           meta: {
-            total_count: powers.offset(nil).limit(nil).count
+            total_count: powers.count
           }
         ), status: :ok
       end
@@ -26,6 +30,13 @@ module Api
 
       def create
         power = Power.new(powers_params)
+
+        # Se não é um poder base e tem law_area_id, pode ser customizado
+        if !power.is_base? && power.law_area_id.present? && power.law_area&.system_area?
+          # Se é uma área do sistema, o poder pode ser customizado
+          power.created_by_team = @current_user.team
+        end
+
         if power.save
           render json: PowerSerializer.new(
             power
@@ -63,11 +74,14 @@ module Api
       private
 
       def powers_params
-        params.require(:power).permit(:description, :category)
+        params.expect(power: [:description, :category, :law_area_id, :is_base])
       end
 
       def retrieve_power
-        @power = Power.find(params[:id])
+        # Só permite acesso a poderes do sistema ou do próprio team
+        @power = Power.system_powers
+                   .or(Power.where(created_by_team: @current_user.team))
+                   .find(params[:id])
       rescue ActiveRecord::RecordNotFound
         head :not_found
       end
