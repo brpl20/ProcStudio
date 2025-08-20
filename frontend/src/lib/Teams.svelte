@@ -1,6 +1,12 @@
 <script lang="ts">
   import api from './api';
-  import type { TeamData, MyTeamResponse, TeamResponse, UpdateTeamResponse, TeamMembersResponse } from './api';
+  import type {
+    TeamData,
+    MyTeamResponse,
+    TeamResponse,
+    UpdateTeamResponse,
+    TeamMembersResponse
+  } from './api';
 
   // Estados para renderização de dados
   let myTeamResult: {
@@ -9,21 +15,21 @@
     error?: string;
     message: string;
   } | null = null;
-  
+
   let teamByIdResult: {
     success: boolean;
     data?: TeamResponse;
     error?: string;
     message: string;
   } | null = null;
-  
+
   let updateTeamResult: {
     success: boolean;
     data?: UpdateTeamResponse;
     error?: string;
     message: string;
   } | null = null;
-  
+
   let teamMembersResult: {
     success: boolean;
     data?: TeamMembersResponse;

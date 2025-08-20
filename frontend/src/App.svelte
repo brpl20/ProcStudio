@@ -9,6 +9,10 @@
   import RegisterPage from './lib/pages/RegisterPage.svelte';
   import DashboardPage from './lib/pages/DashboardPage.svelte';
   import TeamsPage from './lib/pages/TeamsPage.svelte';
+  import AdminPage from './lib/pages/AdminPage.svelte';
+  import SettingsPage from './lib/pages/SettingsPage.svelte';
+  import ReportsPage from './lib/pages/ReportsPage.svelte';
+  import TasksPage from './lib/pages/TasksPage.svelte';
   import ProfileCompletion from './lib/ProfileCompletion.svelte';
 
   // Reactive stores
@@ -21,7 +25,7 @@
   function getComponent(path, isAuth) {
     if (
       !isAuth &&
-      (path === '/dashboard' || path === '/teams' || path === '/reports' || path === '/documents')
+      (path === '/dashboard' || path === '/teams' || path === '/admin' || path === '/settings' || path === '/reports' || path === '/tasks' || path === '/documents')
     ) {
       router.navigate('/login');
       return LoginPage;
@@ -32,7 +36,11 @@
       '/login': LoginPage,
       '/register': RegisterPage,
       '/dashboard': DashboardPage,
-      '/teams': TeamsPage
+      '/teams': TeamsPage,
+      '/admin': AdminPage,
+      '/settings': SettingsPage,
+      '/reports': ReportsPage,
+      '/tasks': TasksPage
     };
 
     return routes[path] || LandingPage;

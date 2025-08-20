@@ -12,7 +12,7 @@ import type {
   UpdateTeamRequest,
   UpdateTeamResponse,
   TeamMembersResponse,
-  TeamData,
+  TeamData
 } from '../types';
 
 export class TeamService {
@@ -53,10 +53,7 @@ export class TeamService {
     teamId: string | number,
     teamData: UpdateTeamRequest
   ): Promise<UpdateTeamResponse> {
-    return this.http.put<UpdateTeamResponse>(
-      `${API_ENDPOINTS.TEAMS}/${teamId}`,
-      teamData
-    );
+    return this.http.put<UpdateTeamResponse>(`${API_ENDPOINTS.TEAMS}/${teamId}`, teamData);
   }
 
   /**

@@ -1,19 +1,13 @@
 /**
  * Main API Module
  * Provides a unified interface to all API services
- * 
+ *
  * This replaces the old monolithic api.ts file with a modular structure
  * following SOLID principles and DRY practices.
  */
 
 import { HttpClient } from './utils/http-client';
-import {
-  AuthService,
-  UserService,
-  TeamService,
-  LawAreaService,
-  PowerService,
-} from './services';
+import { AuthService, UserService, TeamService, LawAreaService, PowerService } from './services';
 
 // Re-export types for convenience
 export * from './types';
@@ -29,7 +23,7 @@ export { API_CONFIG, API_ENDPOINTS } from './config';
  */
 export class API {
   private httpClient: HttpClient;
-  
+
   // Service instances
   public auth: AuthService;
   public users: UserService;

@@ -12,7 +12,7 @@ import type {
   UpdateUserRequest,
   UpdateUserProfileRequest,
   UserData,
-  UserProfileData,
+  UserProfileData
 } from '../types';
 
 export class UserService {
@@ -83,12 +83,16 @@ export class UserService {
   /**
    * Helper to extract user profile from included data
    */
-  extractUserProfile(response: UserResponse | UsersListResponse, userId: string): UserProfileData | undefined {
+  extractUserProfile(
+    response: UserResponse | UsersListResponse,
+    userId: string
+  ): UserProfileData | undefined {
     if ('included' in response && response.included) {
-      const userData = 'data' in response && Array.isArray(response.data) 
-        ? response.data.find(u => u.id === userId)
-        : (response as UserResponse).data;
-      
+      const userData =
+        'data' in response && Array.isArray(response.data)
+          ? response.data.find((u) => u.id === userId)
+          : (response as UserResponse).data;
+
       if (userData?.relationships?.user_profile?.data) {
         const profileId = userData.relationships.user_profile.data.id;
         return response.included.find(

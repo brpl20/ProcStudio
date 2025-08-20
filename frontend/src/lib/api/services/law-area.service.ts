@@ -10,7 +10,7 @@ import type {
   LawAreaResponse,
   CreateLawAreaRequest,
   UpdateLawAreaRequest,
-  LawAreaData,
+  LawAreaData
 } from '../types';
 
 export class LawAreaService {
@@ -44,10 +44,7 @@ export class LawAreaService {
     lawAreaId: string | number,
     lawAreaData: UpdateLawAreaRequest
   ): Promise<LawAreaResponse> {
-    return this.http.put<LawAreaResponse>(
-      `${API_ENDPOINTS.LAW_AREAS}/${lawAreaId}`,
-      lawAreaData
-    );
+    return this.http.put<LawAreaResponse>(`${API_ENDPOINTS.LAW_AREAS}/${lawAreaId}`, lawAreaData);
   }
 
   /**
@@ -62,7 +59,7 @@ export class LawAreaService {
    */
   async getMainAreas(): Promise<LawAreaData[]> {
     const response = await this.getLawAreas();
-    return response.data.filter(area => area.attributes.is_main_area);
+    return response.data.filter((area) => area.attributes.is_main_area);
   }
 
   /**
@@ -83,7 +80,7 @@ export class LawAreaService {
    */
   async getSystemAreas(): Promise<LawAreaData[]> {
     const response = await this.getLawAreas();
-    return response.data.filter(area => area.attributes.is_system_area);
+    return response.data.filter((area) => area.attributes.is_system_area);
   }
 
   /**
@@ -91,7 +88,7 @@ export class LawAreaService {
    */
   async getCustomAreas(): Promise<LawAreaData[]> {
     const response = await this.getLawAreas();
-    return response.data.filter(area => area.attributes.is_custom_area);
+    return response.data.filter((area) => area.attributes.is_custom_area);
   }
 
   /**
@@ -104,8 +101,8 @@ export class LawAreaService {
     const request: CreateLawAreaRequest = {
       law_area: {
         ...subAreaData,
-        parent_area_id: parentAreaId,
-      },
+        parent_area_id: parentAreaId
+      }
     };
     return this.createLawArea(request);
   }

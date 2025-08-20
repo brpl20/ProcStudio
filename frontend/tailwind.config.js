@@ -4,12 +4,10 @@ import daisyui from 'daisyui';
 export default {
   content: ['./src/**/*.{html,js,svelte,ts}'],
   theme: {
-    extend: {},
+    extend: {}
   },
-  plugins: [
-    daisyui,
-  ],
+  plugins: [daisyui],
   daisyui: {
-    themes: ["light", "dark"],
-  },
-}
+    themes: ['light', 'dark']
+  }
+};

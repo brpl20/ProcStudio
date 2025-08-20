@@ -1,5 +1,5 @@
 <script>
-  import MainLayout from '../components/MainLayout.svelte';
+  import AdminLayout from '../components/AdminLayout.svelte';
   import Breadcrumbs from '../components/Breadcrumbs.svelte';
   import UserProfile from '../UserProfile.svelte';
   import ApiTester from '../ApiTester.svelte';
@@ -8,7 +8,7 @@
   $: ({ user } = $authStore);
 </script>
 
-<MainLayout>
+<AdminLayout activeSection="dashboard">
   <Breadcrumbs />
 
   <div class="">
@@ -80,4 +80,4 @@
       </div>
     </div>
   </div>
-</MainLayout>
+</AdminLayout>

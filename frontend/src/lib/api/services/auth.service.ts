@@ -11,7 +11,7 @@ import type {
   LoginRequest,
   LoginResponse,
   ProfileCompletionData,
-  ProfileCompletionResponse,
+  ProfileCompletionResponse
 } from '../types';
 
 export class AuthService {
@@ -26,8 +26,8 @@ export class AuthService {
         email,
         password,
         password_confirmation: password,
-        oab,
-      },
+        oab
+      }
     };
 
     return this.http.post<RegisterResponse>(API_ENDPOINTS.REGISTER, request);
@@ -38,15 +38,15 @@ export class AuthService {
    */
   async login(email: string, password: string): Promise<LoginResponse> {
     const request: LoginRequest = { email, password };
-    
+
     const response = await this.http.post<LoginResponse>(API_ENDPOINTS.LOGIN, request);
-    
+
     // Store token if login successful
     if (response.success && response.data?.token) {
       this.http.setAuthToken(response.data.token);
       localStorage.setItem('authToken', response.data.token);
     }
-    
+
     return response;
   }
 
@@ -66,10 +66,9 @@ export class AuthService {
    * Complete user profile after registration
    */
   async completeProfile(profileData: ProfileCompletionData): Promise<ProfileCompletionResponse> {
-    return this.http.post<ProfileCompletionResponse>(
-      API_ENDPOINTS.PROFILE_COMPLETION,
-      { user_profile: profileData }
-    );
+    return this.http.post<ProfileCompletionResponse>(API_ENDPOINTS.PROFILE_COMPLETION, {
+      user_profile: profileData
+    });
   }
 
   /**

@@ -36,6 +36,7 @@ npm run check       # Executa lint + verificação de formatação
 ### Regras de Estilo de Código
 
 #### 1. **Formatação Geral**
+
 - **Indentação**: 2 espaços (não usar tabs)
 - **Aspas**: Sempre usar aspas simples (`'`) exceto quando necessário escapar
 - **Ponto e vírgula**: Sempre incluir no final das declarações
@@ -45,18 +46,21 @@ npm run check       # Executa lint + verificação de formatação
 - **Largura máxima de linha**: 100 caracteres
 
 #### 2. **TypeScript**
+
 - **Tipos explícitos**: Preferir tipos específicos ao invés de `any`
 - **Interfaces**: Usar para definir estruturas de dados
 - **Type assertions**: Evitar `!` (non-null assertion) quando possível
 - **Variáveis não utilizadas**: Prefixar com `_` se necessário manter
 
 #### 3. **Svelte**
+
 - **Componentes**: Nome em PascalCase (ex: `UserProfile.svelte`)
 - **Props**: Usar TypeScript para tipar props quando possível
 - **Eventos**: Seguir padrão de nomenclatura do Svelte
 - **Acessibilidade**: Garantir labels em formulários e atributos ARIA apropriados
 
 #### 4. **Variáveis e Funções**
+
 - **const vs let**: Sempre usar `const` para valores que não mudam
 - **var**: Nunca usar `var`, sempre `const` ou `let`
 - **Comparações**: Usar `===` e `!==` (comparação estrita)
@@ -65,6 +69,7 @@ npm run check       # Executa lint + verificação de formatação
 ### Exemplos de Código
 
 #### ✅ Correto
+
 ```typescript
 // Importações organizadas
 import { writable } from 'svelte/store';
@@ -100,24 +105,24 @@ if (userName === 'João') {
 ```
 
 #### ❌ Evitar
+
 ```javascript
 // Sem tipos
 function fetchUser(id) {
-  return fetch("/api/users/" + id)
+  return fetch('/api/users/' + id);
 }
 
 // Uso de var
-var userName = "João"
+var userName = 'João';
 
 // Comparação não estrita
-if (userName == "João")
-  console.log("Olá João!")  // Sem chaves
+if (userName == 'João') console.log('Olá João!'); // Sem chaves
 
 // Vírgulas finais desnecessárias
 const config = {
-  api: "http://localhost",
-  timeout: 5000,  // ❌ vírgula final
-}
+  api: 'http://localhost',
+  timeout: 5000 // ❌ vírgula final
+};
 ```
 
 ### Estrutura de Pastas
@@ -156,12 +161,14 @@ O projeto utiliza Husky para executar verificações antes dos commits:
 ### Desenvolvimento
 
 #### Requisitos
+
 - Node.js 18+
 - npm ou yarn
 
 #### Configuração do VS Code
 
 Extensões recomendadas (já configuradas em `.vscode/extensions.json`):
+
 - Svelte for VS Code
 - ESLint
 - Prettier

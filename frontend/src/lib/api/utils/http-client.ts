@@ -19,7 +19,7 @@ export class HttpClient {
   constructor(baseUrl: string = API_CONFIG.BASE_URL) {
     this.baseUrl = baseUrl;
     this.defaultHeaders = {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
@@ -45,11 +45,7 @@ export class HttpClient {
   /**
    * Generic request method
    */
-  async request<T>(
-    method: string,
-    endpoint: string,
-    options: RequestOptions = {}
-  ): Promise<T> {
+  async request<T>(method: string, endpoint: string, options: RequestOptions = {}): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
     const { headers = {}, body, timeout = API_CONFIG.TIMEOUT } = options;
 
@@ -57,8 +53,8 @@ export class HttpClient {
       method,
       headers: {
         ...this.defaultHeaders,
-        ...headers,
-      },
+        ...headers
+      }
     };
 
     if (body && method !== 'GET') {
@@ -73,7 +69,7 @@ export class HttpClient {
 
       const response = await fetch(url, {
         ...requestOptions,
-        signal: controller.signal,
+        signal: controller.signal
       });
 
       clearTimeout(timeoutId);
@@ -94,7 +90,7 @@ export class HttpClient {
    */
   private async handleResponse<T>(response: Response, method: string): Promise<T> {
     let data: any;
-    
+
     try {
       const text = await response.text();
       data = text ? JSON.parse(text) : {};
@@ -109,7 +105,7 @@ export class HttpClient {
         status: response.status,
         statusText: response.statusText,
         data,
-        message: data.message || data.error || 'Request failed',
+        message: data.message || data.error || 'Request failed'
       };
     }
 

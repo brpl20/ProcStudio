@@ -47,7 +47,7 @@
   function formatPhoneInput(event: Event) {
     const input = event.target as HTMLInputElement;
     let value = input.value.replace(/\D/g, ''); // Remove tudo que não é dígito
-    
+
     if (value.length <= 11) {
       // Formato: (XX) XXXXX-XXXX para celular ou (XX) XXXX-XXXX para fixo
       if (value.length >= 11) {
@@ -60,7 +60,7 @@
         value = value.replace(/(\d{2})(\d*)/, '($1) $2');
       }
     }
-    
+
     formData.phone = value;
   }
 
@@ -73,7 +73,7 @@
   function getCivilStatusLabel(option: any): string {
     // Prioridade: gender do userData (do backend) > gender do form
     const currentGender = userData?.gender || formData.gender;
-    
+
     if (currentGender === 'female') {
       return option.labelFemale;
     } else {
@@ -181,10 +181,10 @@
     <div class="modal-box max-w-4xl max-h-[90vh] overflow-y-auto" role="dialog" aria-modal="true">
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold text-base-content">Complete seu Perfil</h2>
-        <button 
-          type="button" 
-          class="btn btn-circle btn-ghost" 
-          on:click={closeModal} 
+        <button
+          type="button"
+          class="btn btn-circle btn-ghost"
+          on:click={closeModal}
           disabled={loading}
         >
           ✕
@@ -196,7 +196,9 @@
           <div>
             <div class="font-semibold">Informações do Usuário</div>
             <p class="text-sm mt-2">
-              <strong>Nome:</strong> {userData.name} {userData.last_name}
+              <strong>Nome:</strong>
+              {userData.name}
+              {userData.last_name}
             </p>
             <p class="text-sm"><strong>OAB:</strong> {userData.oab}</p>
             <p class="text-sm"><strong>Função:</strong> {userData.role}</p>
@@ -246,12 +248,12 @@
                 <label class="label" for="gender">
                   <span class="label-text font-semibold">Gênero *</span>
                 </label>
-                <select 
-                  id="gender" 
-                  class="select select-bordered" 
+                <select
+                  id="gender"
+                  class="select select-bordered"
                   class:select-disabled={loading}
-                  bind:value={formData.gender} 
-                  required 
+                  bind:value={formData.gender}
+                  required
                   disabled={loading}
                 >
                   <option value="">Selecione...</option>
@@ -288,12 +290,12 @@
                 <label class="label" for="nationality">
                   <span class="label-text font-semibold">Nacionalidade *</span>
                 </label>
-                <select 
-                  id="nationality" 
+                <select
+                  id="nationality"
                   class="select select-bordered"
                   class:select-disabled={loading}
-                  bind:value={formData.nationality} 
-                  required 
+                  bind:value={formData.nationality}
+                  required
                   disabled={loading}
                 >
                   <option value="">Selecione...</option>
@@ -349,20 +351,10 @@
           {/if}
 
           <div class="modal-action">
-            <button 
-              type="button" 
-              class="btn btn-outline" 
-              on:click={closeModal} 
-              disabled={loading}
-            >
+            <button type="button" class="btn btn-outline" on:click={closeModal} disabled={loading}>
               Cancelar
             </button>
-            <button 
-              type="submit" 
-              class="btn btn-primary"
-              class:loading={loading}
-              disabled={loading}
-            >
+            <button type="submit" class="btn btn-primary" class:loading disabled={loading}>
               {loading ? 'Salvando...' : 'Completar Perfil'}
             </button>
           </div>
@@ -371,4 +363,3 @@
     </div>
   </div>
 {/if}
-

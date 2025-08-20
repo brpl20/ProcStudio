@@ -11,7 +11,7 @@ import type {
   CreatePowerRequest,
   UpdatePowerRequest,
   PowerData,
-  PowerCategory,
+  PowerCategory
 } from '../types';
 
 export class PowerService {
@@ -45,10 +45,7 @@ export class PowerService {
     powerId: string | number,
     powerData: UpdatePowerRequest
   ): Promise<PowerResponse> {
-    return this.http.put<PowerResponse>(
-      `${API_ENDPOINTS.POWERS}/${powerId}`,
-      powerData
-    );
+    return this.http.put<PowerResponse>(`${API_ENDPOINTS.POWERS}/${powerId}`, powerData);
   }
 
   /**
@@ -63,7 +60,7 @@ export class PowerService {
    */
   async getBasePowers(): Promise<PowerData[]> {
     const response = await this.getPowers();
-    return response.data.filter(power => power.attributes.is_base);
+    return response.data.filter((power) => power.attributes.is_base);
   }
 
   /**
@@ -71,7 +68,7 @@ export class PowerService {
    */
   async getPowersByCategory(category: PowerCategory): Promise<PowerData[]> {
     const response = await this.getPowers();
-    return response.data.filter(power => power.attributes.category === category);
+    return response.data.filter((power) => power.attributes.category === category);
   }
 
   /**
@@ -79,7 +76,7 @@ export class PowerService {
    */
   async getPowersByLawArea(lawAreaId: number): Promise<PowerData[]> {
     const response = await this.getPowers();
-    return response.data.filter(power => power.attributes.law_area_id === lawAreaId);
+    return response.data.filter((power) => power.attributes.law_area_id === lawAreaId);
   }
 
   /**
@@ -87,7 +84,7 @@ export class PowerService {
    */
   async getCustomPowers(): Promise<PowerData[]> {
     const response = await this.getPowers();
-    return response.data.filter(power => power.attributes.is_custom);
+    return response.data.filter((power) => power.attributes.is_custom);
   }
 
   /**
@@ -95,22 +92,19 @@ export class PowerService {
    */
   async getSystemPowers(): Promise<PowerData[]> {
     const response = await this.getPowers();
-    return response.data.filter(power => !power.attributes.is_custom);
+    return response.data.filter((power) => !power.attributes.is_custom);
   }
 
   /**
    * Create a base power
    */
-  async createBasePower(
-    description: string,
-    category: PowerCategory
-  ): Promise<PowerResponse> {
+  async createBasePower(description: string, category: PowerCategory): Promise<PowerResponse> {
     const request: CreatePowerRequest = {
       power: {
         description,
         category,
-        is_base: true,
-      },
+        is_base: true
+      }
     };
     return this.createPower(request);
   }
@@ -128,8 +122,8 @@ export class PowerService {
         description,
         category,
         law_area_id: lawAreaId,
-        is_base: false,
-      },
+        is_base: false
+      }
     };
     return this.createPower(request);
   }
@@ -140,9 +134,10 @@ export class PowerService {
   async searchPowers(searchTerm: string): Promise<PowerData[]> {
     const response = await this.getPowers();
     const lowerSearch = searchTerm.toLowerCase();
-    return response.data.filter(power =>
-      power.attributes.description.toLowerCase().includes(lowerSearch) ||
-      power.attributes.full_description.toLowerCase().includes(lowerSearch)
+    return response.data.filter(
+      (power) =>
+        power.attributes.description.toLowerCase().includes(lowerSearch) ||
+        power.attributes.full_description.toLowerCase().includes(lowerSearch)
     );
   }
 }

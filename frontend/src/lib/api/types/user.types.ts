@@ -33,7 +33,7 @@ export interface UserProfileAttributes {
   emails: EmailAttributes[];
   bank_accounts: BankAccountAttributes[];
   phones: PhoneAttributes[];
-  
+
   // Additional attributes shown on 'show' action
   user_id?: number;
   office_id?: number;

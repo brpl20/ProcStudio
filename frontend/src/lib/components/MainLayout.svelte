@@ -158,6 +158,7 @@
 
 <style>
   .active {
-    @apply bg-primary text-primary-content;
+    background-color: var(--color-primary, #180042);
+    color: var(--color-primary-content, #fefbf6);
   }
 </style>

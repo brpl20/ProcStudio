@@ -13,16 +13,16 @@ function createAuthStore() {
 
   return {
     subscribe,
-    
+
     // Inicializar autenticação
     init() {
       const isAuth = api.auth.isAuthenticated();
-      update(state => ({ ...state, isAuthenticated: isAuth }));
+      update((state) => ({ ...state, isAuthenticated: isAuth }));
     },
-    
+
     // Login bem-sucedido
     loginSuccess(userData) {
-      update(state => ({
+      update((state) => ({
         ...state,
         isAuthenticated: true,
         user: userData,
@@ -31,20 +31,20 @@ function createAuthStore() {
         missingFields: userData.data.missing_fields || []
       }));
     },
-    
+
     // Registro bem-sucedido
     registerSuccess() {
-      update(state => ({ ...state, currentView: 'login' }));
+      update((state) => ({ ...state, currentView: 'login' }));
     },
-    
+
     // Alternar entre login/registro
     switchView() {
-      update(state => ({
+      update((state) => ({
         ...state,
         currentView: state.currentView === 'login' ? 'register' : 'login'
       }));
     },
-    
+
     // Logout
     async logout() {
       try {
@@ -62,10 +62,10 @@ function createAuthStore() {
         });
       }
     },
-    
+
     // Completar perfil
     completeProfile(completionResult) {
-      update(state => ({
+      update((state) => ({
         ...state,
         showProfileCompletion: false,
         profileData: null,
@@ -73,7 +73,7 @@ function createAuthStore() {
         user: completionResult.user ? { ...state.user, ...completionResult.user } : state.user
       }));
     },
-    
+
     // Fechar modal de perfil
     closeProfileCompletion() {
       // Redireciona para logout se fechar sem completar

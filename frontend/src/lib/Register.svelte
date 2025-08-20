@@ -44,8 +44,12 @@
     message = '';
 
     try {
-      const result = await api.auth.register(email, password, oabValidation.normalizedOab as string);
-      
+      const result = await api.auth.register(
+        email,
+        password,
+        oabValidation.normalizedOab as string
+      );
+
       if (result.success) {
         message = 'Registro realizado com sucesso! Você pode fazer login agora.';
         isSuccess = true;
@@ -62,7 +66,8 @@
       }
     } catch (error: any) {
       console.error('Registration error:', error);
-      const errorMessage = error?.message || error?.data?.message || 'Erro no registro. Tente novamente.';
+      const errorMessage =
+        error?.message || error?.data?.message || 'Erro no registro. Tente novamente.';
       message = errorMessage;
       isSuccess = false;
     } finally {

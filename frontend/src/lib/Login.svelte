@@ -22,12 +22,12 @@
 
     try {
       const result = await api.auth.login(email, password);
-      
+
       if (result.success) {
         message = result.message || 'Login realizado com sucesso!';
         isSuccess = true;
         onLoginSuccess(result);
-        
+
         // Limpa o formulário
         email = '';
         password = '';

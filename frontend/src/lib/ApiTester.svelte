@@ -1,6 +1,6 @@
 <script>
   import api from './api';
-  
+
   let connectionTestResult = null;
   let usersListResult = null;
   let isTestingConnection = false;
@@ -60,10 +60,10 @@
       <div class="card-body">
         <h4 class="card-title text-lg">Métodos Gerais</h4>
         <div class="card-actions justify-end">
-          <button 
-            class="btn btn-secondary" 
-            class:loading={isTestingConnection} 
-            on:click={testApiConnection} 
+          <button
+            class="btn btn-secondary"
+            class:loading={isTestingConnection}
+            on:click={testApiConnection}
             disabled={isTestingConnection}
           >
             {isTestingConnection ? 'Testando...' : 'Testar Conexão API'}
@@ -76,10 +76,10 @@
       <div class="card-body">
         <h4 class="card-title text-lg">Métodos de Usuários</h4>
         <div class="card-actions justify-end">
-          <button 
-            class="btn btn-accent" 
-            class:loading={isTestingUsers} 
-            on:click={testListUsers} 
+          <button
+            class="btn btn-accent"
+            class:loading={isTestingUsers}
+            on:click={testListUsers}
             disabled={isTestingUsers}
           >
             {isTestingUsers ? 'Carregando...' : 'Listar Usuários'}
@@ -99,8 +99,14 @@
   <div class="divider"></div>
 
   {#if connectionTestResult}
-    <div class="alert mb-4" class:alert-success={connectionTestResult.success} class:alert-error={!connectionTestResult.success}>
-      <h4 class="text-lg font-semibold">{connectionTestResult.success ? '✅ OK' : '❌ ERRO'} - {connectionTestResult.message}</h4>
+    <div
+      class="alert mb-4"
+      class:alert-success={connectionTestResult.success}
+      class:alert-error={!connectionTestResult.success}
+    >
+      <h4 class="text-lg font-semibold">
+        {connectionTestResult.success ? '✅ OK' : '❌ ERRO'} - {connectionTestResult.message}
+      </h4>
       {#if connectionTestResult.success && connectionTestResult.data}
         <div class="mockup-code mt-4">
           <pre><code>{JSON.stringify(connectionTestResult.data, null, 2)}</code></pre>
@@ -112,15 +118,19 @@
   {/if}
 
   {#if usersListResult}
-    <div class="alert mb-4" class:alert-success={usersListResult.success} class:alert-error={!usersListResult.success}>
-      <h4 class="text-lg font-semibold">{usersListResult.success ? '✅ OK' : '❌ ERRO'} - {usersListResult.message}</h4>
+    <div
+      class="alert mb-4"
+      class:alert-success={usersListResult.success}
+      class:alert-error={!usersListResult.success}
+    >
+      <h4 class="text-lg font-semibold">
+        {usersListResult.success ? '✅ OK' : '❌ ERRO'} - {usersListResult.message}
+      </h4>
       {#if usersListResult.success}
         <p class="mt-2">Total: {usersListResult.count}</p>
         <div class="collapse collapse-arrow bg-base-100 mt-4">
           <input type="checkbox" />
-          <div class="collapse-title text-md font-medium">
-            Ver detalhes dos usuários
-          </div>
+          <div class="collapse-title text-md font-medium">Ver detalhes dos usuários</div>
           <div class="collapse-content">
             {#if usersListResult.data && usersListResult.data.data}
               {#each usersListResult.data.data as user}
@@ -133,7 +143,10 @@
                     <p class="text-xs">Email: {user.attributes?.access_email || 'N/A'}</p>
                     <p class="text-xs">Status: {user.attributes?.status || 'N/A'}</p>
                     {#if profile}
-                      <p class="text-xs">Nome: {profile.attributes?.name || 'N/A'} {profile.attributes?.last_name || ''}</p>
+                      <p class="text-xs">
+                        Nome: {profile.attributes?.name || 'N/A'}
+                        {profile.attributes?.last_name || ''}
+                      </p>
                       <p class="text-xs">Role: {profile.attributes?.role || 'N/A'}</p>
                     {/if}
                   </div>
