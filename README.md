@@ -5,8 +5,8 @@ API RESTful desenvolvida em Ruby on Rails para o sistema PRC.
 ## 🚀 Início Rápido
 
 ### Requisitos
-- Ruby 3.0+
-- Rails 7.0+
+- Ruby 3.2.7
+- Rails 8.0.2.1
 - PostgreSQL
 - Redis (para cache e jobs)
 
@@ -229,6 +229,8 @@ O projeto utiliza Husky para executar verificações antes dos commits:
 - Usar cache quando apropriado
 - Background jobs para operações lentas
 
+#### 
+
 ### Padrões de API
 
 ```ruby
@@ -240,11 +242,12 @@ O projeto utiliza Husky para executar verificações antes dos commits:
 }
 
 # Resposta de erro
-{
-  "success": false,
-  "errors": ["Error message 1", "Error message 2"],
-  "message": "General error message"
-}
+```
+  {
+    "success": false,
+    "message": "Email já está em uso",  # Single user-friendly message
+    "errors": ["Email já está em uso"]   # Array for detailed errors
+  }
 ```
 
 ### Ambientes
