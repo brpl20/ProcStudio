@@ -1,0 +1,401 @@
+<script lang="ts">
+  import Register from './lib/Register.svelte';
+  import Login from './lib/Login.svelte';
+  import ProfileCompletion from './lib/ProfileCompletion.svelte';
+  import Teams from './lib/Teams.svelte';
+  import api from './lib/api';
+  import type { LoginResponse, RegisterResponse, UsersListResponse } from './lib/api';
+
+  let isAuthenticated = false;
+  let user: LoginResponse | null = null;
+  let currentView = 'login'; // 'login' ou 'register'
+  let currentPage = 'home'; // 'home' ou 'teams'
+  let showProfileCompletion = false;
+  let profileData: any = null;
+  let missingFields: string[] = [];
+
+  // Verifica se já está logado ao carregar a página
+  function checkAuth() {
+    isAuthenticated = api.auth.isAuthenticated();
+  }
+
+  function handleLoginSuccess(userData: LoginResponse) {
+    isAuthenticated = true;
+    user = userData;
+    // Verifica se precisa completar o perfil
+    if (userData.data.needs_profile_completion) {
+      showProfileCompletion = true;
+      profileData = userData.data;
+      missingFields = userData.data.missing_fields || [];
+    }
+  }
+
+  function handleRegisterSuccess(registerData: RegisterResponse) {
+    console.log('Registration successful:', registerData);
+    // Após registro, volta para login
+    currentView = 'login';
+  }
+
+  function handleProfileCompletion(completionResult: any) {
+    showProfileCompletion = false;
+    profileData = null;
+    missingFields = [];
+    // Pode atualizar dados do usuário se necessário
+    if (completionResult.user) {
+      user = { ...user, ...completionResult.user };
+    }
+  }
+
+  function handleProfileCompletionClose() {
+    // Se fechar sem completar, faz logout
+    handleLogout();
+  }
+
+  async function handleLogout() {
+    try {
+      await api.auth.logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      isAuthenticated = false;
+      user = null;
+      showProfileCompletion = false;
+      profileData = null;
+      missingFields = [];
+    }
+  }
+
+  function switchView() {
+    currentView = currentView === 'login' ? 'register' : 'login';
+  }
+
+  // Funções de navegação
+  function navigateToTeams() {
+    currentPage = 'teams';
+  }
+
+  function navigateToHome() {
+    currentPage = 'home';
+  }
+
+  // Estados para renderização de dados
+  let connectionTestResult: any = null;
+  let usersListResult: any = null;
+  let isTestingConnection = false;
+  let isTestingUsers = false;
+
+  // Função para testar conexão com API
+  async function testApiConnection() {
+    isTestingConnection = true;
+    connectionTestResult = null;
+
+    try {
+      const data = await api.testConnection();
+      connectionTestResult = {
+        success: true,
+        data: data,
+        message: 'API está funcionando!'
+      };
+    } catch (error: any) {
+      console.error('API connection test error:', error);
+      connectionTestResult = {
+        success: false,
+        error: error?.message || error?.data?.message || 'Erro desconhecido',
+        message: 'Erro ao conectar com API'
+      };
+    } finally {
+      isTestingConnection = false;
+    }
+  }
+
+  // Função para testar endpoint de listar usuários (formerly admins)
+  async function testListUsers() {
+    isTestingUsers = true;
+    usersListResult = null;
+
+    try {
+      const data: UsersListResponse = await api.users.getUsers();
+      usersListResult = {
+        success: true,
+        data: data,
+        count: data.data ? data.data.length : 0,
+        message: 'Lista de usuários carregada com sucesso!'
+      };
+    } catch (error: any) {
+      console.error('Users list error:', error);
+      usersListResult = {
+        success: false,
+        error: error?.message || error?.data?.message || 'Erro desconhecido',
+        message: 'Erro ao buscar usuários'
+      };
+    } finally {
+      isTestingUsers = false;
+    }
+  }
+
+  // Verifica autenticação ao carregar
+  checkAuth();
+</script>
+
+<main class="min-h-screen bg-base-100">
+  <div class="container mx-auto px-4 py-8">
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-primary mb-4">ProcStudio</h1>
+      <button class="btn btn-primary">Default</button>
+    </div>
+  {#if isAuthenticated}
+    <!-- Navegação -->
+    <nav class="navbar bg-base-200 rounded-box shadow-lg mb-6">
+      <div class="navbar-start">
+        <button class="btn btn-ghost" class:btn-active={currentPage === 'home'} on:click={navigateToHome} disabled={currentPage === 'home'}>
+          🏠 Home
+        </button>
+        <button class="btn btn-ghost" class:btn-active={currentPage === 'teams'} on:click={navigateToTeams} disabled={currentPage === 'teams'}>
+          👥 Times
+        </button>
+      </div>
+      <div class="navbar-end">
+        <button class="btn btn-outline btn-error" on:click={handleLogout}>
+          🚪 Sair
+        </button>
+      </div>
+    </nav>
+
+    <!-- Conteúdo das páginas -->
+    {#if currentPage === 'teams'}
+      <Teams />
+    {:else}
+      <!-- Página Home -->
+      <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+          <h2 class="card-title text-2xl">Bem-vindo!</h2>
+          <p class="text-base-content">Você está logado com sucesso.</p>
+          {#if user && user.data}
+            <div class="stats shadow mt-4">
+              <div class="stat">
+                <div class="stat-title">Tipo</div>
+                <div class="stat-value text-sm">Usuário</div>
+              </div>
+              {#if user.data.name}
+                <div class="stat">
+                  <div class="stat-title">Nome</div>
+                  <div class="stat-value text-sm">{user.data.name} {user.data.last_name || ''}</div>
+                </div>
+              {/if}
+              {#if user.data.role}
+                <div class="stat">
+                  <div class="stat-title">Role</div>
+                  <div class="stat-value text-sm">{user.data.role}</div>
+                </div>
+              {/if}
+              {#if user.data.oab}
+                <div class="stat">
+                  <div class="stat-title">OAB</div>
+                  <div class="stat-value text-sm">{user.data.oab}</div>
+                </div>
+              {/if}
+            </div>
+          {/if}
+
+          <h3 class="text-xl font-semibold mt-6 mb-4">Testes da API</h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="card bg-base-200">
+              <div class="card-body">
+                <h4 class="card-title text-lg">Métodos Gerais</h4>
+                <div class="card-actions justify-end">
+                  <button class="btn btn-secondary" class:loading={isTestingConnection} on:click={testApiConnection} disabled={isTestingConnection}>
+                    {isTestingConnection ? 'Testando...' : 'Testar Conexão API'}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card bg-base-200">
+              <div class="card-body">
+                <h4 class="card-title text-lg">Métodos de Usuários</h4>
+                <div class="card-actions justify-end">
+                  <button class="btn btn-accent" class:loading={isTestingUsers} on:click={testListUsers} disabled={isTestingUsers}>
+                    {isTestingUsers ? 'Carregando...' : 'Listar Usuários'}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card bg-base-200">
+              <div class="card-body">
+                <h4 class="card-title text-lg">Law Areas e Powers</h4>
+                <p class="text-sm opacity-70">Em desenvolvimento...</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          {#if connectionTestResult}
+            <div class="alert mb-4" class:alert-success={connectionTestResult.success} class:alert-error={!connectionTestResult.success}>
+              <h4 class="text-lg font-semibold">{connectionTestResult.success ? '✅ OK' : '❌ ERRO'} - {connectionTestResult.message}</h4>
+              {#if connectionTestResult.success && connectionTestResult.data}
+                <div class="mockup-code mt-4">
+                  <pre><code>{JSON.stringify(connectionTestResult.data, null, 2)}</code></pre>
+                </div>
+              {:else if connectionTestResult.error}
+                <p class="mt-2">Erro: {connectionTestResult.error}</p>
+              {/if}
+            </div>
+          {/if}
+
+        {#if usersListResult}
+          <div>
+            <h4>{usersListResult.success ? 'OK' : 'ERRO'} - {usersListResult.message}</h4>
+            {#if usersListResult.success}
+              <p>Total: {usersListResult.count}</p>
+
+              <h5>DEBUG - Resposta Completa:</h5>
+              <pre>{JSON.stringify(usersListResult.data, null, 2)}</pre>
+
+              {#if usersListResult.data && usersListResult.data.data}
+                <h5>Usuários Processados:</h5>
+                {#each usersListResult.data.data as user}
+                  {@const profileId = user.relationships?.user_profile?.data?.id}
+                  {@const included = usersListResult.data.included}
+                  {@const profile = included?.find((p) => p.id === profileId)}
+                  <div>
+                    <h5>Usuário #{user.id}</h5>
+                    <p>Email: {user.attributes?.access_email || 'N/A'}</p>
+                    <p>Status: {user.attributes?.status || 'N/A'}</p>
+                    <p>Deleted (User): {String(user.attributes?.deleted)}</p>
+                    <p>Profile ID: {profileId || 'N/A'}</p>
+
+                    {#if profile}
+                      <h6>Profile Details:</h6>
+                      <p>
+                        Nome: {profile.attributes?.name || 'N/A'}
+                        {profile.attributes?.last_name || ''}
+                      </p>
+                      <p>Role: {profile.attributes?.role || 'N/A'}</p>
+                      <p>Deleted (Profile): {String(profile.attributes?.deleted)}</p>
+                      <p>Phones: {profile.attributes?.phones?.length || 0}</p>
+                      <p>Bank Accounts: {profile.attributes?.bank_accounts?.length || 0}</p>
+                      <p>Emails: {profile.attributes?.emails?.length || 0}</p>
+                    {:else}
+                      <p>
+                        Profile não encontrado no included. Included length: {included?.length || 0}
+                      </p>
+                    {/if}
+                    <hr />
+                  </div>
+                {/each}
+              {/if}
+            {:else if usersListResult.error}
+              <p>Erro: {usersListResult.error}</p>
+            {/if}
+          </div>
+        {/if}
+        </div>
+      </div>
+    {/if}
+  {:else}
+    <div>
+      <h2>Autenticação</h2>
+      {#if currentView === 'login'}
+        <Login onLoginSuccess={handleLoginSuccess} />
+        <p>
+          Não tem conta?
+          <button on:click={switchView}>Registrar-se</button>
+        </p>
+      {:else}
+        <Register onRegisterSuccess={handleRegisterSuccess} />
+        <p>
+          Já tem conta?
+          <button on:click={switchView}>Fazer login</button>
+        </p>
+      {/if}
+      <div>
+        <h3>Testes da API</h3>
+
+        <div>
+          <button on:click={testApiConnection} disabled={isTestingConnection}>
+            {isTestingConnection ? 'Testando...' : 'Testar Conexão API'}
+          </button>
+          <button on:click={testListUsers} disabled={isTestingUsers}>
+            {isTestingUsers ? 'Carregando...' : 'Listar Usuários'}
+          </button>
+        </div>
+
+        {#if connectionTestResult}
+          <div>
+            <h4>{connectionTestResult.success ? 'OK' : 'ERRO'} - {connectionTestResult.message}</h4>
+            {#if connectionTestResult.success && connectionTestResult.data}
+              <pre>{JSON.stringify(connectionTestResult.data, null, 2)}</pre>
+            {:else if connectionTestResult.error}
+              <p>Erro: {connectionTestResult.error}</p>
+            {/if}
+          </div>
+        {/if}
+
+        {#if usersListResult}
+          <div>
+            <h4>{usersListResult.success ? 'OK' : 'ERRO'} - {usersListResult.message}</h4>
+            {#if usersListResult.success}
+              <p>Total: {usersListResult.count}</p>
+
+              <h5>DEBUG - Resposta Completa:</h5>
+              <pre>{JSON.stringify(usersListResult.data, null, 2)}</pre>
+
+              {#if usersListResult.data && usersListResult.data.data}
+                <h5>Usuários Processados:</h5>
+                {#each usersListResult.data.data as user}
+                  {@const profileId = user.relationships?.user_profile?.data?.id}
+                  {@const included = usersListResult.data.included}
+                  {@const profile = included?.find((p) => p.id === profileId)}
+                  <div>
+                    <h5>Usuário #{user.id}</h5>
+                    <p>Email: {user.attributes?.access_email || 'N/A'}</p>
+                    <p>Status: {user.attributes?.status || 'N/A'}</p>
+                    <p>Deleted (User): {String(user.attributes?.deleted)}</p>
+                    <p>Profile ID: {profileId || 'N/A'}</p>
+
+                    {#if profile}
+                      <h6>Profile Details:</h6>
+                      <p>
+                        Nome: {profile.attributes?.name || 'N/A'}
+                        {profile.attributes?.last_name || ''}
+                      </p>
+                      <p>Role: {profile.attributes?.role || 'N/A'}</p>
+                      <p>Deleted (Profile): {String(profile.attributes?.deleted)}</p>
+                      <p>Phones: {profile.attributes?.phones?.length || 0}</p>
+                      <p>Bank Accounts: {profile.attributes?.bank_accounts?.length || 0}</p>
+                      <p>Emails: {profile.attributes?.emails?.length || 0}</p>
+                    {:else}
+                      <p>
+                        Profile não encontrado no included. Included length: {included?.length || 0}
+                      </p>
+                    {/if}
+                    <hr />
+                  </div>
+                {/each}
+              {/if}
+            {:else if usersListResult.error}
+              <p>Erro: {usersListResult.error}</p>
+            {/if}
+          </div>
+        {/if}
+      </div>
+    </div>
+  {/if}
+</main>
+
+<!-- Modal de Completar Perfil -->
+{#if showProfileCompletion}
+  <ProfileCompletion
+    isOpen={showProfileCompletion}
+    userData={profileData}
+    {missingFields}
+    onComplete={handleProfileCompletion}
+    onClose={handleProfileCompletionClose}
+  />
+{/if}
+
+<style>
+</style>
