@@ -1,5 +1,6 @@
 <script>
   import MainLayout from '../components/MainLayout.svelte';
+  import { router } from '../stores/routerStore.js';
 </script>
 
 <MainLayout>
@@ -10,8 +11,12 @@
         <h2 class="text-2xl text-base-content opacity-70 mb-8">Sistema em Desenvolvimento</h2>
 
         <div class="flex gap-4 justify-center">
-          <button class="btn btn-primary btn-lg"> Saiba Mais </button>
-          <button class="btn btn-outline btn-lg"> Contato </button>
+          <button class="btn btn-primary btn-lg" on:click={() => router.navigate('/register')}>
+            Começar agora
+          </button>
+          <button class="btn btn-outline btn-lg" on:click={() => router.navigate('/login')}>
+            Fazer login
+          </button>
         </div>
       </div>
     </div>

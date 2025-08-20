@@ -1,34 +1,204 @@
 <script>
-  import Register from '../Register.svelte';
-  import MainLayout from '../components/MainLayout.svelte';
+  import AuthLayout from '../components/AuthLayout.svelte';
   import { authStore } from '../stores/authStore.js';
   import { router } from '../stores/routerStore.js';
+  
+  let name = '';
+  let email = '';
+  let password = '';
+  let confirmPassword = '';
+  let isLoading = false;
+  let errorMessage = '';
+  let successMessage = '';
 
-  function handleRegisterSuccess() {
-    authStore.registerSuccess();
-    router.navigate('/login');
+  async function handleRegister() {
+    if (!name || !email || !password || !confirmPassword) {
+      errorMessage = 'Por favor, preencha todos os campos';
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      errorMessage = 'As senhas não coincidem';
+      return;
+    }
+
+    if (password.length < 6) {
+      errorMessage = 'A senha deve ter pelo menos 6 caracteres';
+      return;
+    }
+
+    isLoading = true;
+    errorMessage = '';
+
+    try {
+      // Simulação de registro - substituir pela sua lógica real
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      successMessage = 'Conta criada com sucesso! Redirecionando para o login...';
+      
+      setTimeout(() => {
+        authStore.registerSuccess();
+        router.navigate('/login');
+      }, 2000);
+      
+    } catch (error) {
+      errorMessage = 'Erro ao criar conta. Tente novamente.';
+    } finally {
+      isLoading = false;
+    }
   }
 
   function goToLogin() {
     router.navigate('/login');
   }
+  
+  function goHome() {
+    router.navigate('/');
+  }
 </script>
 
-<MainLayout showFooter={false}>
-  <div class="flex items-center justify-center min-h-[70vh]">
-    <div class="card bg-base-100 shadow-xl w-full max-w-md">
-      <div class="card-body">
-        <h2 class="card-title text-2xl justify-center mb-4">Criar Conta</h2>
+<AuthLayout>
+  <div class="text-center mb-8">
+    <h1 class="text-3xl font-bold text-primary mb-2">Criar conta</h1>
+    <p class="text-base-content opacity-70">Junte-se a nós e comece hoje mesmo</p>
+  </div>
 
-        <Register onRegisterSuccess={handleRegisterSuccess} />
+  <div class="card bg-base-100 shadow-xl border">
+    <div class="card-body">
+      <!-- Botão voltar -->
+      <button class="btn btn-ghost btn-sm self-start mb-4" on:click={goHome}>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Voltar
+      </button>
 
-        <div class="divider"></div>
+      <h2 class="text-2xl font-bold text-center mb-6">Registrar-se</h2>
 
-        <div class="text-center">
-          <p class="mb-2">Já tem conta?</p>
-          <button class="btn btn-outline btn-primary" on:click={goToLogin}> Fazer Login </button>
+      <!-- Formulário de registro -->
+      <form on:submit|preventDefault={handleRegister} class="space-y-4">
+        <!-- Nome -->
+        <div class="form-control">
+          <label class="label" for="name">
+            <span class="label-text font-semibold">Nome completo</span>
+          </label>
+          <input
+            id="name"
+            type="text"
+            placeholder="Digite seu nome completo"
+            class="input input-bordered w-full"
+            bind:value={name}
+            required
+            disabled={isLoading}
+          />
         </div>
+
+        <!-- Email -->
+        <div class="form-control">
+          <label class="label" for="email">
+            <span class="label-text font-semibold">Email</span>
+          </label>
+          <input
+            id="email"
+            type="email"
+            placeholder="Digite seu email"
+            class="input input-bordered w-full"
+            bind:value={email}
+            required
+            disabled={isLoading}
+          />
+        </div>
+
+        <!-- Senha -->
+        <div class="form-control">
+          <label class="label" for="password">
+            <span class="label-text font-semibold">Senha</span>
+          </label>
+          <input
+            id="password"
+            type="password"
+            placeholder="Digite sua senha (mín. 6 caracteres)"
+            class="input input-bordered w-full"
+            bind:value={password}
+            required
+            disabled={isLoading}
+            minlength="6"
+          />
+        </div>
+
+        <!-- Confirmar senha -->
+        <div class="form-control">
+          <label class="label" for="confirmPassword">
+            <span class="label-text font-semibold">Confirmar senha</span>
+          </label>
+          <input
+            id="confirmPassword"
+            type="password"
+            placeholder="Confirme sua senha"
+            class="input input-bordered w-full"
+            bind:value={confirmPassword}
+            required
+            disabled={isLoading}
+          />
+        </div>
+
+        <!-- Mensagens -->
+        {#if errorMessage}
+          <div class="alert alert-error">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>{errorMessage}</span>
+          </div>
+        {/if}
+
+        {#if successMessage}
+          <div class="alert alert-success">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>{successMessage}</span>
+          </div>
+        {/if}
+
+        <!-- Botão de registro -->
+        <button 
+          type="submit" 
+          class="btn btn-primary w-full"
+          class:loading={isLoading}
+          disabled={isLoading || successMessage}
+        >
+          {#if isLoading}
+            Criando conta...
+          {:else if successMessage}
+            Conta criada!
+          {:else}
+            Criar conta
+          {/if}
+        </button>
+      </form>
+
+      <!-- Divider -->
+      <div class="divider">ou</div>
+
+      <!-- Link para login -->
+      <div class="text-center">
+        <p class="text-sm text-base-content opacity-70 mb-3">
+          Já tem uma conta?
+        </p>
+        <button class="btn btn-outline btn-primary w-full" on:click={goToLogin}>
+          Fazer login
+        </button>
+      </div>
+
+      <!-- Termos de uso -->
+      <div class="text-center mt-6">
+        <p class="text-xs text-base-content opacity-60">
+          Ao criar uma conta, você concorda com nossos 
+          <a href="#" class="link link-primary">Termos de Uso</a> e 
+          <a href="#" class="link link-primary">Política de Privacidade</a>.
+        </p>
       </div>
     </div>
   </div>
-</MainLayout>
+</AuthLayout>
