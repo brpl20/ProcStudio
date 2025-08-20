@@ -17,6 +17,7 @@ AllCops:
     - bin/*
     - node_modules/**/*
     - frontend/**/*
+    - lib/tasks/**/*
 
 # Layout Cops
 Layout/LineLength:
