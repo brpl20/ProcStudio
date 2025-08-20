@@ -2,22 +2,24 @@
   import AuthLayout from '../components/AuthLayout.svelte';
   import { authStore } from '../stores/authStore.js';
   import { router } from '../stores/routerStore.js';
-  
-  let name = '';
+  import api from '../api';
+  import { validateAndNormalizeOab } from '../oabValidator';
+
   let email = '';
   let password = '';
-  let confirmPassword = '';
+  let passwordConfirmation = '';
+  let oab = '';
   let isLoading = false;
   let errorMessage = '';
   let successMessage = '';
 
   async function handleRegister() {
-    if (!name || !email || !password || !confirmPassword) {
-      errorMessage = 'Por favor, preencha todos os campos';
+    if (!email || !password || !passwordConfirmation || !oab) {
+      errorMessage = 'Todos os campos são obrigatórios';
       return;
     }
 
-    if (password !== confirmPassword) {
+    if (password !== passwordConfirmation) {
       errorMessage = 'As senhas não coincidem';
       return;
     }
@@ -27,22 +29,42 @@
       return;
     }
 
+    // Validação e normalização da OAB
+    const oabValidation = validateAndNormalizeOab(oab);
+    if (!oabValidation.isValid) {
+      errorMessage = oabValidation.error || 'OAB inválida';
+      return;
+    }
+
     isLoading = true;
     errorMessage = '';
 
     try {
-      // Simulação de registro - substituir pela sua lógica real
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      successMessage = 'Conta criada com sucesso! Redirecionando para o login...';
-      
-      setTimeout(() => {
-        authStore.registerSuccess();
-        router.navigate('/login');
-      }, 2000);
-      
+      const result = await api.auth.register(
+        email,
+        password,
+        oabValidation.normalizedOab
+      );
+
+      if (result.success) {
+        successMessage = 'Registro realizado com sucesso! Você pode fazer login agora.';
+
+        // Limpa o formulário
+        email = '';
+        password = '';
+        passwordConfirmation = '';
+        oab = '';
+
+        setTimeout(() => {
+          router.navigate('/login');
+        }, 2000);
+      } else {
+        errorMessage = result.message || 'Erro no registro';
+      }
     } catch (error) {
-      errorMessage = 'Erro ao criar conta. Tente novamente.';
+      console.error('Registration error:', error);
+      const errorMsg = error?.message || error?.data?.message || 'Erro no registro. Tente novamente.';
+      errorMessage = errorMsg;
     } finally {
       isLoading = false;
     }
@@ -51,7 +73,7 @@
   function goToLogin() {
     router.navigate('/login');
   }
-  
+
   function goHome() {
     router.navigate('/');
   }
@@ -77,17 +99,17 @@
 
       <!-- Formulário de registro -->
       <form on:submit|preventDefault={handleRegister} class="space-y-4">
-        <!-- Nome -->
+        <!-- OAB -->
         <div class="form-control">
-          <label class="label" for="name">
-            <span class="label-text font-semibold">Nome completo</span>
+          <label class="label" for="oab">
+            <span class="label-text font-semibold">OAB</span>
           </label>
           <input
-            id="name"
+            id="oab"
             type="text"
-            placeholder="Digite seu nome completo"
+            placeholder="PR_54159"
             class="input input-bordered w-full"
-            bind:value={name}
+            bind:value={oab}
             required
             disabled={isLoading}
           />
@@ -128,15 +150,15 @@
 
         <!-- Confirmar senha -->
         <div class="form-control">
-          <label class="label" for="confirmPassword">
+          <label class="label" for="passwordConfirmation">
             <span class="label-text font-semibold">Confirmar senha</span>
           </label>
           <input
-            id="confirmPassword"
+            id="passwordConfirmation"
             type="password"
             placeholder="Confirme sua senha"
             class="input input-bordered w-full"
-            bind:value={confirmPassword}
+            bind:value={passwordConfirmation}
             required
             disabled={isLoading}
           />
@@ -162,8 +184,8 @@
         {/if}
 
         <!-- Botão de registro -->
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           class="btn btn-primary w-full"
           class:loading={isLoading}
           disabled={isLoading || successMessage}
@@ -194,9 +216,9 @@
       <!-- Termos de uso -->
       <div class="text-center mt-6">
         <p class="text-xs text-base-content opacity-60">
-          Ao criar uma conta, você concorda com nossos 
-          <a href="#" class="link link-primary">Termos de Uso</a> e 
-          <a href="#" class="link link-primary">Política de Privacidade</a>.
+          Ao criar uma conta, você concorda com nossos
+          <button class="link link-primary">Termos de Uso</button> e
+          <button class="link link-primary">Política de Privacidade</button>.
         </p>
       </div>
     </div>

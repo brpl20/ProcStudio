@@ -2,15 +2,17 @@
   import AuthLayout from '../components/AuthLayout.svelte';
   import { authStore } from '../stores/authStore.js';
   import { router } from '../stores/routerStore.js';
-  
+  import api from '../api';
+
   let email = '';
   let password = '';
   let isLoading = false;
   let errorMessage = '';
+  let successMessage = '';
 
   async function handleLogin() {
     if (!email || !password) {
-      errorMessage = 'Por favor, preencha todos os campos';
+      errorMessage = 'E-mail e senha são obrigatórios';
       return;
     }
 
@@ -18,19 +20,24 @@
     errorMessage = '';
 
     try {
-      // Simulação de login - substituir pela sua lógica real
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const userData = {
-        id: '1',
-        email: email,
-        name: 'Usuário Teste'
-      };
-      
-      authStore.loginSuccess(userData);
-      router.navigate('/dashboard');
+      const result = await api.auth.login(email, password);
+
+      if (result.success) {
+        successMessage = result.message || 'Login realizado com sucesso!';
+
+        // Limpa o formulário
+        email = '';
+        password = '';
+
+        // Pode precisar ajustar baseado na estrutura do authStore
+        authStore.loginSuccess(result);
+        router.navigate('/dashboard');
+      } else {
+        errorMessage = result.message || 'Erro no login';
+      }
     } catch (error) {
-      errorMessage = 'Erro ao fazer login. Verifique suas credenciais.';
+      console.error('Login error:', error);
+      errorMessage = error?.data?.message || error?.message || 'Erro no login. Tente novamente.';
     } finally {
       isLoading = false;
     }
@@ -39,7 +46,7 @@
   function goToRegister() {
     router.navigate('/register');
   }
-  
+
   function goHome() {
     router.navigate('/');
   }
@@ -97,7 +104,7 @@
           />
         </div>
 
-        <!-- Erro -->
+        <!-- Mensagens -->
         {#if errorMessage}
           <div class="alert alert-error">
             <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
@@ -107,9 +114,18 @@
           </div>
         {/if}
 
+        {#if successMessage}
+          <div class="alert alert-success">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>{successMessage}</span>
+          </div>
+        {/if}
+
         <!-- Botão de login -->
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           class="btn btn-primary w-full"
           class:loading={isLoading}
           disabled={isLoading}
@@ -124,7 +140,7 @@
 
       <!-- Link esqueci a senha -->
       <div class="text-center mt-4">
-        <a href="#" class="link link-primary text-sm">Esqueci minha senha</a>
+        <button class="link link-primary text-sm">Esqueci minha senha</button>
       </div>
 
       <!-- Divider -->
