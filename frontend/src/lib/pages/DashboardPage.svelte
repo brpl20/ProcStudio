@@ -1,18 +1,17 @@
 <script>
-  import AuthenticatedNavbar from '../components/AuthenticatedNavbar.svelte';
+  import MainLayout from '../components/MainLayout.svelte';
   import Breadcrumbs from '../components/Breadcrumbs.svelte';
   import UserProfile from '../UserProfile.svelte';
   import ApiTester from '../ApiTester.svelte';
   import { authStore } from '../stores/authStore.js';
-  
+
   $: ({ user } = $authStore);
 </script>
 
-<div class="min-h-screen bg-base-100">
-  <AuthenticatedNavbar />
+<MainLayout>
   <Breadcrumbs />
-  
-  <div class="container mx-auto px-4 py-6">
+
+  <div class="">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Conteúdo Principal -->
       <div class="lg:col-span-2">
@@ -20,10 +19,10 @@
           <div class="card-body">
             <h2 class="card-title text-2xl">Dashboard</h2>
             <p class="text-base-content">Bem-vindo ao ProcStudio!</p>
-            
+
             <!-- Stats do usuário -->
             <UserProfile {user} />
-            
+
             <!-- Cards de ações rápidas -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
               <div class="card bg-primary text-primary-content">
@@ -35,7 +34,7 @@
                   </div>
                 </div>
               </div>
-              
+
               <div class="card bg-secondary text-secondary-content">
                 <div class="card-body">
                   <h3 class="card-title">👥 Equipes</h3>
@@ -45,7 +44,7 @@
                   </div>
                 </div>
               </div>
-              
+
               <div class="card bg-accent text-accent-content">
                 <div class="card-body">
                   <h3 class="card-title">📊 Relatórios</h3>
@@ -55,7 +54,7 @@
                   </div>
                 </div>
               </div>
-              
+
               <div class="card bg-neutral text-neutral-content">
                 <div class="card-body">
                   <h3 class="card-title">⚙️ Configurações</h3>
@@ -69,7 +68,7 @@
           </div>
         </div>
       </div>
-      
+
       <!-- Sidebar -->
       <div class="lg:col-span-1">
         <div class="card bg-base-100 shadow-xl">
@@ -81,4 +80,4 @@
       </div>
     </div>
   </div>
-</div>
+</MainLayout>

@@ -46,7 +46,7 @@ class OabApiService
       full_name: capitalize_name(principal['full_name']),
       name: capitalize_name(extract_first_name(principal['full_name'])),
       last_name: capitalize_name(extract_last_name(principal['full_name'])),
-      oab: principal['oab_id'], # Usar oab_id que retorna formato PR_54160
+      oab: principal['oab_id'], # Usar oab_id que retorna formato PR_54159
       profession: principal['profession'],
       gender: gender_check(principal['profession']),
       city: principal['city'],
