@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { api } from './api';
+  import api from './api';
 
   export let isOpen = false;
   export let userData: any = {};
@@ -12,7 +12,7 @@
     rg: '',
     gender: '',
     civil_status: '',
-    nationality: 'Brasileira',
+    nationality: 'brazilian',
     birth: '',
     phone: ''
   };
@@ -23,21 +23,63 @@
 
   // Opções para os selects
   const genderOptions = [
-    { value: 'M', label: 'Masculino' },
-    { value: 'F', label: 'Feminino' },
-    { value: 'O', label: 'Outro' }
+    { value: 'male', label: 'Masculino' },
+    { value: 'female', label: 'Feminino' }
   ];
 
   const civilStatusOptions = [
-    { value: 'solteiro', label: 'Solteiro(a)' },
-    { value: 'casado', label: 'Casado(a)' },
-    { value: 'divorciado', label: 'Divorciado(a)' },
-    { value: 'viuvo', label: 'Viúvo(a)' },
-    { value: 'uniao_estavel', label: 'União Estável' }
+    { value: 'single', labelMale: 'Solteiro', labelFemale: 'Solteira' },
+    { value: 'married', labelMale: 'Casado', labelFemale: 'Casada' },
+    { value: 'divorced', labelMale: 'Divorciado', labelFemale: 'Divorciada' },
+    { value: 'widower', labelMale: 'Viúvo', labelFemale: 'Viúva' },
+    { value: 'union', labelMale: 'União Estável', labelFemale: 'União Estável' }
+  ];
+
+  const nationalityOptions = [
+    { value: 'brazilian', label: 'Brasileira' },
+    { value: 'foreigner', label: 'Estrangeira' }
   ];
 
   function isFieldRequired(fieldName: string): boolean {
     return missingFields.includes(fieldName);
+  }
+
+  function formatPhoneInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    let value = input.value.replace(/\D/g, ''); // Remove tudo que não é dígito
+    
+    if (value.length <= 11) {
+      // Formato: (XX) XXXXX-XXXX para celular ou (XX) XXXX-XXXX para fixo
+      if (value.length >= 11) {
+        value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+      } else if (value.length >= 10) {
+        value = value.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+      } else if (value.length >= 6) {
+        value = value.replace(/(\d{2})(\d{4})(\d*)/, '($1) $2-$3');
+      } else if (value.length >= 2) {
+        value = value.replace(/(\d{2})(\d*)/, '($1) $2');
+      }
+    }
+    
+    formData.phone = value;
+  }
+
+  function validateBrazilianPhone(phone: string): boolean {
+    // Aceita formato (XX) XXXXX-XXXX ou (XX) XXXX-XXXX
+    const phonePattern = /^\(\d{2}\)\s\d{4,5}-\d{4}$/;
+    return phonePattern.test(phone);
+  }
+
+  function getCivilStatusLabel(option: any): string {
+    // Prioridade: gender do userData (do backend) > gender do form
+    const currentGender = userData?.gender || formData.gender;
+    
+    if (currentGender === 'female') {
+      return option.labelFemale;
+    } else {
+      // Default para masculino se não tiver gender definido ou se for 'male'
+      return option.labelMale;
+    }
   }
 
   function closeModal() {
@@ -88,6 +130,15 @@
       }
     }
 
+    // Validação do telefone brasileiro
+    if (isFieldRequired('phone') && formData.phone) {
+      if (!validateBrazilianPhone(formData.phone)) {
+        message = 'Telefone deve estar no formato: (XX) XXXXX-XXXX ou (XX) XXXX-XXXX';
+        isSuccess = false;
+        return;
+      }
+    }
+
     loading = true;
     message = '';
 
@@ -101,7 +152,7 @@
         }
       });
 
-      const result = await api.completeProfile(dataToSend);
+      const result = await api.auth.completeProfile(dataToSend);
       message = 'Perfil completado com sucesso!';
       isSuccess = true;
 
@@ -198,7 +249,7 @@
               >
                 <option value="">Selecione...</option>
                 {#each civilStatusOptions as option}
-                  <option value={option.value}>{option.label}</option>
+                  <option value={option.value}>{getCivilStatusLabel(option)}</option>
                 {/each}
               </select>
             </div>
@@ -207,13 +258,12 @@
           {#if isFieldRequired('nationality')}
             <div class="form-group">
               <label for="nationality">Nacionalidade: *</label>
-              <input
-                type="text"
-                id="nationality"
-                bind:value={formData.nationality}
-                required
-                disabled={loading}
-              />
+              <select id="nationality" bind:value={formData.nationality} required disabled={loading}>
+                <option value="">Selecione...</option>
+                {#each nationalityOptions as option}
+                  <option value={option.value}>{option.label}</option>
+                {/each}
+              </select>
             </div>
           {/if}
 
@@ -237,9 +287,11 @@
                 type="tel"
                 id="phone"
                 bind:value={formData.phone}
-                placeholder="(00) 00000-0000"
+                placeholder="(45) 98405-5504"
                 required
                 disabled={loading}
+                on:input={formatPhoneInput}
+                maxlength="15"
               />
             </div>
           {/if}

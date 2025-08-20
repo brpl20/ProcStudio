@@ -88,6 +88,47 @@ module Api
         end
       end
 
+      def complete_profile
+        # Autorizar explicitamente para este método
+        authorize :user_profile, :complete?
+
+        user = @current_user
+        user_profile = user.user_profile
+
+        # Se não existe user_profile, criar um novo
+        user_profile = user.build_user_profile if user_profile.nil?
+
+        ActiveRecord::Base.transaction do
+          # Atualizar dados básicos do profile
+          basic_params = profile_completion_params.except(:phone)
+          user_profile.update!(basic_params) if basic_params.present?
+
+          # Lidar com telefone separadamente se fornecido
+          phone_number = params.dig(:user_profile, :phone)
+          create_or_update_phone(user_profile, phone_number) if phone_number.present?
+
+          render json: {
+            success: true,
+            message: 'Perfil completado com sucesso!',
+            data: UserProfileSerializer.new(user_profile).serializable_hash
+          }, status: :ok
+        end
+      rescue ActiveRecord::RecordInvalid => e
+        error_messages = e.record.errors.full_messages
+        render json: {
+          success: false,
+          message: error_messages.first,
+          errors: error_messages
+        }, status: :unprocessable_entity
+      rescue StandardError => e
+        Rails.logger.error "Error completing profile: #{e.message}"
+        render json: {
+          success: false,
+          message: 'Erro interno do servidor',
+          errors: [e.message]
+        }, status: :internal_server_error
+      end
+
       private
 
       def user_profiles_params
@@ -111,7 +152,37 @@ module Api
         @user_profile = UserProfile.with_deleted.find(params[:id])
       end
 
+      def profile_completion_params
+        params.expect(user_profile: [:cpf, :rg, :gender, :civil_status, :nationality, :birth, :phone])
+      end
+
+      def create_or_update_phone(user_profile, phone_number)
+        # Limpa o telefone (remove formatação)
+        clean_phone = phone_number.gsub(/\D/, '')
+
+        # Verifica se já existe um telefone
+        existing_phone_relation = user_profile.user_phones.first
+
+        if existing_phone_relation
+          # Atualiza o telefone existente
+          existing_phone_relation.phone.update!(phone_number: clean_phone)
+        else
+          # Cria novo telefone
+          phone = Phone.create!(
+            phone_number: clean_phone
+          )
+
+          UserPhone.create!(
+            user_profile: user_profile,
+            phone: phone
+          )
+        end
+      end
+
       def perform_authorization
+        # Skip authorization for complete_profile since it has explicit authorization
+        return if action_name == 'complete_profile'
+
         authorize [:admin, :work], :"#{action_name}?"
       end
     end

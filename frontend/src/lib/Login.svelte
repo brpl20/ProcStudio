@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { api } from './api';
+  import api from './api';
+  import type { LoginResponse } from './api';
 
   let email = '';
   let password = '';
@@ -7,7 +8,7 @@
   let message = '';
   let isSuccess = false;
 
-  export let onLoginSuccess: (result: any) => void = () => {};
+  export let onLoginSuccess: (result: LoginResponse) => void = () => {};
 
   async function handleSubmit() {
     if (!email || !password) {
@@ -20,18 +21,23 @@
     message = '';
 
     try {
-      const result = await api.login(email, password);
-      message = 'Login realizado com sucesso!';
-      isSuccess = true;
-
-      // Chama a função de callback para notificar o login
-      onLoginSuccess(result);
-
-      // Limpa o formulário
-      email = '';
-      password = '';
-    } catch (error) {
-      message = error.message;
+      const result = await api.auth.login(email, password);
+      
+      if (result.success) {
+        message = result.message || 'Login realizado com sucesso!';
+        isSuccess = true;
+        onLoginSuccess(result);
+        
+        // Limpa o formulário
+        email = '';
+        password = '';
+      } else {
+        message = result.message || 'Erro no login';
+        isSuccess = false;
+      }
+    } catch (error: any) {
+      console.error('Login error:', error);
+      message = error?.data?.message || error?.message || 'Erro no login. Tente novamente.';
       isSuccess = false;
     } finally {
       loading = false;

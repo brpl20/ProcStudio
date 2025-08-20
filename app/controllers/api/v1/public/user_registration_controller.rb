@@ -18,6 +18,9 @@ module Api
             # Se OAB foi fornecida, consultar API e criar UserProfile
             create_profile_from_oab(user) if user.oab.present?
 
+            # Recarregar user para pegar o user_profile que foi criado
+            user.reload
+
             render json: {
               success: true,
               message: 'User and team created successfully',
@@ -26,22 +29,26 @@ module Api
           end
         rescue ActiveRecord::RecordInvalid => e
           Rails.logger.error "Validation error creating user: #{e.message}"
+          error_messages = e.record.errors.full_messages
           render json: {
             success: false,
-            errors: e.record.errors.full_messages
+            message: error_messages.first, # Single user-friendly message
+            errors: error_messages # Array for detailed errors
           }, status: :unprocessable_entity
         rescue StandardError => e
           Rails.logger.error "Error creating user and team: #{e.message}"
+          error_message = 'Erro interno do servidor. Tente novamente.'
           render json: {
             success: false,
-            errors: ['Erro interno do servidor. Tente novamente.']
+            message: error_message,
+            errors: [error_message]
           }, status: :internal_server_error
         end
 
         private
 
         def user_params
-          params.require(:user).permit(:email, :password, :password_confirmation, :oab)
+          params.expect(user: [:email, :password, :password_confirmation, :oab])
         end
 
         def create_team_for_user
@@ -97,6 +104,8 @@ module Api
           oab_service = OabApiService.new
           lawyer_data = oab_service.find_lawyer(user.oab)
 
+          Rails.logger.info "OAB API returned data: #{lawyer_data.inspect}" if Rails.env.development?
+
           return unless lawyer_data
 
           ActiveRecord::Base.transaction do
@@ -105,10 +114,13 @@ module Api
               last_name: lawyer_data[:last_name],
               oab: lawyer_data[:oab],
               role: 'lawyer',
-              status: 'active'
+              status: 'active',
+              gender: lawyer_data[:gender]
               # Campos opcionais deixados em branco para serem preenchidos via modal
-              # civil_status, cpf, gender, nationality, rg, birth serão nil
+              # civil_status, cpf, nationality, rg, birth serão nil
             )
+
+            Rails.logger.info "Created UserProfile: #{user_profile.inspect}" if Rails.env.development?
 
             # Criar endereço se dados estiverem disponíveis
             create_address_from_data(user_profile, lawyer_data) if has_address_data?(lawyer_data)
@@ -117,7 +129,7 @@ module Api
             create_phone_from_data(user_profile, lawyer_data) if lawyer_data[:phone].present?
 
             # Salvar URL da foto do perfil como atributo temporário
-            user_profile.update_column(:origin, lawyer_data[:profile_picture_url]) if lawyer_data[:profile_picture_url]
+            user_profile.update(origin: lawyer_data[:profile_picture_url]) if lawyer_data[:profile_picture_url]
           end
         rescue StandardError => e
           Rails.logger.error "Error creating profile from OAB: #{e.message}"

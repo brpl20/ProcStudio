@@ -49,6 +49,10 @@ Rails.application.routes.draw do
         member do
           post :restore
         end
+
+        collection do
+          post :complete_profile
+        end
       end
 
       resources :works do
@@ -92,6 +96,9 @@ Rails.application.routes.draw do
 
       post '/login', to: 'auth#authenticate'
       delete '/logout', to: 'auth#destroy'
+
+      # Test route
+      get '/test', to: 'test#index'
 
       namespace :customer do
         post :login, to: 'auth#authenticate'

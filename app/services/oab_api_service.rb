@@ -43,10 +43,12 @@ class OabApiService
     principal = data['principal']
 
     {
-      full_name: principal['full_name'],
-      name: extract_first_name(principal['full_name']),
-      last_name: extract_last_name(principal['full_name']),
-      oab: principal['oab_number'],
+      full_name: capitalize_name(principal['full_name']),
+      name: capitalize_name(extract_first_name(principal['full_name'])),
+      last_name: capitalize_name(extract_last_name(principal['full_name'])),
+      oab: principal['oab_id'], # Usar oab_id que retorna formato PR_54160
+      profession: principal['profession'],
+      gender: gender_check(principal['profession']),
       city: principal['city'],
       state: principal['state'],
       address: principal['address'],
@@ -87,5 +89,19 @@ class OabApiService
 
     # Remove parênteses, espaços e hífens
     phone.gsub(/[\(\)\s\-]/, '')
+  end
+
+  def gender_check(profession)
+    return 'male' if profession == 'ADVOGADO'
+    return 'female' if profession == 'ADVOGADA'
+
+    nil
+  end
+
+  def capitalize_name(name)
+    return nil if name.blank?
+
+    # Capitaliza cada palavra corretamente
+    name.split.map(&:capitalize).join(' ')
   end
 end

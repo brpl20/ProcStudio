@@ -45,15 +45,25 @@ module Api
             user
           ), status: :created
         else
+          error_messages = user.errors.full_messages
           render(
             status: :bad_request,
-            json: { errors: [{ code: user.errors.full_messages }] }
+            json: {
+              success: false,
+              message: error_messages.first,
+              errors: error_messages
+            }
           )
         end
       rescue StandardError => e
+        error_message = e.message
         render(
           status: :bad_request,
-          json: { errors: [{ code: e }] }
+          json: {
+            success: false,
+            message: error_message,
+            errors: [error_message]
+          }
         )
       end
 
@@ -63,9 +73,14 @@ module Api
             @user
           ), status: :ok
         else
+          error_messages = @user.errors.full_messages
           render(
             status: :bad_request,
-            json: { errors: [{ code: @user.errors.full_messages }] }
+            json: {
+              success: false,
+              message: error_messages.first,
+              errors: error_messages
+            }
           )
         end
       end
@@ -86,9 +101,14 @@ module Api
             user
           ), status: :ok
         else
+          error_messages = user.errors.full_messages
           render(
             status: :bad_request,
-            json: { errors: [{ code: user.errors.full_messages }] }
+            json: {
+              success: false,
+              message: error_messages.first,
+              errors: error_messages
+            }
           )
         end
       end

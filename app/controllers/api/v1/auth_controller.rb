@@ -23,7 +23,7 @@ module Api
           else
             user_id = decoded_token['user_id'] || decoded_token['admin_id'] # backward compatibility
             current_user = User.find(user_id)
-            current_user.update_attribute(:jwt_token, nil)
+            current_user.update(jwt_token: nil)
             render json: { success: true, message: I18n.t('errors.messages.authentication.logout_success') }
           end
         end
@@ -34,14 +34,23 @@ module Api
       def authenticate_with_email_and_password
         user = User.find_for_authentication(email: auth_params[:email])
         if user&.valid_password?(auth_params[:password])
+          # Recarregar user para garantir que temos a versão mais atual com user_profile
+          user.reload
           user_profile = user.user_profile
           token = update_user_token(user, user_profile)
 
           response_data = build_auth_response(token, user_profile)
-          render json: response_data
+          render json: {
+            success: true,
+            message: response_data[:message] || 'Login realizado com sucesso',
+            data: response_data
+          }
         else
-          render json: { success: false, message: I18n.t('errors.messages.authentication.unauthorized') },
-                 status: :unauthorized
+          render json: {
+            success: false,
+            message: I18n.t('errors.messages.authentication.unauthorized'),
+            errors: [I18n.t('errors.messages.authentication.unauthorized')]
+          }, status: :unauthorized
         end
       end
 
@@ -98,12 +107,14 @@ module Api
             response[:message] = I18n.t('errors.messages.profile.incomplete')
           else
             response[:needs_profile_completion] = false
+            response[:message] = 'Login realizado com sucesso'
           end
 
           response[:role] = user_profile.role
           response[:name] = user_profile.name
           response[:last_name] = user_profile.last_name
           response[:oab] = user_profile.oab if user_profile.lawyer? && user_profile.oab.present?
+          response[:gender] = user_profile.gender if user_profile.gender.present?
         end
 
         response
