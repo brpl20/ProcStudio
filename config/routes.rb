@@ -7,6 +7,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
+      resources :law_areas
       # Public routes (no authentication required)
       namespace :public do
         post 'user_registration', to: 'user_registration#create'
@@ -88,12 +89,6 @@ Rails.application.routes.draw do
       put 'my_team', to: 'my_team#update'
       patch 'my_team', to: 'my_team#update'
       get 'my_team/members', to: 'my_team#members'
-
-      # Super admin routes (acesso total ao sistema)
-      namespace :super_admin do
-        get 'users'
-        get 'teams'
-      end
 
       post '/login', to: 'auth#authenticate'
       delete '/logout', to: 'auth#destroy'

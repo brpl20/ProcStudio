@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_18_233629) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_20_003847) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -245,6 +245,22 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_18_233629) do
     t.index ["work_id"], name: "index_jobs_on_work_id"
   end
 
+  create_table "law_areas", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "code", null: false
+    t.text "description"
+    t.boolean "active", default: true, null: false
+    t.integer "sort_order", default: 0
+    t.bigint "parent_area_id"
+    t.bigint "created_by_team_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_law_areas_on_active"
+    t.index ["code", "created_by_team_id", "parent_area_id"], name: "index_law_areas_unique_code", unique: true
+    t.index ["created_by_team_id"], name: "index_law_areas_on_created_by_team_id"
+    t.index ["parent_area_id"], name: "index_law_areas_on_parent_area_id"
+  end
+
   create_table "office_bank_accounts", force: :cascade do |t|
     t.bigint "bank_account_id", null: false
     t.bigint "office_id", null: false
@@ -356,6 +372,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_18_233629) do
     t.integer "category", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "is_base", default: false, null: false
+    t.bigint "created_by_team_id"
+    t.bigint "law_area_id"
+    t.index ["category", "law_area_id"], name: "index_powers_on_category_and_law_area_id"
+    t.index ["created_by_team_id"], name: "index_powers_on_created_by_team_id"
+    t.index ["is_base"], name: "index_powers_on_is_base"
+    t.index ["law_area_id"], name: "index_powers_on_law_area_id"
   end
 
   create_table "profile_customers", force: :cascade do |t|
@@ -609,6 +632,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_18_233629) do
   add_foreign_key "job_works", "works"
   add_foreign_key "jobs", "teams"
   add_foreign_key "jobs", "users", column: "created_by_id"
+  add_foreign_key "law_areas", "law_areas", column: "parent_area_id"
+  add_foreign_key "law_areas", "teams", column: "created_by_team_id"
   add_foreign_key "office_bank_accounts", "bank_accounts"
   add_foreign_key "office_bank_accounts", "offices"
   add_foreign_key "office_emails", "emails"
@@ -623,6 +648,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_18_233629) do
   add_foreign_key "pending_documents", "works"
   add_foreign_key "power_works", "powers"
   add_foreign_key "power_works", "works"
+  add_foreign_key "powers", "law_areas"
+  add_foreign_key "powers", "teams", column: "created_by_team_id"
   add_foreign_key "profile_customers", "customers"
   add_foreign_key "profile_customers", "users", column: "created_by_id"
   add_foreign_key "recommendations", "profile_customers"
