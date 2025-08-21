@@ -2,17 +2,17 @@
   import { WebsiteName } from '../config.js';
   import { authStore } from '../stores/authStore.js';
   import { router } from '../stores/routerStore.js';
-  
+
   export const activeSection = '';
-  
+
   $: isAuthenticated = $authStore.isAuthenticated;
   $: currentPath = $router.currentPath;
-  
+
   function handleLogout() {
     authStore.logout();
     router.navigate('/');
   }
-  
+
   function closeDrawer() {
     const adminDrawer = document.getElementById('admin-drawer');
     if (adminDrawer) {
@@ -50,7 +50,7 @@
         </label>
       </div>
     </div>
-    
+
     <!-- Conteúdo principal -->
     <div class="container px-6 lg:px-12 py-3 lg:py-6">
       <slot />
@@ -70,13 +70,15 @@
           <label for="admin-drawer" class="lg:hidden ml-3"> ✕ </label>
         </div>
       </li>
-      
+
       <!-- Dashboard -->
       <li>
         <a
           href="/dashboard"
           class={currentPath === '/dashboard' ? 'active' : ''}
-          on:click={() => { router.navigate('/dashboard'); closeDrawer(); }}
+          on:click|preventDefault={() => {
+            router.navigate('/dashboard'); closeDrawer();
+          }}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -95,13 +97,15 @@
           Dashboard
         </a>
       </li>
-      
+
       <!-- Admin -->
       <li>
         <a
           href="/admin"
           class={currentPath === '/admin' ? 'active' : ''}
-          on:click={() => { router.navigate('/admin'); closeDrawer(); }}
+          on:click|preventDefault={() => {
+            router.navigate('/admin'); closeDrawer();
+          }}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -120,13 +124,15 @@
           Admin
         </a>
       </li>
-      
+
       <!-- Configurações -->
       <li>
         <a
           href="/settings"
           class={currentPath === '/settings' ? 'active' : ''}
-          on:click={() => { router.navigate('/settings'); closeDrawer(); }}
+          on:click|preventDefault={() => {
+            router.navigate('/settings'); closeDrawer();
+          }}
         >
           <svg class="h-5 w-5" viewBox="0 0 24 24" stroke="none" fill="none">
             <g id="Interface / Settings">
@@ -151,13 +157,15 @@
           Configurações
         </a>
       </li>
-      
+
       <!-- Relatórios -->
       <li>
         <a
           href="/reports"
           class={currentPath === '/reports' ? 'active' : ''}
-          on:click={() => { router.navigate('/reports'); closeDrawer(); }}
+          on:click|preventDefault={() => {
+            router.navigate('/reports'); closeDrawer();
+          }}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -176,13 +184,15 @@
           Relatórios
         </a>
       </li>
-      
+
       <!-- Tarefas -->
       <li>
         <a
           href="/tasks"
           class={currentPath === '/tasks' ? 'active' : ''}
-          on:click={() => { router.navigate('/tasks'); closeDrawer(); }}
+          on:click|preventDefault={() => {
+            router.navigate('/tasks'); closeDrawer();
+          }}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -201,13 +211,15 @@
           Tarefas
         </a>
       </li>
-      
+
       <!-- Equipes (já existente) -->
       <li>
         <a
           href="/teams"
           class={currentPath === '/teams' ? 'active' : ''}
-          on:click={() => { router.navigate('/teams'); closeDrawer(); }}
+          on:click|preventDefault={() => {
+            router.navigate('/teams'); closeDrawer();
+          }}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

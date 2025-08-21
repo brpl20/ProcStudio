@@ -7,7 +7,7 @@
     <div class="card bg-base-100 shadow-xl">
       <div class="card-body">
         <h2 class="card-title text-3xl mb-6">📊 Relatórios</h2>
-        
+
         <!-- Filtros -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <div class="form-control">
@@ -21,7 +21,7 @@
               <option>Último ano</option>
             </select>
           </div>
-          
+
           <div class="form-control">
             <label class="label">
               <span class="label-text">Tipo</span>
@@ -33,7 +33,7 @@
               <option>Tarefas</option>
             </select>
           </div>
-          
+
           <div class="form-control">
             <label class="label">
               <span class="label-text">Status</span>
@@ -45,7 +45,7 @@
               <option>Pendente</option>
             </select>
           </div>
-          
+
           <div class="form-control">
             <label class="label">
               <span class="label-text">Ações</span>
@@ -53,7 +53,7 @@
             <button class="btn btn-primary">Gerar Relatório</button>
           </div>
         </div>
-        
+
         <!-- Cards de estatísticas -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <div class="stat bg-primary text-primary-content rounded-lg">
@@ -66,7 +66,7 @@
             <div class="stat-value">31K</div>
             <div class="stat-desc">Jan 1st - Fev 1st</div>
           </div>
-          
+
           <div class="stat bg-secondary text-secondary-content rounded-lg">
             <div class="stat-figure">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
@@ -77,7 +77,7 @@
             <div class="stat-value">4,200</div>
             <div class="stat-desc">↗︎ 400 (22%)</div>
           </div>
-          
+
           <div class="stat bg-accent text-accent-content rounded-lg">
             <div class="stat-figure">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
@@ -88,7 +88,7 @@
             <div class="stat-value">1,200</div>
             <div class="stat-desc">↘︎ 90 (14%)</div>
           </div>
-          
+
           <div class="stat bg-info text-info-content rounded-lg">
             <div class="stat-figure">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
@@ -100,7 +100,7 @@
             <div class="stat-desc">↗︎ 12% from last month</div>
           </div>
         </div>
-        
+
         <!-- Gráfico placeholder -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div class="card bg-base-200">
@@ -111,7 +111,7 @@
               </div>
             </div>
           </div>
-          
+
           <div class="card bg-base-200">
             <div class="card-body">
               <h3 class="card-title">🎯 Performance de Tarefas</h3>
@@ -121,11 +121,11 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Tabela de dados -->
         <div class="divider mt-8"></div>
         <h3 class="text-xl font-semibold mb-4">📋 Dados Detalhados</h3>
-        
+
         <div class="overflow-x-auto">
           <table class="table table-zebra w-full">
             <thead>
@@ -166,7 +166,7 @@
             </tbody>
           </table>
         </div>
-        
+
         <!-- Botões de exportação -->
         <div class="card-actions justify-end mt-6">
           <button class="btn btn-outline">📄 Exportar PDF</button>

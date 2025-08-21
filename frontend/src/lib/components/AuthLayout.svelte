@@ -11,14 +11,14 @@
       </a>
     </div>
   </div>
-  
+
   <!-- Conteúdo centralizado -->
   <div class="flex-1 flex items-center justify-center p-4">
     <div class="w-full max-w-md">
       <slot />
     </div>
   </div>
-  
+
   <!-- Footer minimalista -->
   <div class="text-center py-6 text-sm opacity-60">
     <p>&copy; 2025 {WebsiteName}. Todos os direitos reservados.</p>

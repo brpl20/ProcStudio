@@ -7,7 +7,7 @@
     <div class="card bg-base-100 shadow-xl">
       <div class="card-body">
         <h2 class="card-title text-3xl mb-6">⚙️ Administração</h2>
-        
+
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <!-- Usuários -->
           <div class="card bg-primary text-primary-content">
@@ -19,7 +19,7 @@
               </div>
             </div>
           </div>
-          
+
           <!-- Permissões -->
           <div class="card bg-secondary text-secondary-content">
             <div class="card-body">
@@ -30,7 +30,7 @@
               </div>
             </div>
           </div>
-          
+
           <!-- Sistema -->
           <div class="card bg-accent text-accent-content">
             <div class="card-body">
@@ -41,7 +41,7 @@
               </div>
             </div>
           </div>
-          
+
           <!-- Logs -->
           <div class="card bg-info text-info-content">
             <div class="card-body">
@@ -52,7 +52,7 @@
               </div>
             </div>
           </div>
-          
+
           <!-- Backup -->
           <div class="card bg-warning text-warning-content">
             <div class="card-body">
@@ -63,7 +63,7 @@
               </div>
             </div>
           </div>
-          
+
           <!-- Manutenção -->
           <div class="card bg-error text-error-content">
             <div class="card-body">
@@ -75,7 +75,7 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Stats do sistema -->
         <div class="divider mt-8"></div>
         <div class="stats shadow">
@@ -89,7 +89,7 @@
             <div class="stat-value text-primary">25</div>
             <div class="stat-desc">21% mais que o mês passado</div>
           </div>
-          
+
           <div class="stat">
             <div class="stat-figure text-secondary">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
@@ -100,7 +100,7 @@
             <div class="stat-value text-secondary">99.9%</div>
             <div class="stat-desc">Sistema estável</div>
           </div>
-          
+
           <div class="stat">
             <div class="stat-figure text-primary">
               <div class="avatar online">
