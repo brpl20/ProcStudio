@@ -53,9 +53,11 @@ module Api
           )
         end
       rescue StandardError => e
+        Rails.logger.error "Customer creation error: #{e.class} - #{e.message}"
+        Rails.logger.error e.backtrace.first(10).join("\n") if e.backtrace
         render(
           status: :bad_request,
-          json: { errors: [{ code: e }] }
+          json: { errors: [{ code: e.message }] }
         )
       end
 
@@ -111,8 +113,8 @@ module Api
       private
 
       def customers_params
-        params.require(:customer).permit(
-          :email, :access_email, :password, :password_confirmation, :status
+        params.expect(
+          customer: [:email, :access_email, :password, :password_confirmation, :status]
         )
       end
 

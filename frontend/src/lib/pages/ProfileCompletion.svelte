@@ -1,5 +1,5 @@
 <script lang="ts">
-  import api from './api';
+  import api from '../api/index';
 
   export let isOpen = false;
   export let userData: any = {};

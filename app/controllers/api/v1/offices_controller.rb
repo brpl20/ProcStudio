@@ -103,20 +103,20 @@ module Api
       end
 
       def offices_params
-        params.require(:office).permit(
-          :name, :cnpj,
-          :oab, :society,
-          :foundation, :site,
-          :zip_code, :street,
-          :number, :neighborhood,
-          :city, :state,
-          :logo,
-          :accounting_type,
-          :office_type_id,
-          :responsible_lawyer_id,
-          phones_attributes: [:id, :phone_number],
-          emails_attributes: [:id, :email],
-          bank_accounts_attributes: [:id, :bank_name, :type_account, :agency, :account, :operation, :pix]
+        params.expect(
+          office: [:name, :cnpj,
+                   :oab, :society,
+                   :foundation, :site,
+                   :zip_code, :street,
+                   :number, :neighborhood,
+                   :city, :state,
+                   :logo,
+                   :accounting_type,
+                   :office_type_id,
+                   :responsible_lawyer_id,
+                   { phones_attributes: [:id, :phone_number],
+                     emails_attributes: [:id, :email],
+                     bank_accounts_attributes: [:id, :bank_name, :type_account, :agency, :account, :operation, :pix] }]
         )
       end
 

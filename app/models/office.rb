@@ -46,9 +46,9 @@ class Office < ApplicationRecord
 
   belongs_to :team
   belongs_to :office_type
-  belongs_to :responsible_lawyer, class_name: 'ProfileAdmin', optional: true
+  belongs_to :responsible_lawyer, class_name: 'UserProfile', optional: true
 
-  has_many :profile_admins, dependent: :destroy
+  has_many :user_profiles, dependent: :destroy
 
   validate :responsible_lawyer_same_team, if: -> { responsible_lawyer.present? }
   has_one_attached :logo
@@ -93,6 +93,6 @@ class Office < ApplicationRecord
   private
 
   def responsible_lawyer_same_team
-    errors.add(:responsible_lawyer, 'deve pertencer ao mesmo team') unless responsible_lawyer.admin.team == team
+    errors.add(:responsible_lawyer, 'deve pertencer ao mesmo team') unless responsible_lawyer.user.team == team
   end
 end

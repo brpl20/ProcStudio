@@ -1,5 +1,5 @@
 <script>
-  import api from './api';
+  import api from './api/index';
 
   let connectionTestResult = null;
   let usersListResult = null;

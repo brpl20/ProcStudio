@@ -1,8 +1,8 @@
 <script>
-  import AdminLayout from '../components/AdminLayout.svelte';
+  import AuthSidebar from '../components/AuthSidebar.svelte';
 </script>
 
-<AdminLayout activeSection="settings">
+<AuthSidebar activeSection="settings">
   <div class="container mx-auto">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Menu de configurações -->
@@ -33,14 +33,22 @@
               <label class="label">
                 <span class="label-text">Nome de usuário</span>
               </label>
-              <input type="text" placeholder="Digite seu nome" class="input input-bordered w-full max-w-xs" />
+              <input
+                type="text"
+                placeholder="Digite seu nome"
+                class="input input-bordered w-full max-w-xs"
+              />
             </div>
 
             <div class="form-control w-full max-w-xs">
               <label class="label">
                 <span class="label-text">Email</span>
               </label>
-              <input type="email" placeholder="seu@email.com" class="input input-bordered w-full max-w-xs" />
+              <input
+                type="email"
+                placeholder="seu@email.com"
+                class="input input-bordered w-full max-w-xs"
+              />
             </div>
 
             <div class="divider"></div>
@@ -110,4 +118,4 @@
       </div>
     </div>
   </div>
-</AdminLayout>
+</AuthSidebar>

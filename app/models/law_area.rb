@@ -30,7 +30,8 @@
 class LawArea < ApplicationRecord
   # Relacionamento hierárquico
   belongs_to :parent_area, class_name: 'LawArea', optional: true
-  has_many :sub_areas, class_name: 'LawArea', foreign_key: 'parent_area_id', dependent: :destroy, inverse_of: :parent_area
+  has_many :sub_areas, class_name: 'LawArea', foreign_key: 'parent_area_id', dependent: :destroy,
+                       inverse_of: :parent_area
 
   # Relacionamento com team e powers
   belongs_to :created_by_team, class_name: 'Team', optional: true

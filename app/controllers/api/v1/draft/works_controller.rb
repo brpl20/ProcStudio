@@ -95,7 +95,7 @@ class Api::V1::Draft::WorksController < BackofficeController
   end
 
   def draft_work_params
-    params.require(:draft_work).permit(:name, :work_id)
+    params.expect(draft_work: [:name, :work_id])
   end
 
   def perform_authorization

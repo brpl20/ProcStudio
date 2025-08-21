@@ -31,7 +31,7 @@ module Api
       end
 
       def document_params
-        params.require(:document).permit(:file)
+        params.expect(document: [:file])
       end
 
       def handle_signed_pdf

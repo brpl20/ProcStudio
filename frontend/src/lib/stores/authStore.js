@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import api from '../api';
+import api from '../api/index';
 
 function createAuthStore() {
   const { subscribe, set, update } = writable({

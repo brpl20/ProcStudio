@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
+require 'sidekiq/web' if defined?(Sidekiq)
+
 Rails.application.routes.draw do
+  # Mount Sidekiq Web UI (only in development/staging, protect in production)
+  mount Sidekiq::Web => '/sidekiq' if Rails.env.development? || Rails.env.staging?
+
   root to: proc { [200, {}, ['API running']] }
 
   get '/api/v1/customer/document' => 'profile_customers#prepare_document'

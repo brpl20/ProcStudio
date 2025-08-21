@@ -1,6 +1,6 @@
 <script>
-  import AdminLayout from '../components/AdminLayout.svelte';
-  import api from '../api';
+  import AuthSidebar from '../components/AuthSidebar.svelte';
+  import api from '../api/index';
   import { onMount } from 'svelte';
 
   let tasks = [];
@@ -38,7 +38,7 @@
       if (result.success) {
         tasks = result.data || [];
         success = 'Tarefas carregadas com sucesso';
-        setTimeout(() => success = '', 3000);
+        setTimeout(() => (success = ''), 3000);
       } else {
         error = result.message || 'Erro ao carregar tarefas';
       }
@@ -75,7 +75,7 @@
         await loadTasks(); // Reload tasks
         success = 'Tarefa criada com sucesso';
         resetNewTaskForm();
-        setTimeout(() => success = '', 3000);
+        setTimeout(() => (success = ''), 3000);
       } else {
         error = result.message || 'Erro ao criar tarefa';
       }
@@ -97,7 +97,7 @@
       if (result.success) {
         await loadTasks(); // Reload tasks
         success = 'Status atualizado com sucesso';
-        setTimeout(() => success = '', 3000);
+        setTimeout(() => (success = ''), 3000);
       } else {
         error = result.message || 'Erro ao atualizar status';
       }
@@ -133,7 +133,7 @@
         await loadTasks(); // Reload tasks
         success = 'Tarefa atualizada com sucesso';
         cancelEdit();
-        setTimeout(() => success = '', 3000);
+        setTimeout(() => (success = ''), 3000);
       } else {
         error = result.message || 'Erro ao atualizar tarefa';
       }
@@ -159,7 +159,7 @@
       if (result.success) {
         await loadTasks(); // Reload tasks
         success = 'Tarefa excluída com sucesso';
-        setTimeout(() => success = '', 3000);
+        setTimeout(() => (success = ''), 3000);
       } else {
         error = result.message || 'Erro ao excluir tarefa';
       }
@@ -200,66 +200,66 @@
 
   function getStatusBadge(status) {
     switch (status) {
-    case 'completed':
-      return 'badge-success';
-    case 'in_progress':
-      return 'badge-warning';
-    case 'pending':
-      return 'badge-error';
-    case 'cancelled':
-      return 'badge-neutral';
-    default:
-      return 'badge-ghost';
+      case 'completed':
+        return 'badge-success';
+      case 'in_progress':
+        return 'badge-warning';
+      case 'pending':
+        return 'badge-error';
+      case 'cancelled':
+        return 'badge-neutral';
+      default:
+        return 'badge-ghost';
     }
   }
 
   function getPriorityBadge(priority) {
     switch (priority) {
-    case 'urgent':
-      return 'badge-error';
-    case 'high':
-      return 'badge-warning';
-    case 'medium':
-      return 'badge-info';
-    case 'low':
-      return 'badge-success';
-    default:
-      return 'badge-ghost';
+      case 'urgent':
+        return 'badge-error';
+      case 'high':
+        return 'badge-warning';
+      case 'medium':
+        return 'badge-info';
+      case 'low':
+        return 'badge-success';
+      default:
+        return 'badge-ghost';
     }
   }
 
   function getStatusLabel(status) {
     switch (status) {
-    case 'pending':
-      return 'Pendente';
-    case 'in_progress':
-      return 'Em Progresso';
-    case 'completed':
-      return 'Concluída';
-    case 'cancelled':
-      return 'Cancelada';
-    default:
-      return status;
+      case 'pending':
+        return 'Pendente';
+      case 'in_progress':
+        return 'Em Progresso';
+      case 'completed':
+        return 'Concluída';
+      case 'cancelled':
+        return 'Cancelada';
+      default:
+        return status;
     }
   }
 
   function getPriorityLabel(priority) {
     switch (priority) {
-    case 'low':
-      return 'Baixa';
-    case 'medium':
-      return 'Média';
-    case 'high':
-      return 'Alta';
-    case 'urgent':
-      return 'Urgente';
-    default:
-      return priority;
+      case 'low':
+        return 'Baixa';
+      case 'medium':
+        return 'Média';
+      case 'high':
+        return 'Alta';
+      case 'urgent':
+        return 'Urgente';
+      default:
+        return priority;
     }
   }
 </script>
 
-<AdminLayout>
+<AuthSidebar>
   <div class="container mx-auto py-6">
     <div class="card bg-base-100 shadow-xl">
       <div class="card-body">
@@ -267,7 +267,7 @@
           <h2 class="card-title text-3xl">📋 Tarefas</h2>
           <button
             class="btn btn-primary"
-            on:click={() => showNewTaskForm = !showNewTaskForm}
+            on:click={() => (showNewTaskForm = !showNewTaskForm)}
             disabled={isLoading}
           >
             + Nova Tarefa
@@ -311,7 +311,11 @@
                   <label class="label">
                     <span class="label-text">Prioridade</span>
                   </label>
-                  <select class="select select-bordered" bind:value={newTaskPriority} disabled={isLoading}>
+                  <select
+                    class="select select-bordered"
+                    bind:value={newTaskPriority}
+                    disabled={isLoading}
+                  >
                     <option value="low">Baixa</option>
                     <option value="medium">Média</option>
                     <option value="high">Alta</option>
@@ -432,14 +436,20 @@
                     </td>
                     <td>
                       {#if editingTask && editingTask.id === task.id}
-                        <select class="select select-sm select-bordered" bind:value={editPriority} disabled={isLoading}>
+                        <select
+                          class="select select-sm select-bordered"
+                          bind:value={editPriority}
+                          disabled={isLoading}
+                        >
                           <option value="low">Baixa</option>
                           <option value="medium">Média</option>
                           <option value="high">Alta</option>
                           <option value="urgent">Urgente</option>
                         </select>
                       {:else}
-                        <span class="badge {getPriorityBadge(task.priority)}">{getPriorityLabel(task.priority)}</span>
+                        <span class="badge {getPriorityBadge(task.priority)}"
+                          >{getPriorityLabel(task.priority)}</span
+                        >
                       {/if}
                     </td>
                     <td>
@@ -530,4 +540,4 @@
       </div>
     </div>
   </div>
-</AdminLayout>
+</AuthSidebar>

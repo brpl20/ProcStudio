@@ -25,8 +25,7 @@
 class CustomerWorkSerializer
   include JSONAPI::Serializer
 
-  attributes :procedure, :subject, :number, :civel_area, :social_security_areas,
-             :other_description, :laborite_areas, :tributary_areas, :physical_lawyer, :responsible_lawyer,
+  attributes :procedure, :law_area_id, :number, :other_description, :physical_lawyer, :responsible_lawyer,
              :partner_lawyer, :intern, :bachelor, :initial_atendee, :note, :folder, :rate_parceled_exfield,
              :extra_pending_document, :compensations_five_years, :compensations_service, :lawsuit,
              :gain_projection, :procedures, :honorary, :status
@@ -59,12 +58,13 @@ class CustomerWorkSerializer
     }
   end
 
-  attribute :profile_admins do |object|
-    object.profile_admins.map do |profile|
+  attribute :user_profiles do |object|
+    object.user_profiles.map do |profile|
       {
         id: profile.id,
         name: profile.name,
-        email: profile.admin.email
+        email: profile.user.email,
+        role: profile.role
       }
     end
   end
@@ -112,8 +112,9 @@ class CustomerWorkSerializer
   end
 
   attribute :initial_atendee do |object|
-    atendee = ProfileAdmin.find(object.initial_atendee)
+    return {} unless object.initial_atendee
 
+    atendee = UserProfile.find(object.initial_atendee)
     {
       id: atendee.id,
       full_name: atendee.full_name
@@ -123,14 +124,27 @@ class CustomerWorkSerializer
   end
 
   attribute :responsible_lawyer do |object|
-    lawyer = ProfileAdmin.find(object.responsible_lawyer)
+    return {} unless object.responsible_lawyer
 
+    lawyer = UserProfile.find(object.responsible_lawyer)
     {
       id: lawyer.id,
       full_name: lawyer.full_name
     }
   rescue ActiveRecord::RecordNotFound
     {}
+  end
+
+  attribute :law_area do |object|
+    if object.law_area
+      {
+        id: object.law_area.id,
+        name: object.law_area.name,
+        full_name: object.law_area.full_name,
+        code: object.law_area.code,
+        parent_area_id: object.law_area.parent_area_id
+      }
+    end
   end
 
   attribute :work_events do |object|

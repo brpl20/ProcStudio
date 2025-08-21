@@ -7,13 +7,20 @@
  */
 
 import { HttpClient } from './utils/http-client';
-import { AuthService, UserService, TeamService, LawAreaService, PowerService, JobService } from './services';
+import {
+  AuthService,
+  UserService,
+  TeamService,
+  LawAreaService,
+  PowerService,
+  JobService
+} from './services';
 
 // Re-export types for convenience
 export * from './types';
 
 // Re-export configuration
-export { API_CONFIG, API_ENDPOINTS } from './config';
+export { API_CONFIG, API_ENDPOINTS } from './config.ts';
 
 /**
  * Main API class that aggregates all services

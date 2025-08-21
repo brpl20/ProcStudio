@@ -12,8 +12,8 @@ class OfficeFilter
 
     def retrieve_offices_with_lawyers
       Office
-        .includes(:profile_admins)
-        .where(profile_admins: { role: 'lawyer' })
+        .includes(:user_profiles)
+        .where(user_profiles: { role: 'lawyer' })
     end
   end
 end

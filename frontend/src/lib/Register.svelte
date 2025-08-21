@@ -1,6 +1,6 @@
 <script lang="ts">
-  import api from './api';
-  import type { RegisterResponse } from './api';
+  import api from './api/index';
+  import type { RegisterResponse } from './api/index';
   import { validateAndNormalizeOab } from './oabValidator';
 
   let email = '';

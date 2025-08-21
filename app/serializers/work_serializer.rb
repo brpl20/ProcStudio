@@ -6,7 +6,6 @@
 #
 #  id                                                                   :bigint           not null, primary key
 #  bachelor                                                             :integer
-#  civel_area(Civil aréas)                                              :string
 #  compensations_five_years(Compensações realizadas nos últimos 5 anos) :boolean
 #  compensations_service(Compensações de oficio)                        :boolean
 #  deleted_at                                                           :datetime
@@ -15,7 +14,6 @@
 #  gain_projection(Projeção de ganho)                                   :string
 #  initial_atendee                                                      :integer
 #  intern                                                               :integer
-#  laborite_areas(Trabalhista aréas)                                    :string
 #  lawsuit(Possui ação Judicial)                                        :boolean
 #  note                                                                 :string
 #  number                                                               :integer
@@ -26,31 +24,31 @@
 #  procedures                                                           :text             default([]), is an Array
 #  rate_parceled_exfield                                                :string
 #  responsible_lawyer                                                   :integer
-#  social_security_areas(Previdênciário aréas)                          :string
 #  status                                                               :string           default("in_progress")
 #  subject                                                              :string
-#  tributary_areas(Tributário aréas)                                    :string
 #  created_at                                                           :datetime         not null
 #  updated_at                                                           :datetime         not null
 #  created_by_id                                                        :bigint
+#  law_area_id                                                          :bigint
 #  team_id                                                              :bigint           not null
 #
 # Indexes
 #
 #  index_works_on_created_by_id  (created_by_id)
 #  index_works_on_deleted_at     (deleted_at)
+#  index_works_on_law_area_id    (law_area_id)
 #  index_works_on_team_id        (team_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (created_by_id => users.id)
+#  fk_rails_...  (law_area_id => law_areas.id)
 #  fk_rails_...  (team_id => teams.id)
 #
 class WorkSerializer
   include JSONAPI::Serializer
 
-  attributes :procedure, :subject, :number, :civel_area, :social_security_areas,
-             :other_description, :laborite_areas, :tributary_areas, :physical_lawyer, :responsible_lawyer,
+  attributes :procedure, :law_area_id, :number, :other_description, :physical_lawyer, :responsible_lawyer,
              :partner_lawyer, :intern, :bachelor, :initial_atendee, :note, :folder, :rate_parceled_exfield,
              :extra_pending_document, :compensations_five_years, :compensations_service, :lawsuit,
              :gain_projection, :procedures, :honorary, :created_by_id, :status
@@ -79,12 +77,13 @@ class WorkSerializer
     end
   end
 
-  attribute :profile_admins do |object|
-    object.profile_admins.map do |profile|
+  attribute :user_profiles do |object|
+    object.user_profiles.map do |profile|
       {
         id: profile.id,
         name: profile.name,
-        email: profile.admin.email
+        email: profile.user.email,
+        role: profile.role
       }
     end
   end
@@ -139,6 +138,18 @@ class WorkSerializer
         description: work_event.description,
         date: work_event.date,
         work_id: work_event.work_id
+      }
+    end
+  end
+
+  attribute :law_area do |object|
+    if object.law_area
+      {
+        id: object.law_area.id,
+        name: object.law_area.name,
+        full_name: object.law_area.full_name,
+        code: object.law_area.code,
+        parent_area_id: object.law_area.parent_area_id
       }
     end
   end

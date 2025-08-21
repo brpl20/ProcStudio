@@ -1,6 +1,6 @@
 <script lang="ts">
-  import api from './api';
-  import type { LoginResponse } from './api';
+  import api from './api/index';
+  import type { LoginResponse } from './api/index';
 
   let email = '';
   let password = '';

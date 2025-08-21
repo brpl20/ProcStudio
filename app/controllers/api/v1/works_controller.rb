@@ -13,7 +13,8 @@ module Api
       def index
         works = team_scoped(Work).includes(
           :profile_customers,
-          :profile_admins,
+          :user_profiles,
+          :law_area,
           :powers,
           :recommendations,
           :jobs,
@@ -130,20 +131,21 @@ module Api
       end
 
       def work_params
-        params.require(:work).permit(
-          :procedure, :subject, :number, :folder, :initial_atendee, :note, :extra_pending_document,
-          :civel_area, :social_security_areas, :laborite_areas, :tributary_areas, :other_description,
-          :compensations_five_years, :compensations_service, :lawsuit, :gain_projection, :physical_lawyer,
-          :responsible_lawyer, :partner_lawyer, :intern, :bachelor, :rate_parceled_exfield, :status,
-          documents_attributes: [:id, :document_type, :profile_customer_id],
-          pending_documents_attributes: [:id, :description, :profile_customer_id],
-          recommendations_attributes: [:id, :percentage, :commission, :profile_customer_id],
-          honorary_attributes: [:id, :fixed_honorary_value, :parcelling_value, :honorary_type, :percent_honorary_value, :parcelling, :work_prev],
-          power_ids: [],
-          profile_customer_ids: [],
-          profile_admin_ids: [],
-          office_ids: [],
-          procedures: []
+        params.expect(
+          work: [:procedure, :law_area_id, :number, :folder, :initial_atendee, :note, :extra_pending_document,
+                 :other_description, :compensations_five_years, :compensations_service, :lawsuit, :gain_projection,
+                 :physical_lawyer, :responsible_lawyer, :partner_lawyer, :intern, :bachelor, :rate_parceled_exfield,
+                 :status,
+                 { documents_attributes: [:id, :document_type, :profile_customer_id],
+                   pending_documents_attributes: [:id, :description, :profile_customer_id],
+                   recommendations_attributes: [:id, :percentage, :commission, :profile_customer_id],
+                   honorary_attributes: [:id, :fixed_honorary_value, :parcelling_value, :honorary_type,
+                                         :percent_honorary_value, :parcelling, :work_prev],
+                   power_ids: [],
+                   profile_customer_ids: [],
+                   user_profile_ids: [],
+                   office_ids: [],
+                   procedures: [] }]
         )
       end
 

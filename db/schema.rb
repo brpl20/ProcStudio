@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_20_003847) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_21_105414) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -573,7 +573,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_20_003847) do
 
   create_table "works", force: :cascade do |t|
     t.string "procedure"
-    t.string "subject"
     t.integer "number"
     t.string "rate_parceled_exfield"
     t.string "folder"
@@ -581,10 +580,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_20_003847) do
     t.string "extra_pending_document"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "civel_area", comment: "Civil aréas"
-    t.string "social_security_areas", comment: "Previdênciário aréas"
-    t.string "laborite_areas", comment: "Trabalhista aréas"
-    t.string "tributary_areas", comment: "Tributário aréas"
     t.text "other_description", comment: "Descrição do outro tipo de assunto"
     t.boolean "compensations_five_years", comment: "Compensações realizadas nos últimos 5 anos"
     t.boolean "compensations_service", comment: "Compensações de oficio"
@@ -601,8 +596,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_20_003847) do
     t.string "status", default: "in_progress"
     t.datetime "deleted_at"
     t.bigint "team_id", null: false
+    t.bigint "law_area_id"
     t.index ["created_by_id"], name: "index_works_on_created_by_id"
     t.index ["deleted_at"], name: "index_works_on_deleted_at"
+    t.index ["law_area_id"], name: "index_works_on_law_area_id"
     t.index ["team_id"], name: "index_works_on_team_id"
   end
 
@@ -672,6 +669,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_20_003847) do
   add_foreign_key "user_profiles", "users"
   add_foreign_key "users", "teams"
   add_foreign_key "work_events", "works"
+  add_foreign_key "works", "law_areas"
   add_foreign_key "works", "teams"
   add_foreign_key "works", "users", column: "created_by_id"
 end

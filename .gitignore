@@ -42,3 +42,7 @@
 /config/credentials/development.key
 /config/credentials/staging.key
 /coverage
+
+# ClaudeOnRails
+.claude-on-rails/sessions/
+swarm.log

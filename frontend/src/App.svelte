@@ -13,7 +13,7 @@
   import SettingsPage from './lib/pages/SettingsPage.svelte';
   import ReportsPage from './lib/pages/ReportsPage.svelte';
   import TasksPage from './lib/pages/TasksPage.svelte';
-  import ProfileCompletion from './lib/ProfileCompletion.svelte';
+  import ProfileCompletion from './lib/pages/ProfileCompletion.svelte';
 
   // Reactive stores
   $: ({ isAuthenticated, showProfileCompletion, profileData, missingFields } = $authStore);
@@ -25,7 +25,13 @@
   function getComponent(path, isAuth) {
     if (
       !isAuth &&
-      (path === '/dashboard' || path === '/teams' || path === '/admin' || path === '/settings' || path === '/reports' || path === '/tasks' || path === '/documents')
+      (path === '/dashboard' ||
+        path === '/teams' ||
+        path === '/admin' ||
+        path === '/settings' ||
+        path === '/reports' ||
+        path === '/tasks' ||
+        path === '/documents')
     ) {
       router.navigate('/login');
       return LoginPage;

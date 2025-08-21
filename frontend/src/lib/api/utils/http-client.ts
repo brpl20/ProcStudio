@@ -64,22 +64,10 @@ export class HttpClient {
     ApiLogger.logRequest(method, url, body);
 
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-      const response = await fetch(url, {
-        ...requestOptions,
-        signal: controller.signal
-      });
-
-      clearTimeout(timeoutId);
-
+      const response = await fetch(url, requestOptions);
       const data = await this.handleResponse<T>(response, method);
       return data;
     } catch (error) {
-      if (error.name === 'AbortError') {
-        throw new Error('Request timeout');
-      }
       ApiLogger.logError(`${method} ${endpoint}`, error);
       throw error;
     }

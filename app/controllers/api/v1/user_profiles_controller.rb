@@ -137,8 +137,10 @@ module Api
                          :rg, :cpf, :nationality, :civil_status, :birth, :mother_name, :origin,
                          { user_attributes: [:id, :email, :access_email, :password, :password_confirmation],
                            office_attributes: [:name, :cnpj],
-                           addresses_attributes: [:id, :description, :zip_code, :street, :number, :neighborhood, :city, :state],
-                           bank_accounts_attributes: [:id, :bank_name, :type_account, :agency, :account, :operation, :pix],
+                           addresses_attributes: [:id, :description, :zip_code, :street, :number, :neighborhood, :city,
+                                                  :state],
+                           bank_accounts_attributes: [:id, :bank_name, :type_account, :agency, :account, :operation,
+                                                      :pix],
                            phones_attributes: [:id, :phone_number],
                            emails_attributes: [:id, :email] }]
         )

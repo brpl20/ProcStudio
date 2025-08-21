@@ -4,7 +4,8 @@
  */
 
 export const API_CONFIG = {
-  BASE_URL: 'http://localhost:3000/api/v1',
+  // Use relative URL to leverage Vite proxy in development
+  BASE_URL: import.meta.env.DEV ? '/api/v1' : 'http://localhost:3000/api/v1',
   DEBUG_MODE: true,
   TIMEOUT: 30000
 } as const;

@@ -25,13 +25,12 @@ class Draft::WorkSerializer
 
   attributes :name, :work_id
 
-  attributes :procedure, :subject, :number, :civel_area, :social_security_areas,
-             :other_description, :laborite_areas, :tributary_areas, :physical_lawyer,
+  attributes :procedure, :law_area_id, :number, :other_description, :physical_lawyer,
              :responsible_lawyer, :partner_lawyer, :intern, :bachelor, :initial_atendee,
              :note, :folder, :rate_parceled_exfield, :extra_pending_document,
              :compensations_five_years, :compensations_service, :lawsuit, :gain_projection,
-             :procedures, :offices, :honorary, :profile_customers, :profile_admins,
-             :powers, :recommendations, :jobs, :pending_documents, :documents,
+             :procedures, :offices, :honorary, :profile_customers, :user_profiles,
+             :powers, :recommendations, :jobs, :pending_documents, :documents, :law_area,
              if: proc { |_, options| options[:action] == 'show' }
 
   attribute :honorary do |object|
@@ -67,12 +66,13 @@ class Draft::WorkSerializer
     end
   end
 
-  attribute :profile_admins do |object|
-    object.profile_admins.map do |profile|
+  attribute :user_profiles do |object|
+    object.user_profiles.map do |profile|
       {
         id: profile.id,
         name: profile.full_name,
-        email: profile.admin.email
+        email: profile.user.email,
+        role: profile.role
       }
     end
   end
@@ -122,6 +122,18 @@ class Draft::WorkSerializer
     object.documents.map do |document|
       {
         document_type: document.document_type
+      }
+    end
+  end
+
+  attribute :law_area do |object|
+    if object.law_area
+      {
+        id: object.law_area.id,
+        name: object.law_area.name,
+        full_name: object.law_area.full_name,
+        code: object.law_area.code,
+        parent_area_id: object.law_area.parent_area_id
       }
     end
   end

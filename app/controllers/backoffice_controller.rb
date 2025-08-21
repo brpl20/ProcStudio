@@ -11,6 +11,9 @@ class BackofficeController < ApplicationController
   rescue_from Pundit::NotAuthorizedError, with: :unauthorized
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
+  # Helper method to access current_user
+  attr_reader :current_user
+
   # Pundit usa current_user por padrão, mas podemos sobrescrever com pundit_user
   def pundit_user
     @current_user

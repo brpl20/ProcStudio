@@ -42,23 +42,24 @@ class Api::V1::Customer::ProfileCustomersController < FrontofficeController
   end
 
   def profile_customers_params
-    params.require(:profile_customer).permit(
-      :customer_type, :name, :status, :customer_id, :last_name,
-      :cpf, :rg, :birth, :gender, :cnpj,
-      :civil_status, :nationality,
-      :capacity, :profession,
-      :company,
-      :number_benefit,
-      :nit, :mother_name,
-      :inss_password,
-      :accountant_id,
-      addresses_attributes: [:id, :description, :zip_code, :street, :number, :neighborhood, :city, :state],
-      bank_accounts_attributes: [:id, :bank_name, :type_account, :agency, :account, :operation, :pix],
-      customer_attributes: [:id, :email, :password, :password_confirmation],
-      phones_attributes: [:id, :phone_number],
-      emails_attributes: [:id, :email],
-      represent_attributes: [:id, :representor_id],
-      customer_files_attributes: [:id, :file_description]
+    params.expect(
+      profile_customer: [:customer_type, :name, :status, :customer_id, :last_name,
+                         :cpf, :rg, :birth, :gender, :cnpj,
+                         :civil_status, :nationality,
+                         :capacity, :profession,
+                         :company,
+                         :number_benefit,
+                         :nit, :mother_name,
+                         :inss_password,
+                         :accountant_id,
+                         { addresses_attributes: [:id, :description, :zip_code, :street, :number, :neighborhood, :city, :state],
+                           bank_accounts_attributes: [:id, :bank_name, :type_account, :agency, :account, :operation,
+                                                      :pix],
+                           customer_attributes: [:id, :email, :password, :password_confirmation],
+                           phones_attributes: [:id, :phone_number],
+                           emails_attributes: [:id, :email],
+                           represent_attributes: [:id, :representor_id],
+                           customer_files_attributes: [:id, :file_description] }]
     )
   end
 end

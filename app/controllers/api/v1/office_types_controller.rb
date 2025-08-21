@@ -65,7 +65,7 @@ module Api
       private
 
       def office_types_params
-        params.require(:office_type).permit(:description)
+        params.expect(office_type: [:description])
       end
 
       def retrieve_office_type

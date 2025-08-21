@@ -3,9 +3,29 @@
 class LawAreaSerializer
   include JSONAPI::Serializer
 
-  attributes :id, :name, :code, :description, :active, :sort_order
+  attributes :name, :code, :description, :active, :sort_order
 
-  # Atributos computados
+  attribute :parent_area do |object|
+    if object.parent_area
+      {
+        id: object.parent_area.id,
+        name: object.parent_area.name,
+        code: object.parent_area.code
+      }
+    end
+  end
+
+  attribute :sub_areas do |object|
+    object.sub_areas.active.ordered.map do |area|
+      {
+        id: area.id,
+        name: area.name,
+        code: area.code,
+        description: area.description
+      }
+    end
+  end
+
   attribute :full_name, &:full_name
 
   attribute :is_main_area, &:main_area?
@@ -16,35 +36,7 @@ class LawAreaSerializer
 
   attribute :is_custom_area, &:custom_area?
 
-  attribute :depth, &:depth
-
-  attribute :hierarchy_path do |object|
-    object.hierarchy_path.map { |area| { id: area.id, name: area.name } }
-  end
-
-  # Relacionamentos
-  belongs_to :parent_area, serializer: LawAreaSerializer, if: proc { |record| record.parent_area.present? }
-
-  has_many :sub_areas, serializer: LawAreaSerializer, if: proc { |record| record.sub_areas.any? }
-
-  has_many :powers, serializer: PowerSerializer, if: proc { |record| record.powers.any? }
-
-  attribute :created_by_team do |object|
-    if object.created_by_team
-      {
-        id: object.created_by_team.id,
-        name: object.created_by_team.name,
-        subdomain: object.created_by_team.subdomain
-      }
-    end
-  end
-
-  # Contadores úteis
-  attribute :sub_areas_count do |object|
-    object.sub_areas.count
-  end
-
-  attribute :powers_count do |object|
-    object.powers.count
+  attribute :applicable_powers_count do |object|
+    object.applicable_powers.count
   end
 end

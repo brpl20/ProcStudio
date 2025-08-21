@@ -44,7 +44,7 @@ class OfficeSerializer
   attributes :name, :cnpj, :city, :site, :responsible_lawyer_id
 
   attributes :oab, :society, :foundation, :zip_code, :street, :number, :neighborhood,
-             :state, :profile_admins, :phones, :emails, :bank_accounts, :works,
+             :state, :user_profiles, :phones, :emails, :bank_accounts, :works,
              :accounting_type, if: proc { |_, options| options[:action] == 'show' }
 
   attribute :office_type_description do |object|

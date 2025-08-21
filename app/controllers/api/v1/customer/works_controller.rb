@@ -13,7 +13,8 @@ class Api::V1::Customer::WorksController < FrontofficeController
     works = current_user.profile_customer.works.includes(
       :documents,
       :offices,
-      :profile_admins,
+      :user_profiles,
+      :law_area,
       :powers,
       :recommendations,
       :jobs,

@@ -6,7 +6,7 @@ class OfficeWithLawyersSerializer
   attributes :name
 
   attribute :lawyers do |object|
-    object.profile_admins.map do |lawyer|
+    object.user_profiles.map do |lawyer|
       {
         id: lawyer.id,
         name: lawyer.name

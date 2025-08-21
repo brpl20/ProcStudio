@@ -27,7 +27,12 @@ gem 'rubocop-rails', '~> 2.19', require: false
 gem 'rubocop-rspec', '~> 2.20', require: false
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
+# Background jobs
+gem 'sidekiq', '~> 7.2'
+gem 'redis', '~> 5.0'
+
 group :development, :test, :staging do
+  gem 'claude-on-rails'
   gem 'faker'
   gem 'mina', '0.3.8'
   gem 'pry-byebug'
@@ -36,6 +41,9 @@ end
 
 group :development, :test do
   gem 'annotaterb'
+  gem 'brakeman', require: false
+  gem 'bullet'
+  gem 'bundle-audit', require: false
   gem 'database_cleaner'
   gem 'debug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'dotenv-rails'
@@ -43,6 +51,11 @@ group :development, :test do
   gem 'rspec-rails', '~> 6.0.0'
   gem 'shoulda-matchers'
   gem 'simplecov', '~> 0.22.0'
+end
+
+group :development do
+  gem 'better_errors'
+  gem 'binding_of_caller'
 end
 
 gem 'extensobr'

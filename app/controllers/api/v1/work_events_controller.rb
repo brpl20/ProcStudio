@@ -104,7 +104,7 @@ class Api::V1::WorkEventsController < BackofficeController
   end
 
   def work_event_params
-    params.require(:work_event).permit(:description, :date, :work_id)
+    params.expect(work_event: [:description, :date, :work_id])
   end
 
   def perform_authorization

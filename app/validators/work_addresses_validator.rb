@@ -5,7 +5,7 @@ class WorkAddressesValidator < ActiveModel::Validator
     @work = record
 
     validate_profile_customers_addresses
-    validate_profile_admins_addresses
+    validate_user_profiles_addresses
     validate_offices_addresses
     validate_represent_addresses
   end
@@ -21,9 +21,9 @@ class WorkAddressesValidator < ActiveModel::Validator
     end
   end
 
-  def validate_profile_admins_addresses
-    @work.profile_admins.each do |profile_admin|
-      @work.errors.add(:profile_admins, 'endereço do advogado deve ser preenchido') if profile_admin.addresses.blank?
+  def validate_user_profiles_addresses
+    @work.user_profiles.each do |user_profile|
+      @work.errors.add(:user_profiles, 'endereço do usuário deve ser preenchido') if user_profile.addresses.blank?
     end
   end
 

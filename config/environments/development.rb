@@ -36,7 +36,22 @@ Rails.application.configure do
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :amazon
+
+  # ActionMailer Configuration
   # Don't care if the mailer can't send.
+  config.action_mailer.raise_delivery_errors = false
+  config.action_mailer.perform_caching = false
+  config.action_mailer.perform_deliveries = false
+  config.action_mailer.delivery_method = :test
+  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+  # Disable ActionMailer previews for API-only mode
+  config.action_mailer.show_previews = false
+
+  # Active Job Configuration
+  # Use async adapter for development (runs jobs in a thread pool)
+  config.active_job.queue_adapter = :async
+  # Or use :inline for immediate execution (useful for debugging)
+  # config.active_job.queue_adapter = :inline
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
@@ -63,5 +78,16 @@ Rails.application.configure do
 
   # Uncomment if you wish to allow Action Cable access from any origin.
   # config.action_cable.disable_request_forgery_protection = true
+
+  # Bullet configuration for N+1 query detection
+  config.after_initialize do
+    Bullet.enable = true
+    Bullet.alert = false
+    Bullet.bullet_logger = true
+    Bullet.console = true
+    Bullet.rails_logger = true
+    Bullet.add_footer = false
+    Bullet.skip_html_injection = true # Since this is an API-only app
+  end
 end
 Rails.application.routes.default_url_options[:host] = 'localhost:3000'

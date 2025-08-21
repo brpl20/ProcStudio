@@ -1,0 +1,29 @@
+---
+:concurrency: 5
+:timeout: 30
+
+# Specify Redis connection
+:redis:
+  url: <%= ENV.fetch('REDIS_URL', 'redis://localhost:6379/0') %>
+
+# Configure queues with priorities
+:queues:
+  - [critical, 3]
+  - [mailers, 2]
+  - [default, 1]
+  - [low, 1]
+
+# Production configuration
+production:
+  :concurrency: 10
+  :timeout: 30
+  
+# Staging configuration  
+staging:
+  :concurrency: 5
+  :timeout: 30
+
+# Development configuration
+development:
+  :concurrency: 2
+  :timeout: 30

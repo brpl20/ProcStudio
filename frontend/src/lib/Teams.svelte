@@ -1,12 +1,12 @@
 <script lang="ts">
-  import api from './api';
+  import api from './api/index';
   import type {
     TeamData,
     MyTeamResponse,
     TeamResponse,
     UpdateTeamResponse,
     TeamMembersResponse
-  } from './api';
+  } from './api/index';
 
   // Estados para renderização de dados
   let myTeamResult: {

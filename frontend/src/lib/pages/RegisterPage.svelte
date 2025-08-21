@@ -2,7 +2,7 @@
   import AuthLayout from '../components/AuthLayout.svelte';
   import { authStore } from '../stores/authStore.js';
   import { router } from '../stores/routerStore.js';
-  import api from '../api';
+  import api from '../api/index';
   import { validateAndNormalizeOab } from '../oabValidator';
 
   let email = '';

@@ -37,8 +37,8 @@ class Api::V1::Customer::CustomersController < FrontofficeController
   end
 
   def customers_params
-    params.require(:customer).permit(
-      :email, :password, :password_confirmation
+    params.expect(
+      customer: [:email, :password, :password_confirmation]
     )
   end
 end
