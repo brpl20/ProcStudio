@@ -1,275 +1,532 @@
 <script>
   import AdminLayout from '../components/AdminLayout.svelte';
-  
-  let tasks = [
-    { id: 1, title: 'Implementar autenticação', status: 'completed', priority: 'high', assignee: 'João Silva', dueDate: '2025-01-20' },
-    { id: 2, title: 'Criar dashboard', status: 'in_progress', priority: 'medium', assignee: 'Maria Santos', dueDate: '2025-01-25' },
-    { id: 3, title: 'Otimizar performance', status: 'pending', priority: 'low', assignee: 'Pedro Costa', dueDate: '2025-01-30' },
-    { id: 4, title: 'Testes unitários', status: 'pending', priority: 'high', assignee: 'Ana Silva', dueDate: '2025-02-01' }
-  ];
-  
+  import api from '../api';
+  import { onMount } from 'svelte';
+
+  let tasks = [];
+  let isLoading = false;
+  let error = '';
+  let success = '';
+
+  // Form state
   let newTaskTitle = '';
+  let newTaskDescription = '';
   let newTaskPriority = 'medium';
-  let newTaskAssignee = '';
+  let newTaskAssignedTo = '';
+  let newTaskDueDate = '';
   let showNewTaskForm = false;
-  
-  function addTask() {
-    if (newTaskTitle.trim()) {
-      const newTask = {
-        id: tasks.length + 1,
-        title: newTaskTitle,
-        status: 'pending',
-        priority: newTaskPriority,
-        assignee: newTaskAssignee,
-        dueDate: new Date().toISOString().split('T')[0]
-      };
-      tasks = [...tasks, newTask];
-      newTaskTitle = '';
-      newTaskAssignee = '';
-      showNewTaskForm = false;
+
+  // Edit state
+  let editingTask = null;
+  let editTitle = '';
+  let editDescription = '';
+  let editPriority = 'medium';
+  let editAssignedTo = '';
+  let editDueDate = '';
+
+  onMount(() => {
+    loadTasks();
+  });
+
+  async function loadTasks() {
+    isLoading = true;
+    error = '';
+
+    try {
+      const result = await api.jobs.getJobs();
+
+      if (result.success) {
+        tasks = result.data || [];
+        success = 'Tarefas carregadas com sucesso';
+        setTimeout(() => success = '', 3000);
+      } else {
+        error = result.message || 'Erro ao carregar tarefas';
+      }
+    } catch (err) {
+      console.error('Error loading tasks:', err);
+      error = 'Erro ao carregar tarefas';
+    } finally {
+      isLoading = false;
     }
   }
-  
-  function updateTaskStatus(taskId, newStatus) {
-    tasks = tasks.map(task => 
-      task.id === taskId ? { ...task, status: newStatus } : task
-    );
+
+  async function addTask() {
+    if (!newTaskTitle.trim()) {
+      error = 'Título é obrigatório';
+      return;
+    }
+
+    isLoading = true;
+    error = '';
+
+    try {
+      const taskData = {
+        title: newTaskTitle.trim(),
+        description: newTaskDescription.trim() || undefined,
+        priority: newTaskPriority,
+        assigned_to: newTaskAssignedTo ? parseInt(newTaskAssignedTo) : undefined,
+        deadline: newTaskDueDate || undefined,
+        status: 'pending' // Default status
+      };
+
+      const result = await api.jobs.createJob(taskData);
+
+      if (result.success) {
+        await loadTasks(); // Reload tasks
+        success = 'Tarefa criada com sucesso';
+        resetNewTaskForm();
+        setTimeout(() => success = '', 3000);
+      } else {
+        error = result.message || 'Erro ao criar tarefa';
+      }
+    } catch (err) {
+      console.error('Error creating task:', err);
+      error = 'Erro ao criar tarefa';
+    } finally {
+      isLoading = false;
+    }
   }
-  
-  function deleteTask(taskId) {
-    tasks = tasks.filter(task => task.id !== taskId);
+
+  async function updateTaskStatus(taskId, newStatus) {
+    isLoading = true;
+    error = '';
+
+    try {
+      const result = await api.jobs.updateJob(taskId, { status: newStatus });
+
+      if (result.success) {
+        await loadTasks(); // Reload tasks
+        success = 'Status atualizado com sucesso';
+        setTimeout(() => success = '', 3000);
+      } else {
+        error = result.message || 'Erro ao atualizar status';
+      }
+    } catch (err) {
+      console.error('Error updating task status:', err);
+      error = 'Erro ao atualizar status';
+    } finally {
+      isLoading = false;
+    }
   }
-  
+
+  async function saveEditTask() {
+    if (!editTitle.trim()) {
+      error = 'Título é obrigatório';
+      return;
+    }
+
+    isLoading = true;
+    error = '';
+
+    try {
+      const taskData = {
+        title: editTitle.trim(),
+        description: editDescription.trim() || undefined,
+        priority: editPriority,
+        assigned_to: editAssignedTo ? parseInt(editAssignedTo) : undefined,
+        deadline: editDueDate || undefined
+      };
+
+      const result = await api.jobs.updateJob(editingTask.id, taskData);
+
+      if (result.success) {
+        await loadTasks(); // Reload tasks
+        success = 'Tarefa atualizada com sucesso';
+        cancelEdit();
+        setTimeout(() => success = '', 3000);
+      } else {
+        error = result.message || 'Erro ao atualizar tarefa';
+      }
+    } catch (err) {
+      console.error('Error updating task:', err);
+      error = 'Erro ao atualizar tarefa';
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  async function deleteTask(taskId) {
+    if (!confirm('Tem certeza que deseja excluir esta tarefa?')) {
+      return;
+    }
+
+    isLoading = true;
+    error = '';
+
+    try {
+      const result = await api.jobs.deleteJob(taskId);
+
+      if (result.success) {
+        await loadTasks(); // Reload tasks
+        success = 'Tarefa excluída com sucesso';
+        setTimeout(() => success = '', 3000);
+      } else {
+        error = result.message || 'Erro ao excluir tarefa';
+      }
+    } catch (err) {
+      console.error('Error deleting task:', err);
+      error = 'Erro ao excluir tarefa';
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  function startEdit(task) {
+    editingTask = task;
+    editTitle = task.title;
+    editDescription = task.description || '';
+    editPriority = task.priority;
+    editAssignedTo = task.assigned_to ? task.assigned_to.toString() : '';
+    editDueDate = task.deadline ? task.deadline.split('T')[0] : '';
+  }
+
+  function cancelEdit() {
+    editingTask = null;
+    editTitle = '';
+    editDescription = '';
+    editPriority = 'medium';
+    editAssignedTo = '';
+    editDueDate = '';
+  }
+
+  function resetNewTaskForm() {
+    newTaskTitle = '';
+    newTaskDescription = '';
+    newTaskPriority = 'medium';
+    newTaskAssignedTo = '';
+    newTaskDueDate = '';
+    showNewTaskForm = false;
+  }
+
   function getStatusBadge(status) {
     switch (status) {
-      case 'completed':
-        return 'badge-success';
-      case 'in_progress':
-        return 'badge-warning';
-      case 'pending':
-        return 'badge-error';
-      default:
-        return 'badge-ghost';
+    case 'completed':
+      return 'badge-success';
+    case 'in_progress':
+      return 'badge-warning';
+    case 'pending':
+      return 'badge-error';
+    case 'cancelled':
+      return 'badge-neutral';
+    default:
+      return 'badge-ghost';
     }
   }
-  
-  function getStatusText(status) {
-    switch (status) {
-      case 'completed':
-        return 'Concluída';
-      case 'in_progress':
-        return 'Em Progresso';
-      case 'pending':
-        return 'Pendente';
-      default:
-        return status;
-    }
-  }
-  
+
   function getPriorityBadge(priority) {
     switch (priority) {
-      case 'high':
-        return 'badge-error';
-      case 'medium':
-        return 'badge-warning';
-      case 'low':
-        return 'badge-info';
-      default:
-        return 'badge-ghost';
+    case 'urgent':
+      return 'badge-error';
+    case 'high':
+      return 'badge-warning';
+    case 'medium':
+      return 'badge-info';
+    case 'low':
+      return 'badge-success';
+    default:
+      return 'badge-ghost';
     }
   }
-  
-  function getPriorityText(priority) {
+
+  function getStatusLabel(status) {
+    switch (status) {
+    case 'pending':
+      return 'Pendente';
+    case 'in_progress':
+      return 'Em Progresso';
+    case 'completed':
+      return 'Concluída';
+    case 'cancelled':
+      return 'Cancelada';
+    default:
+      return status;
+    }
+  }
+
+  function getPriorityLabel(priority) {
     switch (priority) {
-      case 'high':
-        return 'Alta';
-      case 'medium':
-        return 'Média';
-      case 'low':
-        return 'Baixa';
-      default:
-        return priority;
+    case 'low':
+      return 'Baixa';
+    case 'medium':
+      return 'Média';
+    case 'high':
+      return 'Alta';
+    case 'urgent':
+      return 'Urgente';
+    default:
+      return priority;
     }
   }
 </script>
 
-<AdminLayout activeSection="tasks">
-  <div class="container mx-auto">
+<AdminLayout>
+  <div class="container mx-auto py-6">
     <div class="card bg-base-100 shadow-xl">
       <div class="card-body">
         <div class="flex justify-between items-center mb-6">
-          <h2 class="card-title text-3xl">✅ Tarefas</h2>
-          <button 
-            class="btn btn-primary" 
+          <h2 class="card-title text-3xl">📋 Tarefas</h2>
+          <button
+            class="btn btn-primary"
             on:click={() => showNewTaskForm = !showNewTaskForm}
+            disabled={isLoading}
           >
-            ➕ Nova Tarefa
+            + Nova Tarefa
           </button>
         </div>
-        
-        <!-- Formulário para nova tarefa -->
+
+        <!-- Messages -->
+        {#if error}
+          <div class="alert alert-error mb-4">
+            <span>{error}</span>
+          </div>
+        {/if}
+
+        {#if success}
+          <div class="alert alert-success mb-4">
+            <span>{success}</span>
+          </div>
+        {/if}
+
+        <!-- New Task Form -->
         {#if showNewTaskForm}
-          <div class="card bg-base-200 mb-6">
+          <div class="card bg-base-200 shadow mb-6">
             <div class="card-body">
-              <h3 class="card-title">Criar Nova Tarefa</h3>
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <h3 class="card-title">Nova Tarefa</h3>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="form-control">
                   <label class="label">
-                    <span class="label-text">Título</span>
+                    <span class="label-text">Título *</span>
                   </label>
-                  <input 
-                    type="text" 
-                    placeholder="Digite o título da tarefa" 
-                    class="input input-bordered" 
+                  <input
+                    type="text"
+                    class="input input-bordered"
                     bind:value={newTaskTitle}
+                    placeholder="Título da tarefa"
+                    disabled={isLoading}
                   />
                 </div>
-                
+
                 <div class="form-control">
                   <label class="label">
                     <span class="label-text">Prioridade</span>
                   </label>
-                  <select class="select select-bordered" bind:value={newTaskPriority}>
+                  <select class="select select-bordered" bind:value={newTaskPriority} disabled={isLoading}>
                     <option value="low">Baixa</option>
                     <option value="medium">Média</option>
                     <option value="high">Alta</option>
+                    <option value="urgent">Urgente</option>
                   </select>
                 </div>
-                
+
                 <div class="form-control">
                   <label class="label">
-                    <span class="label-text">Responsável</span>
+                    <span class="label-text">Atribuído para (ID do usuário)</span>
                   </label>
-                  <input 
-                    type="text" 
-                    placeholder="Nome do responsável" 
-                    class="input input-bordered" 
-                    bind:value={newTaskAssignee}
+                  <input
+                    type="number"
+                    class="input input-bordered"
+                    bind:value={newTaskAssignedTo}
+                    placeholder="ID do usuário"
+                    disabled={isLoading}
                   />
                 </div>
+
+                <div class="form-control">
+                  <label class="label">
+                    <span class="label-text">Data de vencimento</span>
+                  </label>
+                  <input
+                    type="date"
+                    class="input input-bordered"
+                    bind:value={newTaskDueDate}
+                    disabled={isLoading}
+                  />
+                </div>
+
+                <div class="form-control md:col-span-2">
+                  <label class="label">
+                    <span class="label-text">Descrição</span>
+                  </label>
+                  <textarea
+                    class="textarea textarea-bordered"
+                    bind:value={newTaskDescription}
+                    placeholder="Descrição da tarefa"
+                    disabled={isLoading}
+                  ></textarea>
+                </div>
               </div>
-              
+
               <div class="card-actions justify-end mt-4">
-                <button class="btn btn-outline" on:click={() => showNewTaskForm = false}>
+                <button class="btn btn-ghost" on:click={resetNewTaskForm} disabled={isLoading}>
                   Cancelar
                 </button>
-                <button class="btn btn-primary" on:click={addTask}>
+                <button
+                  class="btn btn-primary"
+                  class:loading={isLoading}
+                  on:click={addTask}
+                  disabled={isLoading}
+                >
                   Criar Tarefa
                 </button>
               </div>
             </div>
           </div>
         {/if}
-        
-        <!-- Estatísticas -->
-        <div class="stats shadow mb-6">
-          <div class="stat">
-            <div class="stat-figure text-primary">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-              </svg>
-            </div>
-            <div class="stat-title">Total</div>
-            <div class="stat-value text-primary">{tasks.length}</div>
-            <div class="stat-desc">Tarefas cadastradas</div>
-          </div>
-          
-          <div class="stat">
-            <div class="stat-figure text-secondary">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-              </svg>
-            </div>
-            <div class="stat-title">Concluídas</div>
-            <div class="stat-value text-secondary">{tasks.filter(t => t.status === 'completed').length}</div>
-            <div class="stat-desc">Tarefas finalizadas</div>
-          </div>
-          
-          <div class="stat">
-            <div class="stat-figure text-info">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
-              </svg>
-            </div>
-            <div class="stat-title">Em Progresso</div>
-            <div class="stat-value text-info">{tasks.filter(t => t.status === 'in_progress').length}</div>
-            <div class="stat-desc">Tarefas ativas</div>
-          </div>
-        </div>
-        
-        <!-- Lista de tarefas -->
-        <div class="overflow-x-auto">
-          <table class="table table-zebra w-full">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Tarefa</th>
-                <th>Status</th>
-                <th>Prioridade</th>
-                <th>Responsável</th>
-                <th>Data Limite</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {#each tasks as task}
-                <tr>
-                  <th>{task.id}</th>
-                  <td class="font-medium">{task.title}</td>
-                  <td>
-                    <div class="badge {getStatusBadge(task.status)}">
-                      {getStatusText(task.status)}
-                    </div>
-                  </td>
-                  <td>
-                    <div class="badge {getPriorityBadge(task.priority)}">
-                      {getPriorityText(task.priority)}
-                    </div>
-                  </td>
-                  <td>{task.assignee}</td>
-                  <td>{task.dueDate}</td>
-                  <td>
-                    <div class="flex gap-2">
-                      {#if task.status === 'pending'}
-                        <button 
-                          class="btn btn-xs btn-primary"
-                          on:click={() => updateTaskStatus(task.id, 'in_progress')}
-                        >
-                          Iniciar
-                        </button>
-                      {:else if task.status === 'in_progress'}
-                        <button 
-                          class="btn btn-xs btn-success"
-                          on:click={() => updateTaskStatus(task.id, 'completed')}
-                        >
-                          Concluir
-                        </button>
-                      {/if}
-                      <button 
-                        class="btn btn-xs btn-error"
-                        on:click={() => deleteTask(task.id)}
-                      >
-                        Excluir
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              {/each}
-            </tbody>
-          </table>
-        </div>
-        
-        {#if tasks.length === 0}
-          <div class="text-center py-8">
-            <p class="text-base-content opacity-60">Nenhuma tarefa cadastrada ainda.</p>
-            <button 
-              class="btn btn-primary mt-4" 
-              on:click={() => showNewTaskForm = true}
-            >
-              Criar sua primeira tarefa
-            </button>
+
+        <!-- Loading -->
+        {#if isLoading && tasks.length === 0}
+          <div class="flex justify-center py-8">
+            <span class="loading loading-spinner loading-lg"></span>
           </div>
         {/if}
+
+        <!-- Tasks List -->
+        {#if tasks.length > 0}
+          <div class="overflow-x-auto">
+            <table class="table table-zebra w-full">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Título</th>
+                  <th>Status</th>
+                  <th>Prioridade</th>
+                  <th>Atribuído</th>
+                  <th>Vencimento</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {#each tasks as task (task.id)}
+                  <tr>
+                    <td>{task.id}</td>
+                    <td>
+                      {#if editingTask && editingTask.id === task.id}
+                        <input
+                          type="text"
+                          class="input input-sm input-bordered"
+                          bind:value={editTitle}
+                          disabled={isLoading}
+                        />
+                      {:else}
+                        <div>
+                          <div class="font-semibold">{task.title}</div>
+                          {#if task.description}
+                            <div class="text-sm opacity-70">{task.description}</div>
+                          {/if}
+                        </div>
+                      {/if}
+                    </td>
+                    <td>
+                      <select
+                        class="select select-sm select-bordered"
+                        value={task.status}
+                        on:change={(e) => updateTaskStatus(task.id, e.target.value)}
+                        disabled={isLoading}
+                      >
+                        <option value="pending">Pendente</option>
+                        <option value="in_progress">Em Progresso</option>
+                        <option value="completed">Concluída</option>
+                        <option value="cancelled">Cancelada</option>
+                      </select>
+                    </td>
+                    <td>
+                      {#if editingTask && editingTask.id === task.id}
+                        <select class="select select-sm select-bordered" bind:value={editPriority} disabled={isLoading}>
+                          <option value="low">Baixa</option>
+                          <option value="medium">Média</option>
+                          <option value="high">Alta</option>
+                          <option value="urgent">Urgente</option>
+                        </select>
+                      {:else}
+                        <span class="badge {getPriorityBadge(task.priority)}">{getPriorityLabel(task.priority)}</span>
+                      {/if}
+                    </td>
+                    <td>
+                      {#if editingTask && editingTask.id === task.id}
+                        <input
+                          type="number"
+                          class="input input-sm input-bordered"
+                          bind:value={editAssignedTo}
+                          placeholder="User ID"
+                          disabled={isLoading}
+                        />
+                      {:else}
+                        {task.assigned_to || '-'}
+                      {/if}
+                    </td>
+                    <td>
+                      {#if editingTask && editingTask.id === task.id}
+                        <input
+                          type="date"
+                          class="input input-sm input-bordered"
+                          bind:value={editDueDate}
+                          disabled={isLoading}
+                        />
+                      {:else}
+                        {task.deadline ? new Date(task.deadline).toLocaleDateString('pt-BR') : '-'}
+                      {/if}
+                    </td>
+                    <td>
+                      {#if editingTask && editingTask.id === task.id}
+                        <div class="flex gap-2">
+                          <button
+                            class="btn btn-sm btn-success"
+                            on:click={saveEditTask}
+                            disabled={isLoading}
+                          >
+                            Salvar
+                          </button>
+                          <button
+                            class="btn btn-sm btn-ghost"
+                            on:click={cancelEdit}
+                            disabled={isLoading}
+                          >
+                            Cancelar
+                          </button>
+                        </div>
+                      {:else}
+                        <div class="flex gap-2">
+                          <button
+                            class="btn btn-sm btn-ghost"
+                            on:click={() => startEdit(task)}
+                            disabled={isLoading}
+                          >
+                            ✏️
+                          </button>
+                          <button
+                            class="btn btn-sm btn-error"
+                            on:click={() => deleteTask(task.id)}
+                            disabled={isLoading}
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      {/if}
+                    </td>
+                  </tr>
+                {/each}
+              </tbody>
+            </table>
+          </div>
+        {:else if !isLoading}
+          <div class="text-center py-8">
+            <p class="text-lg opacity-70">Nenhuma tarefa encontrada</p>
+            <p class="text-sm opacity-50">Clique em "Nova Tarefa" para começar</p>
+          </div>
+        {/if}
+
+        <!-- Refresh Button -->
+        <div class="card-actions justify-end mt-6">
+          <button
+            class="btn btn-outline"
+            class:loading={isLoading}
+            on:click={loadTasks}
+            disabled={isLoading}
+          >
+            🔄 Atualizar
+          </button>
+        </div>
       </div>
     </div>
   </div>

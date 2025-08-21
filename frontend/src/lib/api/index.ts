@@ -7,7 +7,7 @@
  */
 
 import { HttpClient } from './utils/http-client';
-import { AuthService, UserService, TeamService, LawAreaService, PowerService } from './services';
+import { AuthService, UserService, TeamService, LawAreaService, PowerService, JobService } from './services';
 
 // Re-export types for convenience
 export * from './types';
@@ -30,6 +30,7 @@ export class API {
   public teams: TeamService;
   public lawAreas: LawAreaService;
   public powers: PowerService;
+  public jobs: JobService;
 
   constructor() {
     // Initialize HTTP client
@@ -41,6 +42,7 @@ export class API {
     this.teams = new TeamService(this.httpClient);
     this.lawAreas = new LawAreaService(this.httpClient);
     this.powers = new PowerService(this.httpClient);
+    this.jobs = new JobService(this.httpClient);
 
     // Initialize auth from stored token
     this.auth.initializeAuth();

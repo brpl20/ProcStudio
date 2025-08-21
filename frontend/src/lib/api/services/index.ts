@@ -7,3 +7,4 @@ export { UserService } from './user.service';
 export { TeamService } from './team.service';
 export { LawAreaService } from './law-area.service';
 export { PowerService } from './power.service';
+export { JobService } from './job.service';
