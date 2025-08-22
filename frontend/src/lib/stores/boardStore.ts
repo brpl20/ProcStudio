@@ -6,7 +6,7 @@ import type {
   CreateTaskDto,
   UpdateTaskDto,
   MoveTaskDto
-} from '$lib/types/board.types';
+} from '$lib/components/board/board.types';
 
 interface BoardState {
   boards: Board[];

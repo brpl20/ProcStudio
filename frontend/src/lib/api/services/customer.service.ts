@@ -5,6 +5,7 @@
 
 import type { HttpClient } from '../utils/http-client';
 import type {
+  // Customer Puro
   Customer,
   CreateCustomerRequest,
   UpdateCustomerRequest,
@@ -13,6 +14,7 @@ import type {
   CreateCustomerResponse,
   UpdateCustomerResponse,
   DeleteCustomerResponse,
+  // Profile Customer
   ProfileCustomer,
   CreateProfileCustomerRequest,
   UpdateProfileCustomerRequest,
@@ -21,8 +23,13 @@ import type {
   CreateProfileCustomerResponse,
   UpdateProfileCustomerResponse,
   DeleteProfileCustomerResponse,
-  CustomerLoginRequest,
-  CustomerLoginResponse
+  // JSON:API types
+  JsonApiCustomerData,
+  JsonApiCustomerResponse,
+  JsonApiCustomersListResponse
+  // Outro Frontend
+  // CustomerLoginRequest,
+  // CustomerLoginResponse
 } from '../types/customer.types';
 
 export class CustomerService {
@@ -30,6 +37,27 @@ export class CustomerService {
 
   constructor(httpClient: HttpClient) {
     this.httpClient = httpClient;
+  }
+
+  /**
+   * Transform JSON:API customer data to our Customer type
+   */
+  private transformJsonApiCustomer(jsonApiData: JsonApiCustomerData): Customer {
+    return {
+      id: parseInt(jsonApiData.id),
+      email: jsonApiData.attributes.access_email, // A API só retorna access_email
+      access_email: jsonApiData.attributes.access_email,
+      status: jsonApiData.attributes.status,
+      confirmed_at: jsonApiData.attributes.confirmed_at,
+      confirmed: jsonApiData.attributes.confirmed,
+      deleted: jsonApiData.attributes.deleted,
+      created_by_id: jsonApiData.attributes.created_by_id,
+      profile_customer_id: jsonApiData.attributes.profile_customer_id,
+      created_at: jsonApiData.attributes.created_at,
+      // A API não retorna updated_at e deleted_at no momento
+      updated_at: undefined,
+      deleted_at: undefined
+    };
   }
 
   /**
@@ -45,18 +73,24 @@ export class CustomerService {
       const queryString = params.toString();
       const url = queryString ? `/customers?${queryString}` : '/customers';
 
-      const response = await this.httpClient.get(url);
+      const response: JsonApiCustomersListResponse = await this.httpClient.get(url);
+      
+      // Transform JSON:API data to our Customer type
+      const customers = Array.isArray(response.data) 
+        ? response.data.map(jsonApiData => this.transformJsonApiCustomer(jsonApiData))
+        : [];
+
       return {
         success: true,
-        data: response.data || response,
+        data: customers,
         meta: response.meta,
-        message: 'Customers retrieved successfully'
+        message: response.message || 'Clientes carregados com sucesso'
       };
     } catch (error: any) {
       return {
         success: false,
         data: [],
-        message: error?.message || 'Failed to retrieve customers'
+        message: error?.message || 'Erro ao carregar clientes'
       };
     }
   }
@@ -66,17 +100,21 @@ export class CustomerService {
    */
   async getCustomer(id: number): Promise<CustomerResponse> {
     try {
-      const response = await this.httpClient.get(`/customers/${id}`);
+      const response: JsonApiCustomerResponse = await this.httpClient.get(`/customers/${id}`);
+      
+      // Transform JSON:API data to our Customer type
+      const customer = this.transformJsonApiCustomer(response.data);
+
       return {
         success: true,
-        data: response.data || response,
-        message: 'Customer retrieved successfully'
+        data: customer,
+        message: response.message || 'Cliente carregado com sucesso'
       };
     } catch (error: any) {
       return {
         success: false,
         data: {} as Customer,
-        message: error?.message || 'Failed to retrieve customer'
+        message: error?.message || 'Erro ao carregar cliente'
       };
     }
   }
@@ -86,17 +124,21 @@ export class CustomerService {
    */
   async createCustomer(customerData: CreateCustomerRequest): Promise<CreateCustomerResponse> {
     try {
-      const response = await this.httpClient.post('/customers', { customer: customerData });
+      const response: JsonApiCustomerResponse = await this.httpClient.post('/customers', { customer: customerData });
+      
+      // Transform JSON:API data to our Customer type
+      const customer = this.transformJsonApiCustomer(response.data);
+
       return {
         success: true,
-        data: response.data || response,
-        message: 'Customer created successfully'
+        data: customer,
+        message: response.message || 'Cliente criado com sucesso'
       };
     } catch (error: any) {
       return {
         success: false,
         data: {} as Customer,
-        message: error?.message || 'Failed to create customer'
+        message: error?.message || 'Erro ao criar cliente'
       };
     }
   }
@@ -109,17 +151,21 @@ export class CustomerService {
     customerData: UpdateCustomerRequest
   ): Promise<UpdateCustomerResponse> {
     try {
-      const response = await this.httpClient.patch(`/customers/${id}`, { customer: customerData });
+      const response: JsonApiCustomerResponse = await this.httpClient.patch(`/customers/${id}`, { customer: customerData });
+      
+      // Transform JSON:API data to our Customer type
+      const customer = this.transformJsonApiCustomer(response.data);
+
       return {
         success: true,
-        data: response.data || response,
-        message: 'Customer updated successfully'
+        data: customer,
+        message: response.message || 'Cliente atualizado com sucesso'
       };
     } catch (error: any) {
       return {
         success: false,
         data: {} as Customer,
-        message: error?.message || 'Failed to update customer'
+        message: error?.message || 'Erro ao atualizar cliente'
       };
     }
   }
