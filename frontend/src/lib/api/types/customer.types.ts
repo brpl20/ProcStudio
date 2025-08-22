@@ -5,14 +5,19 @@
 
 export interface Customer {
   id: number;
-  email: string;
+  email?: string;
+  access_email?: string;
   status: CustomerStatus;
   confirmed_at?: string | null;
+  confirmed?: boolean;
+  deleted?: boolean;
+  created_by_id?: number;
+  profile_customer_id?: number | null;
   profile_customer?: ProfileCustomer;
 
   // Timestamps
-  created_at: string;
-  updated_at: string;
+  created_at?: string;
+  updated_at?: string;
   deleted_at?: string | null;
 }
 
@@ -193,6 +198,51 @@ export interface UpdateProfileCustomerResponse {
 export interface DeleteProfileCustomerResponse {
   success: boolean;
   message?: string;
+}
+
+// JSON:API response types
+export interface JsonApiCustomerData {
+  id: string;
+  type: 'customer';
+  attributes: {
+    access_email: string;
+    created_by_id: number;
+    confirmed_at: string | null;
+    profile_customer_id: number | null;
+    status: CustomerStatus;
+    created_at: string;
+    confirmed: boolean;
+    deleted: boolean;
+  };
+  relationships?: {
+    teams?: {
+      data: Array<{
+        id: string;
+        type: 'team';
+      }>;
+    };
+    profile_customer?: {
+      data: null | {
+        id: string;
+        type: 'profile_customer';
+      };
+    };
+  };
+}
+
+export interface JsonApiCustomerResponse {
+  success?: boolean;
+  message?: string;
+  data: JsonApiCustomerData;
+}
+
+export interface JsonApiCustomersListResponse {
+  success?: boolean;
+  message?: string;
+  data: JsonApiCustomerData[];
+  meta?: {
+    total_count: number;
+  };
 }
 
 // Customer Portal Types

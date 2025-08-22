@@ -17,18 +17,27 @@ module Api
           customers = customers.public_send("filter_by_#{key}", value.strip)
         end
 
-        render json: CustomerSerializer.new(
+        serialized = CustomerSerializer.new(
           customers,
           meta: {
             total_count: customers.offset(nil).limit(nil).count
           }
-        ), status: :ok
+        ).serializable_hash
+
+        render json: {
+          success: true,
+          message: 'Clientes listados com sucesso',
+          data: serialized[:data],
+          meta: serialized[:meta]
+        }, status: :ok
       end
 
       def show
-        render json: CustomerSerializer.new(
-          @customer
-        ), status: :ok
+        render json: {
+          success: true,
+          message: 'Cliente encontrado com sucesso',
+          data: CustomerSerializer.new(@customer).serializable_hash[:data]
+        }, status: :ok
       end
 
       def create
@@ -43,9 +52,11 @@ module Api
             customer_email: customer.email
           )
 
-          render json: CustomerSerializer.new(
-            customer
-          ), status: :created
+          render json: {
+            success: true,
+            message: 'Cliente criado com sucesso',
+            data: CustomerSerializer.new(customer).serializable_hash[:data]
+          }, status: :created
         else
           error_messages = customer.errors.full_messages
           render json: {
@@ -68,7 +79,12 @@ module Api
       def resend_confirmation
         @customer.update(confirmed_at: nil)
         @customer.send_confirmation_instructions
-        head :ok
+
+        render json: {
+          success: true,
+          message: 'Email de confirmação reenviado com sucesso',
+          data: { email: @customer.email }
+        }, status: :ok
       end
 
       def update
@@ -77,9 +93,11 @@ module Api
         if @customer.update(customers_params)
           @customer.send_confirmation_instructions if @customer.saved_change_to_email?
 
-          render json: CustomerSerializer.new(
-            @customer
-          ), status: :ok
+          render json: {
+            success: true,
+            message: 'Cliente atualizado com sucesso',
+            data: CustomerSerializer.new(@customer).serializable_hash[:data]
+          }, status: :ok
         else
           error_messages = @customer.errors.full_messages
           render json: {
@@ -94,10 +112,18 @@ module Api
         if destroy_fully?
           customer = current_team.customers.with_deleted.find(params[:id])
           customer.destroy_fully!
+          message = 'Cliente removido permanentemente'
         else
           retrieve_customer
           @customer.destroy
+          message = 'Cliente removido com sucesso'
         end
+
+        render json: {
+          success: true,
+          message: message,
+          data: { id: params[:id] }
+        }, status: :ok
       end
 
       def restore
@@ -105,9 +131,11 @@ module Api
         authorize customer, :restore?, policy_class: Admin::CustomerPolicy
 
         if customer.recover
-          render json: CustomerSerializer.new(
-            customer
-          ), status: :ok
+          render json: {
+            success: true,
+            message: 'Cliente restaurado com sucesso',
+            data: CustomerSerializer.new(customer).serializable_hash[:data]
+          }, status: :ok
         else
           error_messages = customer.errors.full_messages
           render json: {

@@ -36,11 +36,17 @@
 class CustomerSerializer
   include JSONAPI::Serializer
 
-  attributes :access_email, :created_by_id, :confirmed_at, :profile_customer_id, :status
+  attributes :access_email, :created_by_id, :confirmed_at, :profile_customer_id, :status, :created_at
 
   attribute :confirmed, &:confirmed?
 
   attribute :deleted do |object|
     object.deleted_at.present?
   end
+
+  # Include teams associated with the customer
+  has_many :teams, serializer: TeamSerializer
+
+  # Include profile if exists
+  has_one :profile_customer, serializer: ProfileCustomerSerializer
 end
