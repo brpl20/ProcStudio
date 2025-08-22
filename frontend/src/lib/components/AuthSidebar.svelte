@@ -1,25 +1,59 @@
-<script>
+<script lang="ts">
+  import { onMount } from 'svelte';
   import { WebsiteName } from '../config.js';
   import { authStore } from '../stores/authStore.js';
+  import { userProfileStore, currentUserProfile, type UserProfile } from '../stores/userProfileStore.ts';
   import { router } from '../stores/routerStore.js';
   import Icon from '../icons.svelte';
 
-  export const activeSection = '';
+  export const activeSection: string = '';
 
   $: isAuthenticated = $authStore.isAuthenticated;
   $: currentPath = $router.currentPath;
+  $: currentUser = $authStore.user;
+  $: userProfile = $currentUserProfile;
+  $: isLoadingProfile = $userProfileStore.isLoading;
 
-  function handleLogout() {
+  // Computed user display properties
+  $: userDisplayName = getUserDisplayName(userProfile, currentUser, isLoadingProfile);
+  $: userRole = getUserRole(userProfile, currentUser);
+
+  function getUserDisplayName(profile: any, user: any, loading: boolean): string {
+    if (loading) return '';
+    
+    if (profile?.attributes) {
+      const firstName = profile.attributes.name || '';
+      const lastName = profile.attributes.last_name || '';
+      return `${firstName} ${lastName}`.trim() || 'Nome não definido';
+    }
+    
+    if (user?.data) {
+      const firstName = user.data.name || '';
+      const lastName = user.data.last_name || '';
+      return `${firstName} ${lastName}`.trim() || user.data.email || 'Usuário';
+    }
+    
+    return 'Usuário';
+  }
+
+  function getUserRole(profile: any, user: any): string {
+    return profile?.attributes?.role || user?.data?.role || '';
+  }
+
+  function handleLogout(): void {
     authStore.logout();
     router.navigate('/');
   }
 
-  function closeDrawer() {
+  function closeDrawer(): void {
     const adminDrawer = document.getElementById('admin-drawer');
     if (adminDrawer) {
       adminDrawer.checked = false;
     }
   }
+
+  // The currentUserProfile derived store handles automatic fetching
+  // No manual onMount needed
 </script>
 
 <div class="drawer lg:drawer-open">
@@ -138,7 +172,7 @@
         </a>
       </li>
 
-      <!-- Equipes (já existente) -->
+      <!-- Equipes -->
       <li>
         <a
           href="/teams"
@@ -152,6 +186,56 @@
           Equipes
         </a>
       </li>
+
+      <!-- Trabalhos -->
+      <li>
+        <a
+          href="/works"
+          class={currentPath === '/works' ? 'active' : ''}
+          on:click|preventDefault={() => {
+            router.navigate('/works');
+            closeDrawer();
+          }}
+        >
+          <Icon name="work" />
+          Trabalhos
+        </a>
+      </li>
+
+      <!-- Clientes -->
+      <li>
+        <a
+          href="/customers"
+          class={currentPath === '/customers' ? 'active' : ''}
+          on:click|preventDefault={() => {
+            router.navigate('/customers');
+            closeDrawer();
+          }}
+        >
+          <Icon name="customer" />
+          Clientes
+        </a>
+      </li>
+
+      <!-- User Info before logout -->
+      {#if isAuthenticated}
+        <li class="mb-2">
+          <div class="px-4 py-1 text-center">
+            {#if isLoadingProfile}
+              <div class="loading loading-spinner loading-xs"></div>
+            {:else}
+              <div class="text-sm font-medium text-base-content">
+                {userDisplayName}
+              </div>
+              {#if userRole}
+                <div class="text-xs text-base-content/70 mt-1">
+                  {userRole}
+                </div>
+              {/if}
+            {/if}
+          </div>
+        </li>
+      {/if}
 
       <!-- Logout no final -->
       <li class="mt-auto">

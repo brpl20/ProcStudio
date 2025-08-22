@@ -1,0 +1,207 @@
+/**
+ * Customer API Types
+ * Types for customer related API operations
+ */
+
+export interface Customer {
+  id: number;
+  email: string;
+  status: CustomerStatus;
+  confirmed_at?: string | null;
+  profile_customer?: ProfileCustomer;
+
+  // Timestamps
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string | null;
+}
+
+export type CustomerStatus = 'active' | 'inactive' | 'deceased';
+export type CustomerType = 'physical_person' | 'legal_person' | 'representative' | 'counter';
+export type Gender = 'male' | 'female' | 'other';
+export type Nationality = 'brazilian' | 'foreigner';
+export type CivilStatus = 'single' | 'married' | 'divorced' | 'widower' | 'union';
+export type Capacity = 'able' | 'relatively' | 'unable';
+
+export interface ProfileCustomer {
+  id: number;
+  customer_id: number;
+  customer_type: CustomerType;
+  name: string;
+  last_name?: string;
+  status: CustomerStatus;
+
+  // Personal information
+  cpf?: string;
+  cnpj?: string;
+  rg?: string;
+  birth?: string;
+  gender?: Gender;
+  nationality?: Nationality;
+  civil_status?: CivilStatus;
+  capacity?: Capacity;
+  profession?: string;
+  mother_name?: string;
+
+  // Professional information
+  company?: string;
+  accountant_id?: number;
+
+  // Social security
+  number_benefit?: string;
+  nit?: string;
+  inss_password?: string;
+
+  // Timestamps
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string | null;
+}
+
+export interface CreateCustomerRequest {
+  email: string;
+  access_email?: string;
+  password: string;
+  password_confirmation: string;
+  status?: CustomerStatus;
+}
+
+export interface UpdateCustomerRequest {
+  email?: string;
+  access_email?: string;
+  password?: string;
+  password_confirmation?: string;
+  status?: CustomerStatus;
+}
+
+export interface CreateProfileCustomerRequest {
+  customer_type: CustomerType;
+  name: string;
+  last_name?: string;
+  status?: CustomerStatus;
+  customer_id?: number;
+
+  // Personal information
+  cpf?: string;
+  cnpj?: string;
+  rg?: string;
+  birth?: string;
+  gender?: Gender;
+  nationality?: Nationality;
+  civil_status?: CivilStatus;
+  capacity?: Capacity;
+  profession?: string;
+  mother_name?: string;
+
+  // Professional information
+  company?: string;
+  accountant_id?: number;
+
+  // Social security
+  number_benefit?: string;
+  nit?: string;
+  inss_password?: string;
+}
+
+export interface UpdateProfileCustomerRequest {
+  customer_type?: CustomerType;
+  name?: string;
+  last_name?: string;
+  status?: CustomerStatus;
+
+  // Personal information
+  cpf?: string;
+  cnpj?: string;
+  rg?: string;
+  birth?: string;
+  gender?: Gender;
+  nationality?: Nationality;
+  civil_status?: CivilStatus;
+  capacity?: Capacity;
+  profession?: string;
+  mother_name?: string;
+
+  // Professional information
+  company?: string;
+  accountant_id?: number;
+
+  // Social security
+  number_benefit?: string;
+  nit?: string;
+  inss_password?: string;
+}
+
+export interface CustomersListResponse {
+  success: boolean;
+  data: Customer[];
+  meta?: {
+    total_count: number;
+  };
+  message?: string;
+}
+
+export interface CustomerResponse {
+  success: boolean;
+  data: Customer;
+  message?: string;
+}
+
+export interface CreateCustomerResponse {
+  success: boolean;
+  data: Customer;
+  message?: string;
+}
+
+export interface UpdateCustomerResponse {
+  success: boolean;
+  data: Customer;
+  message?: string;
+}
+
+export interface DeleteCustomerResponse {
+  success: boolean;
+  message?: string;
+}
+
+export interface ProfileCustomersListResponse {
+  success: boolean;
+  data: ProfileCustomer[];
+  meta?: {
+    total_count: number;
+  };
+  message?: string;
+}
+
+export interface ProfileCustomerResponse {
+  success: boolean;
+  data: ProfileCustomer;
+  message?: string;
+}
+
+export interface CreateProfileCustomerResponse {
+  success: boolean;
+  data: ProfileCustomer;
+  message?: string;
+}
+
+export interface UpdateProfileCustomerResponse {
+  success: boolean;
+  data: ProfileCustomer;
+  message?: string;
+}
+
+export interface DeleteProfileCustomerResponse {
+  success: boolean;
+  message?: string;
+}
+
+// Customer Portal Types
+export interface CustomerLoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface CustomerLoginResponse {
+  token: string;
+  full_name: string;
+}

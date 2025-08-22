@@ -8,3 +8,5 @@ export * from './team.types';
 export * from './law-area.types';
 export * from './power.types';
 export * from './job.types';
+export * from './work.types';
+export * from './customer.types';

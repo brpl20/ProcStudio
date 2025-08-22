@@ -41,30 +41,30 @@ Instead of having inline SVG code scattered throughout components, we've central
 
 ## Available Icons
 
-| Icon Name | Usage | Description |
-|-----------|-------|-------------|
-| `dashboard` | `<Icon name="dashboard" />` | Home/dashboard icon |
-| `admin` | `<Icon name="admin" />` | Admin/users management icon |
-| `settings` | `<Icon name="settings" />` | Settings/configuration icon |
-| `reports` | `<Icon name="reports" />` | Reports/charts icon |
-| `tasks` | `<Icon name="tasks" />` | Tasks/checklist icon |
-| `teams` | `<Icon name="teams" />` | Teams/groups icon |
-| `logout` | `<Icon name="logout" />` | Logout/exit icon |
-| `hamburger` | `<Icon name="hamburger" />` | Mobile menu hamburger |
-| `search` | `<Icon name="search" />` | Search/magnifying glass |
-| `notification` | `<Icon name="notification" />` | Bell/notification icon |
-| `heart` | `<Icon name="heart" />` | Heart/favorite icon |
-| `lightning` | `<Icon name="lightning" />` | Lightning/fast icon |
-| `briefcase` | `<Icon name="briefcase" />` | Briefcase/work icon |
-| `adjustments` | `<Icon name="adjustments" />` | Adjustments/sliders icon |
+| Icon Name      | Usage                          | Description                 |
+| -------------- | ------------------------------ | --------------------------- |
+| `dashboard`    | `<Icon name="dashboard" />`    | Home/dashboard icon         |
+| `admin`        | `<Icon name="admin" />`        | Admin/users management icon |
+| `settings`     | `<Icon name="settings" />`     | Settings/configuration icon |
+| `reports`      | `<Icon name="reports" />`      | Reports/charts icon         |
+| `tasks`        | `<Icon name="tasks" />`        | Tasks/checklist icon        |
+| `teams`        | `<Icon name="teams" />`        | Teams/groups icon           |
+| `logout`       | `<Icon name="logout" />`       | Logout/exit icon            |
+| `hamburger`    | `<Icon name="hamburger" />`    | Mobile menu hamburger       |
+| `search`       | `<Icon name="search" />`       | Search/magnifying glass     |
+| `notification` | `<Icon name="notification" />` | Bell/notification icon      |
+| `heart`        | `<Icon name="heart" />`        | Heart/favorite icon         |
+| `lightning`    | `<Icon name="lightning" />`    | Lightning/fast icon         |
+| `briefcase`    | `<Icon name="briefcase" />`    | Briefcase/work icon         |
+| `adjustments`  | `<Icon name="adjustments" />`  | Adjustments/sliders icon    |
 
 ## Properties
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `name` | `string` | **required** | The name of the icon to display |
-| `className` | `string` | `'h-5 w-5'` | CSS classes for styling the icon |
-| `strokeWidth` | `string` | `'2'` | SVG stroke width |
+| Property      | Type     | Default      | Description                      |
+| ------------- | -------- | ------------ | -------------------------------- |
+| `name`        | `string` | **required** | The name of the icon to display  |
+| `className`   | `string` | `'h-5 w-5'`  | CSS classes for styling the icon |
+| `strokeWidth` | `string` | `'2'`        | SVG stroke width                 |
 
 ## Adding New Icons
 
@@ -101,6 +101,7 @@ To add a new icon:
 ## Migration from Inline SVGs
 
 ### Before (Inline SVG)
+
 ```svelte
 <svg
   xmlns="http://www.w3.org/2000/svg"
@@ -119,6 +120,7 @@ To add a new icon:
 ```
 
 ### After (Icon Component)
+
 ```svelte
 <script>
   import Icon from '../icons.svelte';
@@ -138,6 +140,7 @@ To add a new icon:
 ## Files Using Icons
 
 The Icon component is currently used in:
+
 - `frontend/src/lib/components/AuthSidebar.svelte`
 - `frontend/src/lib/components/AuthenticatedNavbar.svelte`
 

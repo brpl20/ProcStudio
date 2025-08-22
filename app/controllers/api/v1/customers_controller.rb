@@ -47,18 +47,22 @@ module Api
             customer
           ), status: :created
         else
-          render(
-            status: :bad_request,
-            json: { errors: [{ code: customer.errors.full_messages }] }
-          )
+          error_messages = customer.errors.full_messages
+          render json: {
+            success: false,
+            message: error_messages.first,
+            errors: error_messages
+          }, status: :unprocessable_entity
         end
       rescue StandardError => e
         Rails.logger.error "Customer creation error: #{e.class} - #{e.message}"
         Rails.logger.error e.backtrace.first(10).join("\n") if e.backtrace
-        render(
-          status: :bad_request,
-          json: { errors: [{ code: e.message }] }
-        )
+        error_message = 'Erro ao criar cliente. Tente novamente.'
+        render json: {
+          success: false,
+          message: error_message,
+          errors: [error_message]
+        }, status: :internal_server_error
       end
 
       def resend_confirmation
@@ -77,10 +81,12 @@ module Api
             @customer
           ), status: :ok
         else
-          render(
-            status: :bad_request,
-            json: { errors: [{ code: @customer.errors.full_messages }] }
-          )
+          error_messages = @customer.errors.full_messages
+          render json: {
+            success: false,
+            message: error_messages.first,
+            errors: error_messages
+          }, status: :unprocessable_entity
         end
       end
 
@@ -103,10 +109,12 @@ module Api
             customer
           ), status: :ok
         else
-          render(
-            status: :bad_request,
-            json: { errors: [{ code: customer.errors.full_messages }] }
-          )
+          error_messages = customer.errors.full_messages
+          render json: {
+            success: false,
+            message: error_messages.first,
+            errors: error_messages
+          }, status: :unprocessable_entity
         end
       end
 

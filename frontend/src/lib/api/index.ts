@@ -13,7 +13,9 @@ import {
   TeamService,
   LawAreaService,
   PowerService,
-  JobService
+  JobService,
+  WorkService,
+  CustomerService
 } from './services';
 
 // Re-export types for convenience
@@ -38,6 +40,8 @@ export class API {
   public lawAreas: LawAreaService;
   public powers: PowerService;
   public jobs: JobService;
+  public works: WorkService;
+  public customers: CustomerService;
 
   constructor() {
     // Initialize HTTP client
@@ -50,6 +54,8 @@ export class API {
     this.lawAreas = new LawAreaService(this.httpClient);
     this.powers = new PowerService(this.httpClient);
     this.jobs = new JobService(this.httpClient);
+    this.works = new WorkService(this.httpClient);
+    this.customers = new CustomerService(this.httpClient);
 
     // Initialize auth from stored token
     this.auth.initializeAuth();

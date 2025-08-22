@@ -1,89 +1,89 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
+  <head>
     <title>API Test</title>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Testing Frontend-Backend Connection</h1>
     <div id="results"></div>
-    
+
     <script>
-        const results = document.getElementById('results');
-        
-        function log(message) {
-            console.log(message);
-            results.innerHTML += '<p>' + message + '</p>';
+      const results = document.getElementById('results');
+
+      function log(message) {
+        console.log(message);
+        results.innerHTML += '<p>' + message + '</p>';
+      }
+
+      async function testLogin() {
+        try {
+          log('🔄 Testing Login...');
+
+          const response = await fetch('http://localhost:3000/api/v1/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              email: 'test@example.com',
+              password: 'test123'
+            })
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            log('✅ Login Success: ' + JSON.stringify(data));
+          } else {
+            log('❌ Login Failed: ' + response.status + ' - ' + response.statusText);
+            log('Error details: ' + JSON.stringify(data));
+          }
+        } catch (error) {
+          log('❌ Login Network Error: ' + error.message);
         }
-        
-        async function testLogin() {
-            try {
-                log('🔄 Testing Login...');
-                
-                const response = await fetch('http://localhost:3000/api/v1/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        email: 'test@example.com',
-                        password: 'test123'
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (response.ok) {
-                    log('✅ Login Success: ' + JSON.stringify(data));
-                } else {
-                    log('❌ Login Failed: ' + response.status + ' - ' + response.statusText);
-                    log('Error details: ' + JSON.stringify(data));
-                }
-            } catch (error) {
-                log('❌ Login Network Error: ' + error.message);
-            }
+      }
+
+      async function testRegister() {
+        try {
+          log('🔄 Testing Register...');
+
+          const randomEmail = 'test' + Date.now() + '@example.com';
+
+          const response = await fetch('http://localhost:3000/api/v1/public/user_registration', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              user: {
+                email: randomEmail,
+                password: 'test123',
+                password_confirmation: 'test123',
+                oab: '12345'
+              }
+            })
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            log('✅ Register Success: ' + JSON.stringify(data));
+          } else {
+            log('❌ Register Failed: ' + response.status + ' - ' + response.statusText);
+            log('Error details: ' + JSON.stringify(data));
+          }
+        } catch (error) {
+          log('❌ Register Network Error: ' + error.message);
         }
-        
-        async function testRegister() {
-            try {
-                log('🔄 Testing Register...');
-                
-                const randomEmail = 'test' + Date.now() + '@example.com';
-                
-                const response = await fetch('http://localhost:3000/api/v1/public/user_registration', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        user: {
-                            email: randomEmail,
-                            password: 'test123',
-                            password_confirmation: 'test123',
-                            oab: '12345'
-                        }
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (response.ok) {
-                    log('✅ Register Success: ' + JSON.stringify(data));
-                } else {
-                    log('❌ Register Failed: ' + response.status + ' - ' + response.statusText);
-                    log('Error details: ' + JSON.stringify(data));
-                }
-            } catch (error) {
-                log('❌ Register Network Error: ' + error.message);
-            }
-        }
-        
-        // Run tests automatically
-        async function runTests() {
-            await testRegister();
-            await testLogin();
-        }
-        
-        runTests();
+      }
+
+      // Run tests automatically
+      async function runTests() {
+        await testRegister();
+        await testLogin();
+      }
+
+      runTests();
     </script>
-</body>
+  </body>
 </html>
