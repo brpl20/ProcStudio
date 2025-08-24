@@ -1,160 +1,252 @@
 <!-- components/customers/CustomerForm.svelte -->
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
-  import { createCustomerValidationStore } from '../../stores/validationStore';
-  import { validateEmailRequired } from '../../validation/email';
-  import { validationRules } from '../../validation';
-  import type {
-    Customer,
-    CreateCustomerRequest,
-    UpdateCustomerRequest,
-    CustomerStatus
-  } from '../../api/types/customer.types';
-
-  export let customer: Customer | null = null;
+  import { createEventDispatcher, onMount } from 'svelte';
+  import { 
+    validateCPFRequired, 
+    formatCPF,
+    validateEmailRequired,
+    validatePasswordRequired,
+    createPasswordConfirmationValidator,
+    validateBirthDateRequired,
+    getCapacityFromBirthDate,
+    formatBirthDate,
+    parseBrazilianDate,
+    validationRules
+  } from '../../validation';
+  
+  export let customer: any = null;
   export let isLoading: boolean = false;
 
   const dispatch = createEventDispatcher<{
-    submit: CreateCustomerRequest | UpdateCustomerRequest;
+    submit: any;
     cancel: void;
   }>();
 
-  // Create validation store
-  const validation = createCustomerValidationStore();
-  console.log('Validation store created:', validation);
-
-  // Form data
+  // Form data with nested structure for API
   let formData = {
-    email: customer?.email || '',
-    access_email: customer?.access_email || '',
-    password: '',
-    password_confirmation: '',
-    status: (customer?.status || 'active') as CustomerStatus
+    customer_type: 'physical_person',
+    name: '',
+    last_name: '',
+    status: 'active',
+    cpf: '',
+    rg: '',
+    birth: '',
+    gender: 'male',
+    civil_status: 'single',
+    nationality: 'brazilian',
+    capacity: 'able',
+    profession: '',
+    mother_name: '',
+    customer_attributes: {
+      email: '',
+      password: '',
+      password_confirmation: ''
+    },
+    addresses_attributes: [
+      {
+        description: 'Home Address',
+        zip_code: '',
+        street: '',
+        city: '',
+        number: '',
+        neighborhood: '',
+        state: ''
+      }
+    ],
+    phones_attributes: [
+      {
+        phone_number: ''
+      }
+    ],
+    emails_attributes: [
+      {
+        email: ''
+      }
+    ],
+    bank_accounts_attributes: [
+      {
+        bank_name: '',
+        type_account: 'Corrente',
+        agency: '',
+        account: '',
+        operation: '',
+        pix: ''
+      }
+    ]
   };
 
-  // Initialize form with existing customer data
-  if (customer) {
-    validation.setFieldValue('email', formData.email);
-    validation.setFieldValue('access_email', formData.access_email);
+  // Validation errors
+  let errors: Record<string, string> = {};
+  let touched: Record<string, boolean> = {};
+  let capacityMessage = '';
+
+  // Get gender-based civil status label
+  function getCivilStatusLabel(status: string, gender: string): string {
+    const labels: Record<string, Record<string, string>> = {
+      single: { male: 'Solteiro', female: 'Solteira' },
+      married: { male: 'Casado', female: 'Casada' },
+      divorced: { male: 'Divorciado', female: 'Divorciada' },
+      widower: { male: 'Viúvo', female: 'Viúva' },
+      union: { male: 'Em união estável', female: 'Em união estável' }
+    };
+    
+    return labels[status]?.[gender] || status;
   }
 
-  // Handle field validation on blur
-  function handleFieldBlur(fieldName: string, value: string) {
-    validation.validateField(fieldName, value, true);
+  // Handle CPF formatting
+  function handleCPFInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    formData.cpf = formatCPF(input.value);
+    validateField('cpf', formData.cpf);
   }
 
-  // Handle field input (update value without validation)
-  function handleFieldInput(fieldName: string, value: string) {
-    formData[fieldName] = value;
-    validation.setFieldValue(fieldName, value);
+  // Handle birth date change and update capacity
+  function handleBirthDateChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    formData.birth = input.value;
+    
+    const capacityInfo = getCapacityFromBirthDate(formData.birth);
+    if (capacityInfo) {
+      formData.capacity = capacityInfo.capacity;
+      capacityMessage = capacityInfo.message || '';
+    }
+    
+    validateField('birth', formData.birth);
   }
 
-  // Validate password confirmation separately
-  function handlePasswordConfirmationBlur() {
-    validation.validateField('password_confirmation', formData.password_confirmation, true);
-    if (formData.password && formData.password_confirmation) {
-      validation.validatePasswordConfirmation(formData.password, formData.password_confirmation);
+  // Field validation
+  function validateField(fieldName: string, value: any) {
+    switch(fieldName) {
+      case 'cpf':
+        errors.cpf = validateCPFRequired(value) || '';
+        break;
+      case 'email':
+        errors.email = validateEmailRequired(value) || '';
+        break;
+      case 'password':
+        errors.password = validatePasswordRequired(value) || '';
+        break;
+      case 'password_confirmation': {
+        const validator = createPasswordConfirmationValidator(() => formData.customer_attributes.password);
+        errors.password_confirmation = validator(value) || '';
+        break;
+      }
+      case 'birth':
+        errors.birth = validateBirthDateRequired(value) || '';
+        break;
+      case 'name':
+        errors.name = value ? '' : 'Nome é obrigatório';
+        break;
+      case 'last_name':
+        errors.last_name = value ? '' : 'Sobrenome é obrigatório';
+        break;
+      case 'rg':
+        errors.rg = value ? '' : 'RG é obrigatório';
+        break;
+      case 'profession':
+        errors.profession = value ? '' : 'Profissão é obrigatória';
+        break;
+      case 'mother_name':
+        errors.mother_name = value ? '' : 'Nome da mãe é obrigatório';
+        break;
     }
   }
 
-  // Custom validation for the form
+  // Handle field blur
+  function handleBlur(fieldName: string, value: any) {
+    touched[fieldName] = true;
+    validateField(fieldName, value);
+  }
+
+  // Validate entire form
   function validateForm(): boolean {
-    // Validate basic fields
-    let isValid = validation.validateAll(formData);
-
-    // Additional validation for required fields
-    if (!formData.email) {
-      validation.validateField('email', '', true);
-      isValid = false;
-    }
-
+    let isValid = true;
+    
+    // Validate required fields
+    validateField('name', formData.name);
+    validateField('last_name', formData.last_name);
+    validateField('cpf', formData.cpf);
+    validateField('rg', formData.rg);
+    validateField('birth', formData.birth);
+    validateField('profession', formData.profession);
+    validateField('mother_name', formData.mother_name);
+    validateField('email', formData.customer_attributes.email);
+    
     if (!customer) {
-      // For new customers, password is required
-      if (!formData.password) {
-        validation.validateField('password', '', true);
+      validateField('password', formData.customer_attributes.password);
+      validateField('password_confirmation', formData.customer_attributes.password_confirmation);
+    }
+    
+    // Check if there are any errors
+    for (const error of Object.values(errors)) {
+      if (error) {
         isValid = false;
-      }
-
-      if (!formData.password_confirmation) {
-        validation.validateField('password_confirmation', '', true);
-        isValid = false;
-      }
-
-      // Check password confirmation
-      if (formData.password && formData.password_confirmation) {
-        if (
-          !validation.validatePasswordConfirmation(
-            formData.password,
-            formData.password_confirmation
-          )
-        ) {
-          isValid = false;
-        }
-      }
-    } else if (formData.password) {
-      // For existing customers, only validate if password is provided
-      if (formData.password && formData.password.length < 6) {
-        validation.validateField('password', formData.password, true);
-        isValid = false;
-      }
-
-      if (formData.password && formData.password_confirmation) {
-        if (
-          !validation.validatePasswordConfirmation(
-            formData.password,
-            formData.password_confirmation
-          )
-        ) {
-          isValid = false;
-        }
+        break;
       }
     }
-
+    
     return isValid;
   }
 
-  function handleSubmit(): void {
-    console.log('handleSubmit called');
+  // Handle form submission
+  function handleSubmit() {
+    // Mark all fields as touched
+    Object.keys(formData).forEach(key => touched[key] = true);
     
-    const isValid = validateForm();
-    console.log('Form validation result:', isValid);
-    console.log('Form data:', formData);
-    
-    if (!isValid) {
-      console.log('Validation failed, stopping submission');
+    if (!validateForm()) {
       return;
     }
 
-    const data: CreateCustomerRequest | UpdateCustomerRequest = {
-      email: formData.email,
-      status: formData.status
+    // Prepare data for submission
+    const submitData = {
+      profile_customer: {
+        ...formData,
+        // Sync email from customer_attributes to emails_attributes
+        emails_attributes: [
+          {
+            email: formData.customer_attributes.email
+          }
+        ]
+      }
     };
 
-    if (formData.access_email) {
-      data.access_email = formData.access_email;
-    }
-
-    if (formData.password) {
-      data.password = formData.password;
-      data.password_confirmation = formData.password_confirmation;
-    }
-
-    dispatch('submit', data);
+    dispatch('submit', submitData);
   }
 
-  function handleCancel(): void {
+  function handleCancel() {
     dispatch('cancel');
   }
 
-  // Get field validation state
-  $: emailField = $validation?.email;
-  $: passwordField = $validation?.password;
-  $: passwordConfirmationField = $validation?.password_confirmation;
-  
-  // Debug: Log validation state changes
-  $: console.log('Validation state:', $validation);
-  $: console.log('Email field:', emailField);
-  $: console.log('Password field:', passwordField);
+  // Brazilian states
+  const states = [
+    { value: 'AC', label: 'Acre' },
+    { value: 'AL', label: 'Alagoas' },
+    { value: 'AP', label: 'Amapá' },
+    { value: 'AM', label: 'Amazonas' },
+    { value: 'BA', label: 'Bahia' },
+    { value: 'CE', label: 'Ceará' },
+    { value: 'DF', label: 'Distrito Federal' },
+    { value: 'ES', label: 'Espírito Santo' },
+    { value: 'GO', label: 'Goiás' },
+    { value: 'MA', label: 'Maranhão' },
+    { value: 'MT', label: 'Mato Grosso' },
+    { value: 'MS', label: 'Mato Grosso do Sul' },
+    { value: 'MG', label: 'Minas Gerais' },
+    { value: 'PA', label: 'Pará' },
+    { value: 'PB', label: 'Paraíba' },
+    { value: 'PR', label: 'Paraná' },
+    { value: 'PE', label: 'Pernambuco' },
+    { value: 'PI', label: 'Piauí' },
+    { value: 'RJ', label: 'Rio de Janeiro' },
+    { value: 'RN', label: 'Rio Grande do Norte' },
+    { value: 'RS', label: 'Rio Grande do Sul' },
+    { value: 'RO', label: 'Rondônia' },
+    { value: 'RR', label: 'Roraima' },
+    { value: 'SC', label: 'Santa Catarina' },
+    { value: 'SP', label: 'São Paulo' },
+    { value: 'SE', label: 'Sergipe' },
+    { value: 'TO', label: 'Tocantins' }
+  ];
 </script>
 
 <div class="card bg-base-100 shadow-xl">
@@ -163,117 +255,506 @@
       {customer ? 'Editar Cliente' : 'Novo Cliente'}
     </h2>
 
-    <form on:submit|preventDefault={handleSubmit} class="space-y-4">
-      <!-- Email Field -->
-      <div class="form-control">
-        <label for="email" class="label">
-          <span class="label-text">Email *</span>
-        </label>
-        <input
-          id="email"
-          type="email"
-          class="input input-bordered {emailField?.error && emailField?.touched
-            ? 'input-error'
-            : ''}"
-          bind:value={formData.email}
-          on:input={(e) => handleFieldInput('email', e.currentTarget.value)}
-          on:blur={(e) => handleFieldBlur('email', e.currentTarget.value)}
-          disabled={isLoading}
-          placeholder="cliente@exemplo.com"
-        />
-        {#if emailField?.error && emailField?.touched}
-          <label class="label">
-            <span class="label-text-alt text-error">{emailField.error}</span>
+    <form on:submit|preventDefault={handleSubmit} class="space-y-6">
+      <!-- Personal Information Section -->
+      <div class="divider">Informações Pessoais</div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Name -->
+        <div class="form-control">
+          <label for="name" class="label">
+            <span class="label-text">Nome *</span>
           </label>
-        {/if}
-      </div>
+          <input
+            id="name"
+            type="text"
+            class="input input-bordered {errors.name && touched.name ? 'input-error' : ''}"
+            bind:value={formData.name}
+            on:blur={() => handleBlur('name', formData.name)}
+            disabled={isLoading}
+          />
+          {#if errors.name && touched.name}
+            <label class="label">
+              <span class="label-text-alt text-error">{errors.name}</span>
+            </label>
+          {/if}
+        </div>
 
-      <!-- Access Email Field -->
-      <div class="form-control">
-        <label for="access_email" class="label">
-          <span class="label-text">Email de Acesso</span>
-        </label>
-        <input
-          id="access_email"
-          type="email"
-          class="input input-bordered"
-          bind:value={formData.access_email}
-          on:input={(e) => handleFieldInput('access_email', e.currentTarget.value)}
-          disabled={isLoading}
-          placeholder="Opcional - email alternativo para acesso"
-        />
-      </div>
-
-      <!-- Status Field -->
-      <div class="form-control">
-        <label for="status" class="label">
-          <span class="label-text">Status</span>
-        </label>
-        <select
-          id="status"
-          class="select select-bordered"
-          bind:value={formData.status}
-          disabled={isLoading}
-        >
-          <option value="active">Ativo</option>
-          <option value="inactive">Inativo</option>
-          <option value="deceased">Falecido</option>
-        </select>
-      </div>
-
-      <div class="divider">Senha</div>
-
-      <!-- Password Field -->
-      <div class="form-control">
-        <label for="password" class="label">
-          <span class="label-text">
-            {customer ? 'Nova Senha (deixe em branco para manter a atual)' : 'Senha *'}
-          </span>
-        </label>
-        <input
-          id="password"
-          type="password"
-          class="input input-bordered {passwordField?.error && passwordField?.touched
-            ? 'input-error'
-            : ''}"
-          bind:value={formData.password}
-          on:input={(e) => handleFieldInput('password', e.currentTarget.value)}
-          on:blur={(e) => handleFieldBlur('password', e.currentTarget.value)}
-          disabled={isLoading}
-          placeholder="Mínimo 6 caracteres"
-        />
-        {#if passwordField?.error && passwordField?.touched}
-          <label class="label">
-            <span class="label-text-alt text-error">{passwordField.error}</span>
+        <!-- Last Name -->
+        <div class="form-control">
+          <label for="last_name" class="label">
+            <span class="label-text">Sobrenome *</span>
           </label>
-        {/if}
+          <input
+            id="last_name"
+            type="text"
+            class="input input-bordered {errors.last_name && touched.last_name ? 'input-error' : ''}"
+            bind:value={formData.last_name}
+            on:blur={() => handleBlur('last_name', formData.last_name)}
+            disabled={isLoading}
+          />
+          {#if errors.last_name && touched.last_name}
+            <label class="label">
+              <span class="label-text-alt text-error">{errors.last_name}</span>
+            </label>
+          {/if}
+        </div>
+
+        <!-- CPF -->
+        <div class="form-control">
+          <label for="cpf" class="label">
+            <span class="label-text">CPF *</span>
+          </label>
+          <input
+            id="cpf"
+            type="text"
+            class="input input-bordered {errors.cpf && touched.cpf ? 'input-error' : ''}"
+            bind:value={formData.cpf}
+            on:input={handleCPFInput}
+            on:blur={() => handleBlur('cpf', formData.cpf)}
+            disabled={isLoading}
+            placeholder="000.000.000-00"
+            maxlength="14"
+          />
+          {#if errors.cpf && touched.cpf}
+            <label class="label">
+              <span class="label-text-alt text-error">{errors.cpf}</span>
+            </label>
+          {/if}
+        </div>
+
+        <!-- RG -->
+        <div class="form-control">
+          <label for="rg" class="label">
+            <span class="label-text">RG *</span>
+          </label>
+          <input
+            id="rg"
+            type="text"
+            class="input input-bordered {errors.rg && touched.rg ? 'input-error' : ''}"
+            bind:value={formData.rg}
+            on:blur={() => handleBlur('rg', formData.rg)}
+            disabled={isLoading}
+          />
+          {#if errors.rg && touched.rg}
+            <label class="label">
+              <span class="label-text-alt text-error">{errors.rg}</span>
+            </label>
+          {/if}
+        </div>
+
+        <!-- Birth Date -->
+        <div class="form-control">
+          <label for="birth" class="label">
+            <span class="label-text">Data de Nascimento *</span>
+          </label>
+          <input
+            id="birth"
+            type="date"
+            class="input input-bordered {errors.birth && touched.birth ? 'input-error' : ''}"
+            bind:value={formData.birth}
+            on:change={handleBirthDateChange}
+            on:blur={() => handleBlur('birth', formData.birth)}
+            disabled={isLoading}
+          />
+          {#if errors.birth && touched.birth}
+            <label class="label">
+              <span class="label-text-alt text-error">{errors.birth}</span>
+            </label>
+          {/if}
+          {#if capacityMessage}
+            <label class="label">
+              <span class="label-text-alt text-warning">{capacityMessage}</span>
+            </label>
+          {/if}
+        </div>
+
+        <!-- Gender -->
+        <div class="form-control">
+          <label for="gender" class="label">
+            <span class="label-text">Gênero *</span>
+          </label>
+          <select
+            id="gender"
+            class="select select-bordered"
+            bind:value={formData.gender}
+            disabled={isLoading}
+          >
+            <option value="male">Masculino</option>
+            <option value="female">Feminino</option>
+          </select>
+        </div>
+
+        <!-- Civil Status -->
+        <div class="form-control">
+          <label for="civil_status" class="label">
+            <span class="label-text">Estado Civil *</span>
+          </label>
+          <select
+            id="civil_status"
+            class="select select-bordered"
+            bind:value={formData.civil_status}
+            disabled={isLoading}
+          >
+            <option value="single">{getCivilStatusLabel('single', formData.gender)}</option>
+            <option value="married">{getCivilStatusLabel('married', formData.gender)}</option>
+            <option value="divorced">{getCivilStatusLabel('divorced', formData.gender)}</option>
+            <option value="widower">{getCivilStatusLabel('widower', formData.gender)}</option>
+            <option value="union">{getCivilStatusLabel('union', formData.gender)}</option>
+          </select>
+        </div>
+
+        <!-- Nationality -->
+        <div class="form-control">
+          <label for="nationality" class="label">
+            <span class="label-text">Nacionalidade *</span>
+          </label>
+          <select
+            id="nationality"
+            class="select select-bordered"
+            bind:value={formData.nationality}
+            disabled={isLoading}
+          >
+            <option value="brazilian">Brasileiro</option>
+            <option value="foreigner">Estrangeiro</option>
+          </select>
+        </div>
+
+        <!-- Profession -->
+        <div class="form-control">
+          <label for="profession" class="label">
+            <span class="label-text">Profissão *</span>
+          </label>
+          <input
+            id="profession"
+            type="text"
+            class="input input-bordered {errors.profession && touched.profession ? 'input-error' : ''}"
+            bind:value={formData.profession}
+            on:blur={() => handleBlur('profession', formData.profession)}
+            disabled={isLoading}
+          />
+          {#if errors.profession && touched.profession}
+            <label class="label">
+              <span class="label-text-alt text-error">{errors.profession}</span>
+            </label>
+          {/if}
+        </div>
+
+        <!-- Mother's Name -->
+        <div class="form-control">
+          <label for="mother_name" class="label">
+            <span class="label-text">Nome da Mãe *</span>
+          </label>
+          <input
+            id="mother_name"
+            type="text"
+            class="input input-bordered {errors.mother_name && touched.mother_name ? 'input-error' : ''}"
+            bind:value={formData.mother_name}
+            on:blur={() => handleBlur('mother_name', formData.mother_name)}
+            disabled={isLoading}
+          />
+          {#if errors.mother_name && touched.mother_name}
+            <label class="label">
+              <span class="label-text-alt text-error">{errors.mother_name}</span>
+            </label>
+          {/if}
+        </div>
+
+        <!-- Status -->
+        <div class="form-control">
+          <label for="status" class="label">
+            <span class="label-text">Status</span>
+          </label>
+          <select
+            id="status"
+            class="select select-bordered"
+            bind:value={formData.status}
+            disabled={isLoading}
+          >
+            <option value="active">Ativo</option>
+            <option value="inactive">Inativo</option>
+            <option value="deceased">Falecido</option>
+          </select>
+        </div>
       </div>
 
-      <!-- Password Confirmation Field -->
-      <div class="form-control">
-        <label for="password_confirmation" class="label">
-          <span class="label-text">
-            {customer ? 'Confirmar Nova Senha' : 'Confirmar Senha *'}
-          </span>
-        </label>
-        <input
-          id="password_confirmation"
-          type="password"
-          class="input input-bordered {passwordConfirmationField?.error &&
-          passwordConfirmationField?.touched
-            ? 'input-error'
-            : ''}"
-          bind:value={formData.password_confirmation}
-          on:input={(e) => handleFieldInput('password_confirmation', e.currentTarget.value)}
-          on:blur={handlePasswordConfirmationBlur}
-          disabled={isLoading}
-          placeholder="Digite a senha novamente"
-        />
-        {#if passwordConfirmationField?.error && passwordConfirmationField?.touched}
-          <label class="label">
-            <span class="label-text-alt text-error">{passwordConfirmationField.error}</span>
+      <!-- Login Information Section -->
+      <div class="divider">Informações de Acesso</div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Email -->
+        <div class="form-control">
+          <label for="email" class="label">
+            <span class="label-text">Email *</span>
           </label>
-        {/if}
+          <input
+            id="email"
+            type="email"
+            class="input input-bordered {errors.email && touched.email ? 'input-error' : ''}"
+            bind:value={formData.customer_attributes.email}
+            on:blur={() => handleBlur('email', formData.customer_attributes.email)}
+            disabled={isLoading}
+            placeholder="cliente@exemplo.com"
+          />
+          {#if errors.email && touched.email}
+            <label class="label">
+              <span class="label-text-alt text-error">{errors.email}</span>
+            </label>
+          {/if}
+        </div>
+
+        <!-- Password -->
+        <div class="form-control">
+          <label for="password" class="label">
+            <span class="label-text">
+              {customer ? 'Nova Senha (deixe em branco para manter)' : 'Senha *'}
+            </span>
+          </label>
+          <input
+            id="password"
+            type="password"
+            class="input input-bordered {errors.password && touched.password ? 'input-error' : ''}"
+            bind:value={formData.customer_attributes.password}
+            on:blur={() => handleBlur('password', formData.customer_attributes.password)}
+            disabled={isLoading}
+            placeholder="Mínimo 6 caracteres"
+          />
+          {#if errors.password && touched.password}
+            <label class="label">
+              <span class="label-text-alt text-error">{errors.password}</span>
+            </label>
+          {/if}
+        </div>
+
+        <!-- Password Confirmation -->
+        <div class="form-control">
+          <label for="password_confirmation" class="label">
+            <span class="label-text">
+              {customer ? 'Confirmar Nova Senha' : 'Confirmar Senha *'}
+            </span>
+          </label>
+          <input
+            id="password_confirmation"
+            type="password"
+            class="input input-bordered {errors.password_confirmation && touched.password_confirmation ? 'input-error' : ''}"
+            bind:value={formData.customer_attributes.password_confirmation}
+            on:blur={() => handleBlur('password_confirmation', formData.customer_attributes.password_confirmation)}
+            disabled={isLoading}
+            placeholder="Digite a senha novamente"
+          />
+          {#if errors.password_confirmation && touched.password_confirmation}
+            <label class="label">
+              <span class="label-text-alt text-error">{errors.password_confirmation}</span>
+            </label>
+          {/if}
+        </div>
+      </div>
+
+      <!-- Address Section -->
+      <div class="divider">Endereço</div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- ZIP Code -->
+        <div class="form-control">
+          <label for="zip_code" class="label">
+            <span class="label-text">CEP</span>
+          </label>
+          <input
+            id="zip_code"
+            type="text"
+            class="input input-bordered"
+            bind:value={formData.addresses_attributes[0].zip_code}
+            disabled={isLoading}
+            placeholder="00000-000"
+          />
+        </div>
+
+        <!-- Street -->
+        <div class="form-control">
+          <label for="street" class="label">
+            <span class="label-text">Rua</span>
+          </label>
+          <input
+            id="street"
+            type="text"
+            class="input input-bordered"
+            bind:value={formData.addresses_attributes[0].street}
+            disabled={isLoading}
+          />
+        </div>
+
+        <!-- Number -->
+        <div class="form-control">
+          <label for="number" class="label">
+            <span class="label-text">Número</span>
+          </label>
+          <input
+            id="number"
+            type="text"
+            class="input input-bordered"
+            bind:value={formData.addresses_attributes[0].number}
+            disabled={isLoading}
+          />
+        </div>
+
+        <!-- Neighborhood -->
+        <div class="form-control">
+          <label for="neighborhood" class="label">
+            <span class="label-text">Bairro</span>
+          </label>
+          <input
+            id="neighborhood"
+            type="text"
+            class="input input-bordered"
+            bind:value={formData.addresses_attributes[0].neighborhood}
+            disabled={isLoading}
+          />
+        </div>
+
+        <!-- City -->
+        <div class="form-control">
+          <label for="city" class="label">
+            <span class="label-text">Cidade</span>
+          </label>
+          <input
+            id="city"
+            type="text"
+            class="input input-bordered"
+            bind:value={formData.addresses_attributes[0].city}
+            disabled={isLoading}
+          />
+        </div>
+
+        <!-- State -->
+        <div class="form-control">
+          <label for="state" class="label">
+            <span class="label-text">Estado</span>
+          </label>
+          <select
+            id="state"
+            class="select select-bordered"
+            bind:value={formData.addresses_attributes[0].state}
+            disabled={isLoading}
+          >
+            <option value="">Selecione...</option>
+            {#each states as state}
+              <option value={state.value}>{state.label}</option>
+            {/each}
+          </select>
+        </div>
+      </div>
+
+      <!-- Contact Section -->
+      <div class="divider">Contato</div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Phone -->
+        <div class="form-control">
+          <label for="phone" class="label">
+            <span class="label-text">Telefone</span>
+          </label>
+          <input
+            id="phone"
+            type="tel"
+            class="input input-bordered"
+            bind:value={formData.phones_attributes[0].phone_number}
+            disabled={isLoading}
+            placeholder="+55 11 98765-4321"
+          />
+        </div>
+      </div>
+
+      <!-- Bank Account Section -->
+      <div class="divider">Dados Bancários</div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Bank Name -->
+        <div class="form-control">
+          <label for="bank_name" class="label">
+            <span class="label-text">Banco</span>
+          </label>
+          <input
+            id="bank_name"
+            type="text"
+            class="input input-bordered"
+            bind:value={formData.bank_accounts_attributes[0].bank_name}
+            disabled={isLoading}
+          />
+        </div>
+
+        <!-- Account Type -->
+        <div class="form-control">
+          <label for="type_account" class="label">
+            <span class="label-text">Tipo de Conta</span>
+          </label>
+          <select
+            id="type_account"
+            class="select select-bordered"
+            bind:value={formData.bank_accounts_attributes[0].type_account}
+            disabled={isLoading}
+          >
+            <option value="Corrente">Corrente</option>
+            <option value="Poupança">Poupança</option>
+          </select>
+        </div>
+
+        <!-- Agency -->
+        <div class="form-control">
+          <label for="agency" class="label">
+            <span class="label-text">Agência</span>
+          </label>
+          <input
+            id="agency"
+            type="text"
+            class="input input-bordered"
+            bind:value={formData.bank_accounts_attributes[0].agency}
+            disabled={isLoading}
+            placeholder="0000-0"
+          />
+        </div>
+
+        <!-- Account -->
+        <div class="form-control">
+          <label for="account" class="label">
+            <span class="label-text">Conta</span>
+          </label>
+          <input
+            id="account"
+            type="text"
+            class="input input-bordered"
+            bind:value={formData.bank_accounts_attributes[0].account}
+            disabled={isLoading}
+            placeholder="00000-0"
+          />
+        </div>
+
+        <!-- Operation -->
+        <div class="form-control">
+          <label for="operation" class="label">
+            <span class="label-text">Operação</span>
+          </label>
+          <input
+            id="operation"
+            type="text"
+            class="input input-bordered"
+            bind:value={formData.bank_accounts_attributes[0].operation}
+            disabled={isLoading}
+          />
+        </div>
+
+        <!-- PIX -->
+        <div class="form-control">
+          <label for="pix" class="label">
+            <span class="label-text">Chave PIX</span>
+          </label>
+          <input
+            id="pix"
+            type="text"
+            class="input input-bordered"
+            bind:value={formData.bank_accounts_attributes[0].pix}
+            disabled={isLoading}
+          />
+        </div>
       </div>
 
       <!-- Actions -->
@@ -281,32 +762,13 @@
         <button type="button" class="btn btn-ghost" on:click={handleCancel} disabled={isLoading}>
           Cancelar
         </button>
-        <button 
-          type="submit" 
-          class="btn btn-primary" 
-          disabled={isLoading}
-          on:click={() => console.log('Submit button clicked!')}
-        >
+        <button type="submit" class="btn btn-primary" disabled={isLoading}>
           {#if isLoading}
             <span class="loading loading-spinner"></span>
           {/if}
-          {customer ? 'Atualizar' : 'Criar'}
+          {customer ? 'Atualizar' : 'Criar Cliente'}
         </button>
       </div>
     </form>
-
-    <!-- Show validation errors summary for debugging (optional) -->
-    {#if $validation.errors?.length > 0}
-      <div class="alert alert-warning mt-4">
-        <div class="flex flex-col">
-          <span>Corrija os seguintes erros:</span>
-          <ul class="list-disc list-inside">
-            {#each $validation.errors as error}
-              <li>{error}</li>
-            {/each}
-          </ul>
-        </div>
-      </div>
-    {/if}
   </div>
 </div>

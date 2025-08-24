@@ -117,7 +117,7 @@ function createCustomerStore() {
       }
     },
 
-    // Create a new customer
+    // Create a new customer (simple)
     async addCustomer(customerData: CreateCustomerRequest): Promise<boolean> {
       update((state) => ({ ...state, isLoading: true, error: '' }));
 
@@ -136,10 +136,41 @@ function createCustomerStore() {
         );
         return true;
       } else {
-        // Log field errors if they exist
-        if (response.errors) {
-          console.error('Field validation errors:', response.errors);
-        }
+        // Field validation errors exist but are handled by the message
+        
+        update((state) =>
+          showNotification(
+            {
+              ...state,
+              isLoading: false
+            },
+            response.message || 'Erro ao criar cliente',
+            true
+          )
+        );
+        return false;
+      }
+    },
+
+    // Create a new profile customer (complete with ProfileCustomer data)
+    async addProfileCustomer(profileCustomerData: any): Promise<boolean> {
+      update((state) => ({ ...state, isLoading: true, error: '' }));
+
+      const response = await api.customers.createProfileCustomer(profileCustomerData);
+
+      if (response.success) {
+        update((state) =>
+          showNotification(
+            {
+              ...state,
+              isLoading: false
+            },
+            'Cliente criado com sucesso'
+          )
+        );
+        return true;
+      } else {
+        // Field validation errors exist but are handled by the message
         
         update((state) =>
           showNotification(
@@ -186,10 +217,7 @@ function createCustomerStore() {
         });
         return true;
       } else {
-        // Log field errors if they exist
-        if (response.errors) {
-          console.error('Field validation errors:', response.errors);
-        }
+        // Field validation errors exist but are handled by the message
         
         update((state) =>
           showNotification(

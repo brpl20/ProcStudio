@@ -3,11 +3,11 @@
   import CustomerForm from '../components/customers/CustomerForm.svelte';
   import { customerStore } from '../stores/customerStore';
   import { router } from '../stores/routerStore.js';
-  import type { CreateCustomerRequest } from '../api/types/customer.types';
 
-  async function handleSubmit(event: CustomEvent<CreateCustomerRequest>) {
-    console.log('Creating customer with data:', event.detail);
-    const success = await customerStore.addCustomer(event.detail);
+  async function handleSubmit(event: CustomEvent<any>) {
+    // The form sends data wrapped in profile_customer, extract it
+    const profileCustomerData = event.detail.profile_customer;
+    const success = await customerStore.addProfileCustomer(profileCustomerData);
     if (success) {
       // Navigate back to customers list on success
       router.navigate('/customers');

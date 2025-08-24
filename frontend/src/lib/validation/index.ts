@@ -60,6 +60,17 @@ export {
   passwordValidators
 } from './password';
 
+// Export birth date validators
+export {
+  validateBirthDate,
+  validateBirthDateRequired,
+  calculateAge,
+  getCapacityFromAge,
+  getCapacityFromBirthDate,
+  formatBirthDate,
+  parseBrazilianDate
+} from './birthDate';
+
 import type { ValidationRule, FieldValidation, FormValidationState } from './types';
 
 /**

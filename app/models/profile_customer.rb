@@ -132,7 +132,12 @@ class ProfileCustomer < ApplicationRecord
     validates :rg
   end
 
+  validates :cpf, cpf: true
+  validates :birth, birth_date: { set_capacity: true }, allow_blank: true
+
   validates_with PhoneNumberValidator
+
+  attr_accessor :capacity_message
 
   def full_name
     "#{name} #{last_name}".squish

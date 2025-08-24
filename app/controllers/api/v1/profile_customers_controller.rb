@@ -51,6 +51,15 @@ module Api
         profile_customer = ProfileCustomer.new(profile_customers_params)
         profile_customer.created_by_id = current_user.id
         if profile_customer.save
+          # Associate the customer with the current team
+          if profile_customer.customer.present? && current_team.present?
+            TeamCustomer.create!(
+              team: current_team,
+              customer: profile_customer.customer,
+              customer_email: profile_customer.customer.email
+            )
+          end
+
           if truthy_param?(:issue_documents)
             ProfileCustomers::CreateDocumentService.call(profile_customer,
                                                          current_user)

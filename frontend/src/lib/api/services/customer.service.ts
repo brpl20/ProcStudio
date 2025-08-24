@@ -320,6 +320,7 @@ export class CustomerService {
     issueDocuments = false
   ): Promise<CreateProfileCustomerResponse> {
     try {
+      // profileData already contains the nested structure, send it directly
       const payload = {
         profile_customer: profileData,
         issue_documents: issueDocuments
