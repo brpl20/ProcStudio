@@ -1,7 +1,7 @@
-<script>
+<script lang="ts">
+  import { onMount } from 'svelte';
   import AuthSidebar from '../components/AuthSidebar.svelte';
   import api from '../api/index';
-  import { onMount } from 'svelte';
 
   let works = [];
   let isLoading = false;
@@ -45,7 +45,7 @@
         error = result.message || 'Erro ao carregar trabalhos';
       }
     } catch (err) {
-      console.error('Error loading works:', err);
+      // Error loading works
       error = 'Erro ao carregar trabalhos';
     } finally {
       isLoading = false;
@@ -82,7 +82,7 @@
         error = result.message || 'Erro ao criar trabalho';
       }
     } catch (err) {
-      console.error('Error creating work:', err);
+      // Error creating work
       error = 'Erro ao criar trabalho';
     } finally {
       isLoading = false;
@@ -104,7 +104,7 @@
         error = result.message || 'Erro ao atualizar status';
       }
     } catch (err) {
-      console.error('Error updating work status:', err);
+      // Error updating work status
       error = 'Erro ao atualizar status';
     } finally {
       isLoading = false;
@@ -141,7 +141,7 @@
         error = result.message || 'Erro ao atualizar trabalho';
       }
     } catch (err) {
-      console.error('Error updating work:', err);
+      // Error updating work
       error = 'Erro ao atualizar trabalho';
     } finally {
       isLoading = false;
@@ -167,7 +167,7 @@
         error = result.message || 'Erro ao excluir trabalho';
       }
     } catch (err) {
-      console.error('Error deleting work:', err);
+      // Error deleting work
       error = 'Erro ao excluir trabalho';
     } finally {
       isLoading = false;
@@ -206,44 +206,44 @@
 
   function getStatusBadge(status) {
     switch (status) {
-    case 'completed':
-      return 'badge-success';
-    case 'in_progress':
-      return 'badge-warning';
-    case 'paused':
-      return 'badge-info';
-    case 'archived':
-      return 'badge-neutral';
-    default:
-      return 'badge-ghost';
+      case 'completed':
+        return 'badge-success';
+      case 'in_progress':
+        return 'badge-warning';
+      case 'paused':
+        return 'badge-info';
+      case 'archived':
+        return 'badge-neutral';
+      default:
+        return 'badge-ghost';
     }
   }
 
   function getStatusLabel(status) {
     switch (status) {
-    case 'in_progress':
-      return 'Em Andamento';
-    case 'paused':
-      return 'Pausado';
-    case 'completed':
-      return 'Concluído';
-    case 'archived':
-      return 'Arquivado';
-    default:
-      return status;
+      case 'in_progress':
+        return 'Em Andamento';
+      case 'paused':
+        return 'Pausado';
+      case 'completed':
+        return 'Concluído';
+      case 'archived':
+        return 'Arquivado';
+      default:
+        return status;
     }
   }
 
   function getProcedureLabel(procedure) {
     switch (procedure) {
-    case 'administrative':
-      return 'Administrativo';
-    case 'judicial':
-      return 'Judicial';
-    case 'extrajudicial':
-      return 'Extrajudicial';
-    default:
-      return procedure;
+      case 'administrative':
+        return 'Administrativo';
+      case 'judicial':
+        return 'Judicial';
+      case 'extrajudicial':
+        return 'Extrajudicial';
+      default:
+        return procedure;
     }
   }
 </script>
@@ -284,10 +284,11 @@
 
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="form-control">
-                  <label class="label">
+                  <label class="label" for="work-number">
                     <span class="label-text">Número *</span>
                   </label>
                   <input
+                    id="work-number"
                     type="number"
                     class="input input-bordered"
                     bind:value={newWorkNumber}
@@ -297,10 +298,11 @@
                 </div>
 
                 <div class="form-control">
-                  <label class="label">
+                  <label class="label" for="work-folder">
                     <span class="label-text">Pasta *</span>
                   </label>
                   <input
+                    id="work-folder"
                     type="text"
                     class="input input-bordered"
                     bind:value={newWorkFolder}
@@ -310,10 +312,11 @@
                 </div>
 
                 <div class="form-control">
-                  <label class="label">
+                  <label class="label" for="work-procedure">
                     <span class="label-text">Procedimento</span>
                   </label>
                   <select
+                    id="work-procedure"
                     class="select select-bordered"
                     bind:value={newWorkProcedure}
                     disabled={isLoading}
@@ -325,10 +328,11 @@
                 </div>
 
                 <div class="form-control">
-                  <label class="label">
+                  <label class="label" for="work-status">
                     <span class="label-text">Status</span>
                   </label>
                   <select
+                    id="work-status"
                     class="select select-bordered"
                     bind:value={newWorkStatus}
                     disabled={isLoading}
@@ -341,10 +345,11 @@
                 </div>
 
                 <div class="form-control">
-                  <label class="label">
+                  <label class="label" for="work-law-area">
                     <span class="label-text">Área do Direito (ID) *</span>
                   </label>
                   <input
+                    id="work-law-area"
                     type="number"
                     class="input input-bordered"
                     bind:value={newWorkLawAreaId}
@@ -354,10 +359,11 @@
                 </div>
 
                 <div class="form-control">
-                  <label class="label">
+                  <label class="label" for="work-note">
                     <span class="label-text">Observações</span>
                   </label>
                   <textarea
+                    id="work-note"
                     class="textarea textarea-bordered"
                     bind:value={newWorkNote}
                     placeholder="Observações do trabalho"
