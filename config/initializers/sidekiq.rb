@@ -14,6 +14,15 @@ Sidekiq.configure_server do |config|
   config.death_handlers << lambda do |job, ex|
     Rails.logger.error "[Sidekiq] Job #{job['class']} died: #{ex.message}"
   end
+
+  # Load scheduled jobs for sidekiq-cron
+  schedule_file = Rails.root.join('config/sidekiq_cron.yml')
+  if File.exist?(schedule_file) && Sidekiq.server?
+    require 'sidekiq-cron'
+
+    Sidekiq::Cron::Job.load_from_hash YAML.load_file(schedule_file)
+    Rails.logger.info "[Sidekiq-Cron] Loaded scheduled jobs from #{schedule_file}"
+  end
 end
 
 Sidekiq.configure_client do |config|

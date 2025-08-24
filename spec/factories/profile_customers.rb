@@ -12,11 +12,11 @@
 #  company        :string
 #  cpf            :string
 #  customer_type  :string
+#  deceased_at    :datetime
 #  deleted_at     :datetime
 #  document       :json
 #  gender         :string
 #  inss_password  :string
-#  invalid_person :integer
 #  last_name      :string
 #  mother_name    :string
 #  name           :string
@@ -37,6 +37,7 @@
 #  index_profile_customers_on_accountant_id  (accountant_id)
 #  index_profile_customers_on_created_by_id  (created_by_id)
 #  index_profile_customers_on_customer_id    (customer_id)
+#  index_profile_customers_on_deceased_at    (deceased_at)
 #  index_profile_customers_on_deleted_at     (deleted_at)
 #
 # Foreign Keys

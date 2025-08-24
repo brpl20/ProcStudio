@@ -25,7 +25,6 @@
 #  rate_parceled_exfield                                                :string
 #  responsible_lawyer                                                   :integer
 #  status                                                               :string           default("in_progress")
-#  subject                                                              :string
 #  created_at                                                           :datetime         not null
 #  updated_at                                                           :datetime         not null
 #  created_by_id                                                        :bigint

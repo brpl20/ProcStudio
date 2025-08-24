@@ -12,11 +12,11 @@
 #  company        :string
 #  cpf            :string
 #  customer_type  :string
+#  deceased_at    :datetime
 #  deleted_at     :datetime
 #  document       :json
 #  gender         :string
 #  inss_password  :string
-#  invalid_person :integer
 #  last_name      :string
 #  mother_name    :string
 #  name           :string
@@ -37,6 +37,7 @@
 #  index_profile_customers_on_accountant_id  (accountant_id)
 #  index_profile_customers_on_created_by_id  (created_by_id)
 #  index_profile_customers_on_customer_id    (customer_id)
+#  index_profile_customers_on_deceased_at    (deceased_at)
 #  index_profile_customers_on_deleted_at     (deleted_at)
 #
 # Foreign Keys
@@ -49,8 +50,14 @@ class ProfileCustomer < ApplicationRecord
 
   acts_as_paranoid
 
+  # Track changes for compliance, only tracking capacity changes manually
+  has_paper_trail only: [:capacity], on: [:update]
+
   belongs_to :customer, -> { with_deleted }, optional: true
   belongs_to :accountant, class_name: 'ProfileCustomer', optional: true
+
+  # Compliance callback for manual capacity changes
+  after_update :check_compliance_for_capacity_change, if: :saved_change_to_capacity?
 
   enum :gender, {
     male: 'male',
@@ -111,6 +118,7 @@ class ProfileCustomer < ApplicationRecord
   has_many :jobs, dependent: :destroy
   has_many :documents, dependent: :destroy
   has_many :recommendations, dependent: :destroy
+  has_many :drafts, as: :draftable, dependent: :destroy
 
   has_many :represented_customers, class_name: 'Represent', foreign_key: 'representor_id', dependent: :nullify
   has_one :represent, dependent: :destroy
@@ -128,9 +136,11 @@ class ProfileCustomer < ApplicationRecord
     validates :gender
     validates :name
     validates :nationality
-    validates :profession
     validates :rg
   end
+
+  # Profession is required only for able and relatively incapable persons
+  validates :profession, presence: true, unless: :unable?
 
   validates :cpf, cpf: true
   validates :birth, birth_date: { set_capacity: true }, allow_blank: true
@@ -173,5 +183,13 @@ class ProfileCustomer < ApplicationRecord
     customer_phones.where.not(phone_id: current_phone_ids).destroy_all
 
     super
+  end
+
+  private
+
+  def check_compliance_for_capacity_change
+    # Only create compliance notification for manual changes
+    # Automatic age-based changes are handled by AgeTransitionCheckerJob
+    Compliance::CapacityChangeService.new(self).handle_manual_change
   end
 end

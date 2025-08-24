@@ -1,0 +1,7 @@
+# Schedule for daily age transition checker
+# Runs at 1:00 AM every day
+age_transition_checker:
+  cron: "0 1 * * *"
+  class: "AgeTransitionCheckerJob"
+  queue: default
+  description: "Check for customer age transitions and update capacity accordingly"

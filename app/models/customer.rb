@@ -53,7 +53,10 @@ class Customer < ApplicationRecord
 
   before_validation :setup_password, if: :new_record?
 
-  validates :email, uniqueness: { conditions: -> { where(deleted_at: nil) } }
+  validates :email, uniqueness: {
+    conditions: -> { where(deleted_at: nil) },
+    unless: :unable_person?
+  }
 
   # From Devise module Validatable
   validates :email, presence: { if: :email_required? }
@@ -66,8 +69,7 @@ class Customer < ApplicationRecord
 
   enum :status, {
     active: 'active',
-    inactive: 'inactive',
-    deceased: 'deceased'
+    inactive: 'inactive'
   }
 
   # Setup a random password for the customer if such is not present. This is
@@ -92,5 +94,11 @@ class Customer < ApplicationRecord
 
   def email_required?
     true
+  end
+
+  # Check if this customer is an unable person (minor or incapacitated)
+  # Used to allow email sharing with their guardian
+  def unable_person?
+    profile_customer&.unable?
   end
 end

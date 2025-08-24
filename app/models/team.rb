@@ -29,6 +29,7 @@ class Team < ApplicationRecord
   has_many :offices, dependent: :destroy
   has_many :works, dependent: :destroy
   has_many :jobs, dependent: :destroy
+  has_many :compliance_notifications, dependent: :destroy
 
   has_many :team_customers, dependent: :destroy
   has_many :customers, through: :team_customers

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Api::V1::Customer::ProfileCustomersController < FrontofficeController
+  include Draftable
+
   before_action :load_active_storage_url_options unless Rails.env.production?
 
   before_action :retrieve_customer
@@ -9,17 +11,34 @@ class Api::V1::Customer::ProfileCustomersController < FrontofficeController
   def show
     authorize @profile_customer, :show?, policy_class: Customer::ProfileCustomerPolicy
 
-    render json: ProfileCustomerSerializer.new(
+    response_data = ProfileCustomerSerializer.new(
       @profile_customer,
       { params: { action: 'show' } }
-    ), status: :ok
+    ).serializable_hash
+
+    if @draft_data
+      response_data[:draft] = {
+        id: @draft_id,
+        data: @draft_data,
+        expires_at: @draft_expires_at
+      }
+    end
+
+    render json: response_data, status: :ok
   end
 
   # PATCH/PUT /api/v1/customer/profile_customers/1
   def update
     authorize @profile_customer, :update?, policy_class: Customer::ProfileCustomerPolicy
 
-    if @profile_customer.update(profile_customers_params)
+    if params[:save_as_draft] == 'true'
+      save_draft_if_requested
+      render json: {
+        message: 'Draft saved successfully',
+        draft_id: @profile_customer.drafts.last&.id
+      }, status: :ok
+    elsif @profile_customer.update(profile_customers_params)
+      clear_draft_if_exists
 
       render json: ProfileCustomerSerializer.new(
         @profile_customer,
@@ -39,6 +58,11 @@ class Api::V1::Customer::ProfileCustomersController < FrontofficeController
     @profile_customer = ProfileCustomerFilter.retrieve_customer(params[:id])
   rescue ActiveRecord::RecordNotFound
     head :not_found
+  end
+
+  def clear_draft_if_exists
+    draft = @profile_customer.drafts.active.find_by(form_type: params[:form_type] || 'profile_form')
+    draft&.recover!
   end
 
   def profile_customers_params
