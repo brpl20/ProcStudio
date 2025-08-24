@@ -20,8 +20,11 @@ class BackofficeController < ApplicationController
   end
 
   def unauthorized(exception)
+    message = I18n.t("admin.#{exception.query}", scope: 'pundit', default: :default)
     render json: {
-      error: I18n.t("admin.#{exception.query}", scope: 'pundit', default: :default)
+      success: false,
+      message: message,
+      errors: [message]
     }, status: :unauthorized
   end
 
@@ -41,17 +44,31 @@ class BackofficeController < ApplicationController
 
     return unless secret_key.blank? || credential.blank? || secret_key != credential
 
-    render json: { error: 'Acesso não autorizado' }, status: :unauthorized
+    render json: {
+      success: false,
+      message: 'Acesso não autorizado',
+      errors: ['Acesso não autorizado']
+    }, status: :unauthorized
   end
 
   def record_not_found(exception)
     # Quando é um User não encontrado por scoping de team,
     # é na verdade um problema de autorização, não de recurso inexistente
     if exception.model == 'User'
-      render json: { error: I18n.t('errors.messages.general.unauthorized_access') }, status: :forbidden
+      message = I18n.t('errors.messages.general.unauthorized_access')
+      render json: {
+        success: false,
+        message: message,
+        errors: [message]
+      }, status: :forbidden
     else
       model_name = exception.model || 'Registro'
-      render json: { error: "#{model_name} não encontrado" }, status: :not_found
+      message = "#{model_name} não encontrado"
+      render json: {
+        success: false,
+        message: message,
+        errors: [message]
+      }, status: :not_found
     end
   end
 end

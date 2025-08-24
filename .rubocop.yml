@@ -151,6 +151,7 @@ Metrics/ClassLength:
   Max: 200
   Exclude:
     - spec/**/*
+    - app/controllers/api/v1/jobs_controller.rb
 
 Metrics/ModuleLength:
   Max: 200
@@ -197,6 +198,13 @@ Naming/ConstantName:
 # Rails Cops
 Rails:
   Enabled: true
+
+Rails/UnknownEnv:
+  Environments:
+    - production
+    - development
+    - test
+    - staging
 
 Rails/HasManyOrHasOneDependent:
   Enabled: true

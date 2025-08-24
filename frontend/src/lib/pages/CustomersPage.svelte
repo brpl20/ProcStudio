@@ -4,20 +4,17 @@
   import CustomerList from '../components/customers/CustomerList.svelte';
   import CustomerForm from '../components/customers/CustomerForm.svelte';
   import { customerStore } from '../stores/customerStore';
-  import type { Customer, CreateCustomerRequest, UpdateCustomerRequest, CustomerStatus } from '../api/types/customer.types';
+  import { router } from '../stores/routerStore.js';
+  import type { Customer, UpdateCustomerRequest, CustomerStatus } from '../api/types/customer.types';
 
-  let showNewCustomerForm = false;
   let editingCustomer: Customer | null = null;
 
   onMount(() => {
     customerStore.loadCustomers();
   });
 
-  async function handleAddCustomer(event: CustomEvent<CreateCustomerRequest>) {
-    const success = await customerStore.addCustomer(event.detail);
-    if (success) {
-      showNewCustomerForm = false;
-    }
+  function handleNewCustomer() {
+    router.navigate('/customers/new');
   }
 
   async function handleUpdateStatus(event: CustomEvent<{ id: number; status: CustomerStatus }>) {
@@ -49,10 +46,6 @@
   function handleCancelEdit() {
     editingCustomer = null;
   }
-
-  function handleCancelNew() {
-    showNewCustomerForm = false;
-  }
 </script>
 
 <AuthSidebar>
@@ -63,7 +56,7 @@
           <h2 class="card-title text-3xl">👥 Clientes</h2>
           <button
             class="btn btn-primary"
-            on:click={() => (showNewCustomerForm = !showNewCustomerForm)}
+            on:click={handleNewCustomer}
             disabled={$customerStore.isLoading}
           >
             + Novo Cliente
@@ -83,16 +76,6 @@
           </div>
         {/if}
 
-        <!-- New Customer Form -->
-        {#if showNewCustomerForm}
-          <div class="mb-6">
-            <CustomerForm
-              isLoading={$customerStore.isLoading}
-              on:submit={handleAddCustomer}
-              on:cancel={handleCancelNew}
-            />
-          </div>
-        {/if}
 
         <!-- Edit Customer Form -->
         {#if editingCustomer}

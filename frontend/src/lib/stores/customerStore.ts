@@ -136,13 +136,18 @@ function createCustomerStore() {
         );
         return true;
       } else {
+        // Log field errors if they exist
+        if (response.errors) {
+          console.error('Field validation errors:', response.errors);
+        }
+        
         update((state) =>
           showNotification(
             {
               ...state,
               isLoading: false
             },
-            response.message,
+            response.message || 'Erro ao criar cliente',
             true
           )
         );
@@ -181,13 +186,18 @@ function createCustomerStore() {
         });
         return true;
       } else {
+        // Log field errors if they exist
+        if (response.errors) {
+          console.error('Field validation errors:', response.errors);
+        }
+        
         update((state) =>
           showNotification(
             {
               ...state,
               isLoading: false
             },
-            response.message,
+            response.message || 'Erro ao atualizar cliente',
             true
           )
         );

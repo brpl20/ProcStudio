@@ -25,7 +25,7 @@ module Customers::Mail::MailjetService
   end
 
   def sandbox_mode?
-    Rails.env.development? || Rails.env.test?
+    Rails.env.local?
   end
 
   # Sends the email using Mailjet service.

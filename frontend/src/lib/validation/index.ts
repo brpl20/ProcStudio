@@ -46,6 +46,20 @@ export {
   getCNPJType
 } from './cnpj';
 
+// Export password validators
+export {
+  validatePasswordRequired,
+  validatePasswordMinLength,
+  validatePasswordMaxLength,
+  validatePasswordStrong,
+  validatePasswordMedium,
+  validatePasswordNotCommon,
+  createPasswordConfirmationValidator,
+  calculatePasswordStrength,
+  getPasswordStrengthLabel,
+  passwordValidators
+} from './password';
+
 import type { ValidationRule, FieldValidation, FormValidationState } from './types';
 
 /**

@@ -21,19 +21,30 @@ module Api
           profile_customers = profile_customers.public_send("filter_by_#{key}", value.strip)
         end
 
-        render json: ProfileCustomerSerializer.new(
+        serialized = ProfileCustomerSerializer.new(
           profile_customers,
           meta: {
             total_count: profile_customers.offset(nil).limit(nil).count
           }
-        ), status: :ok
+        ).serializable_hash
+
+        render json: {
+          success: true,
+          message: 'Perfis de clientes listados com sucesso',
+          data: serialized[:data],
+          meta: serialized[:meta]
+        }, status: :ok
       end
 
       def show
-        render json: ProfileCustomerSerializer.new(
-          @profile_customer,
-          { params: { action: 'show' } }
-        ), status: :ok
+        render json: {
+          success: true,
+          message: 'Perfil de cliente encontrado com sucesso',
+          data: ProfileCustomerSerializer.new(
+            @profile_customer,
+            { params: { action: 'show' } }
+          ).serializable_hash[:data]
+        }, status: :ok
       end
 
       def create
@@ -45,21 +56,31 @@ module Api
                                                          current_user)
           end
 
-          render json: ProfileCustomerSerializer.new(
-            profile_customer,
-            params: { action: 'show' }
-          ), status: :created
+          render json: {
+            success: true,
+            message: 'Perfil de cliente criado com sucesso',
+            data: ProfileCustomerSerializer.new(
+              profile_customer,
+              params: { action: 'show' }
+            ).serializable_hash[:data]
+          }, status: :created
         else
-          render(
-            status: :bad_request,
-            json: { errors: [{ code: profile_customer.errors.full_messages }] }
-          )
+          error_messages = profile_customer.errors.full_messages
+          render json: {
+            success: false,
+            message: error_messages.first,
+            errors: error_messages
+          }, status: :unprocessable_entity
         end
       rescue StandardError => e
-        render(
-          status: :bad_request,
-          json: { errors: [{ code: e }] }
-        )
+        Rails.logger.error "ProfileCustomer creation error: #{e.class} - #{e.message}"
+        Rails.logger.error e.backtrace.first(10).join("\n") if e.backtrace
+        error_message = 'Erro ao criar perfil de cliente. Tente novamente.'
+        render json: {
+          success: false,
+          message: error_message,
+          errors: [error_message]
+        }, status: :internal_server_error
       end
 
       def update
@@ -75,25 +96,39 @@ module Api
             @profile_customer.customer.send_confirmation_instructions
           end
 
-          render json: ProfileCustomerSerializer.new(
-            @profile_customer,
-            params: { action: 'show' }
-          ), status: :ok
+          render json: {
+            success: true,
+            message: 'Perfil de cliente atualizado com sucesso',
+            data: ProfileCustomerSerializer.new(
+              @profile_customer,
+              params: { action: 'show' }
+            ).serializable_hash[:data]
+          }, status: :ok
         else
-          render(
-            status: :bad_request,
-            json: { errors: [{ code: @profile_customer.errors.full_messages }] }
-          )
+          error_messages = @profile_customer.errors.full_messages
+          render json: {
+            success: false,
+            message: error_messages.first,
+            errors: error_messages
+          }, status: :unprocessable_entity
         end
       end
 
       def destroy
         if destroy_fully?
-          ProfileCustomer.with_deleted.find(params[:id]).destroy_fully!
+          profile_customer = ProfileCustomer.with_deleted.find(params[:id])
+          profile_customer.destroy_fully!
+          message = 'Perfil de cliente removido permanentemente'
         else
-          profile_customer
           @profile_customer.destroy
+          message = 'Perfil de cliente removido com sucesso'
         end
+
+        render json: {
+          success: true,
+          message: message,
+          data: { id: params[:id] }
+        }, status: :ok
       end
 
       def restore
@@ -101,15 +136,21 @@ module Api
         authorize profile_customer, :restore?, policy_class: Admin::CustomerPolicy
 
         if profile_customer.recover
-          render json: ProfileCustomerSerializer.new(
-            profile_customer,
-            params: { action: 'show' }
-          ), status: :ok
+          render json: {
+            success: true,
+            message: 'Perfil de cliente restaurado com sucesso',
+            data: ProfileCustomerSerializer.new(
+              profile_customer,
+              params: { action: 'show' }
+            ).serializable_hash[:data]
+          }, status: :ok
         else
-          render(
-            status: :bad_request,
-            json: { errors: [{ code: profile_customer.errors.full_messages }] }
-          )
+          error_messages = profile_customer.errors.full_messages
+          render json: {
+            success: false,
+            message: error_messages.first,
+            errors: error_messages
+          }, status: :unprocessable_entity
         end
       end
 

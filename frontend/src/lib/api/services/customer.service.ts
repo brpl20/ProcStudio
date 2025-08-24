@@ -135,10 +135,35 @@ export class CustomerService {
         message: response.message || 'Cliente criado com sucesso'
       };
     } catch (error: any) {
+      console.error('Customer creation error:', error);
+      
+      // Handle API validation errors (422)
+      if (error?.status === 422 && error?.data?.errors) {
+        const apiErrors = error.data.errors;
+        const fieldErrors: Record<string, string> = {};
+        
+        // Parse field-specific errors if they exist
+        if (Array.isArray(apiErrors)) {
+          apiErrors.forEach((err: any) => {
+            if (err.field) {
+              fieldErrors[err.field] = err.message;
+            }
+          });
+        }
+        
+        return {
+          success: false,
+          data: {} as Customer,
+          message: error?.message || error?.data?.message || 'Erro de validação',
+          errors: fieldErrors
+        };
+      }
+      
+      // Handle other errors
       return {
         success: false,
         data: {} as Customer,
-        message: error?.message || 'Erro ao criar cliente'
+        message: error?.message || error?.data?.message || 'Erro ao criar cliente'
       };
     }
   }
@@ -162,10 +187,35 @@ export class CustomerService {
         message: response.message || 'Cliente atualizado com sucesso'
       };
     } catch (error: any) {
+      console.error('Customer update error:', error);
+      
+      // Handle API validation errors (422)
+      if (error?.status === 422 && error?.data?.errors) {
+        const apiErrors = error.data.errors;
+        const fieldErrors: Record<string, string> = {};
+        
+        // Parse field-specific errors if they exist
+        if (Array.isArray(apiErrors)) {
+          apiErrors.forEach((err: any) => {
+            if (err.field) {
+              fieldErrors[err.field] = err.message;
+            }
+          });
+        }
+        
+        return {
+          success: false,
+          data: {} as Customer,
+          message: error?.message || error?.data?.message || 'Erro de validação',
+          errors: fieldErrors
+        };
+      }
+      
+      // Handle other errors
       return {
         success: false,
         data: {} as Customer,
-        message: error?.message || 'Erro ao atualizar cliente'
+        message: error?.message || error?.data?.message || 'Erro ao atualizar cliente'
       };
     }
   }

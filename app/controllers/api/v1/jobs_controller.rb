@@ -8,6 +8,22 @@ module Api
 
       after_action :verify_authorized
 
+      rescue_from ActiveRecord::RecordNotFound do |_exception|
+        render json: {
+          success: false,
+          message: 'Job não encontrado',
+          errors: ['Job não encontrado']
+        }, status: :not_found
+      end
+
+      rescue_from Pundit::NotAuthorizedError do |_exception|
+        render json: {
+          success: false,
+          message: 'Acesso não autorizado',
+          errors: ['Acesso não autorizado']
+        }, status: :unauthorized
+      end
+
       def index
         jobs = team_scoped(Job).all
 
@@ -17,19 +33,30 @@ module Api
           jobs = jobs.public_send("filter_by_#{key}", value.strip)
         end
 
-        render json: JobSerializer.new(
+        serialized_data = JobSerializer.new(
           jobs,
           meta: {
             total_count: jobs.offset(nil).limit(nil).count
           }
-        ), status: :ok
+        ).serializable_hash
+
+        render json: {
+          success: true,
+          message: 'Jobs listados com sucesso',
+          data: serialized_data[:data],
+          meta: serialized_data[:meta]
+        }, status: :ok
       end
 
       def show
-        render json: JobSerializer.new(
-          @job,
-          { params: { action: 'show' } }
-        ), status: :ok
+        render json: {
+          success: true,
+          message: 'Job encontrado com sucesso',
+          data: JobSerializer.new(
+            @job,
+            { params: { action: 'show' } }
+          ).serializable_hash[:data]
+        }, status: :ok
       end
 
       def create
@@ -41,17 +68,29 @@ module Api
           # Processar diferentes tipos de assignees após salvar
           assign_users_to_job(job, params[:job])
 
-          render json: JobSerializer.new(job), status: :created
+          render json: {
+            success: true,
+            message: 'Job criado com sucesso',
+            data: JobSerializer.new(job).serializable_hash[:data]
+          }, status: :created
         else
           render(
             status: :bad_request,
-            json: { errors: [{ code: job.errors.full_messages }] }
+            json: {
+              success: false,
+              message: job.errors.full_messages.first || 'Erro ao criar job',
+              errors: job.errors.full_messages
+            }
           )
         end
       rescue StandardError => e
         render(
           status: :bad_request,
-          json: { errors: [{ code: e }] }
+          json: {
+            success: false,
+            message: e.message || 'Erro ao processar requisição',
+            errors: [e.message]
+          }
         )
       end
 
@@ -62,13 +101,19 @@ module Api
           # Atualizar assignees se fornecidos
           assign_users_to_job(@job, params[:job], update: true)
 
-          render json: JobSerializer.new(
-            @job
-          ), status: :ok
+          render json: {
+            success: true,
+            message: 'Job atualizado com sucesso',
+            data: JobSerializer.new(@job).serializable_hash[:data]
+          }, status: :ok
         else
           render(
             status: :bad_request,
-            json: { errors: [{ code: @job.errors.full_messages }] }
+            json: {
+              success: false,
+              message: @job.errors.full_messages.first || 'Erro ao atualizar job',
+              errors: @job.errors.full_messages
+            }
           )
         end
       end
@@ -77,10 +122,31 @@ module Api
         if destroy_fully?
           job = team_scoped(Job).with_deleted.find(params[:id])
           job.destroy_fully!
+          render json: {
+            success: true,
+            message: 'Job excluído permanentemente com sucesso'
+          }, status: :ok
         else
           retrieve_job
-          @job.destroy
+          if @job.destroy
+            render json: {
+              success: true,
+              message: 'Job excluído com sucesso'
+            }, status: :ok
+          else
+            render json: {
+              success: false,
+              message: 'Erro ao excluir job',
+              errors: @job.errors.full_messages
+            }, status: :bad_request
+          end
         end
+      rescue ActiveRecord::RecordNotFound
+        render json: {
+          success: false,
+          message: 'Job não encontrado',
+          errors: ['Job não encontrado']
+        }, status: :not_found
       end
 
       def restore
@@ -88,15 +154,27 @@ module Api
         authorize job, :restore?, policy_class: Admin::WorkPolicy
 
         if job.recover
-          render json: JobSerializer.new(
-            job
-          ), status: :ok
+          render json: {
+            success: true,
+            message: 'Job restaurado com sucesso',
+            data: JobSerializer.new(job).serializable_hash[:data]
+          }, status: :ok
         else
           render(
             status: :bad_request,
-            json: { errors: [{ code: job.errors.full_messages }] }
+            json: {
+              success: false,
+              message: job.errors.full_messages.first || 'Erro ao restaurar job',
+              errors: job.errors.full_messages
+            }
           )
         end
+      rescue ActiveRecord::RecordNotFound
+        render json: {
+          success: false,
+          message: 'Job não encontrado',
+          errors: ['Job não encontrado']
+        }, status: :not_found
       end
 
       private

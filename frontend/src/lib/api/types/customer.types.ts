@@ -155,12 +155,14 @@ export interface CreateCustomerResponse {
   success: boolean;
   data: Customer;
   message?: string;
+  errors?: Record<string, string>; // Field-specific errors from API
 }
 
 export interface UpdateCustomerResponse {
   success: boolean;
   data: Customer;
   message?: string;
+  errors?: Record<string, string>; // Field-specific errors from API
 }
 
 export interface DeleteCustomerResponse {

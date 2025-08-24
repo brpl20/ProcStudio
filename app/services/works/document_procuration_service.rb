@@ -13,7 +13,8 @@ module Works
       @lawyers = work.profile_admins&.lawyer
       @customer = document.profile_customer
       @address = customer&.addresses&.first
-      @lawyer_address = lawyers&.first&.addresses&.first
+      lawyer = lawyers&.first
+      @lawyer_address = lawyer&.addresses&.first
     end
 
     def call

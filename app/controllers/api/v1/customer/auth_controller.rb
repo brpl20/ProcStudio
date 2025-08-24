@@ -23,7 +23,7 @@ class Api::V1::Customer::AuthController < ApplicationController
       else
         customer_id = decoded_token['customer_id']
         current_customer = Customer.find(customer_id)
-        current_customer.update_attribute(:jwt_token, nil)
+        current_customer.update!(jwt_token: nil)
         render json: { success: true, message: 'Saiu com successo' }
       end
     end

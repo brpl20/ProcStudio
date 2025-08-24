@@ -28,8 +28,8 @@ gem 'rubocop-rspec', '~> 2.20', require: false
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 # Background jobs
-gem 'sidekiq', '~> 7.2'
 gem 'redis', '~> 5.0'
+gem 'sidekiq', '~> 7.2'
 
 group :development, :test, :staging do
   gem 'claude-on-rails'

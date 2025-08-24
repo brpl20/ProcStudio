@@ -4,8 +4,8 @@
  */
 
 import { writable, derived } from 'svelte/store';
-import type { FormValidationState, FieldValidation, ValidationRule } from './types';
-import { validateField, createFieldValidation } from './index';
+import type { FormValidationState, FieldValidation, ValidationRule } from '../validation/types';
+import { validateField, createFieldValidation } from '../validation/index';
 
 interface ValidationStoreConfig {
   [fieldName: string]: ValidationRule[];
@@ -17,7 +17,7 @@ interface ValidationStoreConfig {
 export function createValidationStore(config: ValidationStoreConfig) {
   // Initial state with empty field validations
   const initialState: FormValidationState = {};
-  Object.keys(config).forEach(fieldName => {
+  Object.keys(config).forEach((fieldName) => {
     initialState[fieldName] = createFieldValidation();
   });
 
@@ -25,6 +25,7 @@ export function createValidationStore(config: ValidationStoreConfig) {
 
   return {
     subscribe,
+    update, // Expose update method for custom validators
 
     /**
      * Validate a single field
@@ -33,7 +34,7 @@ export function createValidationStore(config: ValidationStoreConfig) {
       const rules = config[fieldName] || [];
       const error = validateField(value, rules);
 
-      update(state => ({
+      update((state) => ({
         ...state,
         [fieldName]: {
           value,
@@ -50,7 +51,7 @@ export function createValidationStore(config: ValidationStoreConfig) {
      * Set field value without validation
      */
     setFieldValue: (fieldName: string, value: string) => {
-      update(state => ({
+      update((state) => ({
         ...state,
         [fieldName]: {
           ...state[fieldName],
@@ -63,7 +64,7 @@ export function createValidationStore(config: ValidationStoreConfig) {
      * Mark field as touched
      */
     touchField: (fieldName: string) => {
-      update(state => ({
+      update((state) => ({
         ...state,
         [fieldName]: {
           ...state[fieldName],
@@ -78,10 +79,10 @@ export function createValidationStore(config: ValidationStoreConfig) {
     validateAll: (formData: Record<string, string>) => {
       let allValid = true;
 
-      update(state => {
+      update((state) => {
         const newState = { ...state };
 
-        Object.keys(config).forEach(fieldName => {
+        Object.keys(config).forEach((fieldName) => {
           const value = formData[fieldName] || '';
           const rules = config[fieldName] || [];
           const error = validateField(value, rules);
@@ -109,7 +110,7 @@ export function createValidationStore(config: ValidationStoreConfig) {
      */
     reset: () => {
       const resetState: FormValidationState = {};
-      Object.keys(config).forEach(fieldName => {
+      Object.keys(config).forEach((fieldName) => {
         resetState[fieldName] = createFieldValidation();
       });
       set(resetState);
@@ -119,7 +120,7 @@ export function createValidationStore(config: ValidationStoreConfig) {
      * Clear specific field error
      */
     clearFieldError: (fieldName: string) => {
-      update(state => ({
+      update((state) => ({
         ...state,
         [fieldName]: {
           ...state[fieldName],
@@ -137,67 +138,109 @@ export function createValidationStore(config: ValidationStoreConfig) {
 export function createValidationHelpers(validationStore: ReturnType<typeof createValidationStore>) {
   return {
     // Check if form is valid
-    isValid: derived(validationStore, $state => 
-      Object.values($state).every(field => field.valid)
+    isValid: derived(validationStore, ($state) =>
+      Object.values($state).every((field) => field.valid)
     ),
 
     // Get all errors
-    errors: derived(validationStore, $state =>
+    errors: derived(validationStore, ($state) =>
       Object.values($state)
-        .filter(field => field.error && field.touched)
-        .map(field => field.error!)
+        .filter((field) => field.error && field.touched)
+        .map((field) => field.error!)
     ),
 
     // Check if any field has been touched
-    isTouched: derived(validationStore, $state =>
-      Object.values($state).some(field => field.touched)
+    isTouched: derived(validationStore, ($state) =>
+      Object.values($state).some((field) => field.touched)
     ),
 
     // Get specific field validation
-    getField: (fieldName: string) => derived(validationStore, $state => $state[fieldName])
+    getField: (fieldName: string) => derived(validationStore, ($state) => $state[fieldName])
   };
 }
 
 /**
  * Example usage store for customer form
  */
-import { validateEmailRequired } from './email';
-import { validateCPFRequired } from './cpf';
-import { validationRules } from './index';
+import { validateEmailRequired } from '../validation/email';
+import { validateCPFRequired } from '../validation/cpf';
+import { validatePasswordRequired, validatePasswordMinLength } from '../validation/password';
+import { validationRules } from '../validation/index';
 
-export const customerValidationConfig = {
+// Basic customer validation config (for CustomerForm without CPF)
+export const customerBasicValidationConfig = {
   email: [validateEmailRequired],
-  cpf: [validateCPFRequired],
   password: [
-    validationRules.required('Senha é obrigatória'),
-    validationRules.minLength(6, 'Senha deve ter pelo menos 6 caracteres')
+    validatePasswordRequired,
+    validatePasswordMinLength(6)
   ],
   password_confirmation: [validationRules.required('Confirmação de senha é obrigatória')]
 };
 
-// Create customer form validation store
+// Full customer validation config (with CPF for future profile forms)
+export const customerValidationConfig = {
+  email: [validateEmailRequired],
+  cpf: [validateCPFRequired],
+  password: [
+    validatePasswordRequired,
+    validatePasswordMinLength(6)
+  ],
+  password_confirmation: [validationRules.required('Confirmação de senha é obrigatória')]
+};
+
+// Create customer form validation store (uses basic config without CPF)
 export const createCustomerValidationStore = () => {
-  const store = createValidationStore(customerValidationConfig);
+  const store = createValidationStore(customerBasicValidationConfig);
   const helpers = createValidationHelpers(store);
-  
+
   return {
     ...store,
     ...helpers,
-    
+
     // Custom validation for password confirmation
     validatePasswordConfirmation: (password: string, confirmation: string) => {
       const isValid = password === confirmation;
-      
-      store.update(state => ({
+
+      store.update((state) => ({
         ...state,
         password_confirmation: {
           ...state.password_confirmation,
+          value: confirmation,
           error: isValid ? null : 'As senhas não coincidem',
           valid: isValid,
           touched: true
         }
       }));
-      
+
+      return isValid;
+    }
+  };
+};
+
+// Create customer profile validation store (with CPF for profile forms)
+export const createCustomerProfileValidationStore = () => {
+  const store = createValidationStore(customerValidationConfig);
+  const helpers = createValidationHelpers(store);
+
+  return {
+    ...store,
+    ...helpers,
+
+    // Custom validation for password confirmation
+    validatePasswordConfirmation: (password: string, confirmation: string) => {
+      const isValid = password === confirmation;
+
+      store.update((state) => ({
+        ...state,
+        password_confirmation: {
+          ...state.password_confirmation,
+          value: confirmation,
+          error: isValid ? null : 'As senhas não coincidem',
+          valid: isValid,
+          touched: true
+        }
+      }));
+
       return isValid;
     }
   };

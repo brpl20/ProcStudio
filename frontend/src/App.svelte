@@ -15,6 +15,7 @@
   import TasksPage from './lib/pages/TasksPage.svelte';
   import WorksPage from './lib/pages/WorksPage.svelte';
   import CustomersPage from './lib/pages/CustomersPage.svelte';
+  import CustomersNewPage from './lib/pages/CustomersNewPage.svelte';
   import ProfileCompletion from './lib/pages/ProfileCompletion.svelte';
 
   // Reactive stores
@@ -35,6 +36,7 @@
         path === '/tasks' ||
         path === '/works' ||
         path === '/customers' ||
+        path === '/customers/new' ||
         path === '/documents')
     ) {
       router.navigate('/login');
@@ -52,7 +54,8 @@
       '/reports': ReportsPage,
       '/tasks': TasksPage,
       '/works': WorksPage,
-      '/customers': CustomersPage
+      '/customers': CustomersPage,
+      '/customers/new': CustomersNewPage
     };
 
     return routes[path] || LandingPage;

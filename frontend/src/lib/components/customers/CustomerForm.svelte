@@ -1,22 +1,28 @@
 <!-- components/customers/CustomerForm.svelte -->
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
-  import { createCustomerValidationStore } from '../../validation/validationStore';
+  import { createCustomerValidationStore } from '../../stores/validationStore';
   import { validateEmailRequired } from '../../validation/email';
   import { validationRules } from '../../validation';
-  import type { Customer, CreateCustomerRequest, UpdateCustomerRequest, CustomerStatus } from '../../api/types/customer.types';
-  
+  import type {
+    Customer,
+    CreateCustomerRequest,
+    UpdateCustomerRequest,
+    CustomerStatus
+  } from '../../api/types/customer.types';
+
   export let customer: Customer | null = null;
   export let isLoading: boolean = false;
-  
+
   const dispatch = createEventDispatcher<{
     submit: CreateCustomerRequest | UpdateCustomerRequest;
     cancel: void;
   }>();
-  
+
   // Create validation store
   const validation = createCustomerValidationStore();
-  
+  console.log('Validation store created:', validation);
+
   // Form data
   let formData = {
     email: customer?.email || '',
@@ -25,24 +31,24 @@
     password_confirmation: '',
     status: (customer?.status || 'active') as CustomerStatus
   };
-  
+
   // Initialize form with existing customer data
   if (customer) {
     validation.setFieldValue('email', formData.email);
     validation.setFieldValue('access_email', formData.access_email);
   }
-  
+
   // Handle field validation on blur
   function handleFieldBlur(fieldName: string, value: string) {
     validation.validateField(fieldName, value, true);
   }
-  
+
   // Handle field input (update value without validation)
   function handleFieldInput(fieldName: string, value: string) {
     formData[fieldName] = value;
     validation.setFieldValue(fieldName, value);
   }
-  
+
   // Validate password confirmation separately
   function handlePasswordConfirmationBlur() {
     validation.validateField('password_confirmation', formData.password_confirmation, true);
@@ -50,33 +56,38 @@
       validation.validatePasswordConfirmation(formData.password, formData.password_confirmation);
     }
   }
-  
+
   // Custom validation for the form
   function validateForm(): boolean {
     // Validate basic fields
     let isValid = validation.validateAll(formData);
-    
+
     // Additional validation for required fields
     if (!formData.email) {
       validation.validateField('email', '', true);
       isValid = false;
     }
-    
+
     if (!customer) {
       // For new customers, password is required
       if (!formData.password) {
         validation.validateField('password', '', true);
         isValid = false;
       }
-      
+
       if (!formData.password_confirmation) {
         validation.validateField('password_confirmation', '', true);
         isValid = false;
       }
-      
+
       // Check password confirmation
       if (formData.password && formData.password_confirmation) {
-        if (!validation.validatePasswordConfirmation(formData.password, formData.password_confirmation)) {
+        if (
+          !validation.validatePasswordConfirmation(
+            formData.password,
+            formData.password_confirmation
+          )
+        ) {
           isValid = false;
         }
       }
@@ -86,45 +97,64 @@
         validation.validateField('password', formData.password, true);
         isValid = false;
       }
-      
+
       if (formData.password && formData.password_confirmation) {
-        if (!validation.validatePasswordConfirmation(formData.password, formData.password_confirmation)) {
+        if (
+          !validation.validatePasswordConfirmation(
+            formData.password,
+            formData.password_confirmation
+          )
+        ) {
           isValid = false;
         }
       }
     }
-    
+
     return isValid;
   }
-  
+
   function handleSubmit(): void {
-    if (!validateForm()) return;
+    console.log('handleSubmit called');
     
+    const isValid = validateForm();
+    console.log('Form validation result:', isValid);
+    console.log('Form data:', formData);
+    
+    if (!isValid) {
+      console.log('Validation failed, stopping submission');
+      return;
+    }
+
     const data: CreateCustomerRequest | UpdateCustomerRequest = {
       email: formData.email,
       status: formData.status
     };
-    
+
     if (formData.access_email) {
       data.access_email = formData.access_email;
     }
-    
+
     if (formData.password) {
       data.password = formData.password;
       data.password_confirmation = formData.password_confirmation;
     }
-    
+
     dispatch('submit', data);
   }
-  
+
   function handleCancel(): void {
     dispatch('cancel');
   }
-  
+
   // Get field validation state
-  $: emailField = $validation.email;
-  $: passwordField = $validation.password;
-  $: passwordConfirmationField = $validation.password_confirmation;
+  $: emailField = $validation?.email;
+  $: passwordField = $validation?.password;
+  $: passwordConfirmationField = $validation?.password_confirmation;
+  
+  // Debug: Log validation state changes
+  $: console.log('Validation state:', $validation);
+  $: console.log('Email field:', emailField);
+  $: console.log('Password field:', passwordField);
 </script>
 
 <div class="card bg-base-100 shadow-xl">
@@ -132,7 +162,7 @@
     <h2 class="card-title">
       {customer ? 'Editar Cliente' : 'Novo Cliente'}
     </h2>
-    
+
     <form on:submit|preventDefault={handleSubmit} class="space-y-4">
       <!-- Email Field -->
       <div class="form-control">
@@ -142,7 +172,9 @@
         <input
           id="email"
           type="email"
-          class="input input-bordered {emailField?.error && emailField?.touched ? 'input-error' : ''}"
+          class="input input-bordered {emailField?.error && emailField?.touched
+            ? 'input-error'
+            : ''}"
           bind:value={formData.email}
           on:input={(e) => handleFieldInput('email', e.currentTarget.value)}
           on:blur={(e) => handleFieldBlur('email', e.currentTarget.value)}
@@ -155,7 +187,7 @@
           </label>
         {/if}
       </div>
-      
+
       <!-- Access Email Field -->
       <div class="form-control">
         <label for="access_email" class="label">
@@ -171,7 +203,7 @@
           placeholder="Opcional - email alternativo para acesso"
         />
       </div>
-      
+
       <!-- Status Field -->
       <div class="form-control">
         <label for="status" class="label">
@@ -188,9 +220,9 @@
           <option value="deceased">Falecido</option>
         </select>
       </div>
-      
+
       <div class="divider">Senha</div>
-      
+
       <!-- Password Field -->
       <div class="form-control">
         <label for="password" class="label">
@@ -201,7 +233,9 @@
         <input
           id="password"
           type="password"
-          class="input input-bordered {passwordField?.error && passwordField?.touched ? 'input-error' : ''}"
+          class="input input-bordered {passwordField?.error && passwordField?.touched
+            ? 'input-error'
+            : ''}"
           bind:value={formData.password}
           on:input={(e) => handleFieldInput('password', e.currentTarget.value)}
           on:blur={(e) => handleFieldBlur('password', e.currentTarget.value)}
@@ -214,7 +248,7 @@
           </label>
         {/if}
       </div>
-      
+
       <!-- Password Confirmation Field -->
       <div class="form-control">
         <label for="password_confirmation" class="label">
@@ -225,7 +259,10 @@
         <input
           id="password_confirmation"
           type="password"
-          class="input input-bordered {passwordConfirmationField?.error && passwordConfirmationField?.touched ? 'input-error' : ''}"
+          class="input input-bordered {passwordConfirmationField?.error &&
+          passwordConfirmationField?.touched
+            ? 'input-error'
+            : ''}"
           bind:value={formData.password_confirmation}
           on:input={(e) => handleFieldInput('password_confirmation', e.currentTarget.value)}
           on:blur={handlePasswordConfirmationBlur}
@@ -238,21 +275,17 @@
           </label>
         {/if}
       </div>
-      
+
       <!-- Actions -->
       <div class="card-actions justify-end mt-6">
-        <button
-          type="button"
-          class="btn btn-ghost"
-          on:click={handleCancel}
-          disabled={isLoading}
-        >
+        <button type="button" class="btn btn-ghost" on:click={handleCancel} disabled={isLoading}>
           Cancelar
         </button>
-        <button
-          type="submit"
-          class="btn btn-primary"
+        <button 
+          type="submit" 
+          class="btn btn-primary" 
           disabled={isLoading}
+          on:click={() => console.log('Submit button clicked!')}
         >
           {#if isLoading}
             <span class="loading loading-spinner"></span>
@@ -261,7 +294,7 @@
         </button>
       </div>
     </form>
-    
+
     <!-- Show validation errors summary for debugging (optional) -->
     {#if $validation.errors?.length > 0}
       <div class="alert alert-warning mt-4">
