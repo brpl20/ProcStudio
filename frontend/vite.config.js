@@ -22,7 +22,9 @@ function proxyDebugPlugin() {
     name: 'proxy-debug-middleware',
     configureServer(server) {
       server.middlewares.use('/api', (req, _res, next) => {
-        if (!METHODS_WITH_BODY.has((req.method || '').toUpperCase())) return next();
+        if (!METHODS_WITH_BODY.has((req.method || '').toUpperCase())) {
+          return next();
+        }
         let total = 0;
         const chunks = [];
         req.on('data', (chunk) => {
@@ -33,10 +35,10 @@ function proxyDebugPlugin() {
         req.on('end', () => {
           const bodyBuffer = Buffer.concat(chunks);
           // Stash the raw body for logging and for forwarding in proxyReq
-          // eslint-disable-next-line no-underscore-dangle
+
           req.__rawBody = bodyBuffer;
           // Also keep a clamped copy for log readability
-          // eslint-disable-next-line no-underscore-dangle
+
           req.__rawBodyPreview = bodyBuffer.slice(0, MAX_LOG_BYTES);
           next();
         });
@@ -69,23 +71,31 @@ export default defineConfig({
             const url = req.url;
             const contentType = req.headers['content-type'];
 
-            // Prefer raw body captured by our middleware
-            // eslint-disable-next-line no-underscore-dangle
-            const raw = req.__rawBody;
+            // Never send body for GET requests
+            if (method === 'GET' || method === 'HEAD') {
+              proxyReq.removeHeader('content-type');
+              proxyReq.removeHeader('content-length');
+              // Don't write any body for GET requests
+            } else {
+              // Prefer raw body captured by our middleware
 
-            // Write captured body into the outgoing proxy request when present
-            if (raw && raw.length > 0) {
-              if (contentType) proxyReq.setHeader('content-type', contentType);
-              proxyReq.setHeader('content-length', Buffer.byteLength(raw));
-              try {
-                proxyReq.write(raw);
-              } catch (_e) {
-                // ignore write errors here; will be surfaced as proxy error
+              const raw = req.__rawBody;
+
+              // Write captured body into the outgoing proxy request when present
+              if (raw && raw.length > 0) {
+                if (contentType) {
+                  proxyReq.setHeader('content-type', contentType);
+                }
+                proxyReq.setHeader('content-length', Buffer.byteLength(raw));
+                try {
+                  proxyReq.write(raw);
+                } catch (_e) {
+                  // ignore write errors here; will be surfaced as proxy error
+                }
               }
             }
 
             const preview =
-              // eslint-disable-next-line no-underscore-dangle
               req.__rawBodyPreview && req.__rawBodyPreview.length > 0
                 ? `\n📦 Body (${contentType || 'unknown'}):\n${formatMaybeJSON(req.__rawBodyPreview)}`
                 : '';
@@ -100,7 +110,8 @@ export default defineConfig({
             proxyRes.on('end', () => {
               const bodyBuffer = Buffer.concat(chunks);
               const contentType = proxyRes.headers['content-type'] || '';
-              const isJSON = typeof contentType === 'string' && contentType.includes('application/json');
+              const isJSON =
+                typeof contentType === 'string' && contentType.includes('application/json');
               const preview = isJSON ? formatMaybeJSON(bodyBuffer) : bodyBuffer.toString('utf8');
 
               console.log(`📥 Received Response from Target: ${statusCode} ${req.url}\n${preview}`);
@@ -108,7 +119,9 @@ export default defineConfig({
               // Forward response to the browser
               try {
                 Object.entries(proxyRes.headers).forEach(([key, value]) => {
-                  if (value !== undefined) res.setHeader(key, value);
+                  if (value !== undefined) {
+                    res.setHeader(key, value);
+                  }
                 });
                 res.statusCode = statusCode;
                 res.end(bodyBuffer);
