@@ -94,7 +94,8 @@ RSpec.describe Api::V1::OfficeTypesController, type: :request do
         end
 
         it 'returns status code 422 (unprocessable entity) when description is in use' do
-          post '/api/v1/office_types', params: { office_type: { description: office_type.description } }, headers: valid_header
+          post '/api/v1/office_types', params: { office_type: { description: office_type.description } },
+                                       headers: valid_header
 
           expect(response).to have_http_status(:unprocessable_entity)
         end
@@ -130,7 +131,8 @@ RSpec.describe Api::V1::OfficeTypesController, type: :request do
 
       describe 'when there are params missing or validation issues' do
         it 'returns status code 422 (unprocessable entity) when description is missing' do
-          put "/api/v1/office_types/#{office_type.id}", params: { office_type: { description: '' } }, headers: valid_header
+          put "/api/v1/office_types/#{office_type.id}", params: { office_type: { description: '' } },
+                                                        headers: valid_header
 
           expect(response).to have_http_status(:unprocessable_entity)
         end

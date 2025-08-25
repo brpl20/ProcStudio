@@ -7,7 +7,9 @@ describe ProfileCustomers::SimpleProcurationService do
     let!(:address_two) { create(:address) }
     let!(:bank_account) { create(:bank_account) }
     let!(:email) { create(:email) }
-    let!(:document) { create(:customer_file, profile_customer: profile_customer, file_description: 'simple_procuration') }
+    let!(:document) do
+      create(:customer_file, profile_customer: profile_customer, file_description: 'simple_procuration')
+    end
     let!(:profile_admin) { create(:profile_admin) }
     before do
       profile_customer.address_ids = [address_one.id]

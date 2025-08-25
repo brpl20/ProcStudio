@@ -29,7 +29,8 @@ RSpec.describe '/draft/works', type: :request do
     context 'with valid parameters' do
       it 'creates a new Draft::Work' do
         expect do
-          post api_v1_draft_works_url, params: { draft_work: valid_attributes.merge(name: Faker::Company.name) }, headers: valid_headers, as: :json
+          post api_v1_draft_works_url, params: { draft_work: valid_attributes.merge(name: Faker::Company.name) },
+                                       headers: valid_headers, as: :json
         end.to change(Draft::Work, :count).by(1)
       end
 

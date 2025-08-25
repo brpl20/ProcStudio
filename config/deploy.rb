@@ -78,7 +78,8 @@ end
 # Fix
 set :term_mode, nil
 
-set :shared_paths, ['public/uploads', 'config/database.yml', 'log', 'tmp', 'config/application.yml', 'config/secrets.yml']
+set :shared_paths,
+    ['public/uploads', 'config/database.yml', 'log', 'tmp', 'config/application.yml', 'config/secrets.yml']
 
 # Show logs
 desc 'Show logs rails.'

@@ -15,7 +15,10 @@ RSpec.describe Api::V1::DocumentsController, type: :request do
 
     context 'when the file is provided' do
       context 'when the file is a DOCX' do
-        let(:file) { fixture_file_upload('test_document.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') }
+        let(:file) do
+          fixture_file_upload('test_document.docx',
+                              'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+        end
 
         it 'purges the old document and attaches the new one' do
           expect(document.original).to receive(:purge)
@@ -77,7 +80,10 @@ RSpec.describe Api::V1::DocumentsController, type: :request do
       end
 
       context 'when the file is not a PDF and is_signed_pdf is true' do
-        let(:file) { fixture_file_upload('test_document.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') }
+        let(:file) do
+          fixture_file_upload('test_document.docx',
+                              'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+        end
 
         it 'returns an unprocessable entity status with error message' do
           put "/api/v1/works/#{work.id}/documents/#{document.id}",
@@ -118,7 +124,8 @@ RSpec.describe Api::V1::DocumentsController, type: :request do
       it 'returns a not found status' do
         put "/api/v1/works/#{work.id}/documents/999",
             params: {
-              file: fixture_file_upload('test_document.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+              file: fixture_file_upload('test_document.docx',
+                                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
             },
             headers: {
               Authorization: "Bearer #{admin.jwt_token}",

@@ -21,7 +21,8 @@ RSpec.describe '/api/v1/customer/profile_customers', type: :request do
       let(:new_attributes) { { name: 'Jhones', last_name: 'Silva' } }
 
       it 'updates the requested draft_work' do
-        patch api_v1_customer_profile_customer_url(profile_customer), params: { profile_customer: new_attributes }, headers: valid_headers, as: :json
+        patch api_v1_customer_profile_customer_url(profile_customer), params: { profile_customer: new_attributes },
+                                                                      headers: valid_headers, as: :json
         profile_customer.reload
         expect(profile_customer.name).to eq('Jhones')
         expect(profile_customer.last_name).to eq('Silva')

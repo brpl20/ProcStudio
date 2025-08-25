@@ -15,10 +15,13 @@ RSpec.describe '/api/v1/customer/customers', type: :request do
 
   describe 'PATCH /update' do
     context 'with valid parameters' do
-      let(:new_attributes) { { email: 'newmail@gmail.com', password: '1234567890', password_confirmation: '1234567890' } }
+      let(:new_attributes) do
+        { email: 'newmail@gmail.com', password: '1234567890', password_confirmation: '1234567890' }
+      end
 
       it 'updates the requested draft_work' do
-        patch api_v1_customer_customer_url(customer), params: { customer: new_attributes }, headers: valid_headers, as: :json
+        patch api_v1_customer_customer_url(customer), params: { customer: new_attributes }, headers: valid_headers,
+                                                      as: :json
         customer.reload
         expect(customer.email).to eq('newmail@gmail.com')
       end

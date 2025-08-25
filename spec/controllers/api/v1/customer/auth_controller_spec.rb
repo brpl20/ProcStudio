@@ -24,7 +24,8 @@ RSpec.describe Api::V1::Customer::AuthController, type: :request do
         json_response = response.parsed_body
         expect(json_response['token']).not_to be_empty
 
-        token_payload, _token_header = JWT.decode(json_response['token'], Rails.application.secret_key_base, true, algorithm: 'HS256')
+        token_payload, _token_header = JWT.decode(json_response['token'], Rails.application.secret_key_base, true,
+                                                  algorithm: 'HS256')
         expect(token_payload['customer_id']).to eq(customer.id)
         expect(Time.now.to_i < token_payload['exp']).to be_truthy
       end
@@ -107,7 +108,9 @@ RSpec.describe Api::V1::Customer::AuthController, type: :request do
     end
 
     context 'Quando o token está expirado' do
-      let(:jwt_token) { JWT.encode({ customer_id: customer.id, exp: Time.now.to_i - (99 * 3600) }, Rails.application.secret_key_base) }
+      let(:jwt_token) do
+        JWT.encode({ customer_id: customer.id, exp: Time.now.to_i - (99 * 3600) }, Rails.application.secret_key_base)
+      end
       let(:headers) { { 'Authorization' => "Bearer #{jwt_token}" } }
 
       it 'Retorna não autorizado e não revoga token' do

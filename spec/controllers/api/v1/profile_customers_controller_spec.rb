@@ -10,7 +10,8 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
 
     context 'when request is valid' do
       before do
-        get '/api/v1/profile_customers', headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        get '/api/v1/profile_customers',
+            headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
       end
 
       it 'returns status code 200' do
@@ -221,7 +222,9 @@ RSpec.describe Api::V1::ProfileCustomersController, type: :request do
               nationality: 'brazilian',
               profession: Faker::Job.title,
               customer_files_attributes: [file_description: 'simple_procuration',
-                                          file: Rack::Test::UploadedFile.new(Rails.root.join('spec/factories/images/Ruby.jpg'), 'image/jpg')]
+                                          file: Rack::Test::UploadedFile.new(
+                                            Rails.root.join('spec/factories/images/Ruby.jpg'), 'image/jpg'
+                                          )]
             }
           }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
         end.to change(CustomerFile, :count).by(1)

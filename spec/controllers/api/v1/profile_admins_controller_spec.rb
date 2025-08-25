@@ -10,7 +10,8 @@ RSpec.describe Api::V1::ProfileAdminsController, type: :request do
   describe '#index' do
     context 'when request is valid' do
       before do
-        get '/api/v1/profile_admins', headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        get '/api/v1/profile_admins',
+            headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
       end
 
       it 'returns status code 200' do
@@ -119,7 +120,8 @@ RSpec.describe Api::V1::ProfileAdminsController, type: :request do
   describe 'destroy' do
     context 'when request is valid' do
       it 'returns :no_content' do
-        delete "/api/v1/profile_admins/#{profile_admin.id}", headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        delete "/api/v1/profile_admins/#{profile_admin.id}",
+               headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
 
         expect(response).to have_http_status(:no_content)
       end

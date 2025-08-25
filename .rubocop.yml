@@ -22,9 +22,6 @@ AllCops:
 # Layout Cops
 Layout/LineLength:
   Max: 120
-  Exclude:
-    - config/**/*
-    - spec/**/*
 
 Layout/EmptyLinesAroundAttributeAccessor:
   Enabled: true
@@ -143,9 +140,6 @@ Style/GlobalVars:
 # Metrics Cops
 Metrics/MethodLength:
   Max: 20
-  Exclude:
-    - db/migrate/*
-    - spec/**/*
 
 Metrics/ClassLength:
   Max: 200
@@ -168,8 +162,6 @@ Metrics/BlockLength:
 
 Metrics/AbcSize:
   Max: 20
-  Exclude:
-    - db/migrate/*
 
 Metrics/CyclomaticComplexity:
   Max: 10
@@ -228,9 +220,6 @@ Rails/Output:
 
 Rails/SkipsModelValidations:
   Enabled: true
-  Exclude:
-    - spec/**/*
-    - db/migrate/*
 
 Rails/TimeZone:
   Enabled: true

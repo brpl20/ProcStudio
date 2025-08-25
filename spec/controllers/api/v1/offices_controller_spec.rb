@@ -276,7 +276,8 @@ RSpec.describe Api::V1::OfficesController, type: :request do
     let(:profile_admin) { admin.profile_admin }
     context 'when the request is successful' do
       before do
-        get '/api/v1/offices/with_lawyers', headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
+        get '/api/v1/offices/with_lawyers',
+            headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
       end
 
       it 'returns a successful response' do
