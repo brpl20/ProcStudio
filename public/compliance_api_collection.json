@@ -1,0 +1,331 @@
+{
+  "info": {
+    "name": "Compliance System API",
+    "description": "API endpoints for the compliance notification system and customer capacity management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Compliance Notifications",
+      "item": [
+        {
+          "name": "List Compliance Notifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/compliance_notifications?status=pending&page=1&per_page=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "compliance_notifications"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "pending",
+                  "description": "Filter by status: pending, resolved, ignored"
+                },
+                {
+                  "key": "notification_type",
+                  "value": "age_transition",
+                  "description": "Filter by type",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "20"
+                }
+              ]
+            },
+            "description": "Get all compliance notifications for the current team"
+          }
+        },
+        {
+          "name": "Get Single Notification",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/compliance_notifications/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "compliance_notifications", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Get details of a specific compliance notification"
+          }
+        },
+        {
+          "name": "Resolve Notification",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/compliance_notifications/:id/resolve",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "compliance_notifications", ":id", "resolve"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Mark a compliance notification as resolved"
+          }
+        },
+        {
+          "name": "Ignore Notification",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/compliance_notifications/:id/ignore",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "compliance_notifications", ":id", "ignore"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Mark a compliance notification as ignored"
+          }
+        },
+        {
+          "name": "Get Pending Count",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/compliance_notifications/pending_count",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "compliance_notifications", "pending_count"]
+            },
+            "description": "Get count of pending compliance notifications"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Profile Customer",
+      "item": [
+        {
+          "name": "Update Customer Capacity",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profile_customer\": {\n    \"capacity\": \"able\",\n    \"profession\": \"Software Developer\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/profile_customers/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "profile_customers", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Update customer capacity (triggers compliance notification)"
+          }
+        },
+        {
+          "name": "Create Unable Customer (Shared Email)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profile_customer\": {\n    \"customer_type\": \"physical_person\",\n    \"name\": \"João\",\n    \"last_name\": \"Silva Junior\",\n    \"cpf\": \"12345678901\",\n    \"rg\": \"123456\",\n    \"birth\": \"2010-05-15\",\n    \"gender\": \"male\",\n    \"civil_status\": \"single\",\n    \"nationality\": \"brazilian\",\n    \"capacity\": \"unable\",\n    \"mother_name\": \"Maria Silva\",\n    \"customer_attributes\": {\n      \"email\": \"parent@example.com\",\n      \"password\": \"secure_password123\"\n    },\n    \"represent_attributes\": {\n      \"representor_id\": 2\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/profile_customers",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "profile_customers"]
+            },
+            "description": "Create an unable customer with shared guardian email"
+          }
+        },
+        {
+          "name": "Update Customer to Deceased",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profile_customer\": {\n    \"deceased_at\": \"2024-01-15T10:30:00Z\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/profile_customers/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "profile_customers", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Mark a customer as deceased"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Test Scenarios",
+      "item": [
+        {
+          "name": "Test Age Transition Job",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"job\": \"AgeTransitionCheckerJob\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/jobs/trigger",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "jobs", "trigger"]
+            },
+            "description": "Manually trigger age transition checker (for testing)"
+          }
+        },
+        {
+          "name": "Test Manual Capacity Change",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profile_customer\": {\n    \"capacity\": \"able\"\n  },\n  \"reason\": \"Medical evaluation confirmed mental capacity restored\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/profile_customers/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "profile_customers", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Test manual capacity change (creates PaperTrail version)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Examples",
+      "item": [
+        {
+          "name": "Example: Minor Turning 16",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/compliance_notifications?notification_type=age_transition",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "compliance_notifications"],
+              "query": [
+                {
+                  "key": "notification_type",
+                  "value": "age_transition"
+                }
+              ]
+            },
+            "description": "Example response for age transition notification:\n\n```json\n{\n  \"data\": [\n    {\n      \"id\": 1,\n      \"notification_type\": \"age_transition\",\n      \"title\": \"Minor transitioned to relatively incapable\",\n      \"description\": \"João Silva (CPF: 12345678901) has turned 16 years old today. Their capacity has automatically changed from 'unable' to 'relatively'. Please review and update any necessary documents.\",\n      \"status\": \"pending\",\n      \"metadata\": {\n        \"old_capacity\": \"unable\",\n        \"new_capacity\": \"relatively\",\n        \"age\": 16,\n        \"transition_date\": \"2024-08-24\"\n      },\n      \"created_at\": \"2024-08-24T01:00:00Z\"\n    }\n  ]\n}\n```"
+          }
+        },
+        {
+          "name": "Example: Manual Capacity Update",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/compliance_notifications?notification_type=manual_capacity_update",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "compliance_notifications"],
+              "query": [
+                {
+                  "key": "notification_type",
+                  "value": "manual_capacity_update"
+                }
+              ]
+            },
+            "description": "Example response for manual capacity change:\n\n```json\n{\n  \"data\": [\n    {\n      \"id\": 2,\n      \"notification_type\": \"manual_capacity_update\",\n      \"title\": \"Customer capacity changed to fully capable\",\n      \"description\": \"Maria Santos (CPF: 98765432109) (Age: 35) has had their capacity manually changed from 'unable' to 'able'. This change may be due to medical or legal reasons. Please review and update all related documents and legal procedures.\",\n      \"status\": \"pending\",\n      \"metadata\": {\n        \"previous_capacity\": \"unable\",\n        \"new_capacity\": \"able\",\n        \"changed_at\": \"2024-08-24T14:30:00Z\",\n        \"age\": 35\n      },\n      \"created_at\": \"2024-08-24T14:30:00Z\"\n    }\n  ]\n}\n```"
+          }
+        }
+      ]
+    }
+  ]
+}

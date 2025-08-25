@@ -15,6 +15,7 @@ gem 'jsonapi-serializer'
 gem 'jwt'
 gem 'libreconv', '~> 0.9.5'
 gem 'mailjet'
+gem 'paper_trail'
 gem 'pg'
 gem 'prawn'
 gem 'puma', '~> 6.0'
@@ -30,6 +31,7 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 # Background jobs
 gem 'redis', '~> 5.0'
 gem 'sidekiq', '~> 7.2'
+gem 'sidekiq-cron', '~> 2.0'
 
 group :development, :test, :staging do
   gem 'claude-on-rails'

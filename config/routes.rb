@@ -50,6 +50,15 @@ Rails.application.routes.draw do
         end
       end
 
+      resources :drafts, only: [:index, :show, :destroy] do
+        collection do
+          post :save
+        end
+        member do
+          post :recover
+        end
+      end
+
       resources :user_profiles do
         member do
           post :restore
