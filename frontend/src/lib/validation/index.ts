@@ -85,7 +85,9 @@ export const validationRules = {
   },
 
   minLength: (min: number, message?: string): ValidationRule => (value) => {
-    if (!value) return null;
+    if (!value) {
+      return null;
+    }
     if ((value as string).length < min) {
       return message || `Deve ter pelo menos ${min} caracteres`;
     }
@@ -93,7 +95,9 @@ export const validationRules = {
   },
 
   maxLength: (max: number, message?: string): ValidationRule => (value) => {
-    if (!value) return null;
+    if (!value) {
+      return null;
+    }
     if ((value as string).length > max) {
       return message || `Deve ter no máximo ${max} caracteres`;
     }
@@ -101,7 +105,9 @@ export const validationRules = {
   },
 
   pattern: (regex: RegExp, message: string): ValidationRule => (value) => {
-    if (!value) return null;
+    if (!value) {
+      return null;
+    }
     if (!regex.test(value as string)) {
       return message;
     }
@@ -109,7 +115,9 @@ export const validationRules = {
   },
 
   numeric: (message = 'Deve conter apenas números'): ValidationRule => (value) => {
-    if (!value) return null;
+    if (!value) {
+      return null;
+    }
     if (!/^\d+$/.test((value as string).replace(/\D/g, ''))) {
       return message;
     }
@@ -155,7 +163,7 @@ export const validateForm = (
 ): FormValidationState => {
   const state: FormValidationState = {};
 
-  Object.keys(formData).forEach(fieldName => {
+  Object.keys(formData).forEach((fieldName) => {
     const value = formData[fieldName];
     const rules = fieldRules[fieldName] || [];
     const error = validateField(value, rules);
@@ -175,7 +183,7 @@ export const validateForm = (
  * Check if form is valid
  */
 export const isFormValid = (validationState: FormValidationState): boolean => {
-  return Object.values(validationState).every(field => field.valid);
+  return Object.values(validationState).every((field) => field.valid);
 };
 
 /**
@@ -183,8 +191,8 @@ export const isFormValid = (validationState: FormValidationState): boolean => {
  */
 export const getFormErrors = (validationState: FormValidationState): string[] => {
   return Object.values(validationState)
-    .filter(field => field.error)
-    .map(field => field.error!);
+    .filter((field) => field.error)
+    .map((field) => field.error!);
 };
 
 /**

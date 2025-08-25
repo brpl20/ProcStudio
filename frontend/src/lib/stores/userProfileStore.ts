@@ -25,7 +25,9 @@ function createUserProfileStore() {
 
     // Fetch current user profile information
     async fetchCurrentUser(userId: string): Promise<void> {
-      if (!userId) return;
+      if (!userId) {
+        return;
+      }
 
       update((state) => ({ ...state, isLoading: true, error: null }));
 

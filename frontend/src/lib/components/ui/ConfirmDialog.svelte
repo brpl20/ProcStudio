@@ -1,24 +1,24 @@
 <!-- components/ui/ConfirmDialog.svelte -->
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
-  
+
   export let show: boolean = false;
   export let title: string = 'Confirmar';
   export let message: string = 'Tem certeza?';
   export let confirmText: string = 'Confirmar';
   export let cancelText: string = 'Cancelar';
   export let type: 'warning' | 'danger' | 'info' = 'warning';
-  
+
   const dispatch = createEventDispatcher<{
     confirm: void;
     cancel: void;
   }>();
-  
+
   function confirm(): void {
     dispatch('confirm');
     show = false;
   }
-  
+
   function cancel(): void {
     dispatch('cancel');
     show = false;
@@ -32,8 +32,8 @@
       <p class="py-4">{message}</p>
       <div class="modal-action">
         <button class="btn btn-ghost" on:click={cancel}>{cancelText}</button>
-        <button 
-          class="btn {type === 'danger' ? 'btn-error' : type === 'info' ? 'btn-info' : 'btn-warning'}" 
+        <button
+          class="btn {type === 'danger' ? 'btn-error' : type === 'info' ? 'btn-info' : 'btn-warning'}"
           on:click={confirm}
         >
           {confirmText}

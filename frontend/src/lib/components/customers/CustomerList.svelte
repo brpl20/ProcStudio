@@ -4,22 +4,24 @@
   import ConfirmDialog from '../ui/ConfirmDialog.svelte';
   import StatusBadge from '../ui/StatusBadge.svelte';
   import type { Customer, CustomerStatus } from '../../api/types/customer.types';
-  
+
   export let customers: Customer[] = [];
   export let isLoading: boolean = false;
-  
+
   const dispatch = createEventDispatcher<{
     edit: Customer;
     delete: number;
     updateStatus: { id: number; status: CustomerStatus };
     resendConfirmation: number;
   }>();
-  
+
   let customerToDelete: Customer | null = null;
   let showDeleteConfirm: boolean = false;
-  
+
   function formatDate(dateString?: string | null): string {
-    if (!dateString) return '-';
+    if (!dateString) {
+      return '-';
+    }
     try {
       return new Date(dateString).toLocaleDateString('pt-BR');
     } catch (error) {
@@ -27,20 +29,20 @@
       return '-';
     }
   }
-  
+
   function handleEditClick(customer: Customer): void {
     dispatch('edit', customer);
   }
-  
+
   function handleStatusChange(customerId: number, newStatus: CustomerStatus): void {
     dispatch('updateStatus', { id: customerId, status: newStatus });
   }
-  
+
   function confirmDelete(customer: Customer): void {
     customerToDelete = customer;
     showDeleteConfirm = true;
   }
-  
+
   function handleDeleteConfirm(): void {
     if (customerToDelete) {
       dispatch('delete', customerToDelete.id);
@@ -48,7 +50,7 @@
       showDeleteConfirm = false;
     }
   }
-  
+
   function handleResendConfirmation(customerId: number): void {
     dispatch('resendConfirmation', customerId);
   }
@@ -95,10 +97,10 @@
             </td>
             <td>
               <div class="flex items-center gap-2">
-                <StatusBadge 
-                  status={customer.confirmed_at ? 'confirmed' : 'unconfirmed'} 
+                <StatusBadge
+                  status={customer.confirmed_at ? 'confirmed' : 'unconfirmed'}
                 />
-                
+
                 {#if !customer.confirmed_at}
                   <button
                     class="btn btn-xs btn-outline"

@@ -24,8 +24,10 @@ export const cleanCNPJ = (cnpj: string): string => {
  */
 export const formatCNPJ = (cnpj: string): string => {
   const cleaned = cleanCNPJ(cnpj);
-  if (cleaned.length !== 14) return cnpj;
-  
+  if (cleaned.length !== 14) {
+    return cnpj;
+  }
+
   return cleaned.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
 };
 
@@ -35,7 +37,7 @@ export const formatCNPJ = (cnpj: string): string => {
 const calculateCNPJDigits = (cnpj: string): [number, number] => {
   // Weights for first digit calculation
   const weights1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
-  
+
   // Calculate first verification digit
   let sum = 0;
   for (let i = 0; i < 12; i++) {
@@ -43,10 +45,10 @@ const calculateCNPJDigits = (cnpj: string): [number, number] => {
   }
   let remainder = sum % 11;
   const digit1 = remainder < 2 ? 0 : 11 - remainder;
-  
+
   // Weights for second digit calculation
   const weights2 = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
-  
+
   // Calculate second verification digit
   sum = 0;
   for (let i = 0; i < 13; i++) {
@@ -54,7 +56,7 @@ const calculateCNPJDigits = (cnpj: string): [number, number] => {
   }
   remainder = sum % 11;
   const digit2 = remainder < 2 ? 0 : 11 - remainder;
-  
+
   return [digit1, digit2];
 };
 
@@ -62,32 +64,36 @@ const calculateCNPJDigits = (cnpj: string): [number, number] => {
  * Basic CNPJ validation
  */
 export const validateCNPJ: ValidationRule = (value) => {
-  if (!value) return null;
-  
+  if (!value) {
+    return null;
+  }
+
   // Remove special characters
   const cnpj = cleanCNPJ(value as string);
-  
+
   // Check if CNPJ is provided
-  if (!cnpj) return null;
-  
+  if (!cnpj) {
+    return null;
+  }
+
   // Check length
   if (cnpj.length !== 14) {
     return 'CNPJ deve ter 14 dígitos';
   }
-  
+
   // Check if all digits are the same (invalid CNPJ)
   if (INVALID_CNPJS.includes(cnpj)) {
     return 'CNPJ inválido';
   }
-  
+
   // Calculate verification digits
   const [digit1, digit2] = calculateCNPJDigits(cnpj);
-  
+
   // Verify digits
   if (digit1 !== parseInt(cnpj.charAt(12)) || digit2 !== parseInt(cnpj.charAt(13))) {
     return 'CNPJ inválido: dígitos verificadores incorretos';
   }
-  
+
   return null;
 };
 
@@ -98,7 +104,7 @@ export const validateCNPJRequired: ValidationRule = (value) => {
   if (!value || !cleanCNPJ(value as string)) {
     return 'CNPJ é obrigatório';
   }
-  
+
   return validateCNPJ(value);
 };
 
@@ -106,19 +112,21 @@ export const validateCNPJRequired: ValidationRule = (value) => {
  * CNPJ validation with formatting suggestion
  */
 export const validateCNPJWithFormat: ValidationRule = (value) => {
-  if (!value) return null;
-  
+  if (!value) {
+    return null;
+  }
+
   const result = validateCNPJ(value);
-  
+
   // If valid but not formatted, could suggest formatting
   if (!result) {
     const cnpj = value as string;
     const cleaned = cleanCNPJ(cnpj);
-    
+
     // If it's valid but not formatted, we'll just return null (valid)
     return null;
   }
-  
+
   return result;
 };
 
@@ -134,8 +142,10 @@ export const isCNPJValid = (cnpj: string): boolean => {
  */
 export const maskCNPJ = (cnpj: string): string => {
   const cleaned = cleanCNPJ(cnpj);
-  if (cleaned.length !== 14) return cnpj;
-  
+  if (cleaned.length !== 14) {
+    return cnpj;
+  }
+
   return `${cleaned.substring(0, 2)}.***.***/****-${cleaned.substring(12)}`;
 };
 
@@ -144,12 +154,14 @@ export const maskCNPJ = (cnpj: string): string => {
  */
 export const getCNPJType = (cnpj: string): string => {
   const cleaned = cleanCNPJ(cnpj);
-  if (cleaned.length !== 14) return 'Inválido';
-  
+  if (cleaned.length !== 14) {
+    return 'Inválido';
+  }
+
   // Matrix (first 8 digits identify the company)
   // Branch (digits 9-12 identify the branch, 0001 = headquarters)
   const branch = cleaned.substring(8, 12);
-  
+
   if (branch === '0001') {
     return 'Matriz';
   } else {

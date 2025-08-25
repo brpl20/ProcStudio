@@ -137,7 +137,7 @@ function createCustomerStore() {
         return true;
       } else {
         // Field validation errors exist but are handled by the message
-        
+
         update((state) =>
           showNotification(
             {
@@ -171,7 +171,7 @@ function createCustomerStore() {
         return true;
       } else {
         // Field validation errors exist but are handled by the message
-        
+
         update((state) =>
           showNotification(
             {
@@ -218,7 +218,7 @@ function createCustomerStore() {
         return true;
       } else {
         // Field validation errors exist but are handled by the message
-        
+
         update((state) =>
           showNotification(
             {
@@ -323,36 +323,36 @@ export const customerStore = createCustomerStore();
 
 // Export derived stores for easy access to specific parts of state
 export const customers = derived(
-  customerStore, 
+  customerStore,
   ($store: CustomerState) => $store.customers
 );
 
 export const activeCustomers = derived(
-  customerStore, 
+  customerStore,
   ($store: CustomerState) => $store.customers.filter((c) => c.status === 'active')
 );
 
 export const inactiveCustomers = derived(
-  customerStore, 
+  customerStore,
   ($store: CustomerState) => $store.customers.filter((c) => c.status === 'inactive')
 );
 
 export const isLoading = derived(
-  customerStore, 
+  customerStore,
   ($store: CustomerState) => $store.isLoading
 );
 
 export const error = derived(
-  customerStore, 
+  customerStore,
   ($store: CustomerState) => $store.error
 );
 
 export const success = derived(
-  customerStore, 
+  customerStore,
   ($store: CustomerState) => $store.success
 );
 
 export const currentCustomer = derived(
-  customerStore, 
+  customerStore,
   ($store: CustomerState) => $store.currentCustomer
 );

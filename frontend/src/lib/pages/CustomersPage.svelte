@@ -76,7 +76,6 @@
           </div>
         {/if}
 
-
         <!-- Edit Customer Form -->
         {#if editingCustomer}
           <div class="mb-6">

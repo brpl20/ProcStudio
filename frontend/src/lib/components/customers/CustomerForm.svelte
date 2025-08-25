@@ -303,9 +303,13 @@
       const [parent, child] = fieldName.split('.');
       // Map nested fields to their root validator
       if (parent === 'customer_attributes') {
-        if (child === 'email') fieldName = 'email';
-        else if (child === 'password') fieldName = 'password';
-        else if (child === 'password_confirmation') fieldName = 'password_confirmation';
+        if (child === 'email') {
+          fieldName = 'email';
+        } else if (child === 'password') {
+          fieldName = 'password';
+        } else if (child === 'password_confirmation') {
+          fieldName = 'password_confirmation';
+        }
       }
     }
 

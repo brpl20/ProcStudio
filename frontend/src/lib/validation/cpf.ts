@@ -24,8 +24,10 @@ export const cleanCPF = (cpf: string): string => {
  */
 export const formatCPF = (cpf: string): string => {
   const cleaned = cleanCPF(cpf);
-  if (cleaned.length !== 11) return cpf;
-  
+  if (cleaned.length !== 11) {
+    return cpf;
+  }
+
   return cleaned.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
 };
 
@@ -40,7 +42,7 @@ const calculateCPFDigits = (cpf: string): [number, number] => {
   }
   let remainder = 11 - (sum % 11);
   const digit1 = remainder > 9 ? 0 : remainder;
-  
+
   // Calculate second verification digit
   sum = 0;
   for (let i = 0; i < 10; i++) {
@@ -48,7 +50,7 @@ const calculateCPFDigits = (cpf: string): [number, number] => {
   }
   remainder = 11 - (sum % 11);
   const digit2 = remainder > 9 ? 0 : remainder;
-  
+
   return [digit1, digit2];
 };
 
@@ -56,32 +58,36 @@ const calculateCPFDigits = (cpf: string): [number, number] => {
  * Basic CPF validation
  */
 export const validateCPF: ValidationRule = (value) => {
-  if (!value) return null;
-  
+  if (!value) {
+    return null;
+  }
+
   // Remove special characters
   const cpf = cleanCPF(value as string);
-  
+
   // Check if CPF is provided
-  if (!cpf) return null;
-  
+  if (!cpf) {
+    return null;
+  }
+
   // Check length
   if (cpf.length !== 11) {
     return 'CPF deve ter 11 dígitos';
   }
-  
+
   // Check if all digits are the same (invalid CPF)
   if (INVALID_CPFS.includes(cpf)) {
     return 'CPF inválido';
   }
-  
+
   // Calculate verification digits
   const [digit1, digit2] = calculateCPFDigits(cpf);
-  
+
   // Verify digits
   if (digit1 !== parseInt(cpf.charAt(9)) || digit2 !== parseInt(cpf.charAt(10))) {
     return 'CPF inválido: dígitos verificadores incorretos';
   }
-  
+
   return null;
 };
 
@@ -92,7 +98,7 @@ export const validateCPFRequired: ValidationRule = (value) => {
   if (!value || !cleanCPF(value as string)) {
     return 'CPF é obrigatório';
   }
-  
+
   return validateCPF(value);
 };
 
@@ -100,20 +106,22 @@ export const validateCPFRequired: ValidationRule = (value) => {
  * CPF validation with formatting suggestion
  */
 export const validateCPFWithFormat: ValidationRule = (value) => {
-  if (!value) return null;
-  
+  if (!value) {
+    return null;
+  }
+
   const result = validateCPF(value);
-  
+
   // If valid but not formatted, could suggest formatting
   if (!result) {
     const cpf = value as string;
     const cleaned = cleanCPF(cpf);
-    
+
     // If it's valid but not formatted, we could return a suggestion
     // But for validation purposes, we'll just return null (valid)
     return null;
   }
-  
+
   return result;
 };
 
@@ -129,7 +137,9 @@ export const isCPFValid = (cpf: string): boolean => {
  */
 export const maskCPF = (cpf: string): string => {
   const cleaned = cleanCPF(cpf);
-  if (cleaned.length !== 11) return cpf;
-  
+  if (cleaned.length !== 11) {
+    return cpf;
+  }
+
   return `${cleaned.substring(0, 3)}.***.**${cleaned.substring(9)}-**`;
 };

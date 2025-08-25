@@ -74,10 +74,10 @@ export class CustomerService {
       const url = queryString ? `/customers?${queryString}` : '/customers';
 
       const response: JsonApiCustomersListResponse = await this.httpClient.get(url);
-      
+
       // Transform JSON:API data to our Customer type
-      const customers = Array.isArray(response.data) 
-        ? response.data.map(jsonApiData => this.transformJsonApiCustomer(jsonApiData))
+      const customers = Array.isArray(response.data)
+        ? response.data.map((jsonApiData) => this.transformJsonApiCustomer(jsonApiData))
         : [];
 
       return {
@@ -101,7 +101,7 @@ export class CustomerService {
   async getCustomer(id: number): Promise<CustomerResponse> {
     try {
       const response: JsonApiCustomerResponse = await this.httpClient.get(`/customers/${id}`);
-      
+
       // Transform JSON:API data to our Customer type
       const customer = this.transformJsonApiCustomer(response.data);
 
@@ -125,7 +125,7 @@ export class CustomerService {
   async createCustomer(customerData: CreateCustomerRequest): Promise<CreateCustomerResponse> {
     try {
       const response: JsonApiCustomerResponse = await this.httpClient.post('/customers', { customer: customerData });
-      
+
       // Transform JSON:API data to our Customer type
       const customer = this.transformJsonApiCustomer(response.data);
 
@@ -136,12 +136,12 @@ export class CustomerService {
       };
     } catch (error: any) {
       console.error('Customer creation error:', error);
-      
+
       // Handle API validation errors (422)
       if (error?.status === 422 && error?.data?.errors) {
         const apiErrors = error.data.errors;
         const fieldErrors: Record<string, string> = {};
-        
+
         // Parse field-specific errors if they exist
         if (Array.isArray(apiErrors)) {
           apiErrors.forEach((err: any) => {
@@ -150,7 +150,7 @@ export class CustomerService {
             }
           });
         }
-        
+
         return {
           success: false,
           data: {} as Customer,
@@ -158,7 +158,7 @@ export class CustomerService {
           errors: fieldErrors
         };
       }
-      
+
       // Handle other errors
       return {
         success: false,
@@ -177,7 +177,7 @@ export class CustomerService {
   ): Promise<UpdateCustomerResponse> {
     try {
       const response: JsonApiCustomerResponse = await this.httpClient.patch(`/customers/${id}`, { customer: customerData });
-      
+
       // Transform JSON:API data to our Customer type
       const customer = this.transformJsonApiCustomer(response.data);
 
@@ -188,12 +188,12 @@ export class CustomerService {
       };
     } catch (error: any) {
       console.error('Customer update error:', error);
-      
+
       // Handle API validation errors (422)
       if (error?.status === 422 && error?.data?.errors) {
         const apiErrors = error.data.errors;
         const fieldErrors: Record<string, string> = {};
-        
+
         // Parse field-specific errors if they exist
         if (Array.isArray(apiErrors)) {
           apiErrors.forEach((err: any) => {
@@ -202,7 +202,7 @@ export class CustomerService {
             }
           });
         }
-        
+
         return {
           success: false,
           data: {} as Customer,
@@ -210,7 +210,7 @@ export class CustomerService {
           errors: fieldErrors
         };
       }
-      
+
       // Handle other errors
       return {
         success: false,

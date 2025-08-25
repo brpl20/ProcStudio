@@ -1,57 +1,30 @@
 <script>
   import AuthSidebar from '../components/AuthSidebar.svelte';
+  import Breadcrumbs from '../components/Breadcrumbs.svelte';
 </script>
 
-<AuthSidebar activeSection="settings">
+<AuthSidebar activeSection="dashboard">
+  <Breadcrumbs />
   <div class="container mx-auto">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Menu de configurações -->
-      <div class="lg:col-span-1">
-        <div class="card bg-base-100 shadow-xl">
-          <div class="card-body">
-            <h3 class="card-title">Configurações</h3>
-            <ul class="menu bg-base-200 rounded-box">
-              <li><a>🔧 Geral</a></li>
-              <li><a>👤 Perfil</a></li>
-              <li><a>🔐 Segurança</a></li>
-              <li><a>🔔 Notificações</a></li>
-              <li><a>🎨 Aparência</a></li>
-              <li><a>🌐 Idioma</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
       <!-- Conteúdo das configurações -->
-      <div class="lg:col-span-2">
+      <div class="lg:col-span-3">
         <div class="card bg-base-100 shadow-xl">
           <div class="card-body">
-            <h2 class="card-title text-2xl mb-6">⚙️ Configurações Gerais</h2>
+            <h2 class="card-title text-2xl mb-6">Configurações Gerais</h2>
+            <h2 class="card-title text-2xl mb-6">ToDo (em desenvolvimento)</h2>
 
             <!-- Configurações do perfil -->
-            <div class="form-control w-full max-w-xs">
-              <label class="label">
-                <span class="label-text">Nome de usuário</span>
-              </label>
-              <input
-                type="text"
-                placeholder="Digite seu nome"
-                class="input input-bordered w-full max-w-xs"
-              />
-            </div>
-
-            <div class="form-control w-full max-w-xs">
-              <label class="label">
-                <span class="label-text">Email</span>
-              </label>
-              <input
-                type="email"
-                placeholder="seu@email.com"
-                class="input input-bordered w-full max-w-xs"
-              />
-            </div>
+            <p>Usuário:</p>
+            <p>Email:</p>
+            <p>Oab:</p>
 
             <div class="divider"></div>
+            Configurações de IA Créditos de IA Comprar Créditos de IA
+            <div class="divider"></div>
+
+            Configurações de Documentos Geração Entrega Configurações de Áreas de Atuação
+            Configurações de Poderes Configurações de Permissão
 
             <!-- Configurações de notificação -->
             <h3 class="text-lg font-semibold mb-4">🔔 Notificações</h3>
