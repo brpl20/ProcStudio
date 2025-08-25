@@ -80,7 +80,7 @@ export const validatePasswordStrong: ValidationRule = (value) => {
   }
 
   // Check for special character
-  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+  if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
     return 'Senha deve conter pelo menos um caractere especial';
   }
 

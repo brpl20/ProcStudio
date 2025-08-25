@@ -67,7 +67,7 @@
   }
 
   function handleDeleteTask() {
-    if (confirm('Tem certeza que deseja excluir esta tarefa?')) {
+    if (window.confirm('Tem certeza que deseja excluir esta tarefa?')) {
       boardStore.deleteTask(task.id);
     }
   }
@@ -259,6 +259,7 @@
           class:text-success={task.status === 'completed'}
           on:click|stopPropagation={handleStatusToggle}
           title={task.status === 'completed' ? 'Marcar como pendente' : 'Marcar como concluída'}
+          aria-label={task.status === 'completed' ? 'Marcar como pendente' : 'Marcar como concluída'}
         >
           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -275,6 +276,7 @@
           class="btn btn-ghost btn-xs"
           on:click|stopPropagation={handleEditTask}
           title="Editar tarefa"
+          aria-label="Editar tarefa"
         >
           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -291,6 +293,7 @@
           class="btn btn-ghost btn-xs text-error hover:bg-error hover:text-error-content"
           on:click|stopPropagation={handleDeleteTask}
           title="Excluir tarefa"
+          aria-label="Excluir tarefa"
         >
           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path

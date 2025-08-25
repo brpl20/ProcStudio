@@ -26,7 +26,7 @@
       <!-- Back button -->
       <div class="breadcrumbs text-sm">
         <ul>
-          <li><a href="#" on:click|preventDefault={() => router.navigate('/customers')}>Clientes</a></li>
+          <li><button type="button" class="link link-hover" on:click={() => router.navigate('/customers')}>Clientes</button></li>
           <li>Novo Cliente</li>
         </ul>
       </div>

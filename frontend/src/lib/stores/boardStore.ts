@@ -1,4 +1,4 @@
-import { writable, derived, get } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
 import type {
   Board,
   Column,
@@ -17,7 +17,7 @@ interface BoardState {
 }
 
 function createBoardStore() {
-  const { subscribe, set, update } = writable<BoardState>({
+  const { subscribe, update } = writable<BoardState>({
     boards: [],
     currentBoard: null,
     isLoading: false,
@@ -75,7 +75,7 @@ function createBoardStore() {
     subscribe,
 
     // Initialize board with mock data or fetch from API
-    async initBoard(boardId?: string) {
+    async initBoard(_boardId?: string) {
       update((state) => ({ ...state, isLoading: true, error: null }));
 
       try {

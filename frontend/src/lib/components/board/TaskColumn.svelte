@@ -116,6 +116,8 @@
 
   <!-- Tasks Container -->
   <div
+    role="region"
+    aria-label={`Tarefas da coluna ${column.title}`}
     class="flex-1 p-3 overflow-y-auto min-h-32 transition-colors duration-200"
     class:bg-primary={isDragOver && canDropTask}
     class:bg-opacity-10={isDragOver && canDropTask}

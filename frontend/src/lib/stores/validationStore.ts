@@ -4,7 +4,7 @@
  */
 
 import { writable, derived } from 'svelte/store';
-import type { FormValidationState, FieldValidation, ValidationRule } from '../validation/types';
+import type { FormValidationState, ValidationRule } from '../validation/types';
 import { validateField, createFieldValidation } from '../validation/index';
 
 interface ValidationStoreConfig {

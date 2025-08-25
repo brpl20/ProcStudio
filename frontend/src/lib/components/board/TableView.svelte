@@ -73,20 +73,23 @@
       case 'status':
         comparison = a.status.localeCompare(b.status);
         break;
-      case 'priority':
+      case 'priority': {
         const priorityOrder = { low: 1, medium: 2, high: 3, critical: 4 };
         comparison = priorityOrder[a.priority] - priorityOrder[b.priority];
         break;
-      case 'dueDate':
+      }
+      case 'dueDate': {
         const dateA = a.dueDate ? new Date(a.dueDate).getTime() : 0;
         const dateB = b.dueDate ? new Date(b.dueDate).getTime() : 0;
         comparison = dateA - dateB;
         break;
-      case 'assignedTo':
+      }
+      case 'assignedTo': {
         const assignedA = a.assignedTo?.[0] || '';
         const assignedB = b.assignedTo?.[0] || '';
         comparison = assignedA.localeCompare(assignedB);
         break;
+      }
       }
 
       return sortDirection === 'asc' ? comparison : -comparison;
@@ -116,7 +119,7 @@
   }
 
   function handleDeleteTask(taskId: string) {
-    if (confirm('Tem certeza que deseja excluir esta tarefa?')) {
+    if (window.confirm('Tem certeza que deseja excluir esta tarefa?')) {
       const task = allTasks.find((t) => t.id === taskId);
       if (task) {
         const column = currentBoard?.columns.find((col) => col.tasks.some((t) => t.id === taskId));
@@ -421,6 +424,7 @@
                         class="btn btn-ghost btn-xs"
                         on:click={() => handleEditTask(task)}
                         title="Editar"
+                        aria-label="Editar tarefa"
                       >
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
@@ -435,6 +439,7 @@
                         class="btn btn-ghost btn-xs text-error"
                         on:click={() => handleDeleteTask(task.id)}
                         title="Excluir"
+                        aria-label="Excluir tarefa"
                       >
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path

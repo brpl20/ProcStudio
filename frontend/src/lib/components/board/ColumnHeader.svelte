@@ -44,13 +44,13 @@
 
   function handleDeleteColumn() {
     if (taskCount > 0) {
-      alert(
+      window.alert(
         'Não é possível excluir uma coluna que contém tarefas. Mova ou exclua as tarefas primeiro.'
       );
       return;
     }
 
-    if (confirm(`Tem certeza que deseja excluir a coluna "${column.title}"?`)) {
+    if (window.confirm(`Tem certeza que deseja excluir a coluna "${column.title}"?`)) {
       boardStore.deleteColumn(column.id);
     }
   }

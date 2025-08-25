@@ -9,6 +9,10 @@
   } from '../stores/userProfileStore.ts';
   import { router } from '../stores/routerStore.js';
   import Icon from '../icons.svelte';
+  import TopBar from './TopBar.svelte';
+  import Footer from './Footer.svelte';
+  import Breadcrumbs from './Breadcrumbs.svelte';
+  import AuthGuard from './AuthGuard.svelte';
 
   export const activeSection: string = '';
 
@@ -21,6 +25,8 @@
   // Computed user display properties
   $: userDisplayName = getUserDisplayName(userProfile, currentUser, isLoadingProfile);
   $: userRole = getUserRole(userProfile, currentUser);
+  $: userEmail = getUserEmail(userProfile, currentUser);
+  $: userInitials = getUserInitials(userDisplayName);
 
   function getUserDisplayName(profile: any, user: any, loading: boolean): string {
     if (loading) {
@@ -43,7 +49,31 @@
   }
 
   function getUserRole(profile: any, user: any): string {
-    return profile?.attributes?.role || user?.data?.role || '';
+    const role = profile?.attributes?.role || user?.data?.role || '';
+    const gender = profile?.attributes?.gender || user?.data?.gender || '';
+
+    // Translate lawyer role based on gender
+    if (role && role.toLowerCase().includes('lawyer')) {
+      return gender === 'female' ? 'Advogada' : 'Advogado';
+    }
+
+    return role;
+  }
+
+  function getUserEmail(profile: any, user: any): string {
+    return profile?.attributes?.email || user?.data?.email || '';
+  }
+
+  function getUserInitials(name: string): string {
+    if (!name || name === 'Carregando...') {
+      return '?';
+    }
+    return name
+      .split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2) || 'U';
   }
 
   function handleLogout(): void {
@@ -62,31 +92,23 @@
   // No manual onMount needed
 </script>
 
+<AuthGuard>
 <div class="drawer lg:drawer-open">
   <input id="admin-drawer" type="checkbox" class="drawer-toggle" />
-  <div class="drawer-content">
-    <!-- Navbar para mobile -->
-    <div class="navbar bg-base-100 lg:hidden">
-      <div class="flex-1">
-        <a
-          class="btn btn-ghost normal-case text-xl"
-          href="/"
-          on:click|preventDefault={() => router.navigate('/')}
-        >
-          {WebsiteName}
-        </a>
-      </div>
-      <div class="flex-none">
-        <label for="admin-drawer" class="btn btn-ghost btn-circle">
-          <Icon name="hamburger" />
-        </label>
-      </div>
-    </div>
+  <div class="drawer-content flex flex-col min-h-screen">
+    <!-- Top Bar -->
+    <TopBar showMenuButton={true} />
+
+    <!-- Breadcrumbs -->
+    <Breadcrumbs />
 
     <!-- Conteúdo principal -->
-    <div class="container px-6 lg:px-12 py-3 lg:py-6">
+    <div class="flex-1 container px-6 lg:px-12 py-3 lg:py-6">
       <slot />
     </div>
+
+    <!-- Footer -->
+    <Footer />
   </div>
 
   <!-- Menu lateral -->
@@ -223,39 +245,121 @@
         </a>
       </li>
 
-      <!-- User Info before logout -->
+      <!-- User Menu no final -->
       {#if isAuthenticated}
-        <li class="mb-2">
-          <div class="px-4 py-1 text-center">
-            {#if isLoadingProfile}
-              <div class="loading loading-spinner loading-xs"></div>
-            {:else}
-              <div class="text-sm font-medium text-base-content">
-                {userDisplayName}
-              </div>
-              {#if userRole}
-                <div class="text-xs text-base-content/70 mt-1">
-                  {userRole}
+        <li class="mt-auto">
+          <div class="dropdown dropdown-top w-full">
+            <button
+              type="button"
+              class="btn btn-ghost w-full justify-start px-4 py-3 hover:bg-base-200"
+            >
+              <div class="flex items-center gap-3 w-full">
+                <div class="avatar placeholder">
+                  <div class="bg-primary text-primary-content rounded-full w-8">
+                    <span class="text-sm">{userInitials}</span>
+                  </div>
                 </div>
-              {/if}
-            {/if}
+                <div class="flex-1 text-left">
+                  {#if isLoadingProfile}
+                    <div class="loading loading-spinner loading-xs"></div>
+                  {:else}
+                    <div class="text-sm font-medium">
+                      {userDisplayName}
+                    </div>
+                    {#if userRole}
+                      <div class="text-xs opacity-70">
+                        {userRole}
+                      </div>
+                    {/if}
+                  {/if}
+                </div>
+                <Icon name="chevron-up" className="w-4 h-4 opacity-50" strokeWidth="1.5" />
+              </div>
+            </button>
+
+            <ul class="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-72 mb-2 border border-base-300 z-[100]">
+                <!-- User info section -->
+                <li class="px-3 py-2">
+                  <div class="flex items-center gap-3 pointer-events-none">
+                    <div class="avatar placeholder">
+                      <div class="bg-primary text-primary-content rounded-full w-10">
+                        <span class="text-lg">{userInitials}</span>
+                      </div>
+                    </div>
+                    <div class="flex-1">
+                      <div class="font-medium">{userDisplayName}</div>
+                      {#if userRole}
+                        <div class="text-xs opacity-70">{userRole}</div>
+                      {/if}
+                    </div>
+                  </div>
+                </li>
+
+                {#if userEmail}
+                  <li class="px-3 pb-2">
+                    <div class="text-xs text-base-content/60 pointer-events-none">
+                      {userEmail}
+                    </div>
+                  </li>
+                {/if}
+
+                <div class="divider my-1"></div>
+
+                <!-- Help and Support -->
+                <li>
+                  <button class="px-3 py-2">
+                    <Icon name="help" className="w-4 h-4" strokeWidth="1.5" />
+                    Ajuda
+                  </button>
+                </li>
+                <li>
+                  <button class="px-3 py-2">
+                    <Icon name="support" className="w-4 h-4" strokeWidth="1.5" />
+                    Suporte
+                  </button>
+                </li>
+
+                <div class="divider my-1"></div>
+
+                <!-- Logout -->
+                <li>
+                  <button class="px-3 py-2 text-error" on:click={handleLogout}>
+                    <Icon name="logout-alt" className="w-4 h-4" strokeWidth="1.5" />
+                    Sair
+                  </button>
+                </li>
+              </ul>
           </div>
         </li>
       {/if}
-
-      <!-- Logout no final -->
-      <li class="mt-auto">
-        <button on:click={handleLogout} class="mt-auto text-base w-full text-left">
-          <Icon name="logout" />
-          Sair
-        </button>
-      </li>
     </ul>
   </div>
 </div>
+</AuthGuard>
 
 <style>
   .drawer-content {
     background-color: var(--color-base-200, #faedd6);
+  }
+
+  .dropdown-content {
+    animation: slideUp 0.2s ease-out;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--fallback-bc, oklch(var(--bc) / 0.1));
+    margin: 0.5rem 0;
   }
 </style>

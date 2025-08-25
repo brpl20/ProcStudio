@@ -26,10 +26,10 @@ import type {
   // JSON:API types
   JsonApiCustomerData,
   JsonApiCustomerResponse,
-  JsonApiCustomersListResponse
-  // Outro Frontend
-  // CustomerLoginRequest,
-  // CustomerLoginResponse
+  JsonApiCustomersListResponse,
+  // Customer Portal
+  CustomerLoginRequest,
+  CustomerLoginResponse
 } from '../types/customer.types';
 
 export class CustomerService {

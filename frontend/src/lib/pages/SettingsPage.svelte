@@ -1,10 +1,8 @@
 <script>
   import AuthSidebar from '../components/AuthSidebar.svelte';
-  import Breadcrumbs from '../components/Breadcrumbs.svelte';
 </script>
 
 <AuthSidebar activeSection="dashboard">
-  <Breadcrumbs />
   <div class="container mx-auto">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Conteúdo das configurações -->
@@ -56,10 +54,10 @@
             <h3 class="text-lg font-semibold mb-4">🎨 Aparência</h3>
 
             <div class="form-control w-full max-w-xs">
-              <label class="label">
+              <label class="label" for="theme-select">
                 <span class="label-text">Tema</span>
               </label>
-              <select class="select select-bordered">
+              <select id="theme-select" class="select select-bordered">
                 <option disabled selected>Escolha um tema</option>
                 <option>Claro</option>
                 <option>Escuro</option>
@@ -68,10 +66,10 @@
             </div>
 
             <div class="form-control w-full max-w-xs">
-              <label class="label">
+              <label class="label" for="language-select">
                 <span class="label-text">Idioma</span>
               </label>
-              <select class="select select-bordered">
+              <select id="language-select" class="select select-bordered">
                 <option disabled selected>Escolha um idioma</option>
                 <option>Português (BR)</option>
                 <option>English</option>

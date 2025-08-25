@@ -11,7 +11,6 @@ import type {
   CreateUserRequest,
   UpdateUserRequest,
   UpdateUserProfileRequest,
-  UserData,
   UserProfileData
 } from '../types';
 

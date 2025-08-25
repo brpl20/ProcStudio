@@ -1,14 +1,27 @@
 <script>
+  import { onMount } from 'svelte';
   import AuthLayout from '../components/AuthLayout.svelte';
   import { authStore } from '../stores/authStore.js';
   import { router } from '../stores/routerStore.js';
   import api from '../api/index';
+  import Icon from '../icons.svelte';
 
   let email = '';
   let password = '';
   let isLoading = false;
   let errorMessage = '';
   let successMessage = '';
+
+  onMount(() => {
+    // Check for auth error from AuthGuard
+    if (typeof window !== 'undefined') {
+      const authError = window.sessionStorage.getItem('authError');
+      if (authError) {
+        errorMessage = authError;
+        window.sessionStorage.removeItem('authError');
+      }
+    }
+  });
 
   async function handleLogin() {
     if (!email || !password) {
@@ -31,7 +44,15 @@
 
         // Pode precisar ajustar baseado na estrutura do authStore
         authStore.loginSuccess(result);
-        router.navigate('/dashboard');
+
+        // Check if there's a redirect URL stored
+        const redirectUrl = window.sessionStorage.getItem('redirectAfterLogin');
+        if (redirectUrl) {
+          window.sessionStorage.removeItem('redirectAfterLogin');
+          router.navigate(redirectUrl);
+        } else {
+          router.navigate('/dashboard');
+        }
       } else {
         errorMessage = result.message || 'Erro no login';
       }
@@ -62,20 +83,7 @@
     <div class="card-body">
       <!-- Botão voltar -->
       <button class="btn btn-ghost btn-sm self-start mb-4" on:click={goHome}>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-4 w-4 mr-2"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M10 19l-7-7m0 0l7-7m-7 7h18"
-          />
-        </svg>
+        <Icon name="arrow-left" className="h-4 w-4 mr-2" />
         Voltar
       </button>
 
@@ -118,38 +126,14 @@
         <!-- Mensagens -->
         {#if errorMessage}
           <div class="alert alert-error">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="stroke-current shrink-0 h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
+            <Icon name="error" className="stroke-current shrink-0 h-6 w-6" />
             <span>{errorMessage}</span>
           </div>
         {/if}
 
         {#if successMessage}
           <div class="alert alert-success">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="stroke-current shrink-0 h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
+            <Icon name="success" className="stroke-current shrink-0 h-6 w-6" />
             <span>{successMessage}</span>
           </div>
         {/if}

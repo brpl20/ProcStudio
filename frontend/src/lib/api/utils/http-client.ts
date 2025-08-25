@@ -47,7 +47,7 @@ export class HttpClient {
    */
   async request<T>(method: string, endpoint: string, options: RequestOptions = {}): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
-    const { headers = {}, body, timeout = API_CONFIG.TIMEOUT } = options;
+    const { headers = {}, body } = options;
 
     const requestOptions: RequestInit = {
       method,
@@ -82,7 +82,7 @@ export class HttpClient {
     try {
       const text = await response.text();
       data = text ? JSON.parse(text) : {};
-    } catch (error) {
+    } catch {
       data = { message: 'Invalid response format' };
     }
 

@@ -1,6 +1,5 @@
 <script>
   import AuthSidebar from '../components/AuthSidebar.svelte';
-  import Breadcrumbs from '../components/Breadcrumbs.svelte';
   import UserProfile from '../UserProfile.svelte';
   // import ApiTester from '../ApiTester.svelte';
   import { authStore } from '../stores/authStore.js';
@@ -9,7 +8,6 @@
 </script>
 
 <AuthSidebar activeSection="dashboard">
-  <Breadcrumbs />
 
   <div class="">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">

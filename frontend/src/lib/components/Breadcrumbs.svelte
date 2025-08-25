@@ -10,22 +10,21 @@
 
   function generateBreadcrumbs(path) {
     const routeMap = {
-      '/dashboard': [{ label: 'Home', path: '/dashboard', icon: 'home' }],
-      '/teams': [
-        { label: 'Home', path: '/dashboard', icon: 'home' },
-        { label: 'Equipes', path: '/teams', icon: 'folder' }
-      ],
-      '/documents': [
-        { label: 'Home', path: '/dashboard', icon: 'home' },
-        { label: 'Documentos', path: '/documents', icon: 'folder' }
-      ],
-      '/reports': [
-        { label: 'Home', path: '/dashboard', icon: 'home' },
-        { label: 'Relatórios', path: '/reports', icon: 'document' }
+      '/dashboard': [{ label: 'Dashboard', path: '/dashboard', icon: 'home' }],
+      '/teams': [{ label: 'Equipes', path: '/teams', icon: 'folder' }],
+      '/admin': [{ label: 'Admin', path: '/admin', icon: 'folder' }],
+      '/settings': [{ label: 'Configurações', path: '/settings', icon: 'folder' }],
+      '/reports': [{ label: 'Relatórios', path: '/reports', icon: 'document' }],
+      '/tasks': [{ label: 'Tarefas', path: '/tasks', icon: 'folder' }],
+      '/works': [{ label: 'Trabalhos', path: '/works', icon: 'folder' }],
+      '/customers': [{ label: 'Clientes', path: '/customers', icon: 'folder' }],
+      '/customers/new': [
+        { label: 'Clientes', path: '/customers', icon: 'folder' },
+        { label: 'Novo Cliente', path: '/customers/new', icon: 'document' }
       ]
     };
 
-    return routeMap[path] || [{ label: 'Home', path: '/dashboard', icon: 'home' }];
+    return routeMap[path] || [{ label: 'Dashboard', path: '/dashboard', icon: 'home' }];
   }
 
   function getIcon(iconType) {

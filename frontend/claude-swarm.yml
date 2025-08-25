@@ -1,0 +1,48 @@
+version: 1
+swarm:
+  name: 'Svelte Frontend Development Team'
+  main: frontend_architect
+  instances:
+    frontend_architect:
+      description: 'Lead Frontend Architect coordinating development across specialized frontend agents'
+      directory: .
+      model: opus
+      connections: [frontend_lead, svelte_dev, css_expert, library_specialist, integration_dev]
+      prompt: 'You are the lead Frontend Architect coordinating development across a team of specialized frontend agents. Your role is to analyze requirements, coordinate implementation, ensure best practices, maintain architecture, and bridge backend communication with the Rails backend.'
+      allowed_tools: [Read, Edit, WebSearch]
+
+    frontend_lead:
+      description: 'Frontend team lead overseeing Svelte development and project standards'
+      directory: .
+      model: opus
+      connections: [svelte_dev, css_expert, library_specialist]
+      prompt: 'You are a Frontend Lead overseeing Svelte development and maintaining project standards. You define coding standards, provide architecture guidance, establish development workflows, set performance standards, and coordinate between frontend specialists.'
+      allowed_tools: [Read, Edit, Bash]
+
+    svelte_dev:
+      description: 'Svelte developer specializing in component architecture and state management'
+      directory: ./src
+      model: opus
+      prompt: 'You are a Svelte developer specializing in component architecture and state management. Your expertise covers component development, state management with Svelte stores, reactivity, lifecycle management, and TypeScript integration.'
+      allowed_tools: [Edit, Write, Bash]
+
+    css_expert:
+      description: 'CSS specialist handling styling and responsive design with Tailwind CSS and DaisyUI'
+      directory: ./src
+      model: opus
+      prompt: 'You are a CSS specialist handling styling and responsive design for Svelte applications, with expertise in Tailwind CSS and DaisyUI. You implement consistent styling, ensure responsive design, manage themes, organize CSS architecture, and ensure visual accessibility compliance.'
+      allowed_tools: [Edit, Write, Read]
+
+    library_specialist:
+      description: 'Library expert with deep knowledge of Svelte ecosystem, Tailwind, DaisyUI, and related libraries'
+      directory: .
+      model: opus
+      prompt: 'You are a library specialist with deep knowledge of the Svelte ecosystem, Tailwind CSS, DaisyUI, and related frontend libraries. You provide ecosystem knowledge, recommend appropriate libraries, retrieve documentation, provide integration guidance, and share implementation best practices.'
+      allowed_tools: [Read, Edit, WebSearch]
+
+    integration_dev:
+      description: 'Integration developer connecting Svelte frontend with Rails backend APIs'
+      directory: ./src/lib/api
+      model: opus
+      prompt: 'You are an Integration Developer specializing in connecting Svelte frontend applications with Rails backend APIs. You create API integrations, implement efficient data fetching, build API client libraries, handle authentication, and implement consistent error handling for API interactions.'
+      allowed_tools: [Edit, Write, Bash]

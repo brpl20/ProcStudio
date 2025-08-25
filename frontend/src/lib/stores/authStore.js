@@ -15,13 +15,37 @@ function createAuthStore() {
     subscribe,
 
     // Inicializar autenticação
-    init() {
+    async init() {
       const isAuth = api.auth.isAuthenticated();
-      update((state) => ({ ...state, isAuthenticated: isAuth }));
+      if (isAuth) {
+        // Recuperar dados do usuário do localStorage se disponível
+        const storedUserData = localStorage.getItem('userData');
+        if (storedUserData) {
+          try {
+            const userData = JSON.parse(storedUserData);
+            update((state) => ({
+              ...state,
+              isAuthenticated: true,
+              user: userData
+            }));
+          } catch (error) {
+            console.error('Error parsing stored user data:', error);
+            update((state) => ({ ...state, isAuthenticated: isAuth }));
+          }
+        } else {
+          update((state) => ({ ...state, isAuthenticated: isAuth }));
+        }
+      } else {
+        update((state) => ({ ...state, isAuthenticated: false, user: null }));
+      }
     },
 
     // Login bem-sucedido
     loginSuccess(userData) {
+      // Salvar dados do usuário no localStorage
+      if (userData) {
+        localStorage.setItem('userData', JSON.stringify(userData));
+      }
       update((state) => ({
         ...state,
         isAuthenticated: true,
@@ -52,6 +76,8 @@ function createAuthStore() {
       } catch (error) {
         console.error('Logout error:', error);
       } finally {
+        // Limpar dados do localStorage
+        localStorage.removeItem('userData');
         set({
           isAuthenticated: false,
           user: null,

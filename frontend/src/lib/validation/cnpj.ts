@@ -120,9 +120,6 @@ export const validateCNPJWithFormat: ValidationRule = (value) => {
 
   // If valid but not formatted, could suggest formatting
   if (!result) {
-    const cnpj = value as string;
-    const cleaned = cleanCNPJ(cnpj);
-
     // If it's valid but not formatted, we'll just return null (valid)
     return null;
   }

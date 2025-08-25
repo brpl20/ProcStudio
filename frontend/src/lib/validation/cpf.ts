@@ -114,9 +114,6 @@ export const validateCPFWithFormat: ValidationRule = (value) => {
 
   // If valid but not formatted, could suggest formatting
   if (!result) {
-    const cpf = value as string;
-    const cleaned = cleanCPF(cpf);
-
     // If it's valid but not formatted, we could return a suggestion
     // But for validation purposes, we'll just return null (valid)
     return null;

@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { authStore } from './lib/stores/authStore.js';
   import { router } from './lib/stores/routerStore.js';
+  import SessionTimeout from './lib/components/SessionTimeout.svelte';
 
   // Pages
   import LandingPage from './lib/pages/LandingPage.svelte';
@@ -69,14 +70,23 @@
     authStore.closeProfileCompletion();
   }
 
-  onMount(() => {
-    authStore.init();
+  onMount(async () => {
+    await authStore.init();
     // Redirecionar usuário autenticado para dashboard se estiver na landing
     if ($authStore.isAuthenticated && $router.currentPath === '/') {
       router.navigate('/dashboard');
     }
+
+    // Listen for browser navigation
+    window.addEventListener('popstate', () => {
+      // Force re-evaluation of the current component
+      router.navigate(window.location.pathname);
+    });
   });
 </script>
+
+<!-- Session Timeout Handler -->
+<SessionTimeout timeoutMinutes={60} warningMinutes={5} />
 
 <!-- Renderização do componente atual -->
 <svelte:component this={currentComponent} />
