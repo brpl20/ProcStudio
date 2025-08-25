@@ -32,12 +32,16 @@ const COMMON_DOMAINS = [
  * Basic email validation
  */
 export const validateEmail: ValidationRule = (value) => {
-  if (!value) return null;
+  if (!value) {
+    return null;
+  }
 
   const email = (value as string).trim().toLowerCase();
 
   // Check if email is provided
-  if (!email) return null;
+  if (!email) {
+    return null;
+  }
 
   // Check basic format
   if (!EMAIL_REGEX.test(email)) {
@@ -67,15 +71,21 @@ export const validateEmail: ValidationRule = (value) => {
  * Strict email validation with additional checks
  */
 export const validateEmailStrict: ValidationRule = (value) => {
-  if (!value) return null;
+  if (!value) {
+    return null;
+  }
 
   const email = (value as string).trim().toLowerCase();
 
   // First run basic validation
   const basicResult = validateEmail(email);
-  if (basicResult) return basicResult;
+  if (basicResult) {
+    return basicResult;
+  }
 
-  if (!email) return null;
+  if (!email) {
+    return null;
+  }
 
   // Use more strict regex
   if (!STRICT_EMAIL_REGEX.test(email)) {
@@ -100,13 +110,19 @@ export const validateEmailRequired: ValidationRule = (value) => {
  * Email validation with domain suggestions
  */
 export const validateEmailWithSuggestions: ValidationRule = (value) => {
-  if (!value) return null;
+  if (!value) {
+    return null;
+  }
 
   const email = (value as string).trim().toLowerCase();
   const basicResult = validateEmail(email);
 
-  if (basicResult) return basicResult;
-  if (!email) return null;
+  if (basicResult) {
+    return basicResult;
+  }
+  if (!email) {
+    return null;
+  }
 
   const domain = email.split('@')[1];
 

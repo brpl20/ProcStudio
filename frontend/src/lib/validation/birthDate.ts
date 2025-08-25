@@ -53,7 +53,9 @@ export const getCapacityFromAge = (
  * Basic birth date validation
  */
 export const validateBirthDate: ValidationRule = (value) => {
-  if (!value) return null;
+  if (!value) {
+    return null;
+  }
 
   const dateStr = value as string;
   const date = new Date(dateStr);
@@ -97,7 +99,9 @@ export const getCapacityFromBirthDate = (
   capacity: 'able' | 'relative' | 'unable';
   message?: string;
 } | null => {
-  if (!birthDate) return null;
+  if (!birthDate) {
+    return null;
+  }
 
   try {
     const age = calculateAge(birthDate);
@@ -112,7 +116,9 @@ export const getCapacityFromBirthDate = (
  */
 export const formatBirthDate = (date: string | Date): string => {
   const d = typeof date === 'string' ? new Date(date) : date;
-  if (isNaN(d.getTime())) return '';
+  if (isNaN(d.getTime())) {
+    return '';
+  }
 
   const day = String(d.getDate()).padStart(2, '0');
   const month = String(d.getMonth() + 1).padStart(2, '0');
@@ -126,7 +132,9 @@ export const formatBirthDate = (date: string | Date): string => {
  */
 export const parseBrazilianDate = (dateStr: string): string => {
   const parts = dateStr.split('/');
-  if (parts.length !== 3) return dateStr;
+  if (parts.length !== 3) {
+    return dateStr;
+  }
 
   const [day, month, year] = parts;
   return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;

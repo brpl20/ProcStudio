@@ -206,44 +206,44 @@
 
   function getStatusBadge(status) {
     switch (status) {
-      case 'completed':
-        return 'badge-success';
-      case 'in_progress':
-        return 'badge-warning';
-      case 'paused':
-        return 'badge-info';
-      case 'archived':
-        return 'badge-neutral';
-      default:
-        return 'badge-ghost';
+    case 'completed':
+      return 'badge-success';
+    case 'in_progress':
+      return 'badge-warning';
+    case 'paused':
+      return 'badge-info';
+    case 'archived':
+      return 'badge-neutral';
+    default:
+      return 'badge-ghost';
     }
   }
 
   function getStatusLabel(status) {
     switch (status) {
-      case 'in_progress':
-        return 'Em Andamento';
-      case 'paused':
-        return 'Pausado';
-      case 'completed':
-        return 'Concluído';
-      case 'archived':
-        return 'Arquivado';
-      default:
-        return status;
+    case 'in_progress':
+      return 'Em Andamento';
+    case 'paused':
+      return 'Pausado';
+    case 'completed':
+      return 'Concluído';
+    case 'archived':
+      return 'Arquivado';
+    default:
+      return status;
     }
   }
 
   function getProcedureLabel(procedure) {
     switch (procedure) {
-      case 'administrative':
-        return 'Administrativo';
-      case 'judicial':
-        return 'Judicial';
-      case 'extrajudicial':
-        return 'Extrajudicial';
-      default:
-        return procedure;
+    case 'administrative':
+      return 'Administrativo';
+    case 'judicial':
+      return 'Judicial';
+    case 'extrajudicial':
+      return 'Extrajudicial';
+    default:
+      return procedure;
     }
   }
 </script>

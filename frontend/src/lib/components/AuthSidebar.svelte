@@ -2,7 +2,11 @@
   import { onMount } from 'svelte';
   import { WebsiteName } from '../config.js';
   import { authStore } from '../stores/authStore.js';
-  import { userProfileStore, currentUserProfile, type UserProfile } from '../stores/userProfileStore.ts';
+  import {
+    userProfileStore,
+    currentUserProfile,
+    type UserProfile
+  } from '../stores/userProfileStore.ts';
   import { router } from '../stores/routerStore.js';
   import Icon from '../icons.svelte';
 
@@ -19,20 +23,22 @@
   $: userRole = getUserRole(userProfile, currentUser);
 
   function getUserDisplayName(profile: any, user: any, loading: boolean): string {
-    if (loading) return '';
-    
+    if (loading) {
+      return '';
+    }
+
     if (profile?.attributes) {
       const firstName = profile.attributes.name || '';
       const lastName = profile.attributes.last_name || '';
       return `${firstName} ${lastName}`.trim() || 'Nome não definido';
     }
-    
+
     if (user?.data) {
       const firstName = user.data.name || '';
       const lastName = user.data.last_name || '';
       return `${firstName} ${lastName}`.trim() || user.data.email || 'Usuário';
     }
-    
+
     return 'Usuário';
   }
 

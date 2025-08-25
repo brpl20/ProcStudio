@@ -1,0 +1,353 @@
+{
+  "info": {
+    "name": "Draft System API",
+    "description": "API endpoints for the Draft Management System - Auto-save and recovery functionality",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "your_jwt_token_here",
+      "type": "string"
+    },
+    {
+      "key": "draft_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Draft Operations",
+      "item": [
+        {
+          "name": "Save Draft",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"draftable_type\": \"ProfileCustomer\",\n  \"draftable_id\": \"123\",\n  \"form_type\": \"profile_form\",\n  \"data\": {\n    \"name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"cpf\": \"123.456.789-00\",\n    \"rg\": \"12.345.678-9\",\n    \"gender\": \"male\",\n    \"civil_status\": \"single\",\n    \"profession\": \"Software Developer\",\n    \"addresses_attributes\": {\n      \"0\": {\n        \"street\": \"Main Street\",\n        \"number\": \"123\",\n        \"neighborhood\": \"Downtown\",\n        \"city\": \"São Paulo\",\n        \"state\": \"SP\",\n        \"zip_code\": \"01234-567\"\n      }\n    },\n    \"phones_attributes\": {\n      \"0\": {\n        \"phone_number\": \"+55 11 98765-4321\"\n      }\n    },\n    \"emails_attributes\": {\n      \"0\": {\n        \"email\": \"john.doe@example.com\"\n      }\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/drafts/save",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "drafts", "save"]
+            },
+            "description": "Save or update a draft for a form. If a draft already exists for the same draftable, form_type, and team, it will be updated."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/drafts/save",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "drafts", "save"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"draft\": {\n    \"id\": 45,\n    \"draftable_type\": \"ProfileCustomer\",\n    \"draftable_id\": 123,\n    \"form_type\": \"profile_form\",\n    \"data\": {...},\n    \"status\": \"draft\",\n    \"expires_at\": \"2024-09-23T10:30:00Z\",\n    \"created_at\": \"2024-08-24T10:30:00Z\",\n    \"updated_at\": \"2024-08-24T10:30:00Z\"\n  },\n  \"message\": \"Draft saved successfully\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Draft",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/drafts/show?draftable_type=ProfileCustomer&draftable_id=123&form_type=profile_form",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "drafts", "show"],
+              "query": [
+                {
+                  "key": "draftable_type",
+                  "value": "ProfileCustomer",
+                  "description": "Type of the model (e.g., ProfileCustomer, Work, Job)"
+                },
+                {
+                  "key": "draftable_id",
+                  "value": "123",
+                  "description": "ID of the record"
+                },
+                {
+                  "key": "form_type",
+                  "value": "profile_form",
+                  "description": "Type of form (e.g., profile_form, quick_edit, documents_form)"
+                }
+              ]
+            },
+            "description": "Retrieve a specific draft for a form"
+          },
+          "response": [
+            {
+              "name": "Draft Found",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/drafts/show?draftable_type=ProfileCustomer&draftable_id=123&form_type=profile_form",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "drafts", "show"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"draft\": {\n    \"id\": 45,\n    \"draftable_type\": \"ProfileCustomer\",\n    \"draftable_id\": 123,\n    \"form_type\": \"profile_form\",\n    \"data\": {\n      \"name\": \"John\",\n      \"email\": \"john@example.com\"\n    },\n    \"status\": \"draft\",\n    \"expires_at\": \"2024-09-23T10:30:00Z\",\n    \"created_at\": \"2024-08-24T10:30:00Z\",\n    \"updated_at\": \"2024-08-24T10:30:00Z\"\n  }\n}"
+            },
+            {
+              "name": "Draft Not Found",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/drafts/show?draftable_type=ProfileCustomer&draftable_id=999&form_type=profile_form",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "drafts", "show"]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"error\": \"Draft not found\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "List All User Drafts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/drafts",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "drafts"]
+            },
+            "description": "Get all active drafts for the current user or customer"
+          },
+          "response": [
+            {
+              "name": "List of Drafts",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/drafts",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "drafts"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"drafts\": [\n    {\n      \"id\": 45,\n      \"draftable_type\": \"ProfileCustomer\",\n      \"draftable_id\": 123,\n      \"form_type\": \"profile_form\",\n      \"data\": {...},\n      \"status\": \"draft\",\n      \"expires_at\": \"2024-09-23T10:30:00Z\",\n      \"created_at\": \"2024-08-24T10:30:00Z\",\n      \"updated_at\": \"2024-08-24T10:30:00Z\"\n    },\n    {\n      \"id\": 46,\n      \"draftable_type\": \"Work\",\n      \"draftable_id\": 456,\n      \"form_type\": \"work_form\",\n      \"data\": {...},\n      \"status\": \"draft\",\n      \"expires_at\": \"2024-09-23T11:00:00Z\",\n      \"created_at\": \"2024-08-24T11:00:00Z\",\n      \"updated_at\": \"2024-08-24T11:00:00Z\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Recover Draft",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/drafts/{{draft_id}}/recover",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "drafts", "{{draft_id}}", "recover"]
+            },
+            "description": "Mark a draft as recovered (user has loaded and is using the draft data)"
+          },
+          "response": [
+            {
+              "name": "Draft Recovered",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/drafts/45/recover",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "drafts", "45", "recover"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"draft\": {\n    \"id\": 45,\n    \"draftable_type\": \"ProfileCustomer\",\n    \"draftable_id\": 123,\n    \"form_type\": \"profile_form\",\n    \"data\": {...},\n    \"status\": \"recovered\",\n    \"expires_at\": \"2024-09-23T10:30:00Z\",\n    \"created_at\": \"2024-08-24T10:30:00Z\",\n    \"updated_at\": \"2024-08-24T10:35:00Z\"\n  },\n  \"message\": \"Draft recovered successfully\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Draft",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/drafts/{{draft_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "drafts", "{{draft_id}}"]
+            },
+            "description": "Permanently delete a draft"
+          },
+          "response": [
+            {
+              "name": "Draft Deleted",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/drafts/45",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "drafts", "45"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"message\": \"Draft deleted successfully\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Profile Customer with Draft Support",
+      "item": [
+        {
+          "name": "Get Profile with Draft",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/customer/profile_customers/123?with_draft=true&form_type=profile_form",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "customer", "profile_customers", "123"],
+              "query": [
+                {
+                  "key": "with_draft",
+                  "value": "true",
+                  "description": "Include draft data if available"
+                },
+                {
+                  "key": "form_type",
+                  "value": "profile_form",
+                  "description": "Type of draft to retrieve"
+                }
+              ]
+            },
+            "description": "Get profile customer data with any associated draft"
+          },
+          "response": [
+            {
+              "name": "Profile with Draft",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/customer/profile_customers/123?with_draft=true&form_type=profile_form",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "customer", "profile_customers", "123"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"data\": {\n    \"id\": \"123\",\n    \"type\": \"profile_customer\",\n    \"attributes\": {\n      \"name\": \"John\",\n      \"email\": \"john@example.com\"\n    }\n  },\n  \"draft\": {\n    \"id\": 45,\n    \"data\": {\n      \"name\": \"John Updated\",\n      \"email\": \"john.updated@example.com\"\n    },\n    \"expires_at\": \"2024-09-23T10:30:00Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Save Profile as Draft",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"save_as_draft\": \"true\",\n  \"form_type\": \"profile_form\",\n  \"profile_customer\": {\n    \"name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"cpf\": \"123.456.789-00\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/customer/profile_customers/123",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "customer", "profile_customers", "123"]
+            },
+            "description": "Save profile customer data as draft without updating the actual record"
+          },
+          "response": [
+            {
+              "name": "Saved as Draft",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/customer/profile_customers/123",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "customer", "profile_customers", "123"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"message\": \"Draft saved successfully\",\n  \"draft_id\": 45\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Example: Work Form Draft",
+      "item": [
+        {
+          "name": "Save Work Draft",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"draftable_type\": \"Work\",\n  \"draftable_id\": \"456\",\n  \"form_type\": \"work_form\",\n  \"data\": {\n    \"title\": \"Legal Consultation\",\n    \"description\": \"Corporate law advisory services\",\n    \"status\": \"in_progress\",\n    \"priority\": \"high\",\n    \"due_date\": \"2024-09-30\",\n    \"assigned_to\": \"45\",\n    \"tasks_attributes\": {\n      \"0\": {\n        \"name\": \"Review contracts\",\n        \"completed\": false\n      },\n      \"1\": {\n        \"name\": \"Prepare report\",\n        \"completed\": false\n      }\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/drafts/save",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "drafts", "save"]
+            },
+            "description": "Example of saving a draft for a Work form"
+          }
+        }
+      ]
+    }
+  ]
+}
