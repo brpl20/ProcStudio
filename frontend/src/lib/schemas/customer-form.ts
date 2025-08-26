@@ -21,13 +21,14 @@ export interface AddressFormData {
   street: string;
   city: string;
   number: string;
+  complement?: string;
   neighborhood: string;
   state: string;
 }
 
 // Phone form structure
 export interface PhoneFormData {
-  phone_number: string;
+  number: string;
 }
 
 // Email form structure
@@ -38,6 +39,7 @@ export interface EmailFormData {
 // Bank account form structure
 export interface BankAccountFormData {
   bank_name: string;
+  bank_number?: string;
   type_account: 'Corrente' | 'Poupança';
   agency: string;
   account: string;
@@ -119,13 +121,17 @@ export const createDefaultCustomerFormData = (): CustomerFormData => ({
       street: '',
       city: '',
       number: '',
+      complement: '',
       neighborhood: '',
       state: ''
     }
   ],
   phones_attributes: [
     {
-      phone_number: ''
+      number: ''
+    },
+    {
+      number: ''
     }
   ],
   emails_attributes: [
@@ -176,13 +182,17 @@ export const createDefaultGuardianFormData = (): CustomerFormData => ({
       street: '',
       city: '',
       number: '',
+      complement: '',
       neighborhood: '',
       state: ''
     }
   ],
   phones_attributes: [
     {
-      phone_number: ''
+      number: ''
+    },
+    {
+      number: ''
     }
   ],
   emails_attributes: [
