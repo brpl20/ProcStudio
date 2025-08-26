@@ -29,10 +29,10 @@
 #
 FactoryBot.define do
   factory :law_area do
-    name { 'MyString' }
-    code { 'MyString' }
-    description { 'MyText' }
-    active { false }
+    sequence(:name) { |n| "Law Area #{n}" }
+    sequence(:code) { |n| "LAW#{n}" }
+    description { Faker::Lorem.paragraph }
+    active { true }
     sort_order { 1 }
     parent_area { nil }
     created_by_team { nil }

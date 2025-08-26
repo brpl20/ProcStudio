@@ -47,7 +47,8 @@
 FactoryBot.define do
   factory :work do
     procedure { 'administrative' }
-    subject { 'criminal' }
+    team
+    law_area
     number { 1 }
     folder { Faker::Lorem.word }
     initial_atendee { 6 }
@@ -58,5 +59,6 @@ FactoryBot.define do
     partner_lawyer { 3 }
     intern { 4 }
     bachelor { 5 }
+    status { 'in_progress' }
   end
 end
