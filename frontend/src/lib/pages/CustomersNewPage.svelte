@@ -6,10 +6,14 @@
   import api from '../api/index';
 
   async function handleSubmit(event: CustomEvent<any>) {
+    console.log('CustomersNewPage handleSubmit called with:', event.detail);
+
+    const submitData = event.detail.data;
+
     // Check if we're creating a person with a representative/assistant
-    if (event.detail.represented && event.detail.representor) {
+    if (submitData.represented && submitData.representor) {
       // This is a two-person creation with relationship
-      const { represented, representor, relationship_type } = event.detail;
+      const { represented, representor, relationship_type } = submitData;
 
       try {
         // Step 1: Create the represented person (unable or relatively incapable)
@@ -55,11 +59,15 @@
       }
     } else {
       // Single person creation (normal flow)
-      const profileCustomerData = event.detail.profile_customer;
+      const profileCustomerData = submitData.profile_customer;
+      console.log('Creating single customer with data:', profileCustomerData);
       const createdCustomer = await customerStore.addProfileCustomer(profileCustomerData);
       if (createdCustomer) {
+        console.log('Customer created successfully:', createdCustomer);
         // Navigate back to customers list on success
         router.navigate('/customers');
+      } else {
+        console.log('Customer creation failed');
       }
     }
   }

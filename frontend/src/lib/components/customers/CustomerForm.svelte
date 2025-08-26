@@ -11,7 +11,7 @@
     getCapacityFromBirthDate,
     validationRules
   } from '../../validation';
-  
+
   // Import new modular utilities
   import { BRAZILIAN_STATES } from '../../constants/brazilian-states';
   import type { BrazilianState } from '../../constants/brazilian-states';
@@ -33,7 +33,7 @@
     isFormDirty,
     cloneFormData
   } from '../../utils/form-helpers';
-  
+
   // Import our new component
   import CustomerPersonalInfoStep from './CustomerPersonalInfoStep.svelte';
 
@@ -50,9 +50,9 @@
 
   // Initialize form data using our new schemas
   let formData: CustomerFormData = createDefaultCustomerFormData();
-  let guardianFormData: CustomerFormData = createDefaultGuardianFormData();
-  let formState: CustomerFormState = createDefaultFormState();
-  
+  const guardianFormData: CustomerFormData = createDefaultGuardianFormData();
+  const formState: CustomerFormState = createDefaultFormState();
+
   // Track initial form data for dirty state
   let initialFormData: CustomerFormData;
 
@@ -63,7 +63,6 @@
     showGuardianForm,
     useSameAddress,
     useSameBankAccount,
-    uploadedFiles,
     formIsDirty
   } = formState);
 
@@ -106,18 +105,18 @@
   });
 
   // Reactive declarations for performance optimization
-  
+
   // Age validation for guardian using our utility
   $: guardianAgeValidation = formData.birth && guardianFormData.birth
     ? validateGuardianAge(guardianFormData.birth, formData.birth)
     : { isValid: true, message: '' };
-  
+
   // Update form dirty state using our utility
   $: formState.formIsDirty = isFormDirty(formData, initialFormData);
   $: if (formState.formIsDirty) {
     saveFormDraft(formData);
   }
-  
+
   $: guardianLabel = getGuardianLabel(formData.capacity);
 
   // Clear email when capacity changes to unable
@@ -137,16 +136,14 @@
   }
 
   // Handle CPF formatting
-  function handleCPFInput(event: Event) {
-    const input = event.target as HTMLInputElement;
-    formData.cpf = formatCPF(input.value);
+  function handleCPFInput(event: CustomEvent) {
+    formData.cpf = event.detail.value;
     validateField('cpf', formData.cpf);
   }
 
   // Handle birth date change and update capacity
-  function handleBirthDateChange(event: Event) {
-    const input = event.target as HTMLInputElement;
-    formData.birth = input.value;
+  function handleBirthDateChange(event: CustomEvent) {
+    formData.birth = event.detail.value;
     validateField('birth', formData.birth);
   }
 
@@ -253,6 +250,7 @@
 
   // Function to validate the entire form at once
   function validateForm(): boolean {
+    console.log('validateForm called with formData:', formData);
     let isValid = true;
 
     // Validate all required fields
@@ -273,6 +271,9 @@
 
       // Run the validation
       const error = validator.validate(valueToValidate);
+      if (error) {
+        console.log(`Validation error for field ${field}:`, error, 'value:', valueToValidate);
+      }
       errors[field] = error;
 
       // Mark fields as touched during form submission
@@ -349,27 +350,14 @@
     return isValid;
   }
 
-  // Handle file upload
-  function handleFileUpload(event: Event) {
-    const target = event.target as HTMLInputElement;
-    if (target.files) {
-      uploadedFiles = [...uploadedFiles, ...Array.from(target.files)];
-    }
-  }
-  
-  function removeFile(index: number) {
-    uploadedFiles = uploadedFiles.filter((_, i) => i !== index);
-  }
-  
   // Navigate to step
   function goToStep(step: number) {
     if (step >= 1 && step <= totalSteps) {
       // Validate current step before moving
       if (step > currentStep) {
-        if (currentStep === 1) {
-          // No validation needed for file uploads
+        if (currentStep === 1 && validateForm()) {
           currentStep = step;
-        } else if (currentStep === 2 && validateForm()) {
+        } else if (currentStep === 2 && validateGuardianForm()) {
           currentStep = step;
         }
       } else {
@@ -378,53 +366,62 @@
       }
     }
   }
-  
+
   // Handle form submission
   function handleSubmit() {
-    // Step 1: File uploads - just move to next step
-    if (currentStep === 1) {
-      currentStep = 2;
-      return;
-    }
-    
-    // Step 2: Client data
-    if (currentStep === 2 && showGuardianForm) {
+    console.log('handleSubmit called - currentStep:', currentStep, 'showGuardianForm:', showGuardianForm);
+
+    // Step 1: Client data
+    if (currentStep === 1 && showGuardianForm) {
+      console.log('Step 1 with guardian - validating customer form');
       // Mark all fields as touched
       Object.keys(formData).forEach((key) => (touched[key] = true));
 
-      if (!validateForm()) {
+      const isValid = validateForm();
+      console.log('Form validation result:', isValid);
+      if (!isValid) {
+        console.log('Form validation failed, errors:', errors);
         return;
       }
 
-      currentStep = 3;
+      console.log('Moving to step 2 (guardian form)');
+      currentStep = 2;
       return;
     }
 
-    // Step 3: Guardian form validation
-    if (currentStep === 3 && showGuardianForm) {
+    // Step 2: Guardian form validation
+    if (currentStep === 2 && showGuardianForm) {
+      console.log('Step 2 - validating guardian form');
       // Check age validation
       if (!guardianAgeValidation.isValid) {
+        console.log('Guardian age validation failed:', guardianAgeValidation.message);
         // Show error message
         alert(guardianAgeValidation.message);
         return;
       }
-      if (!validateGuardianForm()) {
+      const guardianValid = validateGuardianForm();
+      console.log('Guardian form validation result:', guardianValid);
+      if (!guardianValid) {
+        console.log('Guardian form validation failed, errors:', guardianErrors);
         return;
       }
     }
 
     // Final submission
+    console.log('Final submission - validating all fields');
     // Mark all fields as touched
     Object.keys(formData).forEach((key) => (touched[key] = true));
 
-    if (!validateForm()) {
+    const finalValid = validateForm();
+    console.log('Final validation result:', finalValid, 'errors:', errors);
+    if (!finalValid) {
       return;
     }
 
     // Generate passwords
     const customerPassword = generateStrongPassword();
     const guardianPassword = showGuardianForm ? generateStrongPassword() : '';
-    
+
     // Prepare data for submission
     let submitData;
 
@@ -490,8 +487,9 @@
     // Clear form draft on successful submission
     clearFormDraft();
 
-    // Include uploaded files in submission
-    dispatch('submit', { data: submitData, files: uploadedFiles });
+    console.log('Dispatching submit event with data:', submitData);
+    dispatch('submit', { data: submitData });
+    console.log('Submit event dispatched successfully');
   }
 
   // Handle previous step
@@ -500,7 +498,7 @@
       currentStep--;
     }
   }
-  
+
   // Handle person form field events
   function handlePersonFieldBlur(event: CustomEvent, isGuardian: boolean = false) {
     const { field, value } = event.detail;
@@ -511,7 +509,7 @@
       handleBlur(field, value);
     }
   }
-  
+
   function handlePersonCPFInput(event: CustomEvent, isGuardian: boolean = false) {
     if (isGuardian) {
       guardianFormData.cpf = formatCPF(guardianFormData.cpf);
@@ -519,7 +517,7 @@
       handleCPFInput(event.detail);
     }
   }
-  
+
   function validateGuardianField(field: string, value: any) {
     // Implement validation for guardian fields
     const validator = validationRules[field];
@@ -1114,6 +1112,7 @@
           disabled={isLoading || (showGuardianForm && currentStep === 1 && !formData.name)}
           aria-busy={isLoading ? 'true' : 'false'}
           data-testid="customer-submit-button"
+          on:click={() => console.log('Submit button clicked!')}
         >
           {#if isLoading}
             <span class="loading loading-spinner"></span>

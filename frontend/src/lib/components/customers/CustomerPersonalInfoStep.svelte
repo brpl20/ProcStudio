@@ -10,7 +10,7 @@
     validateBirthDateRequired,
     getCapacityFromBirthDate
   } from '../../validation';
-  
+
   import { BRAZILIAN_STATES } from '../../constants/brazilian-states';
   import type { BrazilianState } from '../../constants/brazilian-states';
   import type { CustomerFormData } from '../../schemas/customer-form';
@@ -51,13 +51,13 @@
   function handleCPFInput(event: Event) {
     const input = event.target as HTMLInputElement;
     formData.cpf = formatCPF(input.value);
-    dispatch('cpfInput', event);
+    dispatch('cpfInput', { value: formData.cpf });
   }
 
   function handleBirthDateChange(event: Event) {
     const input = event.target as HTMLInputElement;
     formData.birth = input.value;
-    dispatch('birthDateChange', event);
+    dispatch('birthDateChange', { value: formData.birth });
   }
 </script>
 

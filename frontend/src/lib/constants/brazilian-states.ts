@@ -1,6 +1,6 @@
 /**
  * Brazilian States Constants
- * 
+ *
  * This file contains the list of Brazilian states used throughout the application.
  * Extracted from CustomerForm.svelte for better maintainability and reusability.
  */
@@ -49,7 +49,7 @@ export const BRAZILIAN_STATES: BrazilianState[] = [
  * @returns The state object or undefined if not found
  */
 export function getStateByAbbreviation(abbreviation: string): BrazilianState | undefined {
-  return BRAZILIAN_STATES.find(state => state.value === abbreviation);
+  return BRAZILIAN_STATES.find((state) => state.value === abbreviation);
 }
 
 /**
@@ -58,7 +58,7 @@ export function getStateByAbbreviation(abbreviation: string): BrazilianState | u
  * @returns The state object or undefined if not found
  */
 export function getStateByName(name: string): BrazilianState | undefined {
-  return BRAZILIAN_STATES.find(state => state.label.toLowerCase() === name.toLowerCase());
+  return BRAZILIAN_STATES.find((state) => state.label.toLowerCase() === name.toLowerCase());
 }
 
 /**
@@ -66,7 +66,7 @@ export function getStateByName(name: string): BrazilianState | undefined {
  * @returns Array of state abbreviations
  */
 export function getStateAbbreviations(): string[] {
-  return BRAZILIAN_STATES.map(state => state.value);
+  return BRAZILIAN_STATES.map((state) => state.value);
 }
 
 /**
@@ -74,5 +74,5 @@ export function getStateAbbreviations(): string[] {
  * @returns Array of state names
  */
 export function getStateNames(): string[] {
-  return BRAZILIAN_STATES.map(state => state.label);
+  return BRAZILIAN_STATES.map((state) => state.label);
 }

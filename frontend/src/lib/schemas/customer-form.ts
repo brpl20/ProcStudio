@@ -1,15 +1,15 @@
 /**
  * Customer Form Data Schemas
- * 
+ *
  * This file contains form data structures and default values for customer forms.
  * Uses existing customer types for consistency with the API.
  */
 
-import type { 
-  CustomerType, 
-  Gender, 
-  Nationality, 
-  CivilStatus, 
+import type {
+  CustomerType,
+  Gender,
+  Nationality,
+  CivilStatus,
   Capacity,
   CustomerStatus
 } from '../api/types/customer.types';
@@ -85,7 +85,6 @@ export interface CustomerFormState {
   showGuardianForm: boolean;
   useSameAddress: boolean;
   useSameBankAccount: boolean;
-  uploadedFiles: File[];
   formIsDirty: boolean;
 }
 
@@ -210,7 +209,6 @@ export const createDefaultFormState = (): CustomerFormState => ({
   showGuardianForm: false,
   useSameAddress: false,
   useSameBankAccount: false,
-  uploadedFiles: [],
   formIsDirty: false
 });
 

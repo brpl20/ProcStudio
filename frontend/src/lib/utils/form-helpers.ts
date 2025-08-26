@@ -1,6 +1,6 @@
 /**
  * Form Helper Utilities
- * 
+ *
  * This file contains utility functions for form operations,
  * extracted from CustomerForm.svelte for better reusability.
  */
@@ -18,21 +18,21 @@ export function generateStrongPassword(length: number = 12): string {
   const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   const numbers = '0123456789';
   const symbols = '!@#$%^&*()_+-=[]{}|;:,.<>?';
-  
+
   const allChars = lowercase + uppercase + numbers + symbols;
   let password = '';
-  
+
   // Ensure at least one character from each category
   password += lowercase[Math.floor(Math.random() * lowercase.length)];
   password += uppercase[Math.floor(Math.random() * uppercase.length)];
   password += numbers[Math.floor(Math.random() * numbers.length)];
   password += symbols[Math.floor(Math.random() * symbols.length)];
-  
+
   // Fill the rest randomly
   for (let i = 4; i < length; i++) {
     password += allChars[Math.floor(Math.random() * allChars.length)];
   }
-  
+
   // Shuffle the password
   return password.split('').sort(() => Math.random() - 0.5).join('');
 }
@@ -43,11 +43,13 @@ export function generateStrongPassword(length: number = 12): string {
  * @param excludePasswords - Whether to exclude passwords for security (default: true)
  */
 export function saveFormDraft(formData: CustomerFormData, excludePasswords: boolean = true): void {
-  if (typeof localStorage === 'undefined') return;
-  
+  if (typeof localStorage === 'undefined') {
+    return;
+  }
+
   try {
     const draftData = { ...formData };
-    
+
     if (excludePasswords) {
       draftData.customer_attributes = {
         ...draftData.customer_attributes,
@@ -55,7 +57,7 @@ export function saveFormDraft(formData: CustomerFormData, excludePasswords: bool
         password_confirmation: ''
       };
     }
-    
+
     localStorage.setItem(FORM_STORAGE_KEY, JSON.stringify(draftData));
   } catch (error) {
     console.warn('Failed to save form draft:', error);
@@ -67,8 +69,10 @@ export function saveFormDraft(formData: CustomerFormData, excludePasswords: bool
  * @returns Saved form data or null if not found
  */
 export function loadFormDraft(): Partial<CustomerFormData> | null {
-  if (typeof localStorage === 'undefined') return null;
-  
+  if (typeof localStorage === 'undefined') {
+    return null;
+  }
+
   try {
     const savedData = localStorage.getItem(FORM_STORAGE_KEY);
     if (savedData) {
@@ -77,7 +81,7 @@ export function loadFormDraft(): Partial<CustomerFormData> | null {
   } catch (error) {
     console.warn('Failed to load form draft:', error);
   }
-  
+
   return null;
 }
 
@@ -85,8 +89,10 @@ export function loadFormDraft(): Partial<CustomerFormData> | null {
  * Clear saved form data from localStorage
  */
 export function clearFormDraft(): void {
-  if (typeof localStorage === 'undefined') return;
-  
+  if (typeof localStorage === 'undefined') {
+    return;
+  }
+
   try {
     localStorage.removeItem(FORM_STORAGE_KEY);
   } catch (error) {
@@ -143,10 +149,10 @@ export function validateGuardianAge(guardianBirth: string, representedBirth: str
 
   const guardianDate = new Date(guardianBirth);
   const representedDate = new Date(representedBirth);
-  
+
   const guardianAge = new Date().getFullYear() - guardianDate.getFullYear();
   const representedAge = new Date().getFullYear() - representedDate.getFullYear();
-  
+
   // Guardian must be at least 18 years old and older than represented person
   if (guardianAge < 18) {
     return {
@@ -154,14 +160,14 @@ export function validateGuardianAge(guardianBirth: string, representedBirth: str
       message: 'O responsável deve ter pelo menos 18 anos'
     };
   }
-  
+
   if (guardianAge <= representedAge) {
     return {
       isValid: false,
       message: 'O responsável deve ser mais velho que a pessoa representada'
     };
   }
-  
+
   return { isValid: true, message: '' };
 }
 

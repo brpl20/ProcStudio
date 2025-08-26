@@ -50,9 +50,9 @@
       '/customers',
       '/documents'
     ];
-    
-    const isProtected = protectedPaths.some(p => path.startsWith(p));
-    
+
+    const isProtected = protectedPaths.some((p) => path.startsWith(p));
+
     if (!isAuth && isProtected) {
       router.navigate('/login');
       return LoginPage;

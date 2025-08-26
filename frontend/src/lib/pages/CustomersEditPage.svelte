@@ -6,10 +6,10 @@
   import { onMount } from 'svelte';
 
   export let id: string;
-  
+
   let customer: any = null;
   let isLoading = true;
-  
+
   onMount(async () => {
     // Load the customer data
     const customerId = parseInt(id);
@@ -17,11 +17,11 @@
       const success = await customerStore.loadCustomer(customerId);
       if (success) {
         // Get the customer from the store
-        const unsubscribe = customerStore.subscribe(state => {
+        const unsubscribe = customerStore.subscribe((state) => {
           customer = state.currentCustomer;
           isLoading = false;
         });
-        
+
         return () => unsubscribe();
       } else {
         // Customer not found, redirect to list

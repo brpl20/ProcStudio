@@ -10,9 +10,9 @@
   export let onClose: () => void = () => {};
 
   // Check if critical fields are missing (indicating API failure or incomplete data)
-  const hasCriticalMissingFields = 
-    missingFields.includes('name') || 
-    missingFields.includes('last_name') || 
+  const hasCriticalMissingFields =
+    missingFields.includes('name') ||
+    missingFields.includes('last_name') ||
     missingFields.includes('role') ||
     missingFields.includes('address');
 
@@ -147,16 +147,16 @@
   async function handleSubmit() {
     // Validate required fields
     const requiredFieldErrors: string[] = [];
-    
+
     missingFields.forEach((field) => {
       if (field === 'address') {
-        if (!formData.address.street || !formData.address.number || 
-            !formData.address.city || !formData.address.state || 
+        if (!formData.address.street || !formData.address.number ||
+            !formData.address.city || !formData.address.state ||
             !formData.address.zip_code) {
           requiredFieldErrors.push('endereço');
         }
-      } else if (!formData[field as keyof typeof formData] || 
-                 (typeof formData[field as keyof typeof formData] === 'string' && 
+      } else if (!formData[field as keyof typeof formData] ||
+                 (typeof formData[field as keyof typeof formData] === 'string' &&
                   formData[field as keyof typeof formData].trim() === '')) {
         requiredFieldErrors.push(field);
       }
@@ -204,7 +204,7 @@
     try {
       // Prepare data with nested attributes for address
       const dataToSend: any = {};
-      
+
       // Add basic fields including OAB
       Object.keys(formData).forEach((key) => {
         if (key !== 'address') {
