@@ -1,5 +1,40 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: user_profiles
+#
+#  id           :bigint           not null, primary key
+#  birth        :date
+#  civil_status :string
+#  cpf          :string
+#  deleted_at   :datetime
+#  gender       :string
+#  last_name    :string
+#  mother_name  :string
+#  name         :string
+#  nationality  :string
+#  oab          :string
+#  origin       :string
+#  rg           :string
+#  role         :string
+#  status       :string
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  office_id    :bigint
+#  user_id      :bigint           not null
+#
+# Indexes
+#
+#  index_user_profiles_on_deleted_at  (deleted_at)
+#  index_user_profiles_on_office_id   (office_id)
+#  index_user_profiles_on_user_id     (user_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (office_id => offices.id)
+#  fk_rails_...  (user_id => users.id)
+#
 FactoryBot.define do
   factory :user_profile do
     user

@@ -1,0 +1,50 @@
+# Application configuration example
+# Copy this file to application.yml and update with your settings
+# This file is used by the figaro gem for environment variables
+
+# Database
+DB_USERNAME: postgres
+DB_PASSWORD: password
+DB_HOST: localhost
+DB_PORT: 5432
+
+# Redis (for cache and background jobs)
+REDIS_URL: redis://localhost:6379/0
+
+# Mail configuration
+SMTP_HOST: smtp.gmail.com
+SMTP_PORT: 587
+SMTP_USERNAME: your-email@gmail.com
+SMTP_PASSWORD: your-app-password
+
+# API da OAB
+LEGAL_DATA_API_KEY: your-legal-data-api-key
+LEGAL_DATA_ENDPOINT: https://api.example.com
+
+# AWS S3 Configuration
+AWS_ACCESS_KEY_ID: your-aws-access-key
+AWS_SECRET_ACCESS_KEY: your-aws-secret-key
+AWS_BUCKET_MAIN: your-s3-bucket-name
+AWS_DEFAULT_REGION: us-east-1
+
+# GitHub Token (for integrations)
+GITHUB_TOKEN: your-github-token
+
+# AI APIs
+ANTHROPIC_API_KEY: your-anthropic-key
+OPENAI_API_KEY: your-openai-key
+GEMINI_API_KEY: your-gemini-key
+OPENROUTER_API_KEY: your-openrouter-key
+DEEPSEEK_API_KEY: your-deepseek-key
+MISTRAL_API_KEY: your-mistral-key
+
+# JWT Secret (generate with: rails secret)
+JWT_SECRET: your-jwt-secret-key
+
+# Rails
+RAILS_ENV: development
+RAILS_MAX_THREADS: 5
+
+# ZapSign Integration
+ZAPSIGN_API_TOKEN: your-zapsign-token
+ZAPSIGN_WEBHOOK_SECRET: your-zapsign-webhook-secret

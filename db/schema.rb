@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
@@ -12,752 +10,752 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 20_250_826_003_002) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_26_003002) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension 'pg_catalog.plpgsql'
+  enable_extension "pg_catalog.plpgsql"
 
-  create_table 'active_storage_attachments', force: :cascade do |t|
-    t.string 'name', null: false
-    t.string 'record_type', null: false
-    t.bigint 'record_id', null: false
-    t.bigint 'blob_id', null: false
-    t.datetime 'created_at', null: false
-    t.index ['blob_id'], name: 'index_active_storage_attachments_on_blob_id'
-    t.index ['record_type', 'record_id', 'name', 'blob_id'], name: 'index_active_storage_attachments_uniqueness', unique: true
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
   end
 
-  create_table 'active_storage_blobs', force: :cascade do |t|
-    t.string 'key', null: false
-    t.string 'filename', null: false
-    t.string 'content_type'
-    t.text 'metadata'
-    t.string 'service_name', null: false
-    t.bigint 'byte_size', null: false
-    t.string 'checksum'
-    t.datetime 'created_at', null: false
-    t.index ['key'], name: 'index_active_storage_blobs_on_key', unique: true
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
 
-  create_table 'active_storage_variant_records', force: :cascade do |t|
-    t.bigint 'blob_id', null: false
-    t.string 'variation_digest', null: false
-    t.index ['blob_id', 'variation_digest'], name: 'index_active_storage_variant_records_uniqueness', unique: true
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table 'addresses', force: :cascade do |t|
-    t.string 'description'
-    t.string 'zip_code'
-    t.string 'street'
-    t.integer 'number'
-    t.string 'neighborhood'
-    t.string 'city'
-    t.string 'state'
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
+  create_table "addresses", force: :cascade do |t|
+    t.string "description"
+    t.string "zip_code"
+    t.string "street"
+    t.integer "number"
+    t.string "neighborhood"
+    t.string "city"
+    t.string "state"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
-  create_table 'bank_accounts', force: :cascade do |t|
-    t.string 'bank_name'
-    t.string 'type_account'
-    t.string 'agency'
-    t.string 'account'
-    t.string 'operation'
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.string 'pix'
+  create_table "bank_accounts", force: :cascade do |t|
+    t.string "bank_name"
+    t.string "type_account"
+    t.string "agency"
+    t.string "account"
+    t.string "operation"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "pix"
   end
 
-  create_table 'compliance_notifications', force: :cascade do |t|
-    t.string 'notification_type', null: false
-    t.string 'title', null: false
-    t.text 'description', null: false
-    t.string 'status', default: 'pending', null: false
-    t.string 'resource_type'
-    t.bigint 'resource_id'
-    t.json 'metadata'
-    t.datetime 'resolved_at'
-    t.datetime 'ignored_at'
-    t.bigint 'user_id'
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.bigint 'team_id', null: false
-    t.index ['notification_type'], name: 'index_compliance_notifications_on_notification_type'
-    t.index ['resource_type', 'resource_id'], name: 'idx_on_resource_type_resource_id_a14cb9f6d9'
-    t.index ['status'], name: 'index_compliance_notifications_on_status'
-    t.index ['team_id'], name: 'index_compliance_notifications_on_team_id'
-    t.index ['user_id'], name: 'index_compliance_notifications_on_user_id'
+  create_table "compliance_notifications", force: :cascade do |t|
+    t.string "notification_type", null: false
+    t.string "title", null: false
+    t.text "description", null: false
+    t.string "status", default: "pending", null: false
+    t.string "resource_type"
+    t.bigint "resource_id"
+    t.json "metadata"
+    t.datetime "resolved_at"
+    t.datetime "ignored_at"
+    t.bigint "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "team_id", null: false
+    t.index ["notification_type"], name: "index_compliance_notifications_on_notification_type"
+    t.index ["resource_type", "resource_id"], name: "idx_on_resource_type_resource_id_a14cb9f6d9"
+    t.index ["status"], name: "index_compliance_notifications_on_status"
+    t.index ["team_id"], name: "index_compliance_notifications_on_team_id"
+    t.index ["user_id"], name: "index_compliance_notifications_on_user_id"
   end
 
-  create_table 'customer_addresses', force: :cascade do |t|
-    t.bigint 'profile_customer_id', null: false
-    t.bigint 'address_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.datetime 'deleted_at'
-    t.index ['address_id'], name: 'index_customer_addresses_on_address_id'
-    t.index ['deleted_at'], name: 'index_customer_addresses_on_deleted_at'
-    t.index ['profile_customer_id'], name: 'index_customer_addresses_on_profile_customer_id'
+  create_table "customer_addresses", force: :cascade do |t|
+    t.bigint "profile_customer_id", null: false
+    t.bigint "address_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["address_id"], name: "index_customer_addresses_on_address_id"
+    t.index ["deleted_at"], name: "index_customer_addresses_on_deleted_at"
+    t.index ["profile_customer_id"], name: "index_customer_addresses_on_profile_customer_id"
   end
 
-  create_table 'customer_bank_accounts', force: :cascade do |t|
-    t.bigint 'profile_customer_id', null: false
-    t.bigint 'bank_account_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.datetime 'deleted_at'
-    t.index ['bank_account_id'], name: 'index_customer_bank_accounts_on_bank_account_id'
-    t.index ['deleted_at'], name: 'index_customer_bank_accounts_on_deleted_at'
-    t.index ['profile_customer_id'], name: 'index_customer_bank_accounts_on_profile_customer_id'
+  create_table "customer_bank_accounts", force: :cascade do |t|
+    t.bigint "profile_customer_id", null: false
+    t.bigint "bank_account_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["bank_account_id"], name: "index_customer_bank_accounts_on_bank_account_id"
+    t.index ["deleted_at"], name: "index_customer_bank_accounts_on_deleted_at"
+    t.index ["profile_customer_id"], name: "index_customer_bank_accounts_on_profile_customer_id"
   end
 
-  create_table 'customer_emails', force: :cascade do |t|
-    t.bigint 'profile_customer_id', null: false
-    t.bigint 'email_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.datetime 'deleted_at'
-    t.index ['deleted_at'], name: 'index_customer_emails_on_deleted_at'
-    t.index ['email_id'], name: 'index_customer_emails_on_email_id'
-    t.index ['profile_customer_id'], name: 'index_customer_emails_on_profile_customer_id'
+  create_table "customer_emails", force: :cascade do |t|
+    t.bigint "profile_customer_id", null: false
+    t.bigint "email_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_customer_emails_on_deleted_at"
+    t.index ["email_id"], name: "index_customer_emails_on_email_id"
+    t.index ["profile_customer_id"], name: "index_customer_emails_on_profile_customer_id"
   end
 
-  create_table 'customer_files', force: :cascade do |t|
-    t.string 'file_description'
-    t.bigint 'profile_customer_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.datetime 'deleted_at'
-    t.index ['deleted_at'], name: 'index_customer_files_on_deleted_at'
-    t.index ['profile_customer_id'], name: 'index_customer_files_on_profile_customer_id'
+  create_table "customer_files", force: :cascade do |t|
+    t.string "file_description"
+    t.bigint "profile_customer_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_customer_files_on_deleted_at"
+    t.index ["profile_customer_id"], name: "index_customer_files_on_profile_customer_id"
   end
 
-  create_table 'customer_phones', force: :cascade do |t|
-    t.bigint 'profile_customer_id', null: false
-    t.bigint 'phone_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.datetime 'deleted_at'
-    t.index ['deleted_at'], name: 'index_customer_phones_on_deleted_at'
-    t.index ['phone_id'], name: 'index_customer_phones_on_phone_id'
-    t.index ['profile_customer_id'], name: 'index_customer_phones_on_profile_customer_id'
+  create_table "customer_phones", force: :cascade do |t|
+    t.bigint "profile_customer_id", null: false
+    t.bigint "phone_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_customer_phones_on_deleted_at"
+    t.index ["phone_id"], name: "index_customer_phones_on_phone_id"
+    t.index ["profile_customer_id"], name: "index_customer_phones_on_profile_customer_id"
   end
 
-  create_table 'customer_works', force: :cascade do |t|
-    t.bigint 'profile_customer_id', null: false
-    t.bigint 'work_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.datetime 'deleted_at'
-    t.index ['deleted_at'], name: 'index_customer_works_on_deleted_at'
-    t.index ['profile_customer_id'], name: 'index_customer_works_on_profile_customer_id'
-    t.index ['work_id'], name: 'index_customer_works_on_work_id'
+  create_table "customer_works", force: :cascade do |t|
+    t.bigint "profile_customer_id", null: false
+    t.bigint "work_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_customer_works_on_deleted_at"
+    t.index ["profile_customer_id"], name: "index_customer_works_on_profile_customer_id"
+    t.index ["work_id"], name: "index_customer_works_on_work_id"
   end
 
-  create_table 'customers', force: :cascade do |t|
-    t.string 'email', default: '', null: false
-    t.string 'encrypted_password', default: '', null: false
-    t.string 'reset_password_token'
-    t.datetime 'reset_password_sent_at'
-    t.datetime 'remember_created_at'
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.datetime 'deleted_at'
-    t.string 'jwt_token'
-    t.bigint 'created_by_id'
-    t.string 'confirmation_token'
-    t.datetime 'confirmed_at'
-    t.datetime 'confirmation_sent_at'
-    t.datetime 'unconfirmed_email'
-    t.string 'status', default: 'active', null: false
-    t.index ['confirmation_token'], name: 'index_customers_on_confirmation_token', unique: true
-    t.index ['created_by_id'], name: 'index_customers_on_created_by_id'
-    t.index ['deleted_at'], name: 'index_customers_on_deleted_at'
-    t.index ['email'], name: 'index_customers_on_email_where_not_deleted', unique: true, where: '(deleted_at IS NULL)'
-    t.index ['reset_password_token'], name: 'index_customers_on_reset_password_token', unique: true
+  create_table "customers", force: :cascade do |t|
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.string "jwt_token"
+    t.bigint "created_by_id"
+    t.string "confirmation_token"
+    t.datetime "confirmed_at"
+    t.datetime "confirmation_sent_at"
+    t.datetime "unconfirmed_email"
+    t.string "status", default: "active", null: false
+    t.index ["confirmation_token"], name: "index_customers_on_confirmation_token", unique: true
+    t.index ["created_by_id"], name: "index_customers_on_created_by_id"
+    t.index ["deleted_at"], name: "index_customers_on_deleted_at"
+    t.index ["email"], name: "index_customers_on_email_where_not_deleted", unique: true, where: "(deleted_at IS NULL)"
+    t.index ["reset_password_token"], name: "index_customers_on_reset_password_token", unique: true
   end
 
-  create_table 'documents', force: :cascade do |t|
-    t.string 'document_type'
-    t.bigint 'work_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.bigint 'profile_customer_id'
-    t.datetime 'deleted_at'
-    t.integer 'format', default: 0, null: false
-    t.integer 'status', default: 0, null: false
-    t.integer 'sign_source', default: 0, null: false
-    t.index ['deleted_at'], name: 'index_documents_on_deleted_at'
-    t.index ['profile_customer_id'], name: 'index_documents_on_profile_customer_id'
-    t.index ['work_id'], name: 'index_documents_on_work_id'
+  create_table "documents", force: :cascade do |t|
+    t.string "document_type"
+    t.bigint "work_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "profile_customer_id"
+    t.datetime "deleted_at"
+    t.integer "format", default: 0, null: false
+    t.integer "status", default: 0, null: false
+    t.integer "sign_source", default: 0, null: false
+    t.index ["deleted_at"], name: "index_documents_on_deleted_at"
+    t.index ["profile_customer_id"], name: "index_documents_on_profile_customer_id"
+    t.index ["work_id"], name: "index_documents_on_work_id"
   end
 
-  create_table 'draft_works', force: :cascade do |t|
-    t.string 'name'
-    t.bigint 'work_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.datetime 'deleted_at'
-    t.index ['deleted_at'], name: 'index_draft_works_on_deleted_at'
-    t.index ['work_id'], name: 'index_draft_works_on_work_id'
+  create_table "draft_works", force: :cascade do |t|
+    t.string "name"
+    t.bigint "work_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_draft_works_on_deleted_at"
+    t.index ["work_id"], name: "index_draft_works_on_work_id"
   end
 
-  create_table 'drafts', force: :cascade do |t|
-    t.string 'draftable_type', null: false
-    t.bigint 'draftable_id', null: false
-    t.bigint 'user_id'
-    t.bigint 'customer_id'
-    t.string 'form_type', null: false
-    t.json 'data', null: false
-    t.string 'status', default: 'draft'
-    t.datetime 'expires_at'
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.bigint 'team_id'
-    t.index ['customer_id'], name: 'index_drafts_on_customer_id'
-    t.index ['draftable_type', 'draftable_id'], name: 'index_drafts_on_draftable'
-    t.index ['expires_at'], name: 'index_drafts_on_expires_at'
-    t.index ['status'], name: 'index_drafts_on_status'
-    t.index ['team_id', 'draftable_type', 'draftable_id', 'form_type'], name: 'index_drafts_unique_form_with_team', unique: true
-    t.index ['team_id'], name: 'index_drafts_on_team_id'
-    t.index ['user_id'], name: 'index_drafts_on_user_id'
+  create_table "drafts", force: :cascade do |t|
+    t.string "draftable_type", null: false
+    t.bigint "draftable_id", null: false
+    t.bigint "user_id"
+    t.bigint "customer_id"
+    t.string "form_type", null: false
+    t.json "data", null: false
+    t.string "status", default: "draft"
+    t.datetime "expires_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "team_id"
+    t.index ["customer_id"], name: "index_drafts_on_customer_id"
+    t.index ["draftable_type", "draftable_id"], name: "index_drafts_on_draftable"
+    t.index ["expires_at"], name: "index_drafts_on_expires_at"
+    t.index ["status"], name: "index_drafts_on_status"
+    t.index ["team_id", "draftable_type", "draftable_id", "form_type"], name: "index_drafts_unique_form_with_team", unique: true
+    t.index ["team_id"], name: "index_drafts_on_team_id"
+    t.index ["user_id"], name: "index_drafts_on_user_id"
   end
 
-  create_table 'emails', force: :cascade do |t|
-    t.string 'email'
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
+  create_table "emails", force: :cascade do |t|
+    t.string "email"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
-  create_table 'honoraries', force: :cascade do |t|
-    t.string 'fixed_honorary_value'
-    t.string 'parcelling_value'
-    t.string 'honorary_type'
-    t.string 'percent_honorary_value'
-    t.boolean 'parcelling'
-    t.bigint 'work_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.datetime 'deleted_at'
-    t.integer 'work_prev'
-    t.index ['deleted_at'], name: 'index_honoraries_on_deleted_at'
-    t.index ['work_id'], name: 'index_honoraries_on_work_id'
+  create_table "honoraries", force: :cascade do |t|
+    t.string "fixed_honorary_value"
+    t.string "parcelling_value"
+    t.string "honorary_type"
+    t.string "percent_honorary_value"
+    t.boolean "parcelling"
+    t.bigint "work_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.integer "work_prev"
+    t.index ["deleted_at"], name: "index_honoraries_on_deleted_at"
+    t.index ["work_id"], name: "index_honoraries_on_work_id"
   end
 
-  create_table 'job_user_profiles', force: :cascade do |t|
-    t.bigint 'job_id', null: false
-    t.bigint 'user_profile_id', null: false
-    t.string 'role', default: 'assignee'
-    t.datetime 'deleted_at'
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.index ['deleted_at'], name: 'index_job_user_profiles_on_deleted_at'
-    t.index ['job_id', 'user_profile_id'], name: 'index_job_user_profiles_on_job_id_and_user_profile_id', unique: true
-    t.index ['job_id'], name: 'index_job_user_profiles_on_job_id'
-    t.index ['user_profile_id'], name: 'index_job_user_profiles_on_user_profile_id'
+  create_table "job_user_profiles", force: :cascade do |t|
+    t.bigint "job_id", null: false
+    t.bigint "user_profile_id", null: false
+    t.string "role", default: "assignee"
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deleted_at"], name: "index_job_user_profiles_on_deleted_at"
+    t.index ["job_id", "user_profile_id"], name: "index_job_user_profiles_on_job_id_and_user_profile_id", unique: true
+    t.index ["job_id"], name: "index_job_user_profiles_on_job_id"
+    t.index ["user_profile_id"], name: "index_job_user_profiles_on_user_profile_id"
   end
 
-  create_table 'job_works', force: :cascade do |t|
-    t.bigint 'job_id', null: false
-    t.bigint 'work_id', null: false
-    t.bigint 'user_profile_id', null: false
-    t.bigint 'profile_customer_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.index ['job_id'], name: 'index_job_works_on_job_id'
-    t.index ['profile_customer_id'], name: 'index_job_works_on_profile_customer_id'
-    t.index ['user_profile_id'], name: 'index_job_works_on_user_profile_id'
-    t.index ['work_id'], name: 'index_job_works_on_work_id'
+  create_table "job_works", force: :cascade do |t|
+    t.bigint "job_id", null: false
+    t.bigint "work_id", null: false
+    t.bigint "user_profile_id", null: false
+    t.bigint "profile_customer_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["job_id"], name: "index_job_works_on_job_id"
+    t.index ["profile_customer_id"], name: "index_job_works_on_profile_customer_id"
+    t.index ["user_profile_id"], name: "index_job_works_on_user_profile_id"
+    t.index ["work_id"], name: "index_job_works_on_work_id"
   end
 
-  create_table 'jobs', force: :cascade do |t|
-    t.string 'description'
-    t.date 'deadline', null: false
-    t.string 'status'
-    t.string 'priority'
-    t.string 'comment'
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.bigint 'work_id'
-    t.bigint 'profile_customer_id'
-    t.bigint 'created_by_id'
-    t.datetime 'deleted_at'
-    t.bigint 'team_id', null: false
-    t.index ['created_by_id'], name: 'index_jobs_on_created_by_id'
-    t.index ['deleted_at'], name: 'index_jobs_on_deleted_at'
-    t.index ['profile_customer_id'], name: 'index_jobs_on_profile_customer_id'
-    t.index ['team_id'], name: 'index_jobs_on_team_id'
-    t.index ['work_id'], name: 'index_jobs_on_work_id'
+  create_table "jobs", force: :cascade do |t|
+    t.string "description"
+    t.date "deadline", null: false
+    t.string "status"
+    t.string "priority"
+    t.string "comment"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "work_id"
+    t.bigint "profile_customer_id"
+    t.bigint "created_by_id"
+    t.datetime "deleted_at"
+    t.bigint "team_id", null: false
+    t.index ["created_by_id"], name: "index_jobs_on_created_by_id"
+    t.index ["deleted_at"], name: "index_jobs_on_deleted_at"
+    t.index ["profile_customer_id"], name: "index_jobs_on_profile_customer_id"
+    t.index ["team_id"], name: "index_jobs_on_team_id"
+    t.index ["work_id"], name: "index_jobs_on_work_id"
   end
 
-  create_table 'law_areas', force: :cascade do |t|
-    t.string 'name', null: false
-    t.string 'code', null: false
-    t.text 'description'
-    t.boolean 'active', default: true, null: false
-    t.integer 'sort_order', default: 0
-    t.bigint 'parent_area_id'
-    t.bigint 'created_by_team_id'
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.index ['active'], name: 'index_law_areas_on_active'
-    t.index ['code', 'created_by_team_id', 'parent_area_id'], name: 'index_law_areas_unique_code', unique: true
-    t.index ['created_by_team_id'], name: 'index_law_areas_on_created_by_team_id'
-    t.index ['parent_area_id'], name: 'index_law_areas_on_parent_area_id'
+  create_table "law_areas", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "code", null: false
+    t.text "description"
+    t.boolean "active", default: true, null: false
+    t.integer "sort_order", default: 0
+    t.bigint "parent_area_id"
+    t.bigint "created_by_team_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_law_areas_on_active"
+    t.index ["code", "created_by_team_id", "parent_area_id"], name: "index_law_areas_unique_code", unique: true
+    t.index ["created_by_team_id"], name: "index_law_areas_on_created_by_team_id"
+    t.index ["parent_area_id"], name: "index_law_areas_on_parent_area_id"
   end
 
-  create_table 'notifications', force: :cascade do |t|
-    t.string 'title'
-    t.text 'message'
-    t.boolean 'read', default: false
-    t.integer 'user_id'
-    t.string 'priority', default: 'normal'
-    t.jsonb 'metadata', default: {}
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.integer 'team_id'
-    t.index ['created_at'], name: 'index_notifications_on_created_at'
-    t.index ['read'], name: 'index_notifications_on_read'
-    t.index ['team_id'], name: 'index_notifications_on_team_id'
-    t.index ['user_id'], name: 'index_notifications_on_user_id'
+  create_table "notifications", force: :cascade do |t|
+    t.string "title"
+    t.text "message"
+    t.boolean "read", default: false
+    t.integer "user_id"
+    t.string "priority", default: "normal"
+    t.jsonb "metadata", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "team_id"
+    t.index ["created_at"], name: "index_notifications_on_created_at"
+    t.index ["read"], name: "index_notifications_on_read"
+    t.index ["team_id"], name: "index_notifications_on_team_id"
+    t.index ["user_id"], name: "index_notifications_on_user_id"
   end
 
-  create_table 'office_bank_accounts', force: :cascade do |t|
-    t.bigint 'bank_account_id', null: false
-    t.bigint 'office_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.datetime 'deleted_at'
-    t.index ['bank_account_id'], name: 'index_office_bank_accounts_on_bank_account_id'
-    t.index ['deleted_at'], name: 'index_office_bank_accounts_on_deleted_at'
-    t.index ['office_id'], name: 'index_office_bank_accounts_on_office_id'
+  create_table "office_bank_accounts", force: :cascade do |t|
+    t.bigint "bank_account_id", null: false
+    t.bigint "office_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["bank_account_id"], name: "index_office_bank_accounts_on_bank_account_id"
+    t.index ["deleted_at"], name: "index_office_bank_accounts_on_deleted_at"
+    t.index ["office_id"], name: "index_office_bank_accounts_on_office_id"
   end
 
-  create_table 'office_emails', force: :cascade do |t|
-    t.bigint 'office_id', null: false
-    t.bigint 'email_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.datetime 'deleted_at'
-    t.index ['deleted_at'], name: 'index_office_emails_on_deleted_at'
-    t.index ['email_id'], name: 'index_office_emails_on_email_id'
-    t.index ['office_id'], name: 'index_office_emails_on_office_id'
+  create_table "office_emails", force: :cascade do |t|
+    t.bigint "office_id", null: false
+    t.bigint "email_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_office_emails_on_deleted_at"
+    t.index ["email_id"], name: "index_office_emails_on_email_id"
+    t.index ["office_id"], name: "index_office_emails_on_office_id"
   end
 
-  create_table 'office_phones', force: :cascade do |t|
-    t.bigint 'office_id', null: false
-    t.bigint 'phone_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.datetime 'deleted_at'
-    t.index ['deleted_at'], name: 'index_office_phones_on_deleted_at'
-    t.index ['office_id'], name: 'index_office_phones_on_office_id'
-    t.index ['phone_id'], name: 'index_office_phones_on_phone_id'
+  create_table "office_phones", force: :cascade do |t|
+    t.bigint "office_id", null: false
+    t.bigint "phone_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_office_phones_on_deleted_at"
+    t.index ["office_id"], name: "index_office_phones_on_office_id"
+    t.index ["phone_id"], name: "index_office_phones_on_phone_id"
   end
 
-  create_table 'office_types', force: :cascade do |t|
-    t.string 'description'
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
+  create_table "office_types", force: :cascade do |t|
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
-  create_table 'office_works', force: :cascade do |t|
-    t.bigint 'work_id', null: false
-    t.bigint 'office_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.datetime 'deleted_at'
-    t.index ['deleted_at'], name: 'index_office_works_on_deleted_at'
-    t.index ['office_id'], name: 'index_office_works_on_office_id'
-    t.index ['work_id'], name: 'index_office_works_on_work_id'
+  create_table "office_works", force: :cascade do |t|
+    t.bigint "work_id", null: false
+    t.bigint "office_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_office_works_on_deleted_at"
+    t.index ["office_id"], name: "index_office_works_on_office_id"
+    t.index ["work_id"], name: "index_office_works_on_work_id"
   end
 
-  create_table 'offices', force: :cascade do |t|
-    t.string 'name'
-    t.string 'cnpj'
-    t.string 'oab'
-    t.string 'society'
-    t.date 'foundation'
-    t.string 'site'
-    t.string 'zip_code'
-    t.string 'street'
-    t.integer 'number'
-    t.string 'neighborhood'
-    t.string 'city'
-    t.string 'state'
-    t.bigint 'office_type_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.integer 'responsible_lawyer_id'
-    t.string 'accounting_type'
-    t.datetime 'deleted_at'
-    t.bigint 'team_id', null: false
-    t.index ['accounting_type'], name: 'index_offices_on_accounting_type'
-    t.index ['deleted_at'], name: 'index_offices_on_deleted_at'
-    t.index ['office_type_id'], name: 'index_offices_on_office_type_id'
-    t.index ['responsible_lawyer_id'], name: 'index_offices_on_responsible_lawyer_id'
-    t.index ['team_id'], name: 'index_offices_on_team_id'
+  create_table "offices", force: :cascade do |t|
+    t.string "name"
+    t.string "cnpj"
+    t.string "oab"
+    t.string "society"
+    t.date "foundation"
+    t.string "site"
+    t.string "zip_code"
+    t.string "street"
+    t.integer "number"
+    t.string "neighborhood"
+    t.string "city"
+    t.string "state"
+    t.bigint "office_type_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "responsible_lawyer_id"
+    t.string "accounting_type"
+    t.datetime "deleted_at"
+    t.bigint "team_id", null: false
+    t.index ["accounting_type"], name: "index_offices_on_accounting_type"
+    t.index ["deleted_at"], name: "index_offices_on_deleted_at"
+    t.index ["office_type_id"], name: "index_offices_on_office_type_id"
+    t.index ["responsible_lawyer_id"], name: "index_offices_on_responsible_lawyer_id"
+    t.index ["team_id"], name: "index_offices_on_team_id"
   end
 
-  create_table 'pending_documents', force: :cascade do |t|
-    t.string 'description'
-    t.bigint 'work_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.bigint 'profile_customer_id'
-    t.datetime 'deleted_at'
-    t.index ['deleted_at'], name: 'index_pending_documents_on_deleted_at'
-    t.index ['profile_customer_id'], name: 'index_pending_documents_on_profile_customer_id'
-    t.index ['work_id'], name: 'index_pending_documents_on_work_id'
+  create_table "pending_documents", force: :cascade do |t|
+    t.string "description"
+    t.bigint "work_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "profile_customer_id"
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_pending_documents_on_deleted_at"
+    t.index ["profile_customer_id"], name: "index_pending_documents_on_profile_customer_id"
+    t.index ["work_id"], name: "index_pending_documents_on_work_id"
   end
 
-  create_table 'phones', force: :cascade do |t|
-    t.string 'phone_number'
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
+  create_table "phones", force: :cascade do |t|
+    t.string "phone_number"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
-  create_table 'power_works', force: :cascade do |t|
-    t.bigint 'power_id', null: false
-    t.bigint 'work_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.datetime 'deleted_at'
-    t.index ['deleted_at'], name: 'index_power_works_on_deleted_at'
-    t.index ['power_id'], name: 'index_power_works_on_power_id'
-    t.index ['work_id'], name: 'index_power_works_on_work_id'
+  create_table "power_works", force: :cascade do |t|
+    t.bigint "power_id", null: false
+    t.bigint "work_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_power_works_on_deleted_at"
+    t.index ["power_id"], name: "index_power_works_on_power_id"
+    t.index ["work_id"], name: "index_power_works_on_work_id"
   end
 
-  create_table 'powers', force: :cascade do |t|
-    t.string 'description', null: false
-    t.integer 'category', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.boolean 'is_base', default: false, null: false
-    t.bigint 'created_by_team_id'
-    t.bigint 'law_area_id'
-    t.index ['category', 'law_area_id'], name: 'index_powers_on_category_and_law_area_id'
-    t.index ['created_by_team_id'], name: 'index_powers_on_created_by_team_id'
-    t.index ['is_base'], name: 'index_powers_on_is_base'
-    t.index ['law_area_id'], name: 'index_powers_on_law_area_id'
+  create_table "powers", force: :cascade do |t|
+    t.string "description", null: false
+    t.integer "category", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "is_base", default: false, null: false
+    t.bigint "created_by_team_id"
+    t.bigint "law_area_id"
+    t.index ["category", "law_area_id"], name: "index_powers_on_category_and_law_area_id"
+    t.index ["created_by_team_id"], name: "index_powers_on_created_by_team_id"
+    t.index ["is_base"], name: "index_powers_on_is_base"
+    t.index ["law_area_id"], name: "index_powers_on_law_area_id"
   end
 
-  create_table 'profile_customers', force: :cascade do |t|
-    t.string 'customer_type'
-    t.string 'name'
-    t.string 'last_name'
-    t.string 'gender'
-    t.string 'rg'
-    t.string 'cpf'
-    t.string 'cnpj'
-    t.string 'nationality'
-    t.string 'civil_status'
-    t.string 'capacity'
-    t.string 'profession'
-    t.string 'company'
-    t.date 'birth'
-    t.string 'mother_name'
-    t.string 'number_benefit'
-    t.json 'document'
-    t.string 'nit'
-    t.string 'inss_password'
-    t.bigint 'customer_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.integer 'accountant_id'
-    t.datetime 'deleted_at'
-    t.bigint 'created_by_id'
-    t.string 'status', default: 'active', null: false
-    t.datetime 'deceased_at'
-    t.index ['accountant_id'], name: 'index_profile_customers_on_accountant_id'
-    t.index ['created_by_id'], name: 'index_profile_customers_on_created_by_id'
-    t.index ['customer_id'], name: 'index_profile_customers_on_customer_id'
-    t.index ['deceased_at'], name: 'index_profile_customers_on_deceased_at'
-    t.index ['deleted_at'], name: 'index_profile_customers_on_deleted_at'
+  create_table "profile_customers", force: :cascade do |t|
+    t.string "customer_type"
+    t.string "name"
+    t.string "last_name"
+    t.string "gender"
+    t.string "rg"
+    t.string "cpf"
+    t.string "cnpj"
+    t.string "nationality"
+    t.string "civil_status"
+    t.string "capacity"
+    t.string "profession"
+    t.string "company"
+    t.date "birth"
+    t.string "mother_name"
+    t.string "number_benefit"
+    t.json "document"
+    t.string "nit"
+    t.string "inss_password"
+    t.bigint "customer_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "accountant_id"
+    t.datetime "deleted_at"
+    t.bigint "created_by_id"
+    t.string "status", default: "active", null: false
+    t.datetime "deceased_at"
+    t.index ["accountant_id"], name: "index_profile_customers_on_accountant_id"
+    t.index ["created_by_id"], name: "index_profile_customers_on_created_by_id"
+    t.index ["customer_id"], name: "index_profile_customers_on_customer_id"
+    t.index ["deceased_at"], name: "index_profile_customers_on_deceased_at"
+    t.index ["deleted_at"], name: "index_profile_customers_on_deleted_at"
   end
 
-  create_table 'recommendations', force: :cascade do |t|
-    t.decimal 'percentage'
-    t.decimal 'commission'
-    t.bigint 'profile_customer_id', null: false
-    t.bigint 'work_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.datetime 'deleted_at'
-    t.index ['deleted_at'], name: 'index_recommendations_on_deleted_at'
-    t.index ['profile_customer_id'], name: 'index_recommendations_on_profile_customer_id'
-    t.index ['work_id'], name: 'index_recommendations_on_work_id'
+  create_table "recommendations", force: :cascade do |t|
+    t.decimal "percentage"
+    t.decimal "commission"
+    t.bigint "profile_customer_id", null: false
+    t.bigint "work_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_recommendations_on_deleted_at"
+    t.index ["profile_customer_id"], name: "index_recommendations_on_profile_customer_id"
+    t.index ["work_id"], name: "index_recommendations_on_work_id"
   end
 
-  create_table 'represents', force: :cascade do |t|
-    t.bigint 'profile_customer_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.bigint 'representor_id'
-    t.string 'relationship_type', default: 'representation'
-    t.boolean 'active', default: true, null: false
-    t.date 'start_date'
-    t.date 'end_date'
-    t.text 'notes'
-    t.bigint 'team_id'
-    t.index ['active'], name: 'index_represents_on_active'
-    t.index ['profile_customer_id', 'active'], name: 'index_represents_on_profile_customer_id_and_active'
-    t.index ['profile_customer_id'], name: 'index_represents_on_profile_customer_id'
-    t.index ['relationship_type'], name: 'index_represents_on_relationship_type'
-    t.index ['representor_id', 'active'], name: 'index_represents_on_representor_id_and_active'
-    t.index ['representor_id'], name: 'index_represents_on_representor_id'
-    t.index ['team_id'], name: 'index_represents_on_team_id'
+  create_table "represents", force: :cascade do |t|
+    t.bigint "profile_customer_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "representor_id"
+    t.string "relationship_type", default: "representation"
+    t.boolean "active", default: true, null: false
+    t.date "start_date"
+    t.date "end_date"
+    t.text "notes"
+    t.bigint "team_id"
+    t.index ["active"], name: "index_represents_on_active"
+    t.index ["profile_customer_id", "active"], name: "index_represents_on_profile_customer_id_and_active"
+    t.index ["profile_customer_id"], name: "index_represents_on_profile_customer_id"
+    t.index ["relationship_type"], name: "index_represents_on_relationship_type"
+    t.index ["representor_id", "active"], name: "index_represents_on_representor_id_and_active"
+    t.index ["representor_id"], name: "index_represents_on_representor_id"
+    t.index ["team_id"], name: "index_represents_on_team_id"
   end
 
-  create_table 'team_customers', force: :cascade do |t|
-    t.bigint 'team_id', null: false
-    t.bigint 'customer_id', null: false
-    t.string 'customer_email', null: false
-    t.datetime 'deleted_at'
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.index ['customer_id'], name: 'index_team_customers_on_customer_id'
-    t.index ['deleted_at'], name: 'index_team_customers_on_deleted_at'
-    t.index ['team_id', 'customer_email'], name: 'index_team_customers_on_team_id_and_customer_email', unique: true
-    t.index ['team_id', 'customer_id'], name: 'index_team_customers_on_team_id_and_customer_id', unique: true
-    t.index ['team_id'], name: 'index_team_customers_on_team_id'
+  create_table "team_customers", force: :cascade do |t|
+    t.bigint "team_id", null: false
+    t.bigint "customer_id", null: false
+    t.string "customer_email", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_id"], name: "index_team_customers_on_customer_id"
+    t.index ["deleted_at"], name: "index_team_customers_on_deleted_at"
+    t.index ["team_id", "customer_email"], name: "index_team_customers_on_team_id_and_customer_email", unique: true
+    t.index ["team_id", "customer_id"], name: "index_team_customers_on_team_id_and_customer_id", unique: true
+    t.index ["team_id"], name: "index_team_customers_on_team_id"
   end
 
-  create_table 'teams', force: :cascade do |t|
-    t.string 'name', null: false
-    t.string 'subdomain', null: false
-    t.jsonb 'settings', default: {}
-    t.datetime 'deleted_at'
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.index ['deleted_at'], name: 'index_teams_on_deleted_at'
-    t.index ['subdomain'], name: 'index_teams_on_subdomain', unique: true
+  create_table "teams", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "subdomain", null: false
+    t.jsonb "settings", default: {}
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deleted_at"], name: "index_teams_on_deleted_at"
+    t.index ["subdomain"], name: "index_teams_on_subdomain", unique: true
   end
 
-  create_table 'user_addresses', force: :cascade do |t|
-    t.bigint 'address_id', null: false
-    t.bigint 'user_profile_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.datetime 'deleted_at'
-    t.index ['address_id'], name: 'index_user_addresses_on_address_id'
-    t.index ['deleted_at'], name: 'index_user_addresses_on_deleted_at'
-    t.index ['user_profile_id'], name: 'index_user_addresses_on_user_profile_id'
+  create_table "user_addresses", force: :cascade do |t|
+    t.bigint "address_id", null: false
+    t.bigint "user_profile_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["address_id"], name: "index_user_addresses_on_address_id"
+    t.index ["deleted_at"], name: "index_user_addresses_on_deleted_at"
+    t.index ["user_profile_id"], name: "index_user_addresses_on_user_profile_id"
   end
 
-  create_table 'user_bank_accounts', force: :cascade do |t|
-    t.bigint 'bank_account_id', null: false
-    t.bigint 'user_profile_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.datetime 'deleted_at'
-    t.index ['bank_account_id'], name: 'index_user_bank_accounts_on_bank_account_id'
-    t.index ['deleted_at'], name: 'index_user_bank_accounts_on_deleted_at'
-    t.index ['user_profile_id'], name: 'index_user_bank_accounts_on_user_profile_id'
+  create_table "user_bank_accounts", force: :cascade do |t|
+    t.bigint "bank_account_id", null: false
+    t.bigint "user_profile_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["bank_account_id"], name: "index_user_bank_accounts_on_bank_account_id"
+    t.index ["deleted_at"], name: "index_user_bank_accounts_on_deleted_at"
+    t.index ["user_profile_id"], name: "index_user_bank_accounts_on_user_profile_id"
   end
 
-  create_table 'user_emails', force: :cascade do |t|
-    t.bigint 'email_id', null: false
-    t.bigint 'user_profile_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.datetime 'deleted_at'
-    t.index ['deleted_at'], name: 'index_user_emails_on_deleted_at'
-    t.index ['email_id'], name: 'index_user_emails_on_email_id'
-    t.index ['user_profile_id'], name: 'index_user_emails_on_user_profile_id'
+  create_table "user_emails", force: :cascade do |t|
+    t.bigint "email_id", null: false
+    t.bigint "user_profile_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_user_emails_on_deleted_at"
+    t.index ["email_id"], name: "index_user_emails_on_email_id"
+    t.index ["user_profile_id"], name: "index_user_emails_on_user_profile_id"
   end
 
-  create_table 'user_phones', force: :cascade do |t|
-    t.bigint 'phone_id', null: false
-    t.bigint 'user_profile_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.datetime 'deleted_at'
-    t.index ['deleted_at'], name: 'index_user_phones_on_deleted_at'
-    t.index ['phone_id'], name: 'index_user_phones_on_phone_id'
-    t.index ['user_profile_id'], name: 'index_user_phones_on_user_profile_id'
+  create_table "user_phones", force: :cascade do |t|
+    t.bigint "phone_id", null: false
+    t.bigint "user_profile_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_user_phones_on_deleted_at"
+    t.index ["phone_id"], name: "index_user_phones_on_phone_id"
+    t.index ["user_profile_id"], name: "index_user_phones_on_user_profile_id"
   end
 
-  create_table 'user_profile_works', force: :cascade do |t|
-    t.bigint 'user_profile_id', null: false
-    t.bigint 'work_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.datetime 'deleted_at'
-    t.index ['deleted_at'], name: 'index_user_profile_works_on_deleted_at'
-    t.index ['user_profile_id'], name: 'index_user_profile_works_on_user_profile_id'
-    t.index ['work_id'], name: 'index_user_profile_works_on_work_id'
+  create_table "user_profile_works", force: :cascade do |t|
+    t.bigint "user_profile_id", null: false
+    t.bigint "work_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_user_profile_works_on_deleted_at"
+    t.index ["user_profile_id"], name: "index_user_profile_works_on_user_profile_id"
+    t.index ["work_id"], name: "index_user_profile_works_on_work_id"
   end
 
-  create_table 'user_profiles', force: :cascade do |t|
-    t.string 'role'
-    t.string 'name'
-    t.string 'last_name'
-    t.string 'gender'
-    t.string 'oab'
-    t.string 'rg'
-    t.string 'cpf'
-    t.string 'nationality'
-    t.string 'civil_status'
-    t.date 'birth'
-    t.string 'mother_name'
-    t.string 'status'
-    t.bigint 'user_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.bigint 'office_id'
-    t.string 'origin'
-    t.datetime 'deleted_at'
-    t.index ['deleted_at'], name: 'index_user_profiles_on_deleted_at'
-    t.index ['office_id'], name: 'index_user_profiles_on_office_id'
-    t.index ['user_id'], name: 'index_user_profiles_on_user_id'
+  create_table "user_profiles", force: :cascade do |t|
+    t.string "role"
+    t.string "name"
+    t.string "last_name"
+    t.string "gender"
+    t.string "oab"
+    t.string "rg"
+    t.string "cpf"
+    t.string "nationality"
+    t.string "civil_status"
+    t.date "birth"
+    t.string "mother_name"
+    t.string "status"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "office_id"
+    t.string "origin"
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_user_profiles_on_deleted_at"
+    t.index ["office_id"], name: "index_user_profiles_on_office_id"
+    t.index ["user_id"], name: "index_user_profiles_on_user_id"
   end
 
-  create_table 'users', force: :cascade do |t|
-    t.string 'email', default: '', null: false
-    t.string 'encrypted_password', default: '', null: false
-    t.string 'reset_password_token'
-    t.datetime 'reset_password_sent_at'
-    t.datetime 'remember_created_at'
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.string 'jwt_token'
-    t.datetime 'deleted_at'
-    t.string 'status', default: 'active', null: false
-    t.string 'oab'
-    t.bigint 'team_id', null: false
-    t.index ['deleted_at'], name: 'index_users_on_deleted_at'
-    t.index ['email'], name: 'index_users_on_email', unique: true
-    t.index ['jwt_token'], name: 'index_users_on_jwt_token', unique: true
-    t.index ['reset_password_token'], name: 'index_users_on_reset_password_token', unique: true
-    t.index ['team_id'], name: 'index_users_on_team_id'
+  create_table "users", force: :cascade do |t|
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "jwt_token"
+    t.datetime "deleted_at"
+    t.string "status", default: "active", null: false
+    t.string "oab"
+    t.bigint "team_id", null: false
+    t.index ["deleted_at"], name: "index_users_on_deleted_at"
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["jwt_token"], name: "index_users_on_jwt_token", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["team_id"], name: "index_users_on_team_id"
   end
 
-  create_table 'versions', force: :cascade do |t|
-    t.string 'whodunnit'
-    t.datetime 'created_at'
-    t.bigint 'item_id', null: false
-    t.string 'item_type', null: false
-    t.string 'event', null: false
-    t.text 'object'
-    t.index ['item_type', 'item_id'], name: 'index_versions_on_item_type_and_item_id'
+  create_table "versions", force: :cascade do |t|
+    t.string "whodunnit"
+    t.datetime "created_at"
+    t.bigint "item_id", null: false
+    t.string "item_type", null: false
+    t.string "event", null: false
+    t.text "object"
+    t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
   end
 
-  create_table 'work_events', force: :cascade do |t|
-    t.string 'description'
-    t.datetime 'date'
-    t.bigint 'work_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.datetime 'deleted_at'
-    t.index ['deleted_at'], name: 'index_work_events_on_deleted_at'
-    t.index ['work_id'], name: 'index_work_events_on_work_id'
+  create_table "work_events", force: :cascade do |t|
+    t.string "description"
+    t.datetime "date"
+    t.bigint "work_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_work_events_on_deleted_at"
+    t.index ["work_id"], name: "index_work_events_on_work_id"
   end
 
-  create_table 'works', force: :cascade do |t|
-    t.string 'procedure'
-    t.integer 'number'
-    t.string 'rate_parceled_exfield'
-    t.string 'folder'
-    t.string 'note'
-    t.string 'extra_pending_document'
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.text 'other_description', comment: 'Descrição do outro tipo de assunto'
-    t.boolean 'compensations_five_years', comment: 'Compensações realizadas nos últimos 5 anos'
-    t.boolean 'compensations_service', comment: 'Compensações de oficio'
-    t.boolean 'lawsuit', comment: 'Possui ação Judicial'
-    t.string 'gain_projection', comment: 'Projeção de ganho'
-    t.integer 'physical_lawyer'
-    t.integer 'responsible_lawyer'
-    t.integer 'partner_lawyer'
-    t.integer 'intern'
-    t.integer 'bachelor'
-    t.integer 'initial_atendee'
-    t.text 'procedures', default: [], array: true
-    t.bigint 'created_by_id'
-    t.string 'status', default: 'in_progress'
-    t.datetime 'deleted_at'
-    t.bigint 'team_id', null: false
-    t.bigint 'law_area_id'
-    t.index ['created_by_id'], name: 'index_works_on_created_by_id'
-    t.index ['deleted_at'], name: 'index_works_on_deleted_at'
-    t.index ['law_area_id'], name: 'index_works_on_law_area_id'
-    t.index ['team_id'], name: 'index_works_on_team_id'
+  create_table "works", force: :cascade do |t|
+    t.string "procedure"
+    t.integer "number"
+    t.string "rate_parceled_exfield"
+    t.string "folder"
+    t.string "note"
+    t.string "extra_pending_document"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.text "other_description", comment: "Descrição do outro tipo de assunto"
+    t.boolean "compensations_five_years", comment: "Compensações realizadas nos últimos 5 anos"
+    t.boolean "compensations_service", comment: "Compensações de oficio"
+    t.boolean "lawsuit", comment: "Possui ação Judicial"
+    t.string "gain_projection", comment: "Projeção de ganho"
+    t.integer "physical_lawyer"
+    t.integer "responsible_lawyer"
+    t.integer "partner_lawyer"
+    t.integer "intern"
+    t.integer "bachelor"
+    t.integer "initial_atendee"
+    t.text "procedures", default: [], array: true
+    t.bigint "created_by_id"
+    t.string "status", default: "in_progress"
+    t.datetime "deleted_at"
+    t.bigint "team_id", null: false
+    t.bigint "law_area_id"
+    t.index ["created_by_id"], name: "index_works_on_created_by_id"
+    t.index ["deleted_at"], name: "index_works_on_deleted_at"
+    t.index ["law_area_id"], name: "index_works_on_law_area_id"
+    t.index ["team_id"], name: "index_works_on_team_id"
   end
 
-  add_foreign_key 'active_storage_attachments', 'active_storage_blobs', column: 'blob_id'
-  add_foreign_key 'active_storage_variant_records', 'active_storage_blobs', column: 'blob_id'
-  add_foreign_key 'compliance_notifications', 'teams'
-  add_foreign_key 'compliance_notifications', 'users'
-  add_foreign_key 'customer_addresses', 'addresses'
-  add_foreign_key 'customer_addresses', 'profile_customers'
-  add_foreign_key 'customer_bank_accounts', 'bank_accounts'
-  add_foreign_key 'customer_bank_accounts', 'profile_customers'
-  add_foreign_key 'customer_emails', 'emails'
-  add_foreign_key 'customer_emails', 'profile_customers'
-  add_foreign_key 'customer_files', 'profile_customers'
-  add_foreign_key 'customer_phones', 'phones'
-  add_foreign_key 'customer_phones', 'profile_customers'
-  add_foreign_key 'customer_works', 'profile_customers'
-  add_foreign_key 'customer_works', 'works'
-  add_foreign_key 'customers', 'users', column: 'created_by_id'
-  add_foreign_key 'documents', 'profile_customers'
-  add_foreign_key 'documents', 'works'
-  add_foreign_key 'draft_works', 'works'
-  add_foreign_key 'drafts', 'customers'
-  add_foreign_key 'drafts', 'teams'
-  add_foreign_key 'drafts', 'users'
-  add_foreign_key 'honoraries', 'works'
-  add_foreign_key 'job_user_profiles', 'jobs'
-  add_foreign_key 'job_user_profiles', 'user_profiles'
-  add_foreign_key 'job_works', 'jobs'
-  add_foreign_key 'job_works', 'profile_customers'
-  add_foreign_key 'job_works', 'user_profiles'
-  add_foreign_key 'job_works', 'works'
-  add_foreign_key 'jobs', 'teams'
-  add_foreign_key 'jobs', 'users', column: 'created_by_id'
-  add_foreign_key 'law_areas', 'law_areas', column: 'parent_area_id'
-  add_foreign_key 'law_areas', 'teams', column: 'created_by_team_id'
-  add_foreign_key 'office_bank_accounts', 'bank_accounts'
-  add_foreign_key 'office_bank_accounts', 'offices'
-  add_foreign_key 'office_emails', 'emails'
-  add_foreign_key 'office_emails', 'offices'
-  add_foreign_key 'office_phones', 'offices'
-  add_foreign_key 'office_phones', 'phones'
-  add_foreign_key 'office_works', 'offices'
-  add_foreign_key 'office_works', 'works'
-  add_foreign_key 'offices', 'office_types'
-  add_foreign_key 'offices', 'teams'
-  add_foreign_key 'pending_documents', 'profile_customers'
-  add_foreign_key 'pending_documents', 'works'
-  add_foreign_key 'power_works', 'powers'
-  add_foreign_key 'power_works', 'works'
-  add_foreign_key 'powers', 'law_areas'
-  add_foreign_key 'powers', 'teams', column: 'created_by_team_id'
-  add_foreign_key 'profile_customers', 'customers'
-  add_foreign_key 'profile_customers', 'users', column: 'created_by_id'
-  add_foreign_key 'recommendations', 'profile_customers'
-  add_foreign_key 'recommendations', 'works'
-  add_foreign_key 'represents', 'profile_customers'
-  add_foreign_key 'represents', 'profile_customers', column: 'representor_id'
-  add_foreign_key 'represents', 'teams'
-  add_foreign_key 'team_customers', 'customers'
-  add_foreign_key 'team_customers', 'teams'
-  add_foreign_key 'user_addresses', 'addresses'
-  add_foreign_key 'user_addresses', 'user_profiles'
-  add_foreign_key 'user_bank_accounts', 'bank_accounts'
-  add_foreign_key 'user_bank_accounts', 'user_profiles'
-  add_foreign_key 'user_emails', 'emails'
-  add_foreign_key 'user_emails', 'user_profiles'
-  add_foreign_key 'user_phones', 'phones'
-  add_foreign_key 'user_phones', 'user_profiles'
-  add_foreign_key 'user_profile_works', 'user_profiles'
-  add_foreign_key 'user_profile_works', 'works'
-  add_foreign_key 'user_profiles', 'offices'
-  add_foreign_key 'user_profiles', 'users'
-  add_foreign_key 'users', 'teams'
-  add_foreign_key 'work_events', 'works'
-  add_foreign_key 'works', 'law_areas'
-  add_foreign_key 'works', 'teams'
-  add_foreign_key 'works', 'users', column: 'created_by_id'
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "compliance_notifications", "teams"
+  add_foreign_key "compliance_notifications", "users"
+  add_foreign_key "customer_addresses", "addresses"
+  add_foreign_key "customer_addresses", "profile_customers"
+  add_foreign_key "customer_bank_accounts", "bank_accounts"
+  add_foreign_key "customer_bank_accounts", "profile_customers"
+  add_foreign_key "customer_emails", "emails"
+  add_foreign_key "customer_emails", "profile_customers"
+  add_foreign_key "customer_files", "profile_customers"
+  add_foreign_key "customer_phones", "phones"
+  add_foreign_key "customer_phones", "profile_customers"
+  add_foreign_key "customer_works", "profile_customers"
+  add_foreign_key "customer_works", "works"
+  add_foreign_key "customers", "users", column: "created_by_id"
+  add_foreign_key "documents", "profile_customers"
+  add_foreign_key "documents", "works"
+  add_foreign_key "draft_works", "works"
+  add_foreign_key "drafts", "customers"
+  add_foreign_key "drafts", "teams"
+  add_foreign_key "drafts", "users"
+  add_foreign_key "honoraries", "works"
+  add_foreign_key "job_user_profiles", "jobs"
+  add_foreign_key "job_user_profiles", "user_profiles"
+  add_foreign_key "job_works", "jobs"
+  add_foreign_key "job_works", "profile_customers"
+  add_foreign_key "job_works", "user_profiles"
+  add_foreign_key "job_works", "works"
+  add_foreign_key "jobs", "teams"
+  add_foreign_key "jobs", "users", column: "created_by_id"
+  add_foreign_key "law_areas", "law_areas", column: "parent_area_id"
+  add_foreign_key "law_areas", "teams", column: "created_by_team_id"
+  add_foreign_key "office_bank_accounts", "bank_accounts"
+  add_foreign_key "office_bank_accounts", "offices"
+  add_foreign_key "office_emails", "emails"
+  add_foreign_key "office_emails", "offices"
+  add_foreign_key "office_phones", "offices"
+  add_foreign_key "office_phones", "phones"
+  add_foreign_key "office_works", "offices"
+  add_foreign_key "office_works", "works"
+  add_foreign_key "offices", "office_types"
+  add_foreign_key "offices", "teams"
+  add_foreign_key "pending_documents", "profile_customers"
+  add_foreign_key "pending_documents", "works"
+  add_foreign_key "power_works", "powers"
+  add_foreign_key "power_works", "works"
+  add_foreign_key "powers", "law_areas"
+  add_foreign_key "powers", "teams", column: "created_by_team_id"
+  add_foreign_key "profile_customers", "customers"
+  add_foreign_key "profile_customers", "users", column: "created_by_id"
+  add_foreign_key "recommendations", "profile_customers"
+  add_foreign_key "recommendations", "works"
+  add_foreign_key "represents", "profile_customers"
+  add_foreign_key "represents", "profile_customers", column: "representor_id"
+  add_foreign_key "represents", "teams"
+  add_foreign_key "team_customers", "customers"
+  add_foreign_key "team_customers", "teams"
+  add_foreign_key "user_addresses", "addresses"
+  add_foreign_key "user_addresses", "user_profiles"
+  add_foreign_key "user_bank_accounts", "bank_accounts"
+  add_foreign_key "user_bank_accounts", "user_profiles"
+  add_foreign_key "user_emails", "emails"
+  add_foreign_key "user_emails", "user_profiles"
+  add_foreign_key "user_phones", "phones"
+  add_foreign_key "user_phones", "user_profiles"
+  add_foreign_key "user_profile_works", "user_profiles"
+  add_foreign_key "user_profile_works", "works"
+  add_foreign_key "user_profiles", "offices"
+  add_foreign_key "user_profiles", "users"
+  add_foreign_key "users", "teams"
+  add_foreign_key "work_events", "works"
+  add_foreign_key "works", "law_areas"
+  add_foreign_key "works", "teams"
+  add_foreign_key "works", "users", column: "created_by_id"
 end
