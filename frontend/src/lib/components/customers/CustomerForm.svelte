@@ -9,12 +9,33 @@
     createPasswordConfirmationValidator,
     validateBirthDateRequired,
     getCapacityFromBirthDate,
-    formatBirthDate,
-    parseBrazilianDate,
     validationRules
   } from '../../validation';
-  // Import API for state data
-  import api from '../../api/index';
+  
+  // Import new modular utilities
+  import { BRAZILIAN_STATES } from '../../constants/brazilian-states';
+  import type { BrazilianState } from '../../constants/brazilian-states';
+  import {
+    createDefaultCustomerFormData,
+    createDefaultGuardianFormData,
+    createDefaultFormState,
+    requiresGuardian,
+    getGuardianLabel,
+    getRelationshipType
+  } from '../../schemas/customer-form';
+  import type { CustomerFormData, CustomerFormState } from '../../schemas/customer-form';
+  import {
+    generateStrongPassword,
+    saveFormDraft,
+    loadFormDraft,
+    clearFormDraft,
+    validateGuardianAge,
+    isFormDirty,
+    cloneFormData
+  } from '../../utils/form-helpers';
+  
+  // Import our new component
+  import CustomerPersonalInfoStep from './CustomerPersonalInfoStep.svelte';
 
   export let customer: any = null;
   // TODO: Add Customer type
@@ -27,274 +48,77 @@
     cancel: void;
   }>();
 
-  // Form data key for localStorage
-  const FORM_STORAGE_KEY = 'customer_form_draft';
-
+  // Initialize form data using our new schemas
+  let formData: CustomerFormData = createDefaultCustomerFormData();
+  let guardianFormData: CustomerFormData = createDefaultGuardianFormData();
+  let formState: CustomerFormState = createDefaultFormState();
+  
   // Track initial form data for dirty state
-  let initialFormData: any;
-  let formIsDirty = false;
+  let initialFormData: CustomerFormData;
 
-  // File upload data
-  let uploadedFiles: File[] = [];
-  let fileInput: HTMLInputElement;
-  
-  // Toggle for social security information
-  let showSocialSecurityInfo = false;
-  
-  // Form data with nested structure for API
-  let formData = {
-    customer_type: 'physical_person',
-    name: '',
-    last_name: '',
-    status: 'active',
-    cpf: '',
-    rg: '',
-    birth: '',
-    gender: 'male',
-    civil_status: 'single',
-    nationality: 'brazilian',
-    capacity: 'able',
-    profession: '',
-    mother_name: '',
-    deceased_at: '',
-    number_benefit: '',
-    nit: '',
-    inss_password: '',
-    customer_attributes: {
-      email: '',
-      password: '',
-      password_confirmation: ''
-    },
-    addresses_attributes: [
-      {
-        description: 'Home Address',
-        zip_code: '',
-        street: '',
-        city: '',
-        number: '',
-        neighborhood: '',
-        state: ''
-      }
-    ],
-    phones_attributes: [
-      {
-        phone_number: ''
-      }
-    ],
-    emails_attributes: [
-      {
-        email: ''
-      }
-    ],
-    bank_accounts_attributes: [
-      {
-        bank_name: '',
-        type_account: 'Corrente',
-        agency: '',
-        account: '',
-        operation: '',
-        pix: ''
-      }
-    ]
-  };
+  // Destructure form state for easier access
+  $: ({
+    currentStep,
+    totalSteps,
+    showGuardianForm,
+    useSameAddress,
+    useSameBankAccount,
+    uploadedFiles,
+    formIsDirty
+  } = formState);
 
-  // Guardian form data (for unable persons)
-  const guardianFormData = {
-    customer_type: 'physical_person',
-    name: '',
-    last_name: '',
-    status: 'active',
-    cpf: '',
-    rg: '',
-    birth: '',
-    gender: 'male',
-    civil_status: 'single',
-    nationality: 'brazilian',
-    capacity: 'able',
-    profession: '',
-    mother_name: '',
-    customer_attributes: {
-      email: '',
-      password: '',
-      password_confirmation: ''
-    },
-    addresses_attributes: [
-      {
-        description: 'Home Address',
-        zip_code: '',
-        street: '',
-        city: '',
-        number: '',
-        neighborhood: '',
-        state: ''
-      }
-    ],
-    phones_attributes: [
-      {
-        phone_number: ''
-      }
-    ],
-    emails_attributes: [
-      {
-        email: ''
-      }
-    ],
-    bank_accounts_attributes: [
-      {
-        bank_name: '',
-        type_account: 'Corrente',
-        agency: '',
-        account: '',
-        operation: '',
-        pix: ''
-      }
-    ]
-  };
-
-  // Multi-step form control
-  let currentStep = 1;
-  let totalSteps = 2; // Default: 1-uploads, 2-client data
-  let showGuardianForm = false;
-
-  // Checkbox states for copying data
-  let useSameAddress = false;
-  let useSameBankAccount = false;
-
-  // Update total steps based on capacity
+  // Update total steps based on capacity using our helper function
   $: {
-    if (formData.capacity === 'unable' || formData.capacity === 'relatively') {
-      totalSteps = 3; // 1-uploads, 2-client data, 3-guardian data
-      showGuardianForm = true;
+    if (requiresGuardian(formData.capacity)) {
+      formState.totalSteps = 3; // 1-uploads, 2-client data, 3-guardian data
+      formState.showGuardianForm = true;
     } else {
-      totalSteps = 2; // 1-uploads, 2-client data
-      showGuardianForm = false;
-      if (currentStep > 2) {
-        currentStep = 2;
+      formState.totalSteps = 2; // 1-uploads, 2-client data
+      formState.showGuardianForm = false;
+      if (formState.currentStep > 2) {
+        formState.currentStep = 2;
       }
     }
   }
 
-  // Brazilian states - will be fetched from API if possible
-  let states = [];
-  const DEFAULT_STATES = [
-    { value: 'AC', label: 'Acre' },
-    { value: 'AL', label: 'Alagoas' },
-    { value: 'AP', label: 'Amapá' },
-    { value: 'AM', label: 'Amazonas' },
-    { value: 'BA', label: 'Bahia' },
-    { value: 'CE', label: 'Ceará' },
-    { value: 'DF', label: 'Distrito Federal' },
-    { value: 'ES', label: 'Espírito Santo' },
-    { value: 'GO', label: 'Goiás' },
-    { value: 'MA', label: 'Maranhão' },
-    { value: 'MT', label: 'Mato Grosso' },
-    { value: 'MS', label: 'Mato Grosso do Sul' },
-    { value: 'MG', label: 'Minas Gerais' },
-    { value: 'PA', label: 'Pará' },
-    { value: 'PB', label: 'Paraíba' },
-    { value: 'PR', label: 'Paraná' },
-    { value: 'PE', label: 'Pernambuco' },
-    { value: 'PI', label: 'Piauí' },
-    { value: 'RJ', label: 'Rio de Janeiro' },
-    { value: 'RN', label: 'Rio Grande do Norte' },
-    { value: 'RS', label: 'Rio Grande do Sul' },
-    { value: 'RO', label: 'Rondônia' },
-    { value: 'RR', label: 'Roraima' },
-    { value: 'SC', label: 'Santa Catarina' },
-    { value: 'SP', label: 'São Paulo' },
-    { value: 'SE', label: 'Sergipe' },
-    { value: 'TO', label: 'Tocantins' }
-  ];
+  // Use Brazilian states from our constants
+  let states: BrazilianState[] = BRAZILIAN_STATES;
 
   // Validation errors
   let errors: Record<string, string> = {};
   let touched: Record<string, boolean> = {};
   const guardianErrors: Record<string, string> = {};
   const guardianTouched: Record<string, boolean> = {};
-  let capacityMessage = '';
 
   onMount(async () => {
-    // Try to load states from API
-    try {
-      // Uncomment when API endpoint is available
-      // const response = await api.locations.getStates();
-      // states = response.data;
+    // States are now loaded from constants, no API call needed
+    states = BRAZILIAN_STATES;
 
-      // For now, use default states
-      states = DEFAULT_STATES;
-    } catch (error) {
-      // Failed to load states
-      states = DEFAULT_STATES;
-    }
-
-    // Try to restore form data from localStorage
-    try {
-      const savedData = localStorage.getItem(FORM_STORAGE_KEY);
-      if (savedData) {
-        const parsedData = JSON.parse(savedData);
-        formData = { ...formData, ...parsedData };
-        // Show notification that data was restored
-        // Show notification that data was restored
-        // TODO: Replace with proper notification system
-      }
-    } catch (error) {
-      // Failed to restore form data
+    // Try to restore form data from localStorage using our utility
+    const savedData = loadFormDraft();
+    if (savedData) {
+      formData = { ...formData, ...savedData };
+      // TODO: Show notification that data was restored
     }
 
     // Set initial form state for dirty checking
-    initialFormData = JSON.parse(JSON.stringify(formData));
+    initialFormData = cloneFormData(formData);
   });
 
-  // Save form data to localStorage when it changes
-  function saveFormDraft() {
-    if (typeof localStorage !== 'undefined' && formIsDirty) {
-      try {
-        // Don't save passwords in the draft for security
-        const draftData = { ...formData };
-        draftData.customer_attributes = {
-          ...draftData.customer_attributes,
-          password: '',
-          password_confirmation: ''
-        };
-
-        localStorage.setItem(FORM_STORAGE_KEY, JSON.stringify(draftData));
-      } catch (error) {
-        // Failed to save form draft
-      }
-    }
-  }
-
-  // Clear saved form data on successful submission
-  function clearFormDraft() {
-    if (typeof localStorage !== 'undefined') {
-      try {
-        localStorage.removeItem(FORM_STORAGE_KEY);
-      } catch (error) {
-        // Failed to clear form draft
-      }
-    }
-  }
-
   // Reactive declarations for performance optimization
-  $: fullName = `${formData.name} ${formData.last_name}`.trim();
-  $: capacityInfo = getCapacityFromBirthDate(formData.birth);
-  $: if (capacityInfo) {
-    // Show age-based warning message
-    capacityMessage = capacityInfo.message || '';
-  }
   
-  // Age validation for guardian
-  $: guardianAgeValidation = formData.birth && guardianFormData.birth 
+  // Age validation for guardian using our utility
+  $: guardianAgeValidation = formData.birth && guardianFormData.birth
     ? validateGuardianAge(guardianFormData.birth, formData.birth)
     : { isValid: true, message: '' };
-  $: formIsDirty = JSON.stringify(formData) !== JSON.stringify(initialFormData);
-  $: if (formIsDirty) {
-    saveFormDraft();
+  
+  // Update form dirty state using our utility
+  $: formState.formIsDirty = isFormDirty(formData, initialFormData);
+  $: if (formState.formIsDirty) {
+    saveFormDraft(formData);
   }
-  $: isProfessionRequired = formData.capacity !== 'unable';
-  $: isEmailRequired = formData.capacity !== 'unable';
-  $: isEmailDisabled = formData.capacity === 'unable';
-  $: guardianLabel = formData.capacity === 'unable' ? 'Representante Legal' : 'Assistente Legal';
+  
+  $: guardianLabel = getGuardianLabel(formData.capacity);
 
   // Clear email when capacity changes to unable
   $: if (formData.capacity === 'unable' && formData.customer_attributes.email) {
@@ -302,37 +126,14 @@
     formData.emails_attributes[0].email = '';
   }
 
-  // Copy address data when checkbox is checked
-  $: if (useSameAddress) {
+  // Copy address data when checkbox is checked using our utility
+  $: if (formState.useSameAddress) {
     guardianFormData.addresses_attributes[0] = { ...formData.addresses_attributes[0] };
   }
 
-  // Copy bank account data when checkbox is checked
-  $: if (useSameBankAccount) {
+  // Copy bank account data when checkbox is checked using our utility
+  $: if (formState.useSameBankAccount) {
     guardianFormData.bank_accounts_attributes[0] = { ...formData.bank_accounts_attributes[0] };
-  }
-
-  // Get gender-based civil status label
-  function getCivilStatusLabel(status: string, gender: string): string {
-    const labels: Record<string, Record<string, string>> = {
-      single: { male: 'Solteiro', female: 'Solteira' },
-      married: { male: 'Casado', female: 'Casada' },
-      divorced: { male: 'Divorciado', female: 'Divorciada' },
-      widower: { male: 'Viúvo', female: 'Viúva' },
-      union: { male: 'Em união estável', female: 'Em união estável' }
-    };
-
-    return labels[status]?.[gender] || status;
-  }
-
-  // Get gender-based nationality label
-  function getNationalityLabel(nationality: string, gender: string): string {
-    const labels: Record<string, Record<string, string>> = {
-      brazilian: { male: 'Brasileiro', female: 'Brasileira' },
-      foreigner: { male: 'Estrangeiro', female: 'Estrangeira' }
-    };
-
-    return labels[nationality]?.[gender] || nationality;
   }
 
   // Handle CPF formatting
@@ -664,8 +465,8 @@
             password_confirmation: guardianPassword
           }
         },
-        // Relationship type
-        relationship_type: formData.capacity === 'unable' ? 'representation' : 'assistance'
+        // Relationship type using our helper function
+        relationship_type: getRelationshipType(formData.capacity)
       };
     } else {
       submitData = {
@@ -780,697 +581,16 @@
 
       <!-- Step 1: Customer Information -->
       {#if currentStep === 1}
-        <!-- Personal Information Section -->
-        <div class="divider" aria-label="Seção de informações pessoais">Informações Pessoais</div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Name -->
-          <div class="form-control w-full">
-            <label for="name" class="label justify-start">
-              <span class="label-text font-medium">Nome *</span>
-            </label>
-            <input
-              id="name"
-              type="text"
-              class="input input-bordered w-full {errors.name && touched.name ? 'input-error' : ''}"
-              bind:value={formData.name}
-              on:blur={() => handleBlur('name', formData.name)}
-              disabled={isLoading}
-              aria-required="true"
-              aria-invalid={errors.name && touched.name ? 'true' : 'false'}
-              aria-describedby={errors.name && touched.name ? 'name-error' : undefined}
-              data-testid="customer-name-input"
-            />
-            {#if errors.name && touched.name}
-              <div id="name-error" class="text-error text-sm mt-1">{errors.name}</div>
-            {/if}
-          </div>
-
-          <!-- Last Name -->
-          <div class="form-control w-full">
-            <label for="last_name" class="label justify-start">
-              <span class="label-text font-medium">Sobrenome *</span>
-            </label>
-            <input
-              id="last_name"
-              type="text"
-              class="input input-bordered w-full {errors.last_name && touched.last_name
-                ? 'input-error'
-                : ''}"
-              bind:value={formData.last_name}
-              on:blur={() => handleBlur('last_name', formData.last_name)}
-              disabled={isLoading}
-              aria-required="true"
-              aria-invalid={errors.last_name && touched.last_name ? 'true' : 'false'}
-              aria-describedby={errors.last_name && touched.last_name
-                ? 'last_name-error'
-                : undefined}
-              data-testid="customer-lastname-input"
-            />
-            {#if errors.last_name && touched.last_name}
-              <div id="last_name-error" class="text-error text-sm mt-1">{errors.last_name}</div>
-            {/if}
-          </div>
-
-          <!-- CPF -->
-          <div class="form-control w-full">
-            <label for="cpf" class="label justify-start">
-              <span class="label-text font-medium">CPF *</span>
-            </label>
-            <input
-              id="cpf"
-              type="text"
-              class="input input-bordered w-full {errors.cpf && touched.cpf ? 'input-error' : ''}"
-              bind:value={formData.cpf}
-              on:input={handleCPFInput}
-              on:blur={() => handleBlur('cpf', formData.cpf)}
-              disabled={isLoading}
-              placeholder="000.000.000-00"
-              maxlength="14"
-              aria-required="true"
-              aria-invalid={errors.cpf && touched.cpf ? 'true' : 'false'}
-              aria-describedby={errors.cpf && touched.cpf ? 'cpf-error' : undefined}
-              data-testid="customer-cpf-input"
-            />
-            {#if errors.cpf && touched.cpf}
-              <div id="cpf-error" class="text-error text-sm mt-1">{errors.cpf}</div>
-            {/if}
-          </div>
-
-          <!-- RG -->
-          <div class="form-control w-full">
-            <label for="rg" class="label justify-start">
-              <span class="label-text font-medium">RG *</span>
-            </label>
-            <input
-              id="rg"
-              type="text"
-              class="input input-bordered w-full {errors.rg && touched.rg ? 'input-error' : ''}"
-              bind:value={formData.rg}
-              on:blur={() => handleBlur('rg', formData.rg)}
-              disabled={isLoading}
-              aria-required="true"
-              aria-invalid={errors.rg && touched.rg ? 'true' : 'false'}
-              aria-describedby={errors.rg && touched.rg ? 'rg-error' : undefined}
-              data-testid="customer-rg-input"
-            />
-            {#if errors.rg && touched.rg}
-              <div id="rg-error" class="text-error text-sm mt-1">{errors.rg}</div>
-            {/if}
-          </div>
-
-          <!-- Birth Date -->
-          <div class="form-control w-full">
-            <label for="birth" class="label justify-start">
-              <span class="label-text font-medium">Data de Nascimento *</span>
-            </label>
-            <input
-              id="birth"
-              type="date"
-              class="input input-bordered w-full {errors.birth && touched.birth
-                ? 'input-error'
-                : ''}"
-              bind:value={formData.birth}
-              on:change={handleBirthDateChange}
-              on:blur={() => handleBlur('birth', formData.birth)}
-              disabled={isLoading}
-              aria-required="true"
-              aria-invalid={errors.birth && touched.birth ? 'true' : 'false'}
-              aria-describedby={(errors.birth && touched.birth) || capacityMessage
-                ? 'birth-message'
-                : undefined}
-              data-testid="customer-birth-input"
-            />
-            {#if (errors.birth && touched.birth) || capacityMessage}
-              <div
-                id="birth-message"
-                class="text-sm mt-1 {errors.birth && touched.birth ? 'text-error' : 'text-warning'}"
-              >
-                {errors.birth || capacityMessage}
-              </div>
-            {/if}
-          </div>
-
-          <!-- Gender -->
-          <div class="form-control w-full">
-            <label for="gender" class="label justify-start">
-              <span class="label-text font-medium">Gênero *</span>
-            </label>
-            <select
-              id="gender"
-              class="select select-bordered w-full"
-              bind:value={formData.gender}
-              disabled={isLoading}
-              aria-required="true"
-              data-testid="customer-gender-input"
-            >
-              <option value="male">Masculino</option>
-              <option value="female">Feminino</option>
-            </select>
-          </div>
-
-          <!-- Civil Status -->
-          <div class="form-control w-full">
-            <label for="civil_status" class="label justify-start">
-              <span class="label-text font-medium">Estado Civil *</span>
-            </label>
-            <select
-              id="civil_status"
-              class="select select-bordered w-full"
-              bind:value={formData.civil_status}
-              disabled={isLoading}
-              aria-required="true"
-              data-testid="customer-civil-status-input"
-            >
-              <option value="single">{getCivilStatusLabel('single', formData.gender)}</option>
-              <option value="married">{getCivilStatusLabel('married', formData.gender)}</option>
-              <option value="divorced">{getCivilStatusLabel('divorced', formData.gender)}</option>
-              <option value="widower">{getCivilStatusLabel('widower', formData.gender)}</option>
-              <option value="union">{getCivilStatusLabel('union', formData.gender)}</option>
-            </select>
-          </div>
-
-          <!-- Nationality -->
-          <div class="form-control w-full">
-            <label for="nationality" class="label justify-start">
-              <span class="label-text font-medium">Nacionalidade *</span>
-            </label>
-            <select
-              id="nationality"
-              class="select select-bordered w-full"
-              bind:value={formData.nationality}
-              disabled={isLoading}
-              aria-required="true"
-              data-testid="customer-nationality-input"
-            >
-              <option value="brazilian">{getNationalityLabel('brazilian', formData.gender)}</option>
-              <option value="foreigner">{getNationalityLabel('foreigner', formData.gender)}</option>
-            </select>
-          </div>
-
-          <!-- Profession -->
-          <div class="form-control w-full">
-            <label for="profession" class="label justify-start">
-              <span class="label-text font-medium"
-                >Profissão {isProfessionRequired ? '*' : '(Opcional)'}</span
-              >
-            </label>
-            <input
-              id="profession"
-              type="text"
-              class="input input-bordered w-full {errors.profession &&
-              touched.profession &&
-              isProfessionRequired
-                ? 'input-error'
-                : ''}"
-              bind:value={formData.profession}
-              on:blur={() => handleBlur('profession', formData.profession)}
-              disabled={isLoading || !isProfessionRequired}
-              aria-required={isProfessionRequired ? 'true' : 'false'}
-              aria-invalid={errors.profession && touched.profession && isProfessionRequired
-                ? 'true'
-                : 'false'}
-              aria-describedby={errors.profession && touched.profession && isProfessionRequired
-                ? 'profession-error'
-                : undefined}
-              data-testid="customer-profession-input"
-            />
-            {#if !isProfessionRequired}
-              <div class="text-sm text-gray-500 mt-1">Não obrigatório para menores de 16 anos</div>
-            {/if}
-            {#if errors.profession && touched.profession && isProfessionRequired}
-              <div id="profession-error" class="text-error text-sm mt-1">{errors.profession}</div>
-            {/if}
-          </div>
-
-          <!-- Mother's Name -->
-          <div class="form-control w-full">
-            <label for="mother_name" class="label justify-start">
-              <span class="label-text font-medium">Nome da Mãe *</span>
-            </label>
-            <input
-              id="mother_name"
-              type="text"
-              class="input input-bordered w-full {errors.mother_name && touched.mother_name
-                ? 'input-error'
-                : ''}"
-              bind:value={formData.mother_name}
-              on:blur={() => handleBlur('mother_name', formData.mother_name)}
-              disabled={isLoading}
-              aria-required="true"
-              aria-invalid={errors.mother_name && touched.mother_name ? 'true' : 'false'}
-              aria-describedby={errors.mother_name && touched.mother_name
-                ? 'mother_name-error'
-                : undefined}
-              data-testid="customer-mother-name-input"
-            />
-            {#if errors.mother_name && touched.mother_name}
-              <div id="mother_name-error" class="text-error text-sm mt-1">{errors.mother_name}</div>
-            {/if}
-          </div>
-
-          <!-- Capacity Selection -->
-          <div class="form-control w-full">
-            <label for="capacity" class="label justify-start">
-              <span class="label-text font-medium">Capacidade</span>
-            </label>
-            <select
-              id="capacity"
-              class="select select-bordered w-full"
-              bind:value={formData.capacity}
-              disabled={isLoading}
-              data-testid="customer-capacity-input"
-            >
-              <option value="able">Capaz</option>
-              <option value="relatively">Relativamente Incapaz</option>
-              <option value="unable">Absolutamente Incapaz</option>
-            </select>
-            {#if capacityMessage}
-              <div class="text-sm text-warning mt-1">{capacityMessage}</div>
-            {/if}
-          </div>
-        </div>
-
-        <!-- Login Information Section -->
-        <div class="divider" aria-label="Seção de informações de acesso">Informações de Acesso</div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Email -->
-          <div class="form-control w-full">
-            <label for="email" class="label justify-start">
-              <span class="label-text font-medium"
-                >Email {isEmailRequired ? '*' : '(Opcional)'}</span
-              >
-            </label>
-            <input
-              id="email"
-              type="email"
-              class="input input-bordered w-full {errors.email && touched.email && isEmailRequired
-                ? 'input-error'
-                : ''}"
-              bind:value={formData.customer_attributes.email}
-              on:blur={() => handleBlur('email', formData.customer_attributes.email)}
-              disabled={isLoading || isEmailDisabled}
-              placeholder="cliente@exemplo.com"
-              aria-required={isEmailRequired ? 'true' : 'false'}
-              aria-invalid={errors.email && touched.email && isEmailRequired ? 'true' : 'false'}
-              aria-describedby={errors.email && touched.email && isEmailRequired
-                ? 'email-error'
-                : undefined}
-              data-testid="customer-email-input"
-            />
-            {#if !isEmailRequired}
-              <div class="text-sm text-gray-500 mt-1">
-                Este email pode ser compartilhado com a conta do responsável
-              </div>
-            {/if}
-            {#if errors.email && touched.email && isEmailRequired}
-              <div id="email-error" class="text-error text-sm mt-1">{errors.email}</div>
-            {/if}
-          </div>
-
-          <!-- Phone -->
-          <div class="form-control w-full">
-            <label for="phone" class="label justify-start">
-              <span class="label-text font-medium">Telefone</span>
-            </label>
-            <input
-              id="phone"
-              type="tel"
-              class="input input-bordered w-full"
-              bind:value={formData.phones_attributes[0].phone_number}
-              disabled={isLoading}
-              placeholder="+55 11 98765-4321"
-              data-testid="customer-phone-input"
-            />
-          </div>
-
-          <!-- Password -->
-          <div class="form-control w-full">
-            <label for="password" class="label justify-start">
-              <span class="label-text font-medium">
-                {customer ? 'Nova Senha (deixe em branco para manter)' : 'Senha *'}
-              </span>
-            </label>
-            <input
-              id="password"
-              type="password"
-              class="input input-bordered w-full {errors.password && touched.password
-                ? 'input-error'
-                : ''}"
-              bind:value={formData.customer_attributes.password}
-              on:blur={() => handleBlur('password', formData.customer_attributes.password)}
-              disabled={isLoading}
-              placeholder="Mínimo 6 caracteres"
-              aria-required={customer ? 'false' : 'true'}
-              aria-invalid={errors.password && touched.password ? 'true' : 'false'}
-              aria-describedby={errors.password && touched.password ? 'password-error' : undefined}
-              data-testid="customer-password-input"
-            />
-            {#if errors.password && touched.password}
-              <div id="password-error" class="text-error text-sm mt-1">{errors.password}</div>
-            {/if}
-          </div>
-
-          <!-- Password Confirmation -->
-          <div class="form-control w-full">
-            <label for="password_confirmation" class="label justify-start">
-              <span class="label-text font-medium">
-                {customer ? 'Confirmar Nova Senha' : 'Confirmar Senha *'}
-              </span>
-            </label>
-            <input
-              id="password_confirmation"
-              type="password"
-              class="input input-bordered w-full {errors.password_confirmation &&
-              touched.password_confirmation
-                ? 'input-error'
-                : ''}"
-              bind:value={formData.customer_attributes.password_confirmation}
-              on:blur={() =>
-                handleBlur(
-                  'password_confirmation',
-                  formData.customer_attributes.password_confirmation
-                )}
-              disabled={isLoading}
-              placeholder="Digite a senha novamente"
-              aria-required={customer ? 'false' : 'true'}
-              aria-invalid={errors.password_confirmation && touched.password_confirmation
-                ? 'true'
-                : 'false'}
-              aria-describedby={errors.password_confirmation && touched.password_confirmation
-                ? 'password_confirmation-error'
-                : undefined}
-              data-testid="customer-password-confirmation-input"
-            />
-            {#if errors.password_confirmation && touched.password_confirmation}
-              <div id="password_confirmation-error" class="text-error text-sm mt-1">
-                {errors.password_confirmation}
-              </div>
-            {/if}
-          </div>
-        </div>
-
-        <!-- Address Section -->
-        <div class="divider" aria-label="Seção de endereço">Endereço</div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- ZIP Code -->
-          <div class="form-control w-full">
-            <label for="zip_code" class="label justify-start">
-              <span class="label-text font-medium">CEP</span>
-            </label>
-            <input
-              id="zip_code"
-              type="text"
-              class="input input-bordered w-full"
-              bind:value={formData.addresses_attributes[0].zip_code}
-              disabled={isLoading}
-              placeholder="00000-000"
-              data-testid="customer-zipcode-input"
-            />
-          </div>
-
-          <!-- Street -->
-          <div class="form-control w-full">
-            <label for="street" class="label justify-start">
-              <span class="label-text font-medium">Rua</span>
-            </label>
-            <input
-              id="street"
-              type="text"
-              class="input input-bordered w-full"
-              bind:value={formData.addresses_attributes[0].street}
-              disabled={isLoading}
-              data-testid="customer-street-input"
-            />
-          </div>
-
-          <!-- Number -->
-          <div class="form-control w-full">
-            <label for="number" class="label justify-start">
-              <span class="label-text font-medium">Número</span>
-            </label>
-            <input
-              id="number"
-              type="text"
-              class="input input-bordered w-full"
-              bind:value={formData.addresses_attributes[0].number}
-              disabled={isLoading}
-              data-testid="customer-number-input"
-            />
-          </div>
-
-          <!-- Neighborhood -->
-          <div class="form-control w-full">
-            <label for="neighborhood" class="label justify-start">
-              <span class="label-text font-medium">Bairro</span>
-            </label>
-            <input
-              id="neighborhood"
-              type="text"
-              class="input input-bordered w-full"
-              bind:value={formData.addresses_attributes[0].neighborhood}
-              disabled={isLoading}
-              data-testid="customer-neighborhood-input"
-            />
-          </div>
-
-          <!-- City -->
-          <div class="form-control w-full">
-            <label for="city" class="label justify-start">
-              <span class="label-text font-medium">Cidade</span>
-            </label>
-            <input
-              id="city"
-              type="text"
-              class="input input-bordered w-full"
-              bind:value={formData.addresses_attributes[0].city}
-              disabled={isLoading}
-              data-testid="customer-city-input"
-            />
-          </div>
-
-          <!-- State -->
-          <div class="form-control w-full">
-            <label for="state" class="label justify-start">
-              <span class="label-text font-medium">Estado</span>
-            </label>
-            <select
-              id="state"
-              class="select select-bordered w-full"
-              bind:value={formData.addresses_attributes[0].state}
-              disabled={isLoading}
-              data-testid="customer-state-input"
-            >
-              <option value="">Selecione...</option>
-              {#each states as state}
-                <option value={state.value}>{state.label}</option>
-              {/each}
-            </select>
-          </div>
-        </div>
-
-        <!-- Bank Account Section -->
-        <div class="divider" aria-label="Seção de dados bancários">Dados Bancários</div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Bank Name -->
-          <div class="form-control w-full">
-            <label for="bank_name" class="label justify-start">
-              <span class="label-text font-medium">Banco</span>
-            </label>
-            <input
-              id="bank_name"
-              type="text"
-              class="input input-bordered w-full"
-              bind:value={formData.bank_accounts_attributes[0].bank_name}
-              disabled={isLoading}
-              data-testid="customer-bank-name-input"
-            />
-          </div>
-
-          <!-- Account Type -->
-          <div class="form-control w-full">
-            <label for="type_account" class="label justify-start">
-              <span class="label-text font-medium">Tipo de Conta</span>
-            </label>
-            <select
-              id="type_account"
-              class="select select-bordered w-full"
-              bind:value={formData.bank_accounts_attributes[0].type_account}
-              disabled={isLoading}
-              data-testid="customer-account-type-input"
-            >
-              <option value="Corrente">Corrente</option>
-              <option value="Poupança">Poupança</option>
-            </select>
-          </div>
-
-          <!-- Agency -->
-          <div class="form-control w-full">
-            <label for="agency" class="label justify-start">
-              <span class="label-text font-medium">Agência</span>
-            </label>
-            <input
-              id="agency"
-              type="text"
-              class="input input-bordered w-full"
-              bind:value={formData.bank_accounts_attributes[0].agency}
-              disabled={isLoading}
-              placeholder="0000-0"
-              data-testid="customer-agency-input"
-            />
-          </div>
-
-          <!-- Account -->
-          <div class="form-control w-full">
-            <label for="account" class="label justify-start">
-              <span class="label-text font-medium">Conta</span>
-            </label>
-            <input
-              id="account"
-              type="text"
-              class="input input-bordered w-full"
-              bind:value={formData.bank_accounts_attributes[0].account}
-              disabled={isLoading}
-              placeholder="00000-0"
-              data-testid="customer-account-input"
-            />
-          </div>
-
-          <!-- Operation -->
-          <div class="form-control w-full">
-            <label for="operation" class="label justify-start">
-              <span class="label-text font-medium">Operação</span>
-            </label>
-            <input
-              id="operation"
-              type="text"
-              class="input input-bordered w-full"
-              bind:value={formData.bank_accounts_attributes[0].operation}
-              disabled={isLoading}
-              data-testid="customer-operation-input"
-            />
-          </div>
-
-          <!-- PIX with reactive options -->
-          <div class="form-control w-full">
-            <label for="pix" class="label justify-start">
-              <span class="label-text font-medium">Chave PIX</span>
-            </label>
-
-            <!-- PIX Key Type Options -->
-            <div class="flex gap-2 mb-2">
-              <button
-                type="button"
-                class="btn btn-sm btn-outline"
-                disabled={!formData.customer_attributes.email || isLoading}
-                on:click={() =>
-                  (formData.bank_accounts_attributes[0].pix = formData.customer_attributes.email)}
-                aria-label="Usar e-mail como chave PIX"
-                data-testid="pix-email-button"
-              >
-                E-mail
-              </button>
-
-              <button
-                type="button"
-                class="btn btn-sm btn-outline"
-                disabled={!formData.cpf || isLoading}
-                on:click={() =>
-                  (formData.bank_accounts_attributes[0].pix = formData.cpf.replace(/\D/g, ''))}
-                aria-label="Usar CPF como chave PIX"
-                data-testid="pix-cpf-button"
-              >
-                CPF
-              </button>
-
-              <button
-                type="button"
-                class="btn btn-sm btn-outline"
-                disabled={!formData.phones_attributes[0].phone_number || isLoading}
-                on:click={() =>
-                  (formData.bank_accounts_attributes[0].pix =
-                    formData.phones_attributes[0].phone_number.replace(/\D/g, ''))}
-                aria-label="Usar telefone como chave PIX"
-                data-testid="pix-phone-button"
-              >
-                Telefone
-              </button>
-            </div>
-
-            <input
-              id="pix"
-              type="text"
-              class="input input-bordered w-full"
-              bind:value={formData.bank_accounts_attributes[0].pix}
-              disabled={isLoading}
-              data-testid="customer-pix-input"
-            />
-            <div class="text-sm text-gray-500 mt-2">
-              Escolha um dos botões acima para preencher automaticamente.
-            </div>
-          </div>
-        </div>
-
-        <!-- Social Security Information Section -->
-        <div class="divider" aria-label="Seção de informações previdenciárias">
-          Informações Previdenciárias
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Benefit Number -->
-          <div class="form-control w-full">
-            <label for="number_benefit" class="label justify-start">
-              <span class="label-text font-medium">Número de Benefício (Opcional)</span>
-            </label>
-            <input
-              id="number_benefit"
-              type="text"
-              class="input input-bordered w-full"
-              bind:value={formData.number_benefit}
-              disabled={isLoading}
-              placeholder="Número do benefício INSS"
-              data-testid="customer-benefit-input"
-            />
-          </div>
-
-          <!-- NIT -->
-          <div class="form-control w-full">
-            <label for="nit" class="label justify-start">
-              <span class="label-text font-medium">NIT (Opcional)</span>
-            </label>
-            <input
-              id="nit"
-              type="text"
-              class="input input-bordered w-full"
-              bind:value={formData.nit}
-              disabled={isLoading}
-              placeholder="Número de Inscrição do Trabalhador"
-              data-testid="customer-nit-input"
-            />
-          </div>
-
-          <!-- INSS Password -->
-          <div class="form-control w-full md:col-span-2">
-            <label for="inss_password" class="label justify-start">
-              <span class="label-text font-medium">Senha do MeuINSS (Opcional)</span>
-            </label>
-            <input
-              id="inss_password"
-              type="password"
-              class="input input-bordered w-full"
-              bind:value={formData.inss_password}
-              disabled={isLoading}
-              placeholder="Senha de acesso ao MeuINSS"
-              data-testid="customer-inss-password-input"
-            />
-            <div class="text-sm text-warning mt-1">
-              Esta informação é armazenada de forma segura e criptografada
-            </div>
-          </div>
-        </div>
+        <CustomerPersonalInfoStep
+          bind:formData
+          {errors}
+          {touched}
+          {isLoading}
+          {customer}
+          on:fieldBlur={(e) => handleBlur(e.detail.field, e.detail.value)}
+          on:cpfInput={handleCPFInput}
+          on:birthDateChange={handleBirthDateChange}
+        />
       {/if}
       <!-- End of Step 1 -->
 

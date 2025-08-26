@@ -18,7 +18,7 @@
   import CustomersPage from './lib/pages/CustomersPage.svelte';
   import CustomersNewPage from './lib/pages/CustomersNewPage.svelte';
   import CustomersEditPage from './lib/pages/CustomersEditPage.svelte';
-  import ProfileCompletion from './lib/pages/ProfileCompletion.svelte';
+  import ProfileCompletionEnhanced from './lib/pages/ProfileCompletionEnhanced.svelte';
 
   // Reactive stores
   $: ({ isAuthenticated, showProfileCompletion, profileData, missingFields } = $authStore);
@@ -112,7 +112,7 @@
 
 <!-- Modal de Completar Perfil -->
 {#if showProfileCompletion}
-  <ProfileCompletion
+  <ProfileCompletionEnhanced
     isOpen={showProfileCompletion}
     userData={profileData}
     {missingFields}

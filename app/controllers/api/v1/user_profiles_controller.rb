@@ -100,12 +100,41 @@ module Api
 
         ActiveRecord::Base.transaction do
           # Atualizar dados básicos do profile
-          basic_params = profile_completion_params.except(:phone)
+          basic_params = profile_completion_params.except(:phone, :addresses_attributes, :phones_attributes)
           user_profile.update!(basic_params) if basic_params.present?
 
-          # Lidar com telefone separadamente se fornecido
+          # Lidar com telefone legacy (campo único)
           phone_number = params.dig(:user_profile, :phone)
           create_or_update_phone(user_profile, phone_number) if phone_number.present?
+          
+          # Lidar com phones_attributes (nested)
+          phones_attrs = params.dig(:user_profile, :phones_attributes)
+          if phones_attrs.present?
+            phones_attrs.each do |phone_attr|
+              create_or_update_phone(user_profile, phone_attr[:phone_number])
+            end
+          end
+          
+          # Lidar com addresses_attributes (nested)
+          addresses_attrs = params.dig(:user_profile, :addresses_attributes)
+          if addresses_attrs.present?
+            addresses_attrs.each do |address_attr|
+              address = Address.create!(
+                street: address_attr[:street],
+                number: address_attr[:number],
+                neighborhood: address_attr[:neighborhood],
+                city: address_attr[:city],
+                state: address_attr[:state],
+                zip_code: address_attr[:zip_code],
+                description: address_attr[:description] || 'Principal'
+              )
+              
+              UserAddress.create!(
+                user_profile: user_profile,
+                address: address
+              )
+            end
+          end
 
           render json: {
             success: true,
@@ -155,7 +184,11 @@ module Api
       end
 
       def profile_completion_params
-        params.expect(user_profile: [:cpf, :rg, :gender, :civil_status, :nationality, :birth, :phone])
+        params.expect(user_profile: [:name, :last_name, :role, :oab, :cpf, :rg, :gender, :civil_status,
+                                     :nationality, :birth, :phone,
+                                     { addresses_attributes: [:description, :zip_code, :street, :number,
+                                                              :neighborhood, :city, :state],
+                                       phones_attributes: [:phone_number] }])
       end
 
       def create_or_update_phone(user_profile, phone_number)
