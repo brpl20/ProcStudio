@@ -46,3 +46,7 @@
 # ClaudeOnRails
 .claude-on-rails/sessions/
 swarm.log
+
+# Node modules in tests directory
+tests/node_modules/
+node_modules/

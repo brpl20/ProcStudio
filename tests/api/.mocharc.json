@@ -1,0 +1,19 @@
+{
+  "require": [
+    "./environment.js"
+  ],
+  "timeout": 30000,
+  "recursive": true,
+  "reporter": "spec",
+  "bail": false,
+  "exit": true,
+  "slow": 5000,
+  "grep": "",
+  "extension": [
+    "js"
+  ],
+  "package": "../package.json",
+  "reporter-option": [
+    "maxDiffSize=0"
+  ]
+}

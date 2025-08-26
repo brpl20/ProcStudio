@@ -1,0 +1,52 @@
+{
+  "name": "procstudio-test-suite",
+  "version": "1.0.0",
+  "description": "Comprehensive test suite for ProcStudio API",
+  "main": "test_router.js",
+  "scripts": {
+    "test": "node test_router.js",
+    "test:auth": "node auth_only_test.js",
+    "test:unit": "node test_router.js unit",
+    "test:api": "node test_router.js api",
+    "test:api-svelte": "node test_router.js api-svelte",
+    "test:e2e": "node test_router.js e2e",
+    "test:all": "node test_router.js all",
+    "setup": "npm install && npx playwright install",
+    "reports": "node test_router.js reports"
+  },
+  "keywords": [
+    "testing",
+    "api",
+    "rails",
+    "svelte",
+    "e2e"
+  ],
+  "author": "ProcStudio Team",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "chai": "^4.3.8",
+    "mocha": "^10.2.0",
+    "node-fetch": "^3.3.2",
+    "fs-extra": "^11.1.1",
+    "chalk": "^4.1.2",
+    "inquirer": "^8.2.6",
+    "dotenv": "^16.3.1",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "playwright": "^1.40.0",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3",
+    "newman": "^6.0.0",
+    "newman-reporter-htmlextra": "^1.23.1",
+    "eslint": "^8.50.0",
+    "prettier": "^3.0.3"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  }
+}

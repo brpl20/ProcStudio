@@ -13,8 +13,6 @@
   } from '../../validation';
 
   // Import new modular utilities
-  import { BRAZILIAN_STATES } from '../../constants/brazilian-states';
-  import type { BrazilianState } from '../../constants/brazilian-states';
   import {
     createDefaultCustomerFormData,
     createDefaultGuardianFormData,
@@ -34,8 +32,9 @@
     cloneFormData
   } from '../../utils/form-helpers';
 
-  // Import our new component
-  import CustomerPersonalInfoStep from './CustomerPersonalInfoStep.svelte';
+  // Import our step components
+  import CustomerFormStep1 from './CustomerFormStep1.svelte';
+  import CustomerFormStep2 from './CustomerFormStep2.svelte';
 
   export let customer: any = null;
   // TODO: Add Customer type
@@ -50,8 +49,8 @@
 
   // Initialize form data using our new schemas
   let formData: CustomerFormData = createDefaultCustomerFormData();
-  const guardianFormData: CustomerFormData = createDefaultGuardianFormData();
-  const formState: CustomerFormState = createDefaultFormState();
+  let guardianFormData: CustomerFormData = createDefaultGuardianFormData();
+  let formState: CustomerFormState = createDefaultFormState();
 
   // Track initial form data for dirty state
   let initialFormData: CustomerFormData;
@@ -80,19 +79,14 @@
     }
   }
 
-  // Use Brazilian states from our constants
-  let states: BrazilianState[] = BRAZILIAN_STATES;
 
   // Validation errors
   let errors: Record<string, string> = {};
   let touched: Record<string, boolean> = {};
-  const guardianErrors: Record<string, string> = {};
-  const guardianTouched: Record<string, boolean> = {};
+  let guardianErrors: Record<string, string> = {};
+  let guardianTouched: Record<string, boolean> = {};
 
   onMount(async () => {
-    // States are now loaded from constants, no API call needed
-    states = BRAZILIAN_STATES;
-
     // Try to restore form data from localStorage using our utility
     const savedData = loadFormDraft();
     if (savedData) {
@@ -125,14 +119,20 @@
     formData.emails_attributes[0].email = '';
   }
 
-  // Copy address data when checkbox is checked using our utility
-  $: if (formState.useSameAddress) {
-    guardianFormData.addresses_attributes[0] = { ...formData.addresses_attributes[0] };
+  // Handle address copying when checkbox changes
+  function handleSameAddressChange(checked: boolean) {
+    formState.useSameAddress = checked;
+    if (checked && formData.addresses_attributes[0]) {
+      guardianFormData.addresses_attributes[0] = { ...formData.addresses_attributes[0] };
+    }
   }
 
-  // Copy bank account data when checkbox is checked using our utility
-  $: if (formState.useSameBankAccount) {
-    guardianFormData.bank_accounts_attributes[0] = { ...formData.bank_accounts_attributes[0] };
+  // Handle bank account copying when checkbox changes
+  function handleSameBankAccountChange(checked: boolean) {
+    formState.useSameBankAccount = checked;
+    if (checked && formData.bank_accounts_attributes[0]) {
+      guardianFormData.bank_accounts_attributes[0] = { ...formData.bank_accounts_attributes[0] };
+    }
   }
 
   // Handle CPF formatting
@@ -356,13 +356,13 @@
       // Validate current step before moving
       if (step > currentStep) {
         if (currentStep === 1 && validateForm()) {
-          currentStep = step;
+          formState.currentStep = step;
         } else if (currentStep === 2 && validateGuardianForm()) {
-          currentStep = step;
+          formState.currentStep = step;
         }
       } else {
         // Going backwards, no validation needed
-        currentStep = step;
+        formState.currentStep = step;
       }
     }
   }
@@ -385,7 +385,7 @@
       }
 
       console.log('Moving to step 2 (guardian form)');
-      currentStep = 2;
+      formState.currentStep = 2;
       return;
     }
 
@@ -495,7 +495,7 @@
   // Handle previous step
   function handlePreviousStep() {
     if (currentStep > 1) {
-      currentStep--;
+      formState.currentStep--;
     }
   }
 
@@ -519,10 +519,38 @@
   }
 
   function validateGuardianField(field: string, value: any) {
-    // Implement validation for guardian fields
-    const validator = validationRules[field];
-    if (validator) {
-      guardianErrors[field] = validator.validate(value);
+    // Map nested fields to their root validator name
+    let validatorKey = field;
+
+    if (field === 'email' || field === 'customer_attributes.email') {
+      validatorKey = 'email';
+      value = guardianFormData.customer_attributes.email;
+    } else if (field === 'password' || field === 'customer_attributes.password') {
+      validatorKey = 'password';
+      value = guardianFormData.customer_attributes.password;
+    } else if (field === 'password_confirmation' || field === 'customer_attributes.password_confirmation') {
+      validatorKey = 'password_confirmation';
+      value = guardianFormData.customer_attributes.password_confirmation;
+    }
+
+    // Apply validation based on field type
+    if (validatorKey === 'email') {
+      guardianErrors[field] = validateEmailRequired(value);
+    } else if (validatorKey === 'password') {
+      guardianErrors[field] = validatePasswordRequired(value);
+    } else if (validatorKey === 'password_confirmation') {
+      const passwordValidator = createPasswordConfirmationValidator(
+        () => guardianFormData.customer_attributes.password
+      );
+      guardianErrors[field] = passwordValidator(value);
+    } else if (validatorKey === 'cpf') {
+      guardianErrors[field] = validateCPFRequired(value);
+    } else if (validatorKey === 'birth') {
+      guardianErrors[field] = validateBirthDateRequired(value);
+    } else if (validatorKey === 'name' || validatorKey === 'last_name' ||
+               validatorKey === 'rg' || validatorKey === 'profession' ||
+               validatorKey === 'mother_name') {
+      guardianErrors[field] = value ? '' : `${field.replace('_', ' ')} é obrigatório`;
     }
   }
 
@@ -579,7 +607,7 @@
 
       <!-- Step 1: Customer Information -->
       {#if currentStep === 1}
-        <CustomerPersonalInfoStep
+        <CustomerFormStep1
           bind:formData
           {errors}
           {touched}
@@ -594,469 +622,23 @@
 
       <!-- Step 2: Guardian/Assistant Information -->
       {#if currentStep === 2 && showGuardianForm}
-        <div class="divider" aria-label="Seção de informações do {guardianLabel.toLowerCase()}">
-          Informações Pessoais - {guardianLabel}
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Guardian Name -->
-          <div class="form-control w-full">
-            <label for="guardian_name" class="label justify-start">
-              <span class="label-text font-medium">Nome *</span>
-            </label>
-            <input
-              id="guardian_name"
-              type="text"
-              class="input input-bordered w-full {guardianErrors.name && guardianTouched.name
-                ? 'input-error'
-                : ''}"
-              bind:value={guardianFormData.name}
-              on:blur={() => (guardianTouched.name = true)}
-              disabled={isLoading}
-              aria-required="true"
-              data-testid="guardian-name-input"
-            />
-            {#if guardianErrors.name && guardianTouched.name}
-              <div class="text-error text-sm mt-1">{guardianErrors.name}</div>
-            {/if}
-          </div>
-
-          <!-- Guardian Last Name -->
-          <div class="form-control w-full">
-            <label for="guardian_last_name" class="label justify-start">
-              <span class="label-text font-medium">Sobrenome *</span>
-            </label>
-            <input
-              id="guardian_last_name"
-              type="text"
-              class="input input-bordered w-full {guardianErrors.last_name &&
-              guardianTouched.last_name
-                ? 'input-error'
-                : ''}"
-              bind:value={guardianFormData.last_name}
-              on:blur={() => (guardianTouched.last_name = true)}
-              disabled={isLoading}
-              aria-required="true"
-              data-testid="guardian-last-name-input"
-            />
-            {#if guardianErrors.last_name && guardianTouched.last_name}
-              <div class="text-error text-sm mt-1">{guardianErrors.last_name}</div>
-            {/if}
-          </div>
-
-          <!-- Guardian CPF -->
-          <div class="form-control w-full">
-            <label for="guardian_cpf" class="label justify-start">
-              <span class="label-text font-medium">CPF *</span>
-            </label>
-            <input
-              id="guardian_cpf"
-              type="text"
-              class="input input-bordered w-full {guardianErrors.cpf && guardianTouched.cpf
-                ? 'input-error'
-                : ''}"
-              bind:value={guardianFormData.cpf}
-              on:input={(e) => {
-                guardianFormData.cpf = formatCPF(e.target.value);
-              }}
-              on:blur={() => (guardianTouched.cpf = true)}
-              disabled={isLoading}
-              placeholder="000.000.000-00"
-              maxlength="14"
-              aria-required="true"
-              data-testid="guardian-cpf-input"
-            />
-            {#if guardianErrors.cpf && guardianTouched.cpf}
-              <div class="text-error text-sm mt-1">{guardianErrors.cpf}</div>
-            {/if}
-          </div>
-
-          <!-- Guardian RG -->
-          <div class="form-control w-full">
-            <label for="guardian_rg" class="label justify-start">
-              <span class="label-text font-medium">RG *</span>
-            </label>
-            <input
-              id="guardian_rg"
-              type="text"
-              class="input input-bordered w-full {guardianErrors.rg && guardianTouched.rg
-                ? 'input-error'
-                : ''}"
-              bind:value={guardianFormData.rg}
-              on:blur={() => (guardianTouched.rg = true)}
-              disabled={isLoading}
-              aria-required="true"
-              data-testid="guardian-rg-input"
-            />
-            {#if guardianErrors.rg && guardianTouched.rg}
-              <div class="text-error text-sm mt-1">{guardianErrors.rg}</div>
-            {/if}
-          </div>
-
-          <!-- Guardian Birth Date -->
-          <div class="form-control w-full">
-            <label for="guardian_birth" class="label justify-start">
-              <span class="label-text font-medium">Data de Nascimento *</span>
-            </label>
-            <input
-              id="guardian_birth"
-              type="date"
-              class="input input-bordered w-full {guardianErrors.birth && guardianTouched.birth
-                ? 'input-error'
-                : ''}"
-              bind:value={guardianFormData.birth}
-              on:blur={() => (guardianTouched.birth = true)}
-              disabled={isLoading}
-              aria-required="true"
-              data-testid="guardian-birth-input"
-            />
-            {#if guardianErrors.birth && guardianTouched.birth}
-              <div class="text-error text-sm mt-1">{guardianErrors.birth}</div>
-            {/if}
-          </div>
-
-          <!-- Guardian Profession -->
-          <div class="form-control w-full">
-            <label for="guardian_profession" class="label justify-start">
-              <span class="label-text font-medium">Profissão *</span>
-            </label>
-            <input
-              id="guardian_profession"
-              type="text"
-              class="input input-bordered w-full {guardianErrors.profession &&
-              guardianTouched.profession
-                ? 'input-error'
-                : ''}"
-              bind:value={guardianFormData.profession}
-              on:blur={() => (guardianTouched.profession = true)}
-              disabled={isLoading}
-              aria-required="true"
-              data-testid="guardian-profession-input"
-            />
-            {#if guardianErrors.profession && guardianTouched.profession}
-              <div class="text-error text-sm mt-1">{guardianErrors.profession}</div>
-            {/if}
-          </div>
-
-          <!-- Guardian Mother Name -->
-          <div class="form-control w-full">
-            <label for="guardian_mother_name" class="label justify-start">
-              <span class="label-text font-medium">Nome da Mãe *</span>
-            </label>
-            <input
-              id="guardian_mother_name"
-              type="text"
-              class="input input-bordered w-full {guardianErrors.mother_name &&
-              guardianTouched.mother_name
-                ? 'input-error'
-                : ''}"
-              bind:value={guardianFormData.mother_name}
-              on:blur={() => (guardianTouched.mother_name = true)}
-              disabled={isLoading}
-              aria-required="true"
-              data-testid="guardian-mother-input"
-            />
-            {#if guardianErrors.mother_name && guardianTouched.mother_name}
-              <div class="text-error text-sm mt-1">{guardianErrors.mother_name}</div>
-            {/if}
-          </div>
-
-          <!-- Guardian Email -->
-          <div class="form-control w-full">
-            <label for="guardian_email" class="label justify-start">
-              <span class="label-text font-medium">Email *</span>
-            </label>
-            <input
-              id="guardian_email"
-              type="email"
-              class="input input-bordered w-full {guardianErrors.email && guardianTouched.email
-                ? 'input-error'
-                : ''}"
-              bind:value={guardianFormData.customer_attributes.email}
-              on:blur={() => (guardianTouched.email = true)}
-              disabled={isLoading}
-              placeholder="responsavel@exemplo.com"
-              aria-required="true"
-              data-testid="guardian-email-input"
-            />
-            {#if guardianErrors.email && guardianTouched.email}
-              <div class="text-error text-sm mt-1">{guardianErrors.email}</div>
-            {/if}
-          </div>
-
-          <!-- Guardian Password -->
-          <div class="form-control w-full">
-            <label for="guardian_password" class="label justify-start">
-              <span class="label-text font-medium">Senha *</span>
-            </label>
-            <input
-              id="guardian_password"
-              type="password"
-              class="input input-bordered w-full {guardianErrors.password &&
-              guardianTouched.password
-                ? 'input-error'
-                : ''}"
-              bind:value={guardianFormData.customer_attributes.password}
-              on:blur={() => (guardianTouched.password = true)}
-              disabled={isLoading}
-              placeholder="Mínimo 6 caracteres"
-              aria-required="true"
-              data-testid="guardian-password-input"
-            />
-            {#if guardianErrors.password && guardianTouched.password}
-              <div class="text-error text-sm mt-1">{guardianErrors.password}</div>
-            {/if}
-          </div>
-
-          <!-- Guardian Password Confirmation -->
-          <div class="form-control w-full">
-            <label for="guardian_password_confirmation" class="label justify-start">
-              <span class="label-text font-medium">Confirmar Senha *</span>
-            </label>
-            <input
-              id="guardian_password_confirmation"
-              type="password"
-              class="input input-bordered w-full {guardianErrors.password_confirmation &&
-              guardianTouched.password_confirmation
-                ? 'input-error'
-                : ''}"
-              bind:value={guardianFormData.customer_attributes.password_confirmation}
-              on:blur={() => (guardianTouched.password_confirmation = true)}
-              disabled={isLoading}
-              placeholder="Digite a senha novamente"
-              aria-required="true"
-              data-testid="guardian-password-confirm-input"
-            />
-            {#if guardianErrors.password_confirmation && guardianTouched.password_confirmation}
-              <div class="text-error text-sm mt-1">{guardianErrors.password_confirmation}</div>
-            {/if}
-          </div>
-        </div>
-
-        <!-- Guardian Address Section -->
-        <div class="divider" aria-label="Seção de endereço">Endereço - {guardianLabel}</div>
-
-        <!-- Checkbox to use same address -->
-        <div class="form-control">
-          <label class="label cursor-pointer justify-start gap-2">
-            <input
-              type="checkbox"
-              class="checkbox checkbox-primary"
-              bind:checked={useSameAddress}
-            />
-            <span class="label-text">Usar mesmo endereço do representado</span>
-          </label>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Guardian ZIP Code -->
-          <div class="form-control w-full">
-            <label for="guardian_zip_code" class="label justify-start">
-              <span class="label-text font-medium">CEP</span>
-            </label>
-            <input
-              id="guardian_zip_code"
-              type="text"
-              class="input input-bordered w-full"
-              bind:value={guardianFormData.addresses_attributes[0].zip_code}
-              disabled={isLoading || useSameAddress}
-              placeholder="00000-000"
-              data-testid="guardian-zipcode-input"
-            />
-          </div>
-
-          <!-- Guardian Street -->
-          <div class="form-control w-full">
-            <label for="guardian_street" class="label justify-start">
-              <span class="label-text font-medium">Rua</span>
-            </label>
-            <input
-              id="guardian_street"
-              type="text"
-              class="input input-bordered w-full"
-              bind:value={guardianFormData.addresses_attributes[0].street}
-              disabled={isLoading || useSameAddress}
-              data-testid="guardian-street-input"
-            />
-          </div>
-
-          <!-- Guardian Number -->
-          <div class="form-control w-full">
-            <label for="guardian_number" class="label justify-start">
-              <span class="label-text font-medium">Número</span>
-            </label>
-            <input
-              id="guardian_number"
-              type="text"
-              class="input input-bordered w-full"
-              bind:value={guardianFormData.addresses_attributes[0].number}
-              disabled={isLoading || useSameAddress}
-              data-testid="guardian-number-input"
-            />
-          </div>
-
-          <!-- Guardian Neighborhood -->
-          <div class="form-control w-full">
-            <label for="guardian_neighborhood" class="label justify-start">
-              <span class="label-text font-medium">Bairro</span>
-            </label>
-            <input
-              id="guardian_neighborhood"
-              type="text"
-              class="input input-bordered w-full"
-              bind:value={guardianFormData.addresses_attributes[0].neighborhood}
-              disabled={isLoading || useSameAddress}
-              data-testid="guardian-neighborhood-input"
-            />
-          </div>
-
-          <!-- Guardian City -->
-          <div class="form-control w-full">
-            <label for="guardian_city" class="label justify-start">
-              <span class="label-text font-medium">Cidade</span>
-            </label>
-            <input
-              id="guardian_city"
-              type="text"
-              class="input input-bordered w-full"
-              bind:value={guardianFormData.addresses_attributes[0].city}
-              disabled={isLoading || useSameAddress}
-              data-testid="guardian-city-input"
-            />
-          </div>
-
-          <!-- Guardian State -->
-          <div class="form-control w-full">
-            <label for="guardian_state" class="label justify-start">
-              <span class="label-text font-medium">Estado</span>
-            </label>
-            <select
-              id="guardian_state"
-              class="select select-bordered w-full"
-              bind:value={guardianFormData.addresses_attributes[0].state}
-              disabled={isLoading || useSameAddress}
-              data-testid="guardian-state-input"
-            >
-              <option value="">Selecione...</option>
-              {#each states as state}
-                <option value={state.value}>{state.label}</option>
-              {/each}
-            </select>
-          </div>
-        </div>
-
-        <!-- Guardian Bank Account Section -->
-        <div class="divider" aria-label="Seção de dados bancários">
-          Dados Bancários - {guardianLabel}
-        </div>
-
-        <!-- Checkbox to use same bank account -->
-        <div class="form-control">
-          <label class="label cursor-pointer justify-start gap-2">
-            <input
-              type="checkbox"
-              class="checkbox checkbox-primary"
-              bind:checked={useSameBankAccount}
-            />
-            <span class="label-text">Usar mesma conta bancária do representado</span>
-          </label>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Guardian Bank Name -->
-          <div class="form-control w-full">
-            <label for="guardian_bank_name" class="label justify-start">
-              <span class="label-text font-medium">Banco</span>
-            </label>
-            <input
-              id="guardian_bank_name"
-              type="text"
-              class="input input-bordered w-full"
-              bind:value={guardianFormData.bank_accounts_attributes[0].bank_name}
-              disabled={isLoading || useSameBankAccount}
-              data-testid="guardian-bank-name-input"
-            />
-          </div>
-
-          <!-- Guardian Account Type -->
-          <div class="form-control w-full">
-            <label for="guardian_type_account" class="label justify-start">
-              <span class="label-text font-medium">Tipo de Conta</span>
-            </label>
-            <select
-              id="guardian_type_account"
-              class="select select-bordered w-full"
-              bind:value={guardianFormData.bank_accounts_attributes[0].type_account}
-              disabled={isLoading || useSameBankAccount}
-              data-testid="guardian-account-type-input"
-            >
-              <option value="Corrente">Corrente</option>
-              <option value="Poupança">Poupança</option>
-            </select>
-          </div>
-
-          <!-- Guardian Agency -->
-          <div class="form-control w-full">
-            <label for="guardian_agency" class="label justify-start">
-              <span class="label-text font-medium">Agência</span>
-            </label>
-            <input
-              id="guardian_agency"
-              type="text"
-              class="input input-bordered w-full"
-              bind:value={guardianFormData.bank_accounts_attributes[0].agency}
-              disabled={isLoading || useSameBankAccount}
-              placeholder="0000-0"
-              data-testid="guardian-agency-input"
-            />
-          </div>
-
-          <!-- Guardian Account -->
-          <div class="form-control w-full">
-            <label for="guardian_account" class="label justify-start">
-              <span class="label-text font-medium">Conta</span>
-            </label>
-            <input
-              id="guardian_account"
-              type="text"
-              class="input input-bordered w-full"
-              bind:value={guardianFormData.bank_accounts_attributes[0].account}
-              disabled={isLoading || useSameBankAccount}
-              placeholder="00000-0"
-              data-testid="guardian-account-input"
-            />
-          </div>
-
-          <!-- Guardian Operation -->
-          <div class="form-control w-full">
-            <label for="guardian_operation" class="label justify-start">
-              <span class="label-text font-medium">Operação</span>
-            </label>
-            <input
-              id="guardian_operation"
-              type="text"
-              class="input input-bordered w-full"
-              bind:value={guardianFormData.bank_accounts_attributes[0].operation}
-              disabled={isLoading || useSameBankAccount}
-              data-testid="guardian-operation-input"
-            />
-          </div>
-
-          <!-- Guardian PIX -->
-          <div class="form-control w-full">
-            <label for="guardian_pix" class="label justify-start">
-              <span class="label-text font-medium">Chave PIX</span>
-            </label>
-            <input
-              id="guardian_pix"
-              type="text"
-              class="input input-bordered w-full"
-              bind:value={guardianFormData.bank_accounts_attributes[0].pix}
-              disabled={isLoading || useSameBankAccount}
-              data-testid="guardian-pix-input"
-            />
-          </div>
-        </div>
+        <CustomerFormStep2
+          bind:formData={guardianFormData}
+          errors={guardianErrors}
+          touched={guardianTouched}
+          {isLoading}
+          {guardianLabel}
+          useSameAddress={formState.useSameAddress}
+          useSameBankAccount={formState.useSameBankAccount}
+          on:fieldBlur={(e) => handlePersonFieldBlur(e, true)}
+          on:cpfInput={(e) => handlePersonCPFInput(e, true)}
+          on:birthDateChange={(e) => {
+            guardianFormData.birth = e.detail.value;
+            guardianTouched.birth = true;
+          }}
+          on:useSameAddressChange={(e) => handleSameAddressChange(e.detail.checked)}
+          on:useSameBankAccountChange={(e) => handleSameBankAccountChange(e.detail.checked)}
+        />
       {/if}
       <!-- End of Step 2 -->
 

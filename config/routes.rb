@@ -129,6 +129,9 @@ Rails.application.routes.draw do
       # Test route
       get '/test', to: 'test#index'
 
+      # Health check route (redirects to test)
+      get '/health', to: redirect('/api/v1/test')
+
       namespace :customer do
         post :login, to: 'auth#authenticate'
         get :confirm, to: 'auth#confirm'

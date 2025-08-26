@@ -130,8 +130,8 @@ class ProfileCustomer < ApplicationRecord
   has_many :active_represents, -> { active.current }, class_name: 'Represent', dependent: :destroy
   has_many :active_representors, through: :active_represents, source: :representor
 
-  accepts_nested_attributes_for :customer_files, :customer, :addresses,
-                                :phones, :emails, :bank_accounts, :represents,
+  accepts_nested_attributes_for :customer_files, :customer, :represents,
+                                :addresses, :phones, :emails, :bank_accounts,
                                 reject_if: :all_blank
 
   accepts_nested_attributes_for :customer_emails, allow_destroy: true
@@ -170,28 +170,6 @@ class ProfileCustomer < ApplicationRecord
     return I18n.t('general.without_phone') if phones.blank?
 
     phones.last.phone_number
-  end
-
-  def emails_attributes=(attributes)
-    current_email_ids = attributes.filter_map { |attr| attr[:id].to_i }
-
-    customer_emails.where.not(email_id: current_email_ids).destroy_all
-
-    super
-  end
-
-  def phones_attributes=(attributes)
-    current_phone_ids = attributes.filter_map { |attr| attr[:id].to_i }
-
-    customer_phones.where.not(phone_id: current_phone_ids).destroy_all
-
-    super
-  end
-
-  # Backward compatibility method for services expecting a single represent
-  # Returns the first active represent relationship
-  def represent
-    active_represents.first
   end
 
   private

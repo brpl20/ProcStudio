@@ -51,6 +51,9 @@ module Api
         profile_customer = ProfileCustomer.new(profile_customers_params)
         profile_customer.created_by_id = current_user.id
         if profile_customer.save
+          # Reload to ensure all associations are loaded
+          profile_customer.reload
+
           # Associate the customer with the current team
           if profile_customer.customer.present? && current_team.present?
             TeamCustomer.create!(

@@ -11,10 +11,10 @@
 			"name": "Development",
 			"item": [
 				{
-					"name": "Admin",
+					"name": "User",
 					"item": [
 						{
-							"name": "Admins",
+							"name": "Users",
 							"item": [
 								{
 									"name": "Listar registros",
@@ -32,12 +32,12 @@
 										"method": "GET",
 										"header": [],
 										"url": {
-											"raw": "{{base_url}}/admins",
+											"raw": "{{base_url}}/users",
 											"host": [
 												"{{base_url}}"
 											],
 											"path": [
-												"admins"
+												"users"
 											]
 										},
 										"description": "### Retorna todos os Admins cadastrados na aplicação.\n\nRetorna a seguinte estrutura:\n\n``` json\n{\n  \"data\": [\n    {\n      \"id\": \"1\",\n      \"type\": \"admin\",\n      \"attributes\": {\n        \"email\": \"email1@procstudio.com.br\"\n      },\n      \"relationships\": {\n        \"profile_admin\": {\n          \"data\": {\n            \"id\": \"1\",\n            \"type\": \"profile_admin\"\n          }\n        }\n      }\n    },\n    {\n      \"id\": \"2\",\n      \"type\": \"admin\",\n      \"attributes\": {\n        \"email\": \"email2@foo.com.br\"\n      },\n      \"relationships\": {\n        \"profile_admin\": {\n          \"data\": null // => indicates no profile admin associated\n        }\n      }\n    }\n  ],\n  \"meta\": {\n    \"total_count\": 2\n  }\n}\n\n ```"
@@ -77,12 +77,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{base_url}}/admins",
+											"raw": "{{base_url}}/users",
 											"host": [
 												"{{base_url}}"
 											],
 											"path": [
-												"admins"
+												"users"
 											]
 										},
 										"description": "### Criar um registro de admin\n\nEsse endpoint permite adicionar um registro de `Admin`, contudo, `email` é um campo único e `required`. Você também pode persistir um `ProfileAdmin` através desse endpoint.\n\n---\n\n#### Nested Attributes for Profile Admin (`profile_admin_attributes`)\n\nÉ possível informar propriedades de `ProfileAdmin`, para isso, você precisará informar um objeto JSON cujo em seu payload contenha uma chave inícial com o nome de `profile_admin_attributes`.  \nOs campos disponíveis para edição são os seguintes:\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| role | String | um dos: \"lawyer\", \"paralegal\", \"trainee\", \"secretary\", \"counter\", \"excounter\", \"representant\" |\n| status | String | um dos: \"active\", \"inactive\", \"pending\" |\n| admin_id | Integer | \\- |\n| office_id | Integer | \\- |\n| name | String | \\- |\n| gender | String | um dos: \"female\", \"male\", \"other\" |\n| oab | String | \\- |\n| rg | String | \\- |\n| cpf | String | \\- |\n| nationality | String | um dos: \"brazilian\", \"foreigner\" |\n| civil_status | String | um dos: \"single\", \"married\", \"divorced\", \"widower\", \"union\" |\n| birth | date | \"YYYY-MM-DD\" |\n\n---"
@@ -114,12 +114,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{base_url}}/admins/3",
+											"raw": "{{base_url}}/users/3",
 											"host": [
 												"{{base_url}}"
 											],
 											"path": [
-												"admins",
+												"users",
 												"3"
 											]
 										},
@@ -133,12 +133,12 @@
 										"method": "DELETE",
 										"header": [],
 										"url": {
-											"raw": "{{base_url}}/admins/3",
+											"raw": "{{base_url}}/users/3",
 											"host": [
 												"{{base_url}}"
 											],
 											"path": [
-												"admins",
+												"users",
 												"3"
 											]
 										},
@@ -147,7 +147,209 @@
 									"response": []
 								}
 							],
-							"description": "Aqui, você encontrará as requisições cujo o endpoint é `` `/admins` ``. As ações permitidas são as seguintes:\n\n- **index**: lista todos os registros de admins e parte de seus dados_;_\n- **show**: _retorna informação de um registro;_\n- **create:** _cria um registro;_\n- **update:** _atualiza um registro;_\n- **delete:** _indisponível._"
+							"description": "Aqui, você encontrará as requisições cujo o endpoint é `` `/admins` ``. As ações permitidas são as seguintes:\n\n- **index**: lista todos os registros de admins e parte de seus dados_;_\n    \n- **show**: _retorna informação de um registro;_\n    \n- **create:** _cria um registro;_\n    \n- **update:** _atualiza um registro;_\n    \n- **delete:** _indisponível._"
+						},
+						{
+							"name": "Profile Users",
+							"item": [
+								{
+									"name": "Listar registros",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}/user_profiles",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"user_profiles"
+											]
+										},
+										"description": "### Retorna todos os `ProfileAdmin` cadastrados na aplicação.\n\nRetorna a seguinte estrutura:\n\n``` json\n{\n  \"data\": [\n    {\n      \"id\": \"1\",\n      \"type\": \"profile_admin\",\n      \"attributes\": {\n        \"role\": \"lawyer\",\n        \"name\": \"Brian\",\n        \"last_name\": \"Oconnor\",\n        \"email\": \"b.oconnor@procstudio.com.br\"\n      }\n    },\n    {\n      \"id\": \"2\",\n      \"type\": \"profile_admin\",\n      \"attributes\": {\n        \"role\": \"lawyer\",\n        \"name\": \"Rachel\",\n        \"last_name\": \"Thompson\",\n        \"email\": \"r.thompson@procstudio.com.br\"\n      }\n    }\n  ],\n  \"meta\": {\n    \"total_count\": 2\n  }\n}\n\n ```"
+									},
+									"response": []
+								},
+								{
+									"name": "Consultar um registro",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}/user_profiles/1",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"user_profiles",
+												"1"
+											]
+										},
+										"description": "### Consultar a informação de um objeto\n\nRetorna a seguinte estrutura:\n\n``` json\n{\n  \"data\": {\n    \"id\": \"1\",\n    \"type\": \"profile_admin\",\n    \"attributes\": {\n      \"role\": \"lawyer\",\n      \"name\": \"Brian\",\n      \"last_name\": \"Oconnor\",\n      \"email\": \"b.oconnor@procstudio.com.br\"\n    }\n  }\n}\n\n ```"
+									},
+									"response": []
+								},
+								{
+									"name": "Criar um registro",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "  {\r\n      \"user_profile\": {\r\n          \"role\": \"lawyer\",\r\n          \"status\": \"active\",\r\n          \"user_id\": 1,\r\n          \"office_id\": null,\r\n          \"name\": \"Lane\",\r\n          \"last_name\": \"Doe\",\r\n          \"gender\": \"other\",\r\n          \"oab\": \"151515 OAB/MS\",\r\n          \"rg\": \"50.871.886-7\",\r\n          \"cpf\": \"688.481.730-55\",\r\n          \"nationality\": \"foreigner\",\r\n          \"civil_status\": \"single\",\r\n          \"birth\": \"3/30/1980\",\r\n          \"mother_name\": \"Lara Doe\",\r\n          \"addresses_attributes\": [\r\n              {\r\n                  \"description\": \"Apt 4, prédio localizado próximo a Padaria\",\r\n                  \"zip_code\": \"9158210-1\",\r\n                  \"street\": \"Rua Jambaláia\",\r\n                  \"number\": 531,\r\n                  \"neighborhood\": \"Zona norte\",\r\n                  \"city\": \"Caiuá\",\r\n                  \"state\": \"SP\"\r\n              }\r\n          ],\r\n          \"bank_accounts_attributes\": [\r\n              {\r\n                  \"bank_name\": \"Pic Pay\",\r\n                  \"type_account\": \"Pagamentos\",\r\n                  \"agency\": \"000-1\",\r\n                  \"account\": \"909090909192\",\r\n                  \"operation\": \"0\",\r\n                  \"pix\": \"1234567890\"\r\n              }\r\n          ],\r\n          \"phones_attributes\": [\r\n              {\r\n                  \"phone_number\": \"67 96767-6767\"\r\n              }\r\n          ],\r\n          \"emails_attributes\": [\r\n              {\r\n                  \"email\": \"newmail@gmail.com\"\r\n              }\r\n          ]\r\n      }\r\n  }",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{base_url}}/user_profiles",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"user_profiles"
+											]
+										},
+										"description": "### Criar um registro\n\nEsse endpoint permite adicionar um registro de `ProfileAdmin`. Você também pode gerenciar outras relações através desse endpoint, veja:\n\n- dados de Admin (`admin_attributes`);\n- dados de Address (`addresses_attributes`);\n- dados de BankAccount (`bank_account_attributes`);\n- dados de Phone (`phones_attributes`);\n- dados de Email (`emails_attributes`).\n    \n\n---\n\n#### Dados de Profile Admin\n\nOs campos disponíveis para edição são os seguintes:\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| role | String | um dos: \"lawyer\", \"paralegal\", \"trainee\", \"secretary\", \"counter\", \"excounter\", \"representant\" |\n| status | String | um dos: \"active\", \"inactive\", \"pending\" |\n| admin_id | Integer | \\- |\n| office_id | Integer | \\- |\n| name | String | \\- |\n| gender | String | um dos: \"female\", \"male\", \"other\" |\n| oab | String | \\- |\n| rg | String | \\- |\n| cpf | String | \\- |\n| nationality | String | um dos: \"brazilian\", \"foreigner\" |\n| civil_status | String | um dos: \"single\", \"married\", \"divorced\", \"widower\", \"union\" |\n| birth | date | \"202X-12-20\" |\n\n---\n\n#### Dados de Admin (`admin_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| email | String | \\- |\n| password | String | \\- |\n| password_confirmation | String | \\- |\n\n---\n\n#### Dados de Address (`addresses_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| city | String | \\- |\n| description | String | \\- |\n| neighborhood | String | \\- |\n| number | String | \\- |\n| street | String | \\- |\n| zip_code | String | \\- |\n\n---\n\n#### Dados de BankAccount (`bank_account_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| bank_name | String | \\- |\n| type_account | String | \\- |\n| agency | String | \\- |\n| account | String | \\- |\n| operation | String | \\- |\n| pix | String | \\- |\n\n---\n\n#### Dados de Phone (`phones_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| phone_number | String | \\- |\n\n---\n\n#### Dados de Phone (`emails_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| email | String | \\- |\n\n---\n\n### Exemplo Criação\n\n``` json\n{\n  \"profile_admin\": {\n    \"role\": \"lawyer\",\n    \"status\": \"pending\",\n    \"admin_id\": 3,\n    \"office_id\": 4,\n    \"name\": \"Lane\",\n    \"last_name\": \"Doe\",\n    \"gender\": \"other\",\n    \"oab\": \"151515 OAB/MS\",\n    \"rg\": \"50.871.886-7\",\n    \"cpf\": \"688.481.730-55\",\n    \"nationality\": \"foreigner\",\n    \"civil_status\": \"single\",\n    \"birth\": \"3/30/1980\",\n    \"mother_name\": \"Lara Doe\",\n    \"addresses_attributes\": [\n      {\n        \"description\": \"Apt 4, prédio localizado próximo a Padaria\",\n        \"zip_code\": \"9158210-1\",\n        \"street\": \"Rua Jambaláia\",\n        \"number\": 531,\n        \"neighborhood\": \"Zona norte\",\n        \"city\": \"Caiuá\",\n        \"state\": \"SP\"\n      }\n    ],\n    \"bank_accounts_attributes\": [\n      {\n        \"bank_name\": \"Pic Pay\",\n        \"type_account\": \"Pagamentos\",\n        \"agency\": \"000-1\",\n        \"account\": \"909090909192\",\n        \"operation\": \"0\",\n        \"pix\": \"1234567890\"\n      }\n    ],\n    \"phones_attributes\": [\n      {\n        \"phone_number\": \"67 96767-6767\"\n      }\n    ],\n    \"emails_attributes\": [\n      {\n        \"email\": \"newmail@gmail.com\"\n      }\n    ]\n  }\n}\n\n ```\n\n---"
+									},
+									"response": []
+								},
+								{
+									"name": "Atualizar um registro",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "  {\r\n      \"user_profile\": {\r\n          \"name\": \"Updated Name\",\r\n          \"last_name\": \"Updated Last Name\",\r\n          \"role\": \"lawyer\",\r\n          \"gender\": \"other\",\r\n          \"oab\": \"151515 OAB/MS\",\r\n          \"rg\": \"50.871.886-7\",\r\n          \"cpf\": \"688.481.730-55\",\r\n          \"nationality\": \"foreigner\",\r\n          \"civil_status\": \"single\",\r\n          \"birth\": \"3/30/1980\",\r\n          \"mother_name\": \"Lara Doe\",\r\n          \"addresses_attributes\": [\r\n              {\r\n                  \"id\": 1,\r\n                  \"description\": \"Updated apartment description\",\r\n                  \"zip_code\": \"9158210-1\",\r\n                  \"street\": \"Rua Jambaláia\",\r\n                  \"number\": 531,\r\n                  \"neighborhood\": \"Zona norte\",\r\n                  \"city\": \"Caiuá\",\r\n                  \"state\": \"SP\"\r\n              }\r\n          ],\r\n          \"bank_accounts_attributes\": [\r\n              {\r\n                  \"id\": 1,\r\n                  \"bank_name\": \"Updated Bank\",\r\n                  \"type_account\": \"Pagamentos\",\r\n                  \"agency\": \"000-1\",\r\n                  \"account\": \"909090909192\",\r\n                  \"operation\": \"0\",\r\n                  \"pix\": \"1234567890\"\r\n              }\r\n          ],\r\n          \"phones_attributes\": [\r\n              {\r\n                  \"id\": 1,\r\n                  \"phone_number\": \"67 96767-6767\"\r\n              }\r\n          ],\r\n          \"emails_attributes\": [\r\n              {\r\n                  \"id\": 1,\r\n                  \"email\": \"updated@gmail.com\"\r\n              }\r\n          ]\r\n      }\r\n  }",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{base_url}}/user_profiles/1",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"user_profiles",
+												"1"
+											]
+										},
+										"description": "### Atualizar um registro\n\nEsse endpoint permite atualizar um registro de `ProfileAdmin`. Você também pode gerenciar outras relações através desse endpoint, veja:\n\n- dados de Admin (`admin_attributes`);\n- dados de BankAccount (`bank_account_attributes`);\n- dados de Phone (`phones_attributes`);\n- dados de Email (`emails_attributes`).\n    \n\n---\n\n#### Dados de Profile Admin\n\nOs campos disponíveis para edição são os seguintes:\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| role | String | um dos: \"lawyer\", \"paralegal\", \"trainee\", \"secretary\", \"counter\", \"excounter\" |\n| status | String | um dos: \"active\", \"inactive\", \"pending\" |\n| admin_id | Integer | \\- |\n| office_id | Integer | \\- |\n| name | String | \\- |\n| gender | String | um dos: \"female\", \"male\", \"other\" |\n| oab | String | \\- |\n| rg | String | \\- |\n| cpf | String | \\- |\n| nationality | String | um dos: \"brazilian\", \"foreigner\" |\n| civil_status | String | um dos: \"single\", \"married\", \"divorced\", \"widower\", \"union\" |\n| birth | date | \"202X-12-20\" |\n\n---\n\n#### Dados de Admin (`admin_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| email | String | \\- |\n| password | String | \\- |\n| password_confirmation | String | \\- |\n\n---\n\n#### Dados de Address (`addresses_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| city | String | \\- |\n| description | String | \\- |\n| neighborhood | String | \\- |\n| number | String | \\- |\n| street | String | \\- |\n| zip_code | String | \\- |\n\n---\n\n#### Dados de BankAccount (`bank_account_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| bank_name | String | \\- |\n| type_account | String | \\- |\n| agency | String | \\- |\n| account | String | \\- |\n| operation | String | \\- |\n| pix | String | \\- |\n\n---\n\n#### Dados de Phone (`phones_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| phone_number | String | \\- |\n\n---\n\n#### Dados de Phone (`emails_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| email | String | \\- |\n\n---\n\n### Exemplo Update\n\n``` json\n{\n  \"profile_admin\": {\n    \"role\": \"lawyer\",\n    \"status\": \"pending\",\n    \"admin_id\": 3,\n    \"office_id\": 4,\n    \"name\": \"Lane\",\n    \"last_name\": \"Doe\",\n    \"gender\": \"other\",\n    \"oab\": \"151515 OAB/MS\",\n    \"rg\": \"50.871.886-7\",\n    \"cpf\": \"688.481.730-55\",\n    \"nationality\": \"foreigner\",\n    \"civil_status\": \"single\",\n    \"birth\": \"3/30/1980\",\n    \"mother_name\": \"Lara Doe\",\n    \"addresses_attributes\": [\n      {\n        \"id\": 1,\n        \"description\": \"Apt 4, prédio localizado próximo a Padaria\",\n        \"zip_code\": \"9158210-1\",\n        \"street\": \"Rua Jambaláia\",\n        \"number\": 531,\n        \"neighborhood\": \"Zona norte\",\n        \"city\": \"Caiuá\",\n        \"state\": \"SP\"\n      }\n    ],\n    \"bank_accounts_attributes\": [\n      {\n        \"id\": 1,\n        \"bank_name\": \"Pic Pay\",\n        \"type_account\": \"Pagamentos\",\n        \"agency\": \"000-1\",\n        \"account\": \"909090909192\",\n        \"operation\": \"0\",\n        \"pix\": \"1234567890\"\n      }\n    ],\n    \"phones_attributes\": [\n      {\n        \"id\": 1,\n        \"phone_number\": \"67 96767-6767\"\n      }\n    ],\n    \"emails_attributes\": [\n      {\n        \"id\": 1,\n        \"email\": \"newmail@gmail.com\"\n      }\n    ]\n  }\n}\n\n ```"
+									},
+									"response": []
+								},
+								{
+									"name": "Remover um registro (soft)",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}/user_profiles/3",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"user_profiles",
+												"3"
+											]
+										},
+										"description": "Remove um registro"
+									},
+									"response": []
+								},
+								{
+									"name": "Remover um registro (hard)",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}/user_profiles/6?destroy_fully=true",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"user_profiles",
+												"6"
+											],
+											"query": [
+												{
+													"key": "destroy_fully",
+													"value": "true"
+												}
+											]
+										},
+										"description": "Remove um registro"
+									},
+									"response": []
+								}
+							],
+							"description": "Grupo de exemplos referente a requsições feitas para o endpoint `` `/profile_admins` ``\n\nAções permitidas:\n\n- **index**: _lista todos os registros;_\n- **show**: _retorna informação de um registro;_\n- **create:** _permite criar um registro;_\n- **update:** _atualiza um registro;_\n- **delete:** indisponível.\n    \n\n---"
 						},
 						{
 							"name": "Teams",
@@ -195,13 +397,13 @@
 										"method": "GET",
 										"header": [],
 										"url": {
-											"raw": "{{base_url}}/teams/50",
+											"raw": "{{base_url}}/teams/2",
 											"host": [
 												"{{base_url}}"
 											],
 											"path": [
 												"teams",
-												"50"
+												"2"
 											]
 										}
 									},
@@ -232,13 +434,13 @@
 											}
 										},
 										"url": {
-											"raw": "{{base_url}}/teams/50",
+											"raw": "{{base_url}}/teams/2",
 											"host": [
 												"{{base_url}}"
 											],
 											"path": [
 												"teams",
-												"50"
+												"2"
 											]
 										}
 									},
@@ -302,6 +504,173 @@
 							]
 						},
 						{
+							"name": "Jobs",
+							"item": [
+								{
+									"name": "Listar Registros",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}/jobs",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"jobs"
+											]
+										},
+										"description": "### Retorna todos os Jobs cadastrados na aplicação.\n\nRetorna a seguinte estrutura:\n\n``` json\n{\n    \"data\": [\n        {\n            \"id\": \"1\",\n            \"type\": \"job\",\n            \"attributes\": {\n                \"description\": \"Uma tarefa de um trabalho\",\n                \"deadline\": \"2023-12-10\",\n                \"status\": \"pending\",\n                \"priority\": \"1\",\n                \"comment\": \"Precisamos verificar os documentos\",\n                \"customer\": \"Maria Fernanda Laranjeira Jr. Gomide\",\n                \"responsible\": \"Bruno\",\n                \"work_number\": null\n            }\n        }\n    ],\n    \"meta\": {\n        \"total_count\": 1\n    }\n}\n\n ```"
+									},
+									"response": []
+								},
+								{
+									"name": "Consultar um registro",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}/jobs/25",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"jobs",
+												"25"
+											]
+										},
+										"description": "### Consultar a informação de um objeto\n\nRetorna a seguinte estrutura:\n\n``` json\n{\n  \"data\": {\n    \"id\": \"1\",\n    \"type\": \"job\",\n    \"attributes\": {\n      \"description\": \"Uma tarefa de um trabalho\",\n      \"deadline\": \"2023-12-10\",\n      \"status\": \"pending\",\n      \"priority\": \"1\",\n      \"comment\": \"Precisamos verificar os documentos\",\n      \"customer\": \"Maria Fernanda Laranjeira Jr. Gomide\",\n      \"responsible\": \"Bruno\",\n      \"work_number\": null,\n      \"profile_admin_id\": 1,\n      \"profile_customer\": {\n        \"id\": 1,\n        \"customer_type\": \"physical_person\",\n        \"name\": \"Maria Fernanda Laranjeira Jr.\",\n        \"last_name\": \"Gomide\",\n        \"gender\": \"female\",\n        \"rg\": \"286585\",\n        \"cpf\": \"99066815327\",\n        \"cnpj\": \"\",\n        \"nationality\": \"brazilian\",\n        \"civil_status\": \"single\",\n        \"capacity\": \"able\",\n        \"profession\": \"Orquestrador TI Futuro\",\n        \"company\": \"Teixeira, da Silva e Bomdia\",\n        \"birth\": \"\\\"1995-01-12\\\"\",\n        \"mother_name\": \"João Pedro Vieira Lessa\",\n        \"number_benefit\": \"\",\n        \"status\": 1,\n        \"document\": null,\n        \"nit\": \"dhsdkr\",\n        \"inss_password\": \"dglnfrgs\",\n        \"invalid_person\": null,\n        \"customer_id\": 1\n      },\n      \"work\": {\n        \"id\": 1,\n        \"procedure\": \"administrativo\",\n        \"subject\": \"administrativo\",\n        \"number\": 123,\n        \"rate_parceled_exfield\": null,\n        \"folder\": null,\n        \"initial_atendee\": null,\n        \"note\": null,\n        \"extra_pending_document\": null,\n        \"created_at\": \"2023-12-04T07:35:52-03:00\",\n        \"updated_at\": \"2023-12-04T07:35:52-03:00\",\n        \"civel_area\": \"familia\",\n        \"social_security_areas\": \"aposentadoria_contribuicao\",\n        \"laborite_areas\": \"reclamatoria_trabalhista\",\n        \"tributary_areas\": \"asfalto\",\n        \"other_description\": null,\n        \"compensations_five_years\": null,\n        \"compensations_service\": null,\n        \"lawsuit\": null,\n        \"gain_projection\": null\n      }\n    }\n  }\n}\n\n ```"
+									},
+									"response": []
+								},
+								{
+									"name": "Criar um registro",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "  {\r\n    \"job\": {\r\n      \"description1\": \"Revisar contrato de prestação de serviços2\",\r\n      \"deadline\": \"2025-01-30\",\r\n      \"status\": \"pending\",\r\n      \"priority\": \"high\",\r\n      \"comment\": \"Cliente solicitou urgência na revisão\",\r\n      \"assignee_ids\": [],\r\n      \"supervisor_ids\": [2],\r\n      \"collaborator_ids\": [3],\r\n      \"profile_customer_id\": [],\r\n      \"work_id\": null\r\n    }\r\n  }",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{base_url}}/jobs",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"jobs"
+											]
+										},
+										"description": "### Criar um registro\n\nEsse endpoint permite adicionar um registro de `Job`. Você precisará de:\n\n- profile_admin_id;\n- work_id;\n- profile_customer_id;\n    \n\n---\n\n#### Dados de Job\n\nOs campos disponíveis para edição são os seguintes:\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| description | String | \\- |\n| deadline | Date | \\- |\n| status | String | \\- |\n| priority | String | \\- |\n| comment | String | \\- |\n| profile_customer_id | Integer | \\- |\n| profile_admin_id | Integer | \\- |\n| work_id | Integer | \\- |\n\n---\n\n### Exemplo Criação\n\n``` json\n{\n  \"job\": {\n    \"description\": \"Uma tarefa de um trabalho\",\n    \"deadline\": \"2023-12-10\",\n    \"status\": \"pending\",\n    \"priority\": \"1\",\n    \"comment\": \"Precisamos verificar os documentos\",\n    \"profile_customer_id\": 1,\n    \"profile_admin_id\": 1,\n    \"work_id\": 1\n  }\n}\n\n ```\n\n---"
+									},
+									"response": []
+								},
+								{
+									"name": "Atualizar um registro",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"job\": {\r\n        \"status\": \"finished\"\r\n    }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{base_url}}/jobs/1",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"jobs",
+												"1"
+											]
+										},
+										"description": "### Atualizar um registro\n\nEsse endpoint permite atualizar um registro de `Job`. Você precisará de:\n\n- profile_admin_id;\n- work_id;\n- profile_customer_id;\n    \n\n---\n\n#### Dados de Job\n\nOs campos disponíveis para edição são os seguintes:\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| description | String | \\- |\n| deadline | Date | \\- |\n| status | String | \\- |\n| priority | String | \\- |\n| comment | String | \\- |\n| profile_customer_id | Integer | \\- |\n| profile_admin_id | Integer | \\- |\n| work_id | Integer | \\- |\n\n---\n\n### Exemplo Criação\n\n``` json\n{\n  \"job\": {\n    \"description\": \"Uma tarefa de um trabalho\",\n    \"deadline\": \"2023-12-10\",\n    \"status\": \"pending\",\n    \"priority\": \"1\",\n    \"comment\": \"Precisamos verificar os documentos\",\n    \"profile_customer_id\": 1,\n    \"profile_admin_id\": 1,\n    \"work_id\": 1\n  }\n}\n\n ```\n\n---"
+									},
+									"response": []
+								},
+								{
+									"name": "Remover um registro",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}/jobs/4",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"jobs",
+												"4"
+											]
+										},
+										"description": "### Remover um registro\n\nEsse endpoint permite remover um registro de `Job`"
+									},
+									"response": []
+								}
+							],
+							"description": "Aqui, você encontrará as requisições cujo o endpoint é `` `/jobs` ``. As ações permitidas são as seguintes:\n\n- **index**: lista todos os registros de admins e parte de seus dados_;_\n    \n- **show**: _retorna informação de um registro;_\n    \n- **create:** _cria um registro;_\n    \n- **update:** _atualiza um registro;_\n    \n- **delete:** _remove um record._"
+						},
+						{
 							"name": "Customers",
 							"item": [
 								{
@@ -354,13 +723,13 @@
 										"method": "GET",
 										"header": [],
 										"url": {
-											"raw": "{{base_url}}/customers/103",
+											"raw": "{{base_url}}/customers/1",
 											"host": [
 												"{{base_url}}"
 											],
 											"path": [
 												"customers",
-												"103"
+												"1"
 											]
 										},
 										"description": "### Consultar a informação de um objeto\n\nRetorna a seguinte estrutura:\n\n``` json\n{\n  \"data\": {\n    \"id\": \"1\",\n    \"type\": \"customer\",\n    \"attributes\": {\n      \"email\": \"rodrick@tillman.example\"\n    }\n  }\n}\n\n ```"
@@ -384,7 +753,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"customer\": {\r\n    \"email\": \"new@customer.com\",\r\n    \"password\": \"pa$$word\",\r\n    \"password_confirmation\": \"pa$$word\"\r\n  }\r\n}",
+											"raw": "{\r\n  \"customer\": {\r\n    \"email\": \"b@customer.com\",\r\n    \"password\": \"pa$$word\",\r\n    \"password_confirmation\": \"pa$$word\"\r\n  }\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -475,7 +844,7 @@
 							"description": "Grupo de exemplos referente a requsições feitas para o endpoint `` `/customers` ``\n\nAções permitidas:\n\n- **index**: _lista todos os registros;_\n    \n- **show**: _retorna informação de um registro;_\n    \n- **create:** _permite criar um registro;_\n    \n- **update:** _atualiza um registro;_\n    \n- **delete:** indisponível.\n    \n\n---"
 						},
 						{
-							"name": "Jobs",
+							"name": "Profile Customers",
 							"item": [
 								{
 									"name": "Listar Registros",
@@ -493,20 +862,23 @@
 										"method": "GET",
 										"header": [],
 										"url": {
-											"raw": "{{host}}/jobs",
+											"raw": "{{base_url}}/profile_customers",
 											"host": [
-												"{{host}}"
+												"{{base_url}}"
 											],
 											"path": [
-												"jobs"
+												"profile_customers"
 											]
 										},
-										"description": "### Retorna todos os Jobs cadastrados na aplicação.\n\nRetorna a seguinte estrutura:\n\n``` json\n{\n    \"data\": [\n        {\n            \"id\": \"1\",\n            \"type\": \"job\",\n            \"attributes\": {\n                \"description\": \"Uma tarefa de um trabalho\",\n                \"deadline\": \"2023-12-10\",\n                \"status\": \"pending\",\n                \"priority\": \"1\",\n                \"comment\": \"Precisamos verificar os documentos\",\n                \"customer\": \"Maria Fernanda Laranjeira Jr. Gomide\",\n                \"responsible\": \"Bruno\",\n                \"work_number\": null\n            }\n        }\n    ],\n    \"meta\": {\n        \"total_count\": 1\n    }\n}\n\n ```"
+										"description": "### Retorna todos os `ProfileCustomer` cadastrados na aplicação.\n\nRetorna a seguinte estrutura:\n\n``` json\n{\n  \"data\": [\n    {\n      \"id\": \"1\",\n      \"type\": \"profile_customer\",\n      \"attributes\": {\n        \"customer_type\": \"physical_person\",\n        \"name\": \"Maria Fernanda Laranjeira Jr.\",\n        \"last_name\": \"Gomide\",\n        \"cpf\": \"99066815327\",\n        \"cnpj\": \"\",\n        \"default_phone\": \"(62) 6650-0800\",\n        \"default_email\": \"estella.spinka@zboncak-cole.example\",\n        \"city\": \"Brotas\"\n      }\n    },\n    {\n      \"id\": \"2\",\n      \"type\": \"profile_customer\",\n      \"attributes\": {\n        \"customer_type\": \"physical_person\",\n        \"name\": \"Paulo Bittencourt\",\n        \"last_name\": \"Santana\",\n        \"cpf\": \"10247078495\",\n        \"cnpj\": \"\",\n        \"default_phone\": \"(27) 8495-3826\",\n        \"default_email\": \"george@pfeffer-jenkins.example\",\n        \"city\": \"Rolante\"\n      }\n    }\n  ],\n  \"meta\": {\n    \"total_count\": 2\n  }\n}\n\n ```"
 									},
 									"response": []
 								},
 								{
 									"name": "Consultar um registro",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
 									"request": {
 										"auth": {
 											"type": "bearer",
@@ -520,17 +892,26 @@
 										},
 										"method": "GET",
 										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
 										"url": {
-											"raw": "{{host}}/jobs/1",
+											"raw": "{{base_url}}/profile_customers/10",
 											"host": [
-												"{{host}}"
+												"{{base_url}}"
 											],
 											"path": [
-												"jobs",
-												"1"
+												"profile_customers",
+												"10"
 											]
 										},
-										"description": "### Consultar a informação de um objeto\n\nRetorna a seguinte estrutura:\n\n``` json\n{\n  \"data\": {\n    \"id\": \"1\",\n    \"type\": \"job\",\n    \"attributes\": {\n      \"description\": \"Uma tarefa de um trabalho\",\n      \"deadline\": \"2023-12-10\",\n      \"status\": \"pending\",\n      \"priority\": \"1\",\n      \"comment\": \"Precisamos verificar os documentos\",\n      \"customer\": \"Maria Fernanda Laranjeira Jr. Gomide\",\n      \"responsible\": \"Bruno\",\n      \"work_number\": null,\n      \"profile_admin_id\": 1,\n      \"profile_customer\": {\n        \"id\": 1,\n        \"customer_type\": \"physical_person\",\n        \"name\": \"Maria Fernanda Laranjeira Jr.\",\n        \"last_name\": \"Gomide\",\n        \"gender\": \"female\",\n        \"rg\": \"286585\",\n        \"cpf\": \"99066815327\",\n        \"cnpj\": \"\",\n        \"nationality\": \"brazilian\",\n        \"civil_status\": \"single\",\n        \"capacity\": \"able\",\n        \"profession\": \"Orquestrador TI Futuro\",\n        \"company\": \"Teixeira, da Silva e Bomdia\",\n        \"birth\": \"\\\"1995-01-12\\\"\",\n        \"mother_name\": \"João Pedro Vieira Lessa\",\n        \"number_benefit\": \"\",\n        \"status\": 1,\n        \"document\": null,\n        \"nit\": \"dhsdkr\",\n        \"inss_password\": \"dglnfrgs\",\n        \"invalid_person\": null,\n        \"customer_id\": 1\n      },\n      \"work\": {\n        \"id\": 1,\n        \"procedure\": \"administrativo\",\n        \"subject\": \"administrativo\",\n        \"number\": 123,\n        \"rate_parceled_exfield\": null,\n        \"folder\": null,\n        \"initial_atendee\": null,\n        \"note\": null,\n        \"extra_pending_document\": null,\n        \"created_at\": \"2023-12-04T07:35:52-03:00\",\n        \"updated_at\": \"2023-12-04T07:35:52-03:00\",\n        \"civel_area\": \"familia\",\n        \"social_security_areas\": \"aposentadoria_contribuicao\",\n        \"laborite_areas\": \"reclamatoria_trabalhista\",\n        \"tributary_areas\": \"asfalto\",\n        \"other_description\": null,\n        \"compensations_five_years\": null,\n        \"compensations_service\": null,\n        \"lawsuit\": null,\n        \"gain_projection\": null\n      }\n    }\n  }\n}\n\n ```"
+										"description": "### Consultar a informação de um objeto\n\nRetorna a seguinte estrutura:\n\n``` json\n{\n  \"data\": {\n    \"id\": \"1\",\n    \"type\": \"profile_customer\",\n    \"attributes\": {\n      \"customer_id\": 1,\n      \"customer_type\": \"physical_person\",\n      \"name\": \"Maria Fernanda Laranjeira Jr.\",\n      \"last_name\": \"Gomide\",\n      \"cpf\": \"99066815327\",\n      \"cnpj\": \"\",\n      \"emails\": [\n        {\n          \"id\": 1,\n          \"email\": \"estella.spinka@zboncak-cole.example\",\n          \"created_at\": \"2023-12-04T06:20:21.585-03:00\",\n          \"updated_at\": \"2023-12-04T06:20:21.585-03:00\"\n        },\n        {\n          \"id\": 2,\n          \"email\": \"kenyetta@ondricka.example\",\n          \"created_at\": \"2023-12-04T06:20:21.613-03:00\",\n          \"updated_at\": \"2023-12-04T06:20:21.613-03:00\"\n        }\n      ],\n      \"status\": 1,\n      \"rg\": \"286585\",\n      \"birth\": \"1995-01-12\",\n      \"gender\": \"female\",\n      \"civil_status\": \"single\",\n      \"nationality\": \"brazilian\",\n      \"capacity\": \"able\",\n      \"profession\": \"Orquestrador TI Futuro\",\n      \"company\": \"Teixeira, da Silva e Bomdia\",\n      \"number_benefit\": \"\",\n      \"nit\": \"dhsdkr\",\n      \"mother_name\": \"João Pedro Vieira Lessa\",\n      \"addresses\": [\n        {\n          \"id\": 1,\n          \"description\": \"Casa\",\n          \"zip_code\": \"92248-420\",\n          \"street\": \"Avenida Elísio\",\n          \"number\": 7822,\n          \"neighborhood\": \"Paradise Creek\",\n          \"city\": \"Brotas\",\n          \"state\": \"AM\",\n          \"created_at\": \"2023-12-04T06:20:21.525-03:00\",\n          \"updated_at\": \"2023-12-04T06:20:21.525-03:00\"\n        }\n      ],\n      \"phones\": [\n        {\n          \"id\": 1,\n          \"phone_number\": \"(62) 6650-0800\",\n          \"created_at\": \"2023-12-04T06:20:21.551-03:00\",\n          \"updated_at\": \"2023-12-04T06:20:21.551-03:00\"\n        },\n        {\n          \"id\": 2,\n          \"phone_number\": \"(28) 4550-2731\",\n          \"created_at\": \"2023-12-04T06:20:21.578-03:00\",\n          \"updated_at\": \"2023-12-04T06:20:21.578-03:00\"\n        }\n      ],\n      \"bank_accounts\": [\n        {\n          \"id\": 1,\n          \"bank_name\": \"10\",\n          \"type_account\": \"Conta Corrente\",\n          \"agency\": \"006171344\",\n          \"account\": \"1992715087\",\n          \"operation\": \"0\",\n          \"created_at\": \"2023-12-04T06:20:21.621-03:00\",\n          \"updated_at\": \"2023-12-04T06:20:21.621-03:00\",\n          \"pix\": \"96069984489\"\n        }\n      ],\n      \"default_phone\": \"(62) 6650-0800\",\n      \"default_email\": \"estella.spinka@zboncak-cole.example\",\n      \"city\": \"Brotas\"\n    }\n  }\n}\n\n ```"
 									},
 									"response": []
 								},
@@ -551,7 +932,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"job\": {\r\n        \"description\": \"Uma tarefa de um trabalho\",\r\n        \"deadline\": \"2023-12-10\",\r\n        \"status\": \"pending\",\r\n        \"priority\": \"1\",\r\n        \"comment\": \"Precisamos verificar os documentos\",\r\n        \"profile_customer_id\": 1,\r\n        \"profile_admin_id\": 1,\r\n        \"work_id\": 1\r\n    }\r\n}",
+											"raw": "  {\r\n    \"profile_customer\": {\r\n      \"customer_type\": \"physical_person\",\r\n      \"name\": \"John\",\r\n      \"last_name\": \"Doe\",\r\n      \"status\": \"active\",\r\n      \"cpf\": \"058.802.539-96\",\r\n      \"rg\": \"12.345.678-9\",\r\n      \"birth\": \"1990-01-15\",\r\n      \"gender\": \"male\",\r\n      \"civil_status\": \"single\",\r\n      \"nationality\": \"brazilian\",\r\n      \"capacity\": \"able\",\r\n      \"profession\": \"Software Engineer\",\r\n      \"mother_name\": \"Jane Doe\",\r\n\r\n      \"customer_attributes\": {\r\n        \"email\": \"c8@gmail.com\",\r\n        \"password\": \"123456\",\r\n        \"password_confirmation\": \"123456\"\r\n      },\r\n\r\n      \"addresses_attributes\": [\r\n        {\r\n          \"description\": \"Home Address\",\r\n          \"zip_code\": \"01310-100\",\r\n          \"street\": \"Avenida Paulista\",\r\n          \"number\": 1578,\r\n          \"neighborhood\": \"Bela Vista\",\r\n          \"city\": \"São Paulo\",\r\n          \"state\": \"SP\"\r\n        }\r\n      ],\r\n\r\n      \"phones_attributes\": [\r\n        {\r\n          \"phone_number\": \"+55 11 98765-4321\"\r\n        }\r\n      ],\r\n\r\n      \"emails_attributes\": [\r\n        {\r\n          \"email\": \"john.doe@example.com\"\r\n        }\r\n      ],\r\n\r\n      \"bank_accounts_attributes\": [\r\n        {\r\n          \"bank_name\": \"Banco do Brasil\",\r\n          \"type_account\": \"Corrente\",\r\n          \"agency\": \"1234-5\",\r\n          \"account\": \"12345-6\",\r\n          \"operation\": \"001\",\r\n          \"pix\": \"john.doe@example.com\"\r\n        }\r\n      ]\r\n    }\r\n  }",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -559,15 +940,15 @@
 											}
 										},
 										"url": {
-											"raw": "{{host}}/jobs",
+											"raw": "{{base_url}}/profile_customers",
 											"host": [
-												"{{host}}"
+												"{{base_url}}"
 											],
 											"path": [
-												"jobs"
+												"profile_customers"
 											]
 										},
-										"description": "### Criar um registro\n\nEsse endpoint permite adicionar um registro de `Job`. Você precisará de:\n\n- profile_admin_id;\n- work_id;\n- profile_customer_id;\n    \n\n---\n\n#### Dados de Job\n\nOs campos disponíveis para edição são os seguintes:\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| description | String | \\- |\n| deadline | Date | \\- |\n| status | String | \\- |\n| priority | String | \\- |\n| comment | String | \\- |\n| profile_customer_id | Integer | \\- |\n| profile_admin_id | Integer | \\- |\n| work_id | Integer | \\- |\n\n---\n\n### Exemplo Criação\n\n``` json\n{\n  \"job\": {\n    \"description\": \"Uma tarefa de um trabalho\",\n    \"deadline\": \"2023-12-10\",\n    \"status\": \"pending\",\n    \"priority\": \"1\",\n    \"comment\": \"Precisamos verificar os documentos\",\n    \"profile_customer_id\": 1,\n    \"profile_admin_id\": 1,\n    \"work_id\": 1\n  }\n}\n\n ```\n\n---"
+										"description": "### Criar um registro\n\nEsse endpoint permite adicionar um registro de `ProfileCustomer`. Você também pode gerenciar outras relações através desse endpoint, veja:\n\n- dados de Address (`addresses_attributes`);\n- dados de BankAccount (`bank_account_attributes`);\n- dados de Customer (`customer_attributes`);\n- dados de Phone (`phones_attributes`);\n- dados de Represent _(_`represent_attributes`);\n- dados de Email (`emails_attributes`);\n- dados de CustomerFile (`customer_files_attributes`).\n    \n\n---\n\n#### Dados de Profile Customer\n\nOs campos disponíveis para edição são os seguintes:\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| customer_type | String | \\- |\n| name | String | \\- |\n| last_name | String | \\- |\n| gender | String | \\- |\n| rg | String | \\- |\n| cpf | String | \\- |\n| cnpj | String | \\- |\n| nationality | String | \\- |\n| civil_status | String | \\- |\n| capacity | String | \\- |\n| profession | String | \\- |\n| company | String | \\- |\n| birth | Date | \\- |\n| mother_name | String | \\- |\n| number_benefit | String | \\- |\n| status | Integer | \\- |\n| document | JSON | \\- |\n| nit | String | \\- |\n| inss_password | String | \\- |\n| invalid_person | Integer | \\- |\n| customer_id | Integer | \\- |\n\n---\n\n#### Dados de Address (`addresses_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| city | String | \\- |\n| description | String | \\- |\n| neighborhood | String | \\- |\n| number | String | \\- |\n| street | String | \\- |\n| zip_code | String | \\- |\n\n---\n\n#### Dados de BankAccount (`bank_account_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| bank_name | String | \\- |\n| type_account | String | \\- |\n| agency | String | \\- |\n| account | String | \\- |\n| operation | String | \\- |\n| pix | String | \\- |\n\n---\n\n#### Dados de Customer (`customer_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| email | String | \\- |\n| password | String | \\- |\n| password_confirmation | String | \\- |\n\n---\n\n#### Dados de Phone (`phones_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| phone_number | String | \\- |\n\n---\n\n#### Dados de Emails (`emails_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| email | String | \\- |\n\n---\n\n#### Dados de Represent (`represent_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| representor_id | Integer | \\- |\n\n---\n\n#### Dados de CustomerFile (`customer_files_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| file_description | string | \"simple_procuration\" |\n\n---\n\n### Exemplo Criação\n\n``` json\n{\n  \"profile_customer\": {\n    \"customer_type\": \"physical_person\",\n    \"name\": \"Luiz\",\n    \"status\": 1,\n    \"customer_id\": 10,\n    \"last_name\": \"Jaques\",\n    \"cpf\": \"73519678362\",\n    \"rg\": \"128391\",\n    \"birth\": \"1979-12-03\",\n    \"gender\": \"female\",\n    \"civil_status\": \"single\",\n    \"nationality\": \"foreigner\",\n    \"capacity\": \"unable\",\n    \"profession\": \"Consultor Administração Corporativo\",\n    \"company\": \"Regueira S.A.\",\n    \"number_benefit\": \"123132\",\n    \"mother_name\": \"Joana Samuel Corrêa Viveiros\",\n    \"inss_password\": \"nova_senha\",\n    \"accountant_id\": 1,\n    \"addresses_attributes\": [\n      {\n        \"description\": \"Apt 4, prédio localizado próximo a Padaria\",\n        \"zip_code\": \"9158210-1\",\n        \"street\": \"Rua Jambaláia\",\n        \"number\": 531,\n        \"neighborhood\": \"Zona norte\",\n        \"city\": \"Caiuá\",\n        \"state\": \"SP\"\n      }\n    ],\n    \"bank_accounts_attributes\": [\n      {\n        \"bank_name\": \"Pic Pay\",\n        \"type_account\": \"Pagamentos\",\n        \"agency\": \"000-1\",\n        \"account\": \"909090909192\",\n        \"operation\": \"0\",\n        \"pix\": \"1234567890\"\n      }\n    ],\n    \"emails_attributes\": [\n      {\n        \"email\": \"maths2@gmail.com\"\n      },\n      {\n        \"email\": \"maths3@gmail.com\"\n      }\n    ],\n    \"phones_attributes\": [\n      {\n        \"phone_number\": \"67 97667-7676\"\n      },\n      {\n        \"phone_number\": \"67 96767-6767\"\n      }\n    ],\n    \"represent_attributes\": {\n      \"representor_id\": 3\n    }\n  }\n}\n\n ```\n\n---"
 									},
 									"response": []
 								},
@@ -588,7 +969,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"job\": {\r\n        \"status\": \"finished\"\r\n    }\r\n}",
+											"raw": "{\r\n    \"profile_customer\": {\r\n       \"represent_attributes\": {\r\n           \"profile_admin_id\": 17\r\n       }\r\n    }\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -596,16 +977,16 @@
 											}
 										},
 										"url": {
-											"raw": "{{host}}/jobs/1",
+											"raw": "{{base_url}}/profile_customers/83",
 											"host": [
-												"{{host}}"
+												"{{base_url}}"
 											],
 											"path": [
-												"jobs",
-												"1"
+												"profile_customers",
+												"83"
 											]
 										},
-										"description": "### Atualizar um registro\n\nEsse endpoint permite atualizar um registro de `Job`. Você precisará de:\n\n- profile_admin_id;\n- work_id;\n- profile_customer_id;\n    \n\n---\n\n#### Dados de Job\n\nOs campos disponíveis para edição são os seguintes:\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| description | String | \\- |\n| deadline | Date | \\- |\n| status | String | \\- |\n| priority | String | \\- |\n| comment | String | \\- |\n| profile_customer_id | Integer | \\- |\n| profile_admin_id | Integer | \\- |\n| work_id | Integer | \\- |\n\n---\n\n### Exemplo Criação\n\n``` json\n{\n  \"job\": {\n    \"description\": \"Uma tarefa de um trabalho\",\n    \"deadline\": \"2023-12-10\",\n    \"status\": \"pending\",\n    \"priority\": \"1\",\n    \"comment\": \"Precisamos verificar os documentos\",\n    \"profile_customer_id\": 1,\n    \"profile_admin_id\": 1,\n    \"work_id\": 1\n  }\n}\n\n ```\n\n---"
+										"description": "### Atualizar um registro\n\nEsse endpoint permite adicionar um registro de `ProfileCustomer`. Você também pode gerenciar outras relações através desse endpoint, veja:\n\n- dados de Address (`addresses_attributes`);\n- dados de BankAccount (`bank_account_attributes`);\n- dados de Customer (`customer_attributes`);\n- dados de Phone (`phones_attributes`);\n- dados de Represent _(_`represent_attributes`);\n- dados de Email (`emails_attributes`);\n- dados de CustomerFile (`customer_files_attributes`).\n    \n\n---\n\n#### Dados de Profile Customer\n\nOs campos disponíveis para edição são os seguintes:\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| customer_type | String | \\- |\n| name | String | \\- |\n| last_name | String | \\- |\n| gender | String | \\- |\n| rg | String | \\- |\n| cpf | String | \\- |\n| cnpj | String | \\- |\n| nationality | String | \\- |\n| civil_status | String | \\- |\n| capacity | String | \\- |\n| profession | String | \\- |\n| company | String | \\- |\n| birth | Date | \\- |\n| mother_name | String | \\- |\n| number_benefit | String | \\- |\n| status | Integer | \\- |\n| document | JSON | \\- |\n| nit | String | \\- |\n| inss_password | String | \\- |\n| invalid_person | Integer | \\- |\n| customer_id | Integer | \\- |\n\n---\n\n#### Dados de Address (`addresses_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| city | String | \\- |\n| description | String | \\- |\n| neighborhood | String | \\- |\n| number | String | \\- |\n| street | String | \\- |\n| zip_code | String | \\- |\n\n---\n\n#### Dados de BankAccount (`bank_account_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| bank_name | String | \\- |\n| type_account | String | \\- |\n| agency | String | \\- |\n| account | String | \\- |\n| operation | String | \\- |\n| pix | String | \\- |\n\n---\n\n#### Dados de Customer (`customer_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| email | String | \\- |\n| password | String | \\- |\n| password_confirmation | String | \\- |\n\n---\n\n#### Dados de Phone (`phones_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| phone_number | String | \\- |\n\n---\n\n#### Dados de Emails (`emails_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| email | String | \\- |\n\n---\n\n#### Dados de Represent (`represent_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| representor_id | Integer | \\- |\n\n---\n\n#### Dados de CustomerFile (`customer_files_attributes`)\n\n###### Para gerar o(s) doc(s) novamente, `regenerate_docs` deve ser informado com valor `true`\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| file_description | string | \"simple_procuration\" |\n\n---\n\n### Exemplo\n\n``` json\n{\n  \"profile_customer\": {\n    \"customer_type\": \"physical_person\",\n    \"name\": \"Luiz\",\n    \"status\": 1,\n    \"customer_id\": 10,\n    \"last_name\": \"Jaques\",\n    \"cpf\": \"73519678362\",\n    \"rg\": \"128391\",\n    \"birth\": \"1979-12-03\",\n    \"gender\": \"female\",\n    \"civil_status\": \"single\",\n    \"nationality\": \"foreigner\",\n    \"capacity\": \"unable\",\n    \"profession\": \"Consultor Administração Corporativo\",\n    \"company\": \"Regueira S.A.\",\n    \"number_benefit\": \"123132\",\n    \"mother_name\": \"Joana Samuel Corrêa Viveiros\",\n    \"inss_password\": \"nova_senha\",\n    \"accountant_id\": 1,\n    \"addresses_attributes\": [\n      {\n        \"id\": 123,\n        \"description\": \"Apt 4, prédio localizado próximo a Padaria\",\n        \"zip_code\": \"9158210-1\",\n        \"street\": \"Rua Jambaláia\",\n        \"number\": 531,\n        \"neighborhood\": \"Zona norte\",\n        \"city\": \"Caiuá\",\n        \"state\": \"SP\"\n      }\n    ],\n    \"bank_accounts_attributes\": [\n      {\n        \"id\": 123,\n        \"bank_name\": \"Pic Pay\",\n        \"type_account\": \"Pagamentos\",\n        \"agency\": \"000-1\",\n        \"account\": \"909090909192\",\n        \"operation\": \"0\",\n        \"pix\": \"1234567890\"\n      }\n    ],\n    \"emails_attributes\": [\n      {\n        \"id\": 123,\n        \"email\": \"maths2@gmail.com\"\n      },\n      {\n        \"id\": 123,\n        \"email\": \"maths3@gmail.com\"\n      }\n    ],\n    \"phones_attributes\": [\n      {\n        \"id\": 123,\n        \"phone_number\": \"67 97667-7676\"\n      },\n      {\n        \"id\": 123,\n        \"phone_number\": \"67 96767-6767\"\n      }\n    ],\n    \"represent_attributes\": {\n      \"id\": 4,\n      \"representor_id\": 4\n    }\n  }\n}\n\n ```\n\n---"
 									},
 									"response": []
 								},
@@ -625,27 +1006,27 @@
 										"method": "DELETE",
 										"header": [],
 										"url": {
-											"raw": "{{host}}/jobs/6",
+											"raw": "{{base_url}}/profile_customers/68",
 											"host": [
-												"{{host}}"
+												"{{base_url}}"
 											],
 											"path": [
-												"jobs",
-												"6"
+												"profile_customers",
+												"68"
 											]
 										},
-										"description": "### Remover um registro\n\nEsse endpoint permite remover um registro de `Job`"
+										"description": "---\n\nRemove um registro"
 									},
 									"response": []
 								}
 							],
-							"description": "Aqui, você encontrará as requisições cujo o endpoint é `` `/jobs` ``. As ações permitidas são as seguintes:\n\n- **index**: lista todos os registros de admins e parte de seus dados_;_\n    \n- **show**: _retorna informação de um registro;_\n    \n- **create:** _cria um registro;_\n    \n- **update:** _atualiza um registro;_\n    \n- **delete:** _remove um record._"
+							"description": "Grupo de exemplos referente a requisições feitas para o endpoint `/profile_customers.` Ações permitidas:\n\n- **index**: _lists all registered admins;_\n- **show**: _returns record information;_\n- **create:** _creates an admin record;_\n- **update:** _updates a record;_\n- **delete:** not implemented."
 						},
 						{
-							"name": "Profile Admins",
+							"name": "Represents",
 							"item": [
 								{
-									"name": "Listar registros",
+									"name": "Listar Registros",
 									"request": {
 										"auth": {
 											"type": "bearer",
@@ -660,20 +1041,19 @@
 										"method": "GET",
 										"header": [],
 										"url": {
-											"raw": "{{base_url}}/profile_admins",
+											"raw": "{{base_url}}/represents",
 											"host": [
 												"{{base_url}}"
 											],
 											"path": [
-												"profile_admins"
+												"represents"
 											]
-										},
-										"description": "### Retorna todos os `ProfileAdmin` cadastrados na aplicação.\n\nRetorna a seguinte estrutura:\n\n``` json\n{\n  \"data\": [\n    {\n      \"id\": \"1\",\n      \"type\": \"profile_admin\",\n      \"attributes\": {\n        \"role\": \"lawyer\",\n        \"name\": \"Brian\",\n        \"last_name\": \"Oconnor\",\n        \"email\": \"b.oconnor@procstudio.com.br\"\n      }\n    },\n    {\n      \"id\": \"2\",\n      \"type\": \"profile_admin\",\n      \"attributes\": {\n        \"role\": \"lawyer\",\n        \"name\": \"Rachel\",\n        \"last_name\": \"Thompson\",\n        \"email\": \"r.thompson@procstudio.com.br\"\n      }\n    }\n  ],\n  \"meta\": {\n    \"total_count\": 2\n  }\n}\n\n ```"
+										}
 									},
 									"response": []
 								},
 								{
-									"name": "Consultar um registro",
+									"name": "Listar todos representantes de um customer",
 									"request": {
 										"auth": {
 											"type": "bearer",
@@ -688,16 +1068,45 @@
 										"method": "GET",
 										"header": [],
 										"url": {
-											"raw": "{{base_url}}/profile_admins/17",
+											"raw": "{{base_url}}/profile_customers/8/represents",
 											"host": [
 												"{{base_url}}"
 											],
 											"path": [
-												"profile_admins",
-												"17"
+												"profile_customers",
+												"8",
+												"represents"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Listar todos representados de um customer",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
 											]
 										},
-										"description": "### Consultar a informação de um objeto\n\nRetorna a seguinte estrutura:\n\n``` json\n{\n  \"data\": {\n    \"id\": \"1\",\n    \"type\": \"profile_admin\",\n    \"attributes\": {\n      \"role\": \"lawyer\",\n      \"name\": \"Brian\",\n      \"last_name\": \"Oconnor\",\n      \"email\": \"b.oconnor@procstudio.com.br\"\n    }\n  }\n}\n\n ```"
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}/represents/by_representor/9",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"represents",
+												"by_representor",
+												"9"
+											]
+										}
 									},
 									"response": []
 								},
@@ -718,7 +1127,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"profile_admin\": {\r\n        \"role\": \"lawyer\",\r\n        \"status\": \"pending\",\r\n        \"admin_id\": 3,\r\n        \"office_id\": 4,\r\n        \"name\": \"Lane\",\r\n        \"last_name\": \"Doe\",\r\n        \"gender\": \"other\",\r\n        \"oab\": \"151515 OAB/MS\",\r\n        \"rg\": \"50.871.886-7\",\r\n        \"cpf\": \"688.481.730-55\",\r\n        \"nationality\": \"foreigner\",\r\n        \"civil_status\": \"single\",\r\n        \"birth\": \"3/30/1980\",\r\n        \"mother_name\": \"Lara Doe\",\r\n        \"addresses_attributes\": [\r\n            {\r\n                \"description\": \"Apt 4, prédio localizado próximo a Padaria\",\r\n                \"zip_code\": \"9158210-1\",\r\n                \"street\": \"Rua Jambaláia\",\r\n                \"number\": 531,\r\n                \"neighborhood\": \"Zona norte\",\r\n                \"city\": \"Caiuá\",\r\n                \"state\": \"SP\"\r\n            }\r\n        ],\r\n        \"bank_accounts_attributes\": [\r\n            {\r\n                \"bank_name\": \"Pic Pay\",\r\n                \"type_account\": \"Pagamentos\",\r\n                \"agency\": \"000-1\",\r\n                \"account\": \"909090909192\",\r\n                \"operation\": \"0\",\r\n                \"pix\": \"1234567890\"\r\n            }\r\n        ],\r\n        \"phones_attributes\": [\r\n            {\r\n                \"phone_number\": \"67 96767-6767\"\r\n            }\r\n        ],\r\n        \"emails_attributes\": [\r\n            {\r\n                \"email\": \"newmail@gmail.com\"\r\n            }\r\n        ]\r\n    }\r\n}",
+											"raw": "```json\n{\n  \"represent\": {\n    \"profile_customer_id\": 1,  // ID of the unable/relatively incapable person\n    \"representor_id\": 2,        // ID of the representative\n    \"relationship_type\": \"representation\",\n    \"active\": true,\n    \"start_date\": \"2024-01-01\",\n    \"notes\": \"Mãe do menor\"\n  }\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -726,15 +1135,14 @@
 											}
 										},
 										"url": {
-											"raw": "{{base_url}}/profile_admins",
+											"raw": "{{base_url}}/represents",
 											"host": [
 												"{{base_url}}"
 											],
 											"path": [
-												"profile_admins"
+												"represents"
 											]
-										},
-										"description": "### Criar um registro\n\nEsse endpoint permite adicionar um registro de `ProfileAdmin`. Você também pode gerenciar outras relações através desse endpoint, veja:\n\n- dados de Admin (`admin_attributes`);\n- dados de Address (`addresses_attributes`);\n- dados de BankAccount (`bank_account_attributes`);\n- dados de Phone (`phones_attributes`);\n- dados de Email (`emails_attributes`).\n    \n\n---\n\n#### Dados de Profile Admin\n\nOs campos disponíveis para edição são os seguintes:\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| role | String | um dos: \"lawyer\", \"paralegal\", \"trainee\", \"secretary\", \"counter\", \"excounter\", \"representant\" |\n| status | String | um dos: \"active\", \"inactive\", \"pending\" |\n| admin_id | Integer | \\- |\n| office_id | Integer | \\- |\n| name | String | \\- |\n| gender | String | um dos: \"female\", \"male\", \"other\" |\n| oab | String | \\- |\n| rg | String | \\- |\n| cpf | String | \\- |\n| nationality | String | um dos: \"brazilian\", \"foreigner\" |\n| civil_status | String | um dos: \"single\", \"married\", \"divorced\", \"widower\", \"union\" |\n| birth | date | \"202X-12-20\" |\n\n---\n\n#### Dados de Admin (`admin_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| email | String | \\- |\n| password | String | \\- |\n| password_confirmation | String | \\- |\n\n---\n\n#### Dados de Address (`addresses_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| city | String | \\- |\n| description | String | \\- |\n| neighborhood | String | \\- |\n| number | String | \\- |\n| street | String | \\- |\n| zip_code | String | \\- |\n\n---\n\n#### Dados de BankAccount (`bank_account_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| bank_name | String | \\- |\n| type_account | String | \\- |\n| agency | String | \\- |\n| account | String | \\- |\n| operation | String | \\- |\n| pix | String | \\- |\n\n---\n\n#### Dados de Phone (`phones_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| phone_number | String | \\- |\n\n---\n\n#### Dados de Phone (`emails_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| email | String | \\- |\n\n---\n\n### Exemplo Criação\n\n``` json\n{\n  \"profile_admin\": {\n    \"role\": \"lawyer\",\n    \"status\": \"pending\",\n    \"admin_id\": 3,\n    \"office_id\": 4,\n    \"name\": \"Lane\",\n    \"last_name\": \"Doe\",\n    \"gender\": \"other\",\n    \"oab\": \"151515 OAB/MS\",\n    \"rg\": \"50.871.886-7\",\n    \"cpf\": \"688.481.730-55\",\n    \"nationality\": \"foreigner\",\n    \"civil_status\": \"single\",\n    \"birth\": \"3/30/1980\",\n    \"mother_name\": \"Lara Doe\",\n    \"addresses_attributes\": [\n      {\n        \"description\": \"Apt 4, prédio localizado próximo a Padaria\",\n        \"zip_code\": \"9158210-1\",\n        \"street\": \"Rua Jambaláia\",\n        \"number\": 531,\n        \"neighborhood\": \"Zona norte\",\n        \"city\": \"Caiuá\",\n        \"state\": \"SP\"\n      }\n    ],\n    \"bank_accounts_attributes\": [\n      {\n        \"bank_name\": \"Pic Pay\",\n        \"type_account\": \"Pagamentos\",\n        \"agency\": \"000-1\",\n        \"account\": \"909090909192\",\n        \"operation\": \"0\",\n        \"pix\": \"1234567890\"\n      }\n    ],\n    \"phones_attributes\": [\n      {\n        \"phone_number\": \"67 96767-6767\"\n      }\n    ],\n    \"emails_attributes\": [\n      {\n        \"email\": \"newmail@gmail.com\"\n      }\n    ]\n  }\n}\n\n ```\n\n---"
+										}
 									},
 									"response": []
 								},
@@ -751,11 +1159,11 @@
 												}
 											]
 										},
-										"method": "PUT",
+										"method": "PATCH",
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"profile_admin\": {\r\n    \"role\": \"lawyer\",\r\n    \"status\": \"pending\",\r\n    \"admin_id\": 3,\r\n    \"office_id\": 4,\r\n    \"name\": \"Lane\",\r\n    \"last_name\": \"Doe\",\r\n    \"gender\": \"other\",\r\n    \"oab\": \"151515 OAB/MS\",\r\n    \"rg\": \"50.871.886-7\",\r\n    \"cpf\": \"688.481.730-55\",\r\n    \"nationality\": \"foreigner\",\r\n    \"civil_status\": \"single\",\r\n    \"birth\": \"3/30/1980\",\r\n    \"mother_name\": \"Lara Doe\",\r\n    \"addresses_attributes\": [\r\n      {\r\n        \"id\": 12,\r\n        \"description\": \"Apt 51, prédio localizado próximo a Padaria\",\r\n        \"zip_code\": \"9158210-1\",\r\n        \"street\": \"Rua Jambaláia\",\r\n        \"number\": 531,\r\n        \"neighborhood\": \"Zona norte\",\r\n        \"city\": \"Caiub\",\r\n        \"state\": \"SP\"\r\n      }\r\n    ],\r\n    \"bank_accounts_attributes\": [\r\n      {\r\n        \"id\": 13,\r\n        \"bank_name\": \"Pic Pay\",\r\n        \"type_account\": \"Pagamento\",\r\n        \"agency\": \"0000-1\",\r\n        \"account\": \"909090909192\",\r\n        \"operation\": \"0\",\r\n        \"pix\": \"1234567890\"\r\n      }\r\n    ],\r\n    \"phones_attributes\": [\r\n      {\r\n        \"id\": 27,\r\n        \"phone_number\": \"67 96767-6768\"\r\n      }\r\n    ],\r\n    \"emails_attributes\": [\r\n      {\r\n        \"id\": 30,\r\n        \"email\": \"newmail3@gmail.com\"\r\n      }\r\n    ]\r\n  }\r\n}",
+											"raw": "// Cuidar para colocar o ID da representação e não das pessoas\n{\n  \"represent\": {\n    \"profile_customer_id\": 8,  // ID of the unable/relatively incapable person\n    \"representor_id\": 9,        // ID of the representative\n    \"relationship_type\": \"representation\",\n    \"active\": true,\n    \"start_date\": \"2025-08-25\",\n    \"notes\": \"Mãe do menor\"\n  }\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -763,21 +1171,20 @@
 											}
 										},
 										"url": {
-											"raw": "{{base_url}}/profile_admins/17",
+											"raw": "{{base_url}}/represents/1",
 											"host": [
 												"{{base_url}}"
 											],
 											"path": [
-												"profile_admins",
-												"17"
+												"represents",
+												"1"
 											]
-										},
-										"description": "### Atualizar um registro\n\nEsse endpoint permite atualizar um registro de `ProfileAdmin`. Você também pode gerenciar outras relações através desse endpoint, veja:\n\n- dados de Admin (`admin_attributes`);\n- dados de BankAccount (`bank_account_attributes`);\n- dados de Phone (`phones_attributes`);\n- dados de Email (`emails_attributes`).\n    \n\n---\n\n#### Dados de Profile Admin\n\nOs campos disponíveis para edição são os seguintes:\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| role | String | um dos: \"lawyer\", \"paralegal\", \"trainee\", \"secretary\", \"counter\", \"excounter\" |\n| status | String | um dos: \"active\", \"inactive\", \"pending\" |\n| admin_id | Integer | \\- |\n| office_id | Integer | \\- |\n| name | String | \\- |\n| gender | String | um dos: \"female\", \"male\", \"other\" |\n| oab | String | \\- |\n| rg | String | \\- |\n| cpf | String | \\- |\n| nationality | String | um dos: \"brazilian\", \"foreigner\" |\n| civil_status | String | um dos: \"single\", \"married\", \"divorced\", \"widower\", \"union\" |\n| birth | date | \"202X-12-20\" |\n\n---\n\n#### Dados de Admin (`admin_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| email | String | \\- |\n| password | String | \\- |\n| password_confirmation | String | \\- |\n\n---\n\n#### Dados de Address (`addresses_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| city | String | \\- |\n| description | String | \\- |\n| neighborhood | String | \\- |\n| number | String | \\- |\n| street | String | \\- |\n| zip_code | String | \\- |\n\n---\n\n#### Dados de BankAccount (`bank_account_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| bank_name | String | \\- |\n| type_account | String | \\- |\n| agency | String | \\- |\n| account | String | \\- |\n| operation | String | \\- |\n| pix | String | \\- |\n\n---\n\n#### Dados de Phone (`phones_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| phone_number | String | \\- |\n\n---\n\n#### Dados de Phone (`emails_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| email | String | \\- |\n\n---\n\n### Exemplo Update\n\n``` json\n{\n  \"profile_admin\": {\n    \"role\": \"lawyer\",\n    \"status\": \"pending\",\n    \"admin_id\": 3,\n    \"office_id\": 4,\n    \"name\": \"Lane\",\n    \"last_name\": \"Doe\",\n    \"gender\": \"other\",\n    \"oab\": \"151515 OAB/MS\",\n    \"rg\": \"50.871.886-7\",\n    \"cpf\": \"688.481.730-55\",\n    \"nationality\": \"foreigner\",\n    \"civil_status\": \"single\",\n    \"birth\": \"3/30/1980\",\n    \"mother_name\": \"Lara Doe\",\n    \"addresses_attributes\": [\n      {\n        \"id\": 1,\n        \"description\": \"Apt 4, prédio localizado próximo a Padaria\",\n        \"zip_code\": \"9158210-1\",\n        \"street\": \"Rua Jambaláia\",\n        \"number\": 531,\n        \"neighborhood\": \"Zona norte\",\n        \"city\": \"Caiuá\",\n        \"state\": \"SP\"\n      }\n    ],\n    \"bank_accounts_attributes\": [\n      {\n        \"id\": 1,\n        \"bank_name\": \"Pic Pay\",\n        \"type_account\": \"Pagamentos\",\n        \"agency\": \"000-1\",\n        \"account\": \"909090909192\",\n        \"operation\": \"0\",\n        \"pix\": \"1234567890\"\n      }\n    ],\n    \"phones_attributes\": [\n      {\n        \"id\": 1,\n        \"phone_number\": \"67 96767-6767\"\n      }\n    ],\n    \"emails_attributes\": [\n      {\n        \"id\": 1,\n        \"email\": \"newmail@gmail.com\"\n      }\n    ]\n  }\n}\n\n ```"
+										}
 									},
 									"response": []
 								},
 								{
-									"name": "Remover um registro",
+									"name": "Deletar um Registro",
 									"request": {
 										"auth": {
 											"type": "bearer",
@@ -791,22 +1198,29 @@
 										},
 										"method": "DELETE",
 										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "// Cuidar para colocar o ID da representação e não das pessoas\n{\n  \"represent\": {\n    \"profile_customer_id\": 8,  // ID of the unable/relatively incapable person\n    \"representor_id\": 9,        // ID of the representative\n    \"relationship_type\": \"representation\",\n    \"active\": true,\n    \"start_date\": \"2025-08-25\",\n    \"notes\": \"Mãe do menor\"\n  }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
 										"url": {
-											"raw": "{{base_url}}/profile_admins/6",
+											"raw": "{{base_url}}/represents/1",
 											"host": [
 												"{{base_url}}"
 											],
 											"path": [
-												"profile_admins",
-												"6"
+												"represents",
+												"1"
 											]
-										},
-										"description": "Remove um registro"
+										}
 									},
 									"response": []
 								}
-							],
-							"description": "Grupo de exemplos referente a requsições feitas para o endpoint `` `/profile_admins` ``\n\nAções permitidas:\n\n- **index**: _lista todos os registros;_\n- **show**: _retorna informação de um registro;_\n- **create:** _permite criar um registro;_\n- **update:** _atualiza um registro;_\n- **delete:** indisponível.\n    \n\n---"
+							]
 						},
 						{
 							"name": "Offices",
@@ -1182,6 +1596,138 @@
 							"description": "Grupo de exemplos referente a requisições feitas para o endpoint `` `/office_types ``\n\nAções permitidas:\n\n- **index**: _lists all registered office types;_\n- **show**: _returns record information;_\n- **create:** _creates an office type (we validate on uniqueness description);_\n- **update:** _updates a record;_\n- **delete:** _deletes a record._"
 						},
 						{
+							"name": "Law Areas",
+							"item": [
+								{
+									"name": "Listar Registros",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}/law_areas",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"law_areas"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Consultar um Registro",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}/law_areas/1",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"law_areas",
+												"1"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Criar um Registro (Área)",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "  {\n    \"law_area\": {\n      \"name\": \"Civil\",\n      \"code\": \"civil\",\n      \"description\": \"Direito Civil em geral\",\n      \"active\": true,\n      \"sort_order\": 1\n    }\n  }",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{base_url}}/law_areas",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"law_areas"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Criar um Registro (SubáArea)",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "  {\n    \"law_area\": {\n      \"name\": \"Família\",\n      \"code\": \"family2\",\n      \"description\": \"Direito de Família - divórcio, pensão, guarda\",\n      \"parent_area_id\": 4,\n      \"active\": true,\n      \"sort_order\": 1\n    }\n  }",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{base_url}}/law_areas",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"law_areas"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
 							"name": "Powers",
 							"item": [
 								{
@@ -1242,7 +1788,7 @@
 									"response": []
 								},
 								{
-									"name": "Criar registro",
+									"name": "Criar registro (Base)",
 									"request": {
 										"auth": {
 											"type": "bearer",
@@ -1258,7 +1804,45 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"power\": {\r\n        \"description\": \"assinar\",\r\n        \"category\": \"admgeneral\"\r\n    }\r\n}",
+											"raw": "{\r\n    \"power\": {\r\n        \"description\": \"representar em foro geral\",\r\n        \"category\": \"judicial\",\r\n        \"is_base\": true\r\n    }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{base_url}}/powers/",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"powers",
+												""
+											]
+										},
+										"description": "### Criar um registro\n\nEsse endpoint permite adicionar um registro de Powers.\n\n---\n\n#### Dados de Power\n\nOs campos disponíveis para edição são os seguintes:\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| description | String | \\- |\n| category | String (valor informaro) /  <br>Integer (valor salvo no banco) | Um dos: \"admgeneral\", \"admspecific\", \"admspecificprev\", \"admspecifictributary\", \"admspecifictributaryecac\", \"lawgeneral\", \"lawspecific\", \"lawspecificsecret\", \"lawspecificcrime\", \"extrajudicial\", \"subs\" |\n\n---\n\n### Exemplo Criação\n\n``` json\n{\n    \"power\": {\n        \"description\": \"assinar\",\n        \"category\": \"admgeneral\"\n    }\n}\n\n ```\n\n---"
+									},
+									"response": []
+								},
+								{
+									"name": "Criar registro (Poder Customizado)",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"power\": {\r\n        \"description\": \"representar em foro geral\",\r\n        \"category\": \"judicial\",\r\n        \"is_base\": true\r\n    }\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -1359,193 +1943,6 @@
 							"description": "Grupo de exemplos referente a requisições feitas para o endpoint `/powers`\n\nAções permitidas:\n\n- **index**: _lists all registered office types;_\n- **show**: _returns record information;_\n- **create:** _creates an office type (we validate on uniqueness description);_\n- **update:** _updates a record;_\n- **delete:** _not implemented._"
 						},
 						{
-							"name": "Profile Customers",
-							"item": [
-								{
-									"name": "Listar Registros",
-									"request": {
-										"auth": {
-											"type": "bearer",
-											"bearer": [
-												{
-													"key": "token",
-													"value": "{{token}}",
-													"type": "string"
-												}
-											]
-										},
-										"method": "GET",
-										"header": [],
-										"url": {
-											"raw": "{{base_url}}/profile_customers",
-											"host": [
-												"{{base_url}}"
-											],
-											"path": [
-												"profile_customers"
-											]
-										},
-										"description": "### Retorna todos os `ProfileCustomer` cadastrados na aplicação.\n\nRetorna a seguinte estrutura:\n\n``` json\n{\n  \"data\": [\n    {\n      \"id\": \"1\",\n      \"type\": \"profile_customer\",\n      \"attributes\": {\n        \"customer_type\": \"physical_person\",\n        \"name\": \"Maria Fernanda Laranjeira Jr.\",\n        \"last_name\": \"Gomide\",\n        \"cpf\": \"99066815327\",\n        \"cnpj\": \"\",\n        \"default_phone\": \"(62) 6650-0800\",\n        \"default_email\": \"estella.spinka@zboncak-cole.example\",\n        \"city\": \"Brotas\"\n      }\n    },\n    {\n      \"id\": \"2\",\n      \"type\": \"profile_customer\",\n      \"attributes\": {\n        \"customer_type\": \"physical_person\",\n        \"name\": \"Paulo Bittencourt\",\n        \"last_name\": \"Santana\",\n        \"cpf\": \"10247078495\",\n        \"cnpj\": \"\",\n        \"default_phone\": \"(27) 8495-3826\",\n        \"default_email\": \"george@pfeffer-jenkins.example\",\n        \"city\": \"Rolante\"\n      }\n    }\n  ],\n  \"meta\": {\n    \"total_count\": 2\n  }\n}\n\n ```"
-									},
-									"response": []
-								},
-								{
-									"name": "Consultar um registro",
-									"protocolProfileBehavior": {
-										"disableBodyPruning": true
-									},
-									"request": {
-										"auth": {
-											"type": "bearer",
-											"bearer": [
-												{
-													"key": "token",
-													"value": "{{token}}",
-													"type": "string"
-												}
-											]
-										},
-										"method": "GET",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{base_url}}/profile_customers/65",
-											"host": [
-												"{{base_url}}"
-											],
-											"path": [
-												"profile_customers",
-												"65"
-											]
-										},
-										"description": "### Consultar a informação de um objeto\n\nRetorna a seguinte estrutura:\n\n``` json\n{\n  \"data\": {\n    \"id\": \"1\",\n    \"type\": \"profile_customer\",\n    \"attributes\": {\n      \"customer_id\": 1,\n      \"customer_type\": \"physical_person\",\n      \"name\": \"Maria Fernanda Laranjeira Jr.\",\n      \"last_name\": \"Gomide\",\n      \"cpf\": \"99066815327\",\n      \"cnpj\": \"\",\n      \"emails\": [\n        {\n          \"id\": 1,\n          \"email\": \"estella.spinka@zboncak-cole.example\",\n          \"created_at\": \"2023-12-04T06:20:21.585-03:00\",\n          \"updated_at\": \"2023-12-04T06:20:21.585-03:00\"\n        },\n        {\n          \"id\": 2,\n          \"email\": \"kenyetta@ondricka.example\",\n          \"created_at\": \"2023-12-04T06:20:21.613-03:00\",\n          \"updated_at\": \"2023-12-04T06:20:21.613-03:00\"\n        }\n      ],\n      \"status\": 1,\n      \"rg\": \"286585\",\n      \"birth\": \"1995-01-12\",\n      \"gender\": \"female\",\n      \"civil_status\": \"single\",\n      \"nationality\": \"brazilian\",\n      \"capacity\": \"able\",\n      \"profession\": \"Orquestrador TI Futuro\",\n      \"company\": \"Teixeira, da Silva e Bomdia\",\n      \"number_benefit\": \"\",\n      \"nit\": \"dhsdkr\",\n      \"mother_name\": \"João Pedro Vieira Lessa\",\n      \"addresses\": [\n        {\n          \"id\": 1,\n          \"description\": \"Casa\",\n          \"zip_code\": \"92248-420\",\n          \"street\": \"Avenida Elísio\",\n          \"number\": 7822,\n          \"neighborhood\": \"Paradise Creek\",\n          \"city\": \"Brotas\",\n          \"state\": \"AM\",\n          \"created_at\": \"2023-12-04T06:20:21.525-03:00\",\n          \"updated_at\": \"2023-12-04T06:20:21.525-03:00\"\n        }\n      ],\n      \"phones\": [\n        {\n          \"id\": 1,\n          \"phone_number\": \"(62) 6650-0800\",\n          \"created_at\": \"2023-12-04T06:20:21.551-03:00\",\n          \"updated_at\": \"2023-12-04T06:20:21.551-03:00\"\n        },\n        {\n          \"id\": 2,\n          \"phone_number\": \"(28) 4550-2731\",\n          \"created_at\": \"2023-12-04T06:20:21.578-03:00\",\n          \"updated_at\": \"2023-12-04T06:20:21.578-03:00\"\n        }\n      ],\n      \"bank_accounts\": [\n        {\n          \"id\": 1,\n          \"bank_name\": \"10\",\n          \"type_account\": \"Conta Corrente\",\n          \"agency\": \"006171344\",\n          \"account\": \"1992715087\",\n          \"operation\": \"0\",\n          \"created_at\": \"2023-12-04T06:20:21.621-03:00\",\n          \"updated_at\": \"2023-12-04T06:20:21.621-03:00\",\n          \"pix\": \"96069984489\"\n        }\n      ],\n      \"default_phone\": \"(62) 6650-0800\",\n      \"default_email\": \"estella.spinka@zboncak-cole.example\",\n      \"city\": \"Brotas\"\n    }\n  }\n}\n\n ```"
-									},
-									"response": []
-								},
-								{
-									"name": "Criar um registro",
-									"request": {
-										"auth": {
-											"type": "bearer",
-											"bearer": [
-												{
-													"key": "token",
-													"value": "{{token}}",
-													"type": "string"
-												}
-											]
-										},
-										"method": "POST",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "{\r\n    \"profile_customer\": {\r\n        \"customer_type\": \"physical_person\",\r\n        \"name\": \"Luiz\",\r\n        \"status\": 1,\r\n        \"customer_id\": 10,\r\n        \"last_name\": \"Jaques\",\r\n        \"cpf\": \"73519678362\",\r\n        \"rg\": \"128391\",\r\n        \"birth\": \"1979-12-03\",\r\n        \"gender\": \"female\",\r\n        \"civil_status\": \"single\",\r\n        \"nationality\": \"foreigner\",\r\n        \"capacity\": \"unable\",\r\n        \"profession\": \"Consultor Administração Corporativo\",\r\n        \"company\": \"Regueira S.A.\",\r\n        \"number_benefit\": \"123132\",\r\n        \"mother_name\": \"Joana Samuel Corrêa Viveiros\",\r\n        \"inss_password\": \"nova_senha\",\r\n        \"addresses_attributes\": [\r\n            {\r\n                \"description\": \"Apt 4, prédio localizado próximo a Padaria\",\r\n                \"zip_code\": \"9158210-1\",\r\n                \"street\": \"Rua Jambaláia\",\r\n                \"number\": 531,\r\n                \"neighborhood\": \"Zona norte\",\r\n                \"city\": \"Caiuá\",\r\n                \"state\": \"SP\"\r\n            }\r\n        ],\r\n        \"bank_accounts_attributes\": [\r\n            {\r\n                \"bank_name\": \"Pic Pay\",\r\n                \"type_account\": \"Pagamentos\",\r\n                \"agency\": \"000-1\",\r\n                \"account\": \"909090909192\",\r\n                \"operation\": \"0\",\r\n                \"pix\": \"1234567890\"\r\n            }\r\n        ],\r\n        \"emails_attributes\": [\r\n            {\r\n                \"email\": \"maths2@gmail.com\"\r\n            },\r\n            {\r\n                \"email\": \"maths3@gmail.com\"\r\n            }\r\n        ],\r\n        \"phones_attributes\": [\r\n            {\r\n                \"phone_number\": \"67 97667-7676\"\r\n            },\r\n            {\r\n                \"phone_number\": \"67 96767-6767\"\r\n            }\r\n        ]\r\n    }\r\n}",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{base_url}}/profile_customers",
-											"host": [
-												"{{base_url}}"
-											],
-											"path": [
-												"profile_customers"
-											]
-										},
-										"description": "### Criar um registro\n\nEsse endpoint permite adicionar um registro de `ProfileCustomer`. Você também pode gerenciar outras relações através desse endpoint, veja:\n\n- dados de Address (`addresses_attributes`);\n- dados de BankAccount (`bank_account_attributes`);\n- dados de Customer (`customer_attributes`);\n- dados de Phone (`phones_attributes`);\n- dados de Represent _(_`represent_attributes`);\n- dados de Email (`emails_attributes`);\n- dados de CustomerFile (`customer_files_attributes`).\n    \n\n---\n\n#### Dados de Profile Customer\n\nOs campos disponíveis para edição são os seguintes:\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| customer_type | String | \\- |\n| name | String | \\- |\n| last_name | String | \\- |\n| gender | String | \\- |\n| rg | String | \\- |\n| cpf | String | \\- |\n| cnpj | String | \\- |\n| nationality | String | \\- |\n| civil_status | String | \\- |\n| capacity | String | \\- |\n| profession | String | \\- |\n| company | String | \\- |\n| birth | Date | \\- |\n| mother_name | String | \\- |\n| number_benefit | String | \\- |\n| status | Integer | \\- |\n| document | JSON | \\- |\n| nit | String | \\- |\n| inss_password | String | \\- |\n| invalid_person | Integer | \\- |\n| customer_id | Integer | \\- |\n\n---\n\n#### Dados de Address (`addresses_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| city | String | \\- |\n| description | String | \\- |\n| neighborhood | String | \\- |\n| number | String | \\- |\n| street | String | \\- |\n| zip_code | String | \\- |\n\n---\n\n#### Dados de BankAccount (`bank_account_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| bank_name | String | \\- |\n| type_account | String | \\- |\n| agency | String | \\- |\n| account | String | \\- |\n| operation | String | \\- |\n| pix | String | \\- |\n\n---\n\n#### Dados de Customer (`customer_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| email | String | \\- |\n| password | String | \\- |\n| password_confirmation | String | \\- |\n\n---\n\n#### Dados de Phone (`phones_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| phone_number | String | \\- |\n\n---\n\n#### Dados de Emails (`emails_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| email | String | \\- |\n\n---\n\n#### Dados de Represent (`represent_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| representor_id | Integer | \\- |\n\n---\n\n#### Dados de CustomerFile (`customer_files_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| file_description | string | \"simple_procuration\" |\n\n---\n\n### Exemplo Criação\n\n``` json\n{\n  \"profile_customer\": {\n    \"customer_type\": \"physical_person\",\n    \"name\": \"Luiz\",\n    \"status\": 1,\n    \"customer_id\": 10,\n    \"last_name\": \"Jaques\",\n    \"cpf\": \"73519678362\",\n    \"rg\": \"128391\",\n    \"birth\": \"1979-12-03\",\n    \"gender\": \"female\",\n    \"civil_status\": \"single\",\n    \"nationality\": \"foreigner\",\n    \"capacity\": \"unable\",\n    \"profession\": \"Consultor Administração Corporativo\",\n    \"company\": \"Regueira S.A.\",\n    \"number_benefit\": \"123132\",\n    \"mother_name\": \"Joana Samuel Corrêa Viveiros\",\n    \"inss_password\": \"nova_senha\",\n    \"accountant_id\": 1,\n    \"addresses_attributes\": [\n      {\n        \"description\": \"Apt 4, prédio localizado próximo a Padaria\",\n        \"zip_code\": \"9158210-1\",\n        \"street\": \"Rua Jambaláia\",\n        \"number\": 531,\n        \"neighborhood\": \"Zona norte\",\n        \"city\": \"Caiuá\",\n        \"state\": \"SP\"\n      }\n    ],\n    \"bank_accounts_attributes\": [\n      {\n        \"bank_name\": \"Pic Pay\",\n        \"type_account\": \"Pagamentos\",\n        \"agency\": \"000-1\",\n        \"account\": \"909090909192\",\n        \"operation\": \"0\",\n        \"pix\": \"1234567890\"\n      }\n    ],\n    \"emails_attributes\": [\n      {\n        \"email\": \"maths2@gmail.com\"\n      },\n      {\n        \"email\": \"maths3@gmail.com\"\n      }\n    ],\n    \"phones_attributes\": [\n      {\n        \"phone_number\": \"67 97667-7676\"\n      },\n      {\n        \"phone_number\": \"67 96767-6767\"\n      }\n    ],\n    \"represent_attributes\": {\n      \"representor_id\": 3\n    }\n  }\n}\n\n ```\n\n---"
-									},
-									"response": []
-								},
-								{
-									"name": "Atualizar um registro",
-									"request": {
-										"auth": {
-											"type": "bearer",
-											"bearer": [
-												{
-													"key": "token",
-													"value": "{{token}}",
-													"type": "string"
-												}
-											]
-										},
-										"method": "PUT",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "{\r\n    \"profile_customer\": {\r\n       \"represent_attributes\": {\r\n           \"profile_admin_id\": 17\r\n       }\r\n    }\r\n}",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{base_url}}/profile_customers/83",
-											"host": [
-												"{{base_url}}"
-											],
-											"path": [
-												"profile_customers",
-												"83"
-											]
-										},
-										"description": "### Atualizar um registro\n\nEsse endpoint permite adicionar um registro de `ProfileCustomer`. Você também pode gerenciar outras relações através desse endpoint, veja:\n\n- dados de Address (`addresses_attributes`);\n- dados de BankAccount (`bank_account_attributes`);\n- dados de Customer (`customer_attributes`);\n- dados de Phone (`phones_attributes`);\n- dados de Represent _(_`represent_attributes`);\n- dados de Email (`emails_attributes`);\n- dados de CustomerFile (`customer_files_attributes`).\n    \n\n---\n\n#### Dados de Profile Customer\n\nOs campos disponíveis para edição são os seguintes:\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| customer_type | String | \\- |\n| name | String | \\- |\n| last_name | String | \\- |\n| gender | String | \\- |\n| rg | String | \\- |\n| cpf | String | \\- |\n| cnpj | String | \\- |\n| nationality | String | \\- |\n| civil_status | String | \\- |\n| capacity | String | \\- |\n| profession | String | \\- |\n| company | String | \\- |\n| birth | Date | \\- |\n| mother_name | String | \\- |\n| number_benefit | String | \\- |\n| status | Integer | \\- |\n| document | JSON | \\- |\n| nit | String | \\- |\n| inss_password | String | \\- |\n| invalid_person | Integer | \\- |\n| customer_id | Integer | \\- |\n\n---\n\n#### Dados de Address (`addresses_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| city | String | \\- |\n| description | String | \\- |\n| neighborhood | String | \\- |\n| number | String | \\- |\n| street | String | \\- |\n| zip_code | String | \\- |\n\n---\n\n#### Dados de BankAccount (`bank_account_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| bank_name | String | \\- |\n| type_account | String | \\- |\n| agency | String | \\- |\n| account | String | \\- |\n| operation | String | \\- |\n| pix | String | \\- |\n\n---\n\n#### Dados de Customer (`customer_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| email | String | \\- |\n| password | String | \\- |\n| password_confirmation | String | \\- |\n\n---\n\n#### Dados de Phone (`phones_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| phone_number | String | \\- |\n\n---\n\n#### Dados de Emails (`emails_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| email | String | \\- |\n\n---\n\n#### Dados de Represent (`represent_attributes`)\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| representor_id | Integer | \\- |\n\n---\n\n#### Dados de CustomerFile (`customer_files_attributes`)\n\n###### Para gerar o(s) doc(s) novamente, `regenerate_docs` deve ser informado com valor `true`\n\nOs campos disponíveis para edição são os seguintes: _(criação e edição)_\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| id | Integer | \\- |\n| file_description | string | \"simple_procuration\" |\n\n---\n\n### Exemplo\n\n``` json\n{\n  \"profile_customer\": {\n    \"customer_type\": \"physical_person\",\n    \"name\": \"Luiz\",\n    \"status\": 1,\n    \"customer_id\": 10,\n    \"last_name\": \"Jaques\",\n    \"cpf\": \"73519678362\",\n    \"rg\": \"128391\",\n    \"birth\": \"1979-12-03\",\n    \"gender\": \"female\",\n    \"civil_status\": \"single\",\n    \"nationality\": \"foreigner\",\n    \"capacity\": \"unable\",\n    \"profession\": \"Consultor Administração Corporativo\",\n    \"company\": \"Regueira S.A.\",\n    \"number_benefit\": \"123132\",\n    \"mother_name\": \"Joana Samuel Corrêa Viveiros\",\n    \"inss_password\": \"nova_senha\",\n    \"accountant_id\": 1,\n    \"addresses_attributes\": [\n      {\n        \"id\": 123,\n        \"description\": \"Apt 4, prédio localizado próximo a Padaria\",\n        \"zip_code\": \"9158210-1\",\n        \"street\": \"Rua Jambaláia\",\n        \"number\": 531,\n        \"neighborhood\": \"Zona norte\",\n        \"city\": \"Caiuá\",\n        \"state\": \"SP\"\n      }\n    ],\n    \"bank_accounts_attributes\": [\n      {\n        \"id\": 123,\n        \"bank_name\": \"Pic Pay\",\n        \"type_account\": \"Pagamentos\",\n        \"agency\": \"000-1\",\n        \"account\": \"909090909192\",\n        \"operation\": \"0\",\n        \"pix\": \"1234567890\"\n      }\n    ],\n    \"emails_attributes\": [\n      {\n        \"id\": 123,\n        \"email\": \"maths2@gmail.com\"\n      },\n      {\n        \"id\": 123,\n        \"email\": \"maths3@gmail.com\"\n      }\n    ],\n    \"phones_attributes\": [\n      {\n        \"id\": 123,\n        \"phone_number\": \"67 97667-7676\"\n      },\n      {\n        \"id\": 123,\n        \"phone_number\": \"67 96767-6767\"\n      }\n    ],\n    \"represent_attributes\": {\n      \"id\": 4,\n      \"representor_id\": 4\n    }\n  }\n}\n\n ```\n\n---"
-									},
-									"response": []
-								},
-								{
-									"name": "Remover um registro",
-									"request": {
-										"auth": {
-											"type": "bearer",
-											"bearer": [
-												{
-													"key": "token",
-													"value": "{{token}}",
-													"type": "string"
-												}
-											]
-										},
-										"method": "DELETE",
-										"header": [],
-										"url": {
-											"raw": "{{base_url}}/profile_customers/68",
-											"host": [
-												"{{base_url}}"
-											],
-											"path": [
-												"profile_customers",
-												"68"
-											]
-										},
-										"description": "---\n\nRemove um registro"
-									},
-									"response": []
-								},
-								{
-									"name": "New Request",
-									"request": {
-										"method": "GET",
-										"header": []
-									},
-									"response": []
-								}
-							],
-							"description": "Grupo de exemplos referente a requisições feitas para o endpoint `/profile_customers.` Ações permitidas:\n\n- **index**: _lists all registered admins;_\n- **show**: _returns record information;_\n- **create:** _creates an admin record;_\n- **update:** _updates a record;_\n- **delete:** not implemented."
-						},
-						{
 							"name": "Works",
 							"item": [
 								{
@@ -1634,7 +2031,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"work\": {\r\n              \"procedure\": \"administrative\",\r\n              \"subject\": \"administrative_subject\",\r\n              \"office_ids\": [4],\r\n              \"number\": 15478,\r\n              \"folder\": \"/madara\",\r\n              \"initial_atendee\": \"xica@gmail.com\",\r\n              \"civel_area\": \"family\",\r\n              \"social_security_areas\": \"retirement_by_time\",\r\n              \"laborite_areas\": \"labor_claim\",\r\n              \"other_description\": \"escrevendo aqui\",\r\n              \"compensations_five_years\": true,\r\n              \"compensations_service\": true,\r\n              \"lawsuit\": true,\r\n              \"tributary_areas\": \"license\",\r\n              \"gain_projection\": \"2000 reais\",\r\n              \"note\": \"note is fun\",\r\n              \"extra_pending_document\": \"Não trouxe a caneta\",\r\n              \"recommendations_attributes\": [{ \"percentage\": \"30%\", \"commition\": \"100\", \"profile_customer_id\": 1 }],\r\n              \"honorary_attributes\": {\"fixed_honorary_value\": \"200%\", \"parcelling_value\": \"2\", \"honorary_type\": \"success\", \"percent_honorary_value\": \"10%\", \"parcelling\": true},\r\n                        \r\n        \"powers_ids\" : [5],\r\n        \"documents_attributes\" : [{\r\n            \"document_type\": \"procuration\",\r\n            \"profile_customer_id\": 18\r\n        }],\r\n        \"pending_documents_attributes\":[{\"description\": \"rg\"}, {\"description\": \"medical_documents\"}],\r\n        \"profile_customer_ids\" : [10],\r\n        \"profile_admin_ids\": [1]\r\n    }\r\n}",
+											"raw": "  {\r\n    \"work\": {\r\n      \"procedure\": \"administrative\",\r\n      \"law_area_id\": 1,\r\n      \"number\": 12345,\r\n      \"folder\": \"FOLDER-2024-001\",\r\n      \"note\": \"Important case notes\",\r\n      \"status\": \"in_progress\",\r\n      \"initial_atendee\": 1,\r\n      \"physical_lawyer\": 1,\r\n      \"responsible_lawyer\": 1,\r\n      \"partner_lawyer\": 1,\r\n      \"intern\": 1,\r\n      \"bachelor\": 1,\r\n      \"rate_parceled_exfield\": \"10x R$ 500\",\r\n      \"other_description\": \"Additional case details\",\r\n      \"compensations_five_years\": false,\r\n      \"compensations_service\": false,\r\n      \"lawsuit\": true,\r\n      \"gain_projection\": \"R$ 50.000\",\r\n      \"procedures\": [\"consultation\", \"documentation\"],\r\n      \"extra_pending_document\": \"Birth certificate\",\r\n      \"profile_customer_ids\": [1, 2],\r\n      \"user_profile_ids\": [1, 2],\r\n      \"office_ids\": [1],\r\n      \"power_ids\": [1, 2],\r\n      \"documents_attributes\": [\r\n        {\r\n          \"document_type\": \"procuration\",\r\n          \"profile_customer_id\": 1\r\n        }\r\n      ],\r\n      \"pending_documents_attributes\": [\r\n        {\r\n          \"description\": \"CPF Copy\",\r\n          \"profile_customer_id\": 1\r\n        }\r\n      ],\r\n      \"recommendations_attributes\": [\r\n        {\r\n          \"percentage\": 10.5,\r\n          \"commission\": 500.00,\r\n          \"profile_customer_id\": 1\r\n        }\r\n      ],\r\n      \"honorary_attributes\": {\r\n        \"fixed_honorary_value\": 5000.00,\r\n        \"parcelling_value\": 500.00,\r\n        \"honorary_type\": \"fixed\",\r\n        \"percent_honorary_value\": 30.0,\r\n        \"parcelling\": 10,\r\n        \"work_prev\": \"Previous work reference\"\r\n      }\r\n    }\r\n  }",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -2006,6 +2403,59 @@
 								}
 							],
 							"description": "Grupo de exemplos referente a requisições feitas para o endpoint `/work_events.` Ações permitidas:\n\n- **index**: _lists all registered admins;_\n    \n- **show**: _returns record information;_\n    \n- **create:** _creates an admin record;_\n    \n- **update:** _updates a record;_\n    \n- **delete:** _deletes a record_."
+						},
+						{
+							"name": "Notificação",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/notifications",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"notifications"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Notificação Copy",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{        \"title\": \"New Team Invitation\",\n        \"message\": \"You've been invited to join the Development Team\",\n        \"read\": false,\n        \"user_id\": 5,\n        \"priority\": \"medium\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/notifications",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"notifications"
+									]
+								}
+							},
+							"response": []
 						}
 					],
 					"description": "Rotas para Admins"
@@ -2213,7 +2663,7 @@
 					"description": "Rotas para Customer"
 				},
 				{
-					"name": "Criar um Admin",
+					"name": "Criar um User",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -2229,7 +2679,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"admin\": {\r\n        \"email\": \"pelli.br.sp134500000@gmail.com\",\r\n        \"password\": \"12345678\",\r\n        \"password_confirmation\": \"12345678\",\r\n        \"oab\": \"PR_54160\" // Opcional\r\n    }\r\n}",
+							"raw": "{\r\n    \"user\": {\r\n        \"email\": \"a@gmail.com\",\r\n        \"password\": \"123456\",\r\n        \"password_confirmation\": \"123456\",\r\n        \"oab\": \"PR_54159\" // Opcional\r\n    }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2237,13 +2687,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/public/admin_registration",
+							"raw": "{{base_url}}/public/user_registration",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"public",
-								"admin_registration"
+								"user_registration"
 							]
 						},
 						"description": "### Criar um registro de admin\n\nEsse endpoint permite adicionar um registro de `Admin`, contudo, `email` é um campo único e `required`. Você também pode persistir um `ProfileAdmin` através desse endpoint.\n\n---\n\n#### Nested Attributes for Profile Admin (`profile_admin_attributes`)\n\nÉ possível informar propriedades de `ProfileAdmin`, para isso, você precisará informar um objeto JSON cujo em seu payload contenha uma chave inícial com o nome de `profile_admin_attributes`.  \nOs campos disponíveis para edição são os seguintes:\n\n| Propriedade | Tipo | Valor Esperado (se aplicável) |\n| --- | --- | --- |\n| role | String | um dos: \"lawyer\", \"paralegal\", \"trainee\", \"secretary\", \"counter\", \"excounter\", \"representant\" |\n| status | String | um dos: \"active\", \"inactive\", \"pending\" |\n| admin_id | Integer | \\- |\n| office_id | Integer | \\- |\n| name | String | \\- |\n| gender | String | um dos: \"female\", \"male\", \"other\" |\n| oab | String | \\- |\n| rg | String | \\- |\n| cpf | String | \\- |\n| nationality | String | um dos: \"brazilian\", \"foreigner\" |\n| civil_status | String | um dos: \"single\", \"married\", \"divorced\", \"widower\", \"union\" |\n| birth | date | \"YYYY-MM-DD\" |\n\n---"
@@ -2251,7 +2701,7 @@
 					"response": []
 				},
 				{
-					"name": "Authenticate Admin",
+					"name": "Authenticate User",
 					"request": {
 						"auth": {
 							"type": "bearer"
@@ -2260,7 +2710,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"auth\": {\n        \"email\": \"pelli.br.sp134500000@gmail.com\",\n        \"password\": \"12345678\"\n    }\n}",
+							"raw": "{\n    \"auth\": {\n        \"email\": \"u1@gmail.com\",\n        \"password\": \"123456\"\n    }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
