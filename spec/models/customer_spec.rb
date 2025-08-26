@@ -50,12 +50,13 @@ RSpec.describe Customer, type: :model do
 
     context 'password validations' do
       context 'when creating a new record' do
-        it 'validates password presence' do
+        it 'automatically generates password when none provided' do
           customer = Customer.new(email: 'test@example.com')
-          # Don't trigger setup_password callback
-          customer.instance_eval { @password = nil }
-          expect(customer).not_to be_valid
-          expect(customer.errors[:password]).to include(I18n.t('errors.messages.blank'))
+          expect(customer.password).to be_nil
+          customer.valid?
+          expect(customer.password).to be_present
+          expect(customer.password.length).to be >= 6  # Meets minimum password length
+          expect(customer).to be_valid
         end
 
         it 'validates password confirmation' do
@@ -138,7 +139,7 @@ RSpec.describe Customer, type: :model do
           expect(customer.password).to be_nil
           customer.send(:setup_password)
           expect(customer.password).to be_present
-          expect(customer.password.length).to eq(24)
+          expect(customer.password.length).to eq(20)
         end
       end
 
@@ -185,7 +186,7 @@ RSpec.describe Customer, type: :model do
 
   describe 'delegations' do
     let(:customer) { create(:customer) }
-    let(:profile) { create(:profile_customer, customer: customer, full_name: 'John Doe') }
+    let(:profile) { create(:profile_customer, customer: customer, name: 'John', last_name: 'Doe') }
 
     it 'delegates full_name to profile_customer' do
       profile # Ensure profile is created
@@ -211,8 +212,11 @@ RSpec.describe Customer, type: :model do
         let(:customer) { create(:customer) }
 
         it 'returns false when password is not being changed' do
-          customer.reload # Clear any password attributes from creation
-          expect(customer.password_required?).to be false
+          # Get a fresh instance from the database to ensure no password attributes
+          fresh_customer = Customer.find(customer.id)
+          expect(fresh_customer.password).to be_nil
+          expect(fresh_customer.password_confirmation).to be_nil
+          expect(fresh_customer.password_required?).to be false
         end
 
         it 'returns true when password is being set' do

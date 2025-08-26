@@ -97,7 +97,11 @@ RSpec.describe ProfileCustomer, type: :model do
 
     it { is_expected.to have_many(:customer_files).dependent(:destroy) }
 
-    it { is_expected.to have_one(:represent) }
+    it { is_expected.to have_many(:represents).dependent(:destroy) }
+    it { is_expected.to have_many(:representors).through(:represents) }
+    it { is_expected.to have_many(:active_represents) }
+    it { is_expected.to have_many(:active_representors).through(:active_represents) }
+    it { is_expected.to have_many(:represented_customers).class_name('Represent').with_foreign_key('representor_id').dependent(:nullify) }
 
     it { is_expected.to belong_to(:customer).optional }
     it { is_expected.to belong_to(:accountant).class_name('ProfileCustomer').optional(true) }
@@ -110,7 +114,7 @@ RSpec.describe ProfileCustomer, type: :model do
     it { is_expected.to accept_nested_attributes_for(:phones) }
     it { is_expected.to accept_nested_attributes_for(:emails) }
     it { is_expected.to accept_nested_attributes_for(:bank_accounts) }
-    it { is_expected.to accept_nested_attributes_for(:represent) }
+    it { is_expected.to accept_nested_attributes_for(:represents) }
   end
 
   context 'Validations' do
