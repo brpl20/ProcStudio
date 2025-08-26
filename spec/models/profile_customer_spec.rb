@@ -71,7 +71,6 @@ RSpec.describe ProfileCustomer, type: :model do
         document: nil,
         nit: nil,
         inss_password: nil,
-        invalid_person: nil,
         customer_id: nil,
         created_at: nil,
         updated_at: nil,
@@ -162,15 +161,43 @@ RSpec.describe ProfileCustomer, type: :model do
       end
     end
 
-    context '#unable?' do
+    context 'capacity enum predicate methods' do
       let(:profile) { build(:profile_customer) }
 
-      it 'returns false if capacity is not equal to "unable"' do
-        expect(profile.unable?).to eq(false)
+      describe '#unable?' do
+        it 'returns true when capacity is unable' do
+          profile.capacity = 'unable'
+          expect(profile.unable?).to be true
+        end
+
+        it 'returns false when capacity is not unable' do
+          profile.capacity = 'able'
+          expect(profile.unable?).to be false
+        end
       end
 
-      it 'returns false if capacity is not equal to "unable"' do
-        expect(profile.unable?).to eq(false)
+      describe '#able?' do
+        it 'returns true when capacity is able' do
+          profile.capacity = 'able'
+          expect(profile.able?).to be true
+        end
+
+        it 'returns false when capacity is not able' do
+          profile.capacity = 'unable'
+          expect(profile.able?).to be false
+        end
+      end
+
+      describe '#relatively?' do
+        it 'returns true when capacity is relatively' do
+          profile.capacity = 'relatively'
+          expect(profile.relatively?).to be true
+        end
+
+        it 'returns false when capacity is not relatively' do
+          profile.capacity = 'able'
+          expect(profile.relatively?).to be false
+        end
       end
     end
 

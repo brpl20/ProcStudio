@@ -172,10 +172,6 @@ class ProfileCustomer < ApplicationRecord
     phones.last.phone_number
   end
 
-  def unable?
-    capacity == 'unable'
-  end
-
   def emails_attributes=(attributes)
     current_email_ids = attributes.filter_map { |attr| attr[:id].to_i }
 

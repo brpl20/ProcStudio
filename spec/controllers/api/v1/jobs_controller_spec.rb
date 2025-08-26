@@ -153,7 +153,6 @@ RSpec.describe Api::V1::JobsController, type: :request do
                 'document' => job.profile_customer.document,
                 'nit' => job.profile_customer.nit,
                 'inss_password' => job.profile_customer.inss_password,
-                'invalid_person' => job.profile_customer.invalid_person,
                 'customer_id' => job.profile_customer.customer_id
               },
               'work' => {

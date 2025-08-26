@@ -52,7 +52,7 @@ FactoryBot.define do
     customer_type { 'representative' }
     gender { 'other' }
     rg { Faker::Number.number(digits: 6) }
-    cpf { Faker::Number.number(digits: 11) }
+    cpf { '11144477735' }
     cnpj { Faker::Number.number(digits: 14) }
     nationality { 'brazilian' }
     civil_status { 'married' }
@@ -66,7 +66,6 @@ FactoryBot.define do
     document { '' }
     nit { Faker::Number.number(digits: 5) }
     inss_password { Faker::Number.number(digits: 5) }
-    invalid_person { 1 }
     customer
     addresses { [build(:address)] }
   end

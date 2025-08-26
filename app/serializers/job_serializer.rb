@@ -94,7 +94,6 @@ class JobSerializer
       document: object.profile_customer.document,
       nit: object.profile_customer.nit,
       inss_password: object.profile_customer.inss_password,
-      invalid_person: object.profile_customer.invalid_person,
       customer_id: object.profile_customer.customer_id
     }
   end
