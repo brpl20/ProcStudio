@@ -3,6 +3,7 @@
 module Api
   module V1
     class AuthController < ApplicationController
+      include ErrorHandler
       include JwtAuth
 
       def authenticate
@@ -21,9 +22,8 @@ module Api
             render json: { success: false, message: I18n.t('errors.messages.authentication.unauthorized') },
                    status: :unauthorized
           else
-            user_id = decoded_token['user_id'] || decoded_token['admin_id'] # backward compatibility
-            current_user = User.find(user_id)
-            current_user.update(jwt_token: nil)
+            # Token is stateless now, so we just return success
+            # The frontend will clear the token from local storage
             render json: { success: true, message: I18n.t('errors.messages.authentication.logout_success') }
           end
         end
@@ -68,9 +68,7 @@ module Api
           token_data[:role] = user_profile.role
         end
 
-        token = JWT.encode(token_data, Rails.application.secret_key_base)
-        user.update(jwt_token: token)
-        token
+        JWT.encode(token_data, Rails.application.secret_key_base)
       end
 
       def auth_params

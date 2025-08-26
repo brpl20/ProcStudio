@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 20_250_824_233_849) do
+ActiveRecord::Schema[8.0].define(version: 20_250_826_003_002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_catalog.plpgsql'
 
@@ -493,8 +493,19 @@ ActiveRecord::Schema[8.0].define(version: 20_250_824_233_849) do
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
     t.bigint 'representor_id'
+    t.string 'relationship_type', default: 'representation'
+    t.boolean 'active', default: true, null: false
+    t.date 'start_date'
+    t.date 'end_date'
+    t.text 'notes'
+    t.bigint 'team_id'
+    t.index ['active'], name: 'index_represents_on_active'
+    t.index ['profile_customer_id', 'active'], name: 'index_represents_on_profile_customer_id_and_active'
     t.index ['profile_customer_id'], name: 'index_represents_on_profile_customer_id'
+    t.index ['relationship_type'], name: 'index_represents_on_relationship_type'
+    t.index ['representor_id', 'active'], name: 'index_represents_on_representor_id_and_active'
     t.index ['representor_id'], name: 'index_represents_on_representor_id'
+    t.index ['team_id'], name: 'index_represents_on_team_id'
   end
 
   create_table 'team_customers', force: :cascade do |t|
@@ -729,6 +740,7 @@ ActiveRecord::Schema[8.0].define(version: 20_250_824_233_849) do
   add_foreign_key 'recommendations', 'works'
   add_foreign_key 'represents', 'profile_customers'
   add_foreign_key 'represents', 'profile_customers', column: 'representor_id'
+  add_foreign_key 'represents', 'teams'
   add_foreign_key 'team_customers', 'customers'
   add_foreign_key 'team_customers', 'teams'
   add_foreign_key 'user_addresses', 'addresses'

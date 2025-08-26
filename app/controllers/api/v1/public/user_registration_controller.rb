@@ -4,6 +4,8 @@ module Api
   module V1
     module Public
       class UserRegistrationController < ApplicationController
+        include ErrorHandler
+
         def create
           ActiveRecord::Base.transaction do
             # Primeiro criar o team

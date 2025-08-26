@@ -18,7 +18,17 @@ module ErrorHandler
 
   def handle_not_found(exception)
     log_error(exception)
-    render_error('Record not found', :not_found)
+
+    # When it's a User not found by team scoping,
+    # it's actually an authorization issue, not a missing resource
+    if exception.model == 'User'
+      message = I18n.t('errors.messages.general.unauthorized_access', default: 'Unauthorized access')
+      render_error(message, :forbidden)
+    else
+      model_name = exception.model || 'Record'
+      message = "#{model_name} not found"
+      render_error(message, :not_found)
+    end
   end
 
   def handle_record_invalid(exception)
@@ -38,7 +48,8 @@ module ErrorHandler
 
   def handle_unauthorized(exception)
     log_error(exception)
-    render_error('You are not authorized to perform this action', :forbidden)
+    message = I18n.t("admin.#{exception.query}", scope: 'pundit', default: 'You are not authorized to perform this action')
+    render_error(message, :forbidden)
   end
 
   def handle_jwt_error(exception)

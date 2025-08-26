@@ -120,11 +120,18 @@ class ProfileCustomer < ApplicationRecord
   has_many :recommendations, dependent: :destroy
   has_many :drafts, as: :draftable, dependent: :destroy
 
+  # Relationships for representation
+  # As a representor (guardian/assistant), this person can represent multiple customers
   has_many :represented_customers, class_name: 'Represent', foreign_key: 'representor_id', dependent: :nullify
-  has_one :represent, dependent: :destroy
+
+  # As a represented person (unable/relatively incapable), can have multiple representors
+  has_many :represents, dependent: :destroy
+  has_many :representors, through: :represents, source: :representor
+  has_many :active_represents, -> { active.current }, class_name: 'Represent', dependent: :destroy
+  has_many :active_representors, through: :active_represents, source: :representor
 
   accepts_nested_attributes_for :customer_files, :customer, :addresses,
-                                :phones, :emails, :bank_accounts, :represent,
+                                :phones, :emails, :bank_accounts, :represents,
                                 reject_if: :all_blank
 
   accepts_nested_attributes_for :customer_emails, allow_destroy: true
@@ -183,6 +190,12 @@ class ProfileCustomer < ApplicationRecord
     customer_phones.where.not(phone_id: current_phone_ids).destroy_all
 
     super
+  end
+
+  # Backward compatibility method for services expecting a single represent
+  # Returns the first active represent relationship
+  def represent
+    active_represents.first
   end
 
   private

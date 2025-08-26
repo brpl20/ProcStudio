@@ -2,12 +2,9 @@
   import { onMount } from 'svelte';
   import AuthSidebar from '../components/AuthSidebar.svelte';
   import CustomerList from '../components/customers/CustomerList.svelte';
-  import CustomerForm from '../components/customers/CustomerForm.svelte';
   import { customerStore } from '../stores/customerStore';
   import { router } from '../stores/routerStore.js';
-  import type { Customer, UpdateCustomerRequest, CustomerStatus } from '../api/types/customer.types';
-
-  let editingCustomer: Customer | null = null;
+  import type { Customer, CustomerStatus } from '../api/types/customer.types';
 
   onMount(() => {
     customerStore.loadCustomers();
@@ -31,20 +28,8 @@
   }
 
   async function handleEditCustomer(event: CustomEvent<Customer>) {
-    editingCustomer = event.detail;
-  }
-
-  async function handleUpdateCustomer(event: CustomEvent<UpdateCustomerRequest>) {
-    if (editingCustomer) {
-      const success = await customerStore.updateCustomer(editingCustomer.id, event.detail);
-      if (success) {
-        editingCustomer = null;
-      }
-    }
-  }
-
-  function handleCancelEdit() {
-    editingCustomer = null;
+    // Navigate to edit page
+    router.navigate(`/customers/edit/${event.detail.id}`);
   }
 </script>
 
@@ -73,18 +58,6 @@
         {#if $customerStore.success}
           <div class="alert alert-success mb-4">
             <span>{$customerStore.success}</span>
-          </div>
-        {/if}
-
-        <!-- Edit Customer Form -->
-        {#if editingCustomer}
-          <div class="mb-6">
-            <CustomerForm
-              customer={editingCustomer}
-              isLoading={$customerStore.isLoading}
-              on:submit={handleUpdateCustomer}
-              on:cancel={handleCancelEdit}
-            />
           </div>
         {/if}
 

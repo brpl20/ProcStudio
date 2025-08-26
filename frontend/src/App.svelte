@@ -17,6 +17,7 @@
   import WorksPage from './lib/pages/WorksPage.svelte';
   import CustomersPage from './lib/pages/CustomersPage.svelte';
   import CustomersNewPage from './lib/pages/CustomersNewPage.svelte';
+  import CustomersEditPage from './lib/pages/CustomersEditPage.svelte';
   import ProfileCompletion from './lib/pages/ProfileCompletion.svelte';
 
   // Reactive stores
@@ -25,23 +26,41 @@
 
   // Route component logic
   $: currentComponent = getComponent(currentPath, isAuthenticated);
+  $: routeParams = extractRouteParams(currentPath);
+
+  function extractRouteParams(path) {
+    // Extract ID from paths like /customers/edit/123
+    const editMatch = path.match(/\/customers\/edit\/(\d+)/);
+    if (editMatch) {
+      return { id: editMatch[1] };
+    }
+    return {};
+  }
 
   function getComponent(path, isAuth) {
-    if (
-      !isAuth &&
-      (path === '/dashboard' ||
-        path === '/teams' ||
-        path === '/admin' ||
-        path === '/settings' ||
-        path === '/reports' ||
-        path === '/tasks' ||
-        path === '/works' ||
-        path === '/customers' ||
-        path === '/customers/new' ||
-        path === '/documents')
-    ) {
+    // Check for protected routes
+    const protectedPaths = [
+      '/dashboard',
+      '/teams',
+      '/admin',
+      '/settings',
+      '/reports',
+      '/tasks',
+      '/works',
+      '/customers',
+      '/documents'
+    ];
+    
+    const isProtected = protectedPaths.some(p => path.startsWith(p));
+    
+    if (!isAuth && isProtected) {
       router.navigate('/login');
       return LoginPage;
+    }
+
+    // Check for dynamic routes
+    if (path.match(/\/customers\/edit\/\d+/)) {
+      return CustomersEditPage;
     }
 
     const routes = {
@@ -89,7 +108,7 @@
 <SessionTimeout timeoutMinutes={60} warningMinutes={5} />
 
 <!-- Renderização do componente atual -->
-<svelte:component this={currentComponent} />
+<svelte:component this={currentComponent} {...routeParams} />
 
 <!-- Modal de Completar Perfil -->
 {#if showProfileCompletion}

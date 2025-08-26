@@ -3,14 +3,64 @@
   import CustomerForm from '../components/customers/CustomerForm.svelte';
   import { customerStore } from '../stores/customerStore';
   import { router } from '../stores/routerStore.js';
+  import api from '../api/index';
 
   async function handleSubmit(event: CustomEvent<any>) {
-    // The form sends data wrapped in profile_customer, extract it
-    const profileCustomerData = event.detail.profile_customer;
-    const success = await customerStore.addProfileCustomer(profileCustomerData);
-    if (success) {
-      // Navigate back to customers list on success
-      router.navigate('/customers');
+    // Check if we're creating a person with a representative/assistant
+    if (event.detail.represented && event.detail.representor) {
+      // This is a two-person creation with relationship
+      const { represented, representor, relationship_type } = event.detail;
+
+      try {
+        // Step 1: Create the represented person (unable or relatively incapable)
+        const representedCustomer = await customerStore.addProfileCustomer(represented);
+
+        if (representedCustomer && representedCustomer.id) {
+          // Step 2: Create the representor (guardian or assistant)
+          // Remove any relationship attributes that were added before
+          const cleanRepresentorData = { ...representor };
+          delete cleanRepresentorData.represents_attributes;
+          delete cleanRepresentorData.represent_attributes;
+
+          const representorCustomer = await customerStore.addProfileCustomer(cleanRepresentorData);
+
+          if (representorCustomer && representorCustomer.id) {
+            // Step 3: Create the Represent relationship between them
+            console.log('Creating relationship:', {
+              represented: representedCustomer.id,
+              representor: representorCustomer.id,
+              type: relationship_type
+            });
+
+            const relationshipResponse = await api.customers.createRepresent({
+              profile_customer_id: parseInt(representedCustomer.id), // The person being represented
+              representor_id: parseInt(representorCustomer.id), // The person who represents
+              relationship_type: relationship_type,
+              active: true
+            });
+
+            if (relationshipResponse.success) {
+              console.log('Relationship created successfully');
+              // All three operations successful
+              router.navigate('/customers');
+            } else {
+              console.error('Failed to create relationship:', relationshipResponse.message);
+              // The customers were created but relationship failed
+              // You might want to show an error message here
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error creating represented/representor relationship:', error);
+      }
+    } else {
+      // Single person creation (normal flow)
+      const profileCustomerData = event.detail.profile_customer;
+      const createdCustomer = await customerStore.addProfileCustomer(profileCustomerData);
+      if (createdCustomer) {
+        // Navigate back to customers list on success
+        router.navigate('/customers');
+      }
     }
   }
 
@@ -22,15 +72,7 @@
 
 <AuthSidebar>
   <div class="container mx-auto py-6">
-    <div class="mb-6">
-      <!-- Back button -->
-      <div class="breadcrumbs text-sm">
-        <ul>
-          <li><button type="button" class="link link-hover" on:click={() => router.navigate('/customers')}>Clientes</button></li>
-          <li>Novo Cliente</li>
-        </ul>
-      </div>
-    </div>
+    <div class="mb-6"></div>
 
     <!-- Messages -->
     {#if $customerStore.error}

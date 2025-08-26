@@ -48,6 +48,21 @@ Rails.application.routes.draw do
         member do
           post :restore
         end
+
+        # Nested represents routes for a specific customer
+        resources :represents, only: [:index, :create]
+      end
+
+      # Direct represents routes for team-wide operations
+      resources :represents, only: [:index, :show, :create, :update, :destroy] do
+        member do
+          post :deactivate
+          post :reactivate
+        end
+
+        collection do
+          get 'by_representor/:representor_id', to: 'represents#by_representor'
+        end
       end
 
       resources :drafts, only: [:index, :show, :destroy] do

@@ -457,4 +457,34 @@ export class CustomerService {
       return false;
     }
   }
+
+  /**
+   * Create a Represent relationship between two ProfileCustomers
+   */
+  async createRepresent(representData: {
+    profile_customer_id: number; // The person being represented
+    representor_id: number; // The person who represents
+    relationship_type: string;
+    active?: boolean;
+  }): Promise<{ success: boolean; data?: any; message: string }> {
+    try {
+      const response = await this.httpClient.post('/represents', {
+        represent: {
+          ...representData,
+          active: representData.active !== undefined ? representData.active : true
+        }
+      });
+      return {
+        success: true,
+        data: response.data || response,
+        message: 'Relacionamento criado com sucesso'
+      };
+    } catch (error: any) {
+      console.error('Failed to create represent relationship:', error);
+      return {
+        success: false,
+        message: error?.message || 'Erro ao criar relacionamento'
+      };
+    }
+  }
 }

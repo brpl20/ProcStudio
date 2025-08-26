@@ -7,7 +7,6 @@ module JwtAuth
     head :unauthorized and return unless user_id
 
     @current_user ||= User.find(user_id)
-    head :unauthorized unless @current_user&.jwt_token == token
     head :unauthorized unless valid_token?
   rescue JWT::DecodeError
     head :unauthorized
@@ -20,7 +19,6 @@ module JwtAuth
     head :unauthorized and return unless payload.key?('customer_id')
 
     @current_customer ||= Customer.find(payload['customer_id'])
-    head :unauthorized unless @current_customer&.jwt_token == token
     head :unauthorized unless valid_token?
   rescue JWT::DecodeError
     head :unauthorized

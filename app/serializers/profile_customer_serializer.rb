@@ -89,7 +89,8 @@ class ProfileCustomerSerializer
   end
 
   attribute :represent_by do |object|
-    represent = object.represent
+    # Get the first active representor (for backward compatibility)
+    represent = object.active_represents.first
 
     if represent
       {

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Api::V1::Customer::AuthController < ApplicationController
+  include ErrorHandler
   include JwtAuth
 
   def authenticate
@@ -21,9 +22,8 @@ class Api::V1::Customer::AuthController < ApplicationController
       if decoded_token.nil?
         render json: { success: false, message: 'Usuário não autorizado' }, status: :unauthorized
       else
-        customer_id = decoded_token['customer_id']
-        current_customer = Customer.find(customer_id)
-        current_customer.update!(jwt_token: nil)
+        # Token is stateless now, so we just return success
+        # The frontend will clear the token from local storage
         render json: { success: true, message: 'Saiu com successo' }
       end
     end
@@ -115,9 +115,7 @@ class Api::V1::Customer::AuthController < ApplicationController
 
   def update_user_token(customer)
     exp = 24.hours.from_now.to_i
-    token = JWT.encode({ customer_id: customer.id, exp: exp }, Rails.application.secret_key_base)
-    customer.update(jwt_token: token)
-    token
+    JWT.encode({ customer_id: customer.id, exp: exp }, Rails.application.secret_key_base)
   end
 
   def auth_params

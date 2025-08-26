@@ -153,7 +153,7 @@ function createCustomerStore() {
     },
 
     // Create a new profile customer (complete with ProfileCustomer data)
-    async addProfileCustomer(profileCustomerData: any): Promise<boolean> {
+    async addProfileCustomer(profileCustomerData: any): Promise<any> {
       update((state) => ({ ...state, isLoading: true, error: '' }));
 
       const response = await api.customers.createProfileCustomer(profileCustomerData);
@@ -163,12 +163,14 @@ function createCustomerStore() {
           showNotification(
             {
               ...state,
-              isLoading: false
+              isLoading: false,
+              currentCustomer: response.data
             },
             'Cliente criado com sucesso'
           )
         );
-        return true;
+        // Return the created customer data instead of just true
+        return response.data;
       } else {
         // Field validation errors exist but are handled by the message
 
@@ -182,7 +184,7 @@ function createCustomerStore() {
             true
           )
         );
-        return false;
+        return null;
       }
     },
 
@@ -219,6 +221,38 @@ function createCustomerStore() {
       } else {
         // Field validation errors exist but are handled by the message
 
+        update((state) =>
+          showNotification(
+            {
+              ...state,
+              isLoading: false
+            },
+            response.message || 'Erro ao atualizar cliente',
+            true
+          )
+        );
+        return false;
+      }
+    },
+
+    // Update an existing profile customer
+    async updateProfileCustomer(id: number, profileCustomerData: any): Promise<boolean> {
+      update((state) => ({ ...state, isLoading: true, error: '' }));
+
+      const response = await api.customers.updateProfileCustomer(id, profileCustomerData);
+
+      if (response.success) {
+        update((state) =>
+          showNotification(
+            {
+              ...state,
+              isLoading: false
+            },
+            'Cliente atualizado com sucesso'
+          )
+        );
+        return true;
+      } else {
         update((state) =>
           showNotification(
             {

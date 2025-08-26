@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 class ApplicationController < ActionController::API
-  include ErrorHandler
+  # ErrorHandler is not included here to avoid conflicts with BackofficeController
+  # Include it directly in controllers that need it and don't inherit from BackofficeController
 
   protected
 
