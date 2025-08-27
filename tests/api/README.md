@@ -2,6 +2,18 @@
 
 This directory contains direct API tests for the ProcStudio Rails backend, generated from the Postman collection.
 
+## Customer
+npx mocha ./api/Customers/customers_test.js --reporter spec
+npx mocha ./api/Customers/customers_test.js
+
+Testes:
+- Criar um novo registro
+- Listar todos os registros
+- Consultar um registro
+- Atualizar um registro aleatório
+- Deletar um registro
+- Verificar isolabilidade de registros por User
+
 ## Overview
 
 The API tests are automatically generated from the `collection.json` file in the project root. They test the Rails API endpoints directly without any frontend interaction.

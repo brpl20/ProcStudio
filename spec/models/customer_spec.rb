@@ -55,14 +55,15 @@ RSpec.describe Customer, type: :model do
           expect(customer.password).to be_nil
           customer.valid?
           expect(customer.password).to be_present
-          expect(customer.password.length).to be >= 6  # Meets minimum password length
+          expect(customer.password.length).to be >= 6 # Meets minimum password length
           expect(customer).to be_valid
         end
 
         it 'validates password confirmation' do
           customer = build(:customer, password: 'password123', password_confirmation: 'different')
           expect(customer).not_to be_valid
-          expect(customer.errors[:password_confirmation]).to include(I18n.t('errors.messages.confirmation', attribute: 'Password'))
+          expect(customer.errors[:password_confirmation]).to include(I18n.t('errors.messages.confirmation',
+                                                                            attribute: 'Password'))
         end
 
         it 'validates password length' do

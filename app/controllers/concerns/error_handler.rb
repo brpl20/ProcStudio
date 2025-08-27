@@ -48,7 +48,8 @@ module ErrorHandler
 
   def handle_unauthorized(exception)
     log_error(exception)
-    message = I18n.t("admin.#{exception.query}", scope: 'pundit', default: 'You are not authorized to perform this action')
+    message = I18n.t("admin.#{exception.query}", scope: 'pundit',
+                                                 default: 'You are not authorized to perform this action')
     render_error(message, :forbidden)
   end
 

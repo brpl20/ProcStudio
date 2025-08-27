@@ -98,7 +98,7 @@ module Api
         # Se não existe user_profile, criar um novo
         user_profile = user.build_user_profile if user_profile.nil?
 
-        ActiveRecord::Base.transaction do
+        ActiveRecord::Base.transaction do # rubocop:disable Metrics/BlockLength
           # Atualizar dados básicos do profile
           basic_params = profile_completion_params.except(:phone, :addresses_attributes, :phones_attributes)
           user_profile.update!(basic_params) if basic_params.present?
@@ -106,7 +106,7 @@ module Api
           # Lidar com telefone legacy (campo único)
           phone_number = params.dig(:user_profile, :phone)
           create_or_update_phone(user_profile, phone_number) if phone_number.present?
-          
+
           # Lidar com phones_attributes (nested)
           phones_attrs = params.dig(:user_profile, :phones_attributes)
           if phones_attrs.present?
@@ -114,7 +114,7 @@ module Api
               create_or_update_phone(user_profile, phone_attr[:phone_number])
             end
           end
-          
+
           # Lidar com addresses_attributes (nested)
           addresses_attrs = params.dig(:user_profile, :addresses_attributes)
           if addresses_attrs.present?
@@ -128,7 +128,7 @@ module Api
                 zip_code: address_attr[:zip_code],
                 description: address_attr[:description] || 'Principal'
               )
-              
+
               UserAddress.create!(
                 user_profile: user_profile,
                 address: address
