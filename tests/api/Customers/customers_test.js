@@ -53,9 +53,10 @@ describe("Customer/Customers", function () {
 
       // Store the created customer ID for later deletion
       if (response.data) {
-        createdCustomerId = response.data.id || 
-                           response.data.data?.id || 
-                           response.data.customer?.id;
+        createdCustomerId =
+          response.data.id ||
+          response.data.data?.id ||
+          response.data.customer?.id;
       }
 
       console.log(`✅ ${response.status} - Customers - Criar um novo registro`);
@@ -73,9 +74,7 @@ describe("Customer/Customers", function () {
           `Request failed with status ${error.response.status}: ${JSON.stringify(error.response.data)}`,
         );
       } else {
-        console.error(
-          `❌ Network error - Customers - Criar um novo registro`,
-        );
+        console.error(`❌ Network error - Customers - Criar um novo registro`);
         console.error(`   Route: ${url}`);
         console.error(`   Error:`, error.message);
         throw error;
@@ -223,18 +222,21 @@ describe("Customer/Customers", function () {
     }
 
     // Pick a different random customer for update
-    const availableCustomers = customersList.filter(c => 
-      (c.id || c.customer_id) !== createdCustomerId
+    const availableCustomers = customersList.filter(
+      (c) => (c.id || c.customer_id) !== createdCustomerId,
     );
-    
+
     if (availableCustomers.length === 0) {
-      console.log(`   ⚠️ Skipping test - No other customers available for update`);
+      console.log(
+        `   ⚠️ Skipping test - No other customers available for update`,
+      );
       this.skip();
     }
 
     const randomIndex = Math.floor(Math.random() * availableCustomers.length);
-    const customerToUpdate = availableCustomers[randomIndex].id || 
-                           availableCustomers[randomIndex].customer_id;
+    const customerToUpdate =
+      availableCustomers[randomIndex].id ||
+      availableCustomers[randomIndex].customer_id;
 
     const headers = { ...config.api.headers, ...authHelper.getAuthHeaders() };
     const url = `${baseURL}/customers/${customerToUpdate}`;
@@ -263,7 +265,9 @@ describe("Customer/Customers", function () {
         validateJsonApiResponse(response);
       }
 
-      console.log(`✅ ${response.status} - Customers - Atualizar um registro aleatório`);
+      console.log(
+        `✅ ${response.status} - Customers - Atualizar um registro aleatório`,
+      );
       console.log(`   Route: ${url}`);
       console.log(`   Updated customer ID: ${customerToUpdate}`);
       console.log(`   New email: ${requestData.customer.email}`);
@@ -278,7 +282,9 @@ describe("Customer/Customers", function () {
           `Request failed with status ${error.response.status}: ${JSON.stringify(error.response.data)}`,
         );
       } else {
-        console.error(`❌ Network error - Customers - Atualizar um registro aleatório`);
+        console.error(
+          `❌ Network error - Customers - Atualizar um registro aleatório`,
+        );
         console.error(`   Route: ${url}`);
         console.error(`   Error:`, error.message);
         throw error;
@@ -289,9 +295,11 @@ describe("Customer/Customers", function () {
   it("Customers - Deletar um registro", async function () {
     // Prefer to delete the customer we created, fallback to a random one
     const customerToDelete = createdCustomerId || randomCustomerId;
-    
+
     if (!customerToDelete) {
-      console.log(`   ⚠️ Skipping test - No customer ID available for deletion`);
+      console.log(
+        `   ⚠️ Skipping test - No customer ID available for deletion`,
+      );
       this.skip();
     }
 
@@ -311,7 +319,7 @@ describe("Customer/Customers", function () {
       console.log(`✅ ${response.status} - Customers - Deletar um registro`);
       console.log(`   Route: ${url}`);
       console.log(`   Deleted customer ID: ${customerToDelete}`);
-      
+
       if (customerToDelete === createdCustomerId) {
         console.log(`   ✨ Cleaned up test-created customer`);
       }
@@ -337,37 +345,28 @@ describe("Customer/Customers", function () {
   it("Customers - Testar acesso não autorizado (outro usuário)", async function () {
     // Skip this test if we don't have a customer ID to test
     if (!randomCustomerId) {
-      console.log(`   ⚠️ Skipping test - No customer ID available for unauthorized access test`);
+      console.log(
+        `   ⚠️ Skipping test - No customer ID available for unauthorized access test`,
+      );
       this.skip();
     }
 
     const url = `${baseURL}/customers/${randomCustomerId}`;
-    
+
     console.log(`   🔐 Authenticating as different user (u2@gmail.com)...`);
-    
+
     // Create a new auth helper for the second user
-    const secondUserConfig = {
-      ...config,
-      api: {
-        ...config.api,
-        auth: {
-          ...config.api.auth,
-          testCredentials: {
-            email: "u2@gmail.com",
-            password: "123456"
-          }
-        }
-      }
-    };
-    
-    const secondUserAuth = new AuthHelper(secondUserConfig);
-    
+    const secondUserAuth = AuthHelper.createSecondUserAuthHelper(config);
+
     try {
       // Authenticate as second user
       await secondUserAuth.authenticate();
-      
-      const headers = { ...config.api.headers, ...secondUserAuth.getAuthHeaders() };
-      
+
+      const headers = {
+        ...config.api.headers,
+        ...secondUserAuth.getAuthHeaders(),
+      };
+
       // Try to access first user's customer
       const response = await axios({
         method: "get",
@@ -376,25 +375,43 @@ describe("Customer/Customers", function () {
       });
 
       // If we get here, the access was allowed (might be a security issue)
-      console.log(`⚠️ ${response.status} - Customers - Acesso permitido para outro usuário`);
+      console.log(
+        `⚠️ ${response.status} - Customers - Acesso permitido para outro usuário`,
+      );
       console.log(`   Route: ${url}`);
-      console.log(`   User u2@gmail.com could access customer ID: ${randomCustomerId}`);
+      console.log(
+        `   User u2@gmail.com could access customer ID: ${randomCustomerId}`,
+      );
       console.log(`   This might be a security issue if not intended`);
-      
     } catch (error) {
-      if (error.response && (error.response.status === 403 || error.response.status === 404 || error.response.status === 401)) {
+      if (
+        error.response &&
+        (error.response.status === 403 ||
+          error.response.status === 404 ||
+          error.response.status === 401)
+      ) {
         // Expected behavior - access denied
-        console.log(`✅ ${error.response.status} - Customers - Acesso negado para outro usuário (esperado)`);
+        console.log(
+          `✅ ${error.response.status} - Customers - Acesso negado para outro usuário (esperado)`,
+        );
         console.log(`   Route: ${url}`);
-        console.log(`   User u2@gmail.com correctly blocked from accessing customer ID: ${randomCustomerId}`);
+        console.log(
+          `   User u2@gmail.com correctly blocked from accessing customer ID: ${randomCustomerId}`,
+        );
       } else if (error.response) {
         // Unexpected error
-        console.error(`❌ ${error.response.status} - Customers - Teste de acesso não autorizado`);
+        console.error(
+          `❌ ${error.response.status} - Customers - Teste de acesso não autorizado`,
+        );
         console.error(`   Route: ${url}`);
         console.error(`   Response:`, error.response.data);
-        throw new Error(`Unexpected response status ${error.response.status}: ${JSON.stringify(error.response.data)}`);
+        throw new Error(
+          `Unexpected response status ${error.response.status}: ${JSON.stringify(error.response.data)}`,
+        );
       } else {
-        console.error(`❌ Network error - Customers - Teste de acesso não autorizado`);
+        console.error(
+          `❌ Network error - Customers - Teste de acesso não autorizado`,
+        );
         console.error(`   Route: ${url}`);
         console.error(`   Error:`, error.message);
         throw error;

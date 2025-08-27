@@ -12,6 +12,27 @@ class AuthHelper {
     this.authToken = null;
   }
 
+  static getSecondUserCredentials() {
+    return {
+      email: "u2@gmail.com",
+      password: "123456"
+    };
+  }
+
+  static createSecondUserAuthHelper(baseConfig) {
+    const secondUserConfig = {
+      ...baseConfig,
+      api: {
+        ...baseConfig.api,
+        auth: {
+          ...baseConfig.api.auth,
+          testCredentials: AuthHelper.getSecondUserCredentials()
+        }
+      }
+    };
+    return new AuthHelper(secondUserConfig);
+  }
+
   async authenticate() {
     if (!this.config.api.auth || !this.config.api.auth.testCredentials) {
       console.warn('No authentication configuration found');
