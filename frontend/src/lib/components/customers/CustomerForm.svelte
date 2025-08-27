@@ -50,7 +50,7 @@
   // Initialize form data using our new schemas
   let formData: CustomerFormData = createDefaultCustomerFormData();
   let guardianFormData: CustomerFormData = createDefaultGuardianFormData();
-  let formState: CustomerFormState = createDefaultFormState();
+  const formState: CustomerFormState = createDefaultFormState();
 
   // Track initial form data for dirty state
   let initialFormData: CustomerFormData;
@@ -79,23 +79,152 @@
     }
   }
 
-
   // Validation errors
   let errors: Record<string, string> = {};
   let touched: Record<string, boolean> = {};
-  let guardianErrors: Record<string, string> = {};
-  let guardianTouched: Record<string, boolean> = {};
+  const guardianErrors: Record<string, string> = {};
+  const guardianTouched: Record<string, boolean> = {};
+
+  // Populate form data when customer prop changes (for edit mode)
+  $: if (customer) {
+    // Handle both formats: customer with embedded profile_customer OR direct profile_customer
+    const profile = customer.profile_customer || customer;
+    const attrs = profile.attributes || profile;
+
+    // If this is a direct ProfileCustomer response, we need to get customer info differently
+    const customerData = customer.profile_customer ? customer : { access_email: attrs.access_email, status: 'active' };
+
+    formData = {
+      ...formData,
+      // === BASIC PROFILE INFORMATION ===
+      customer_type: attrs.customer_type || 'physical_person',
+      name: attrs.name || '',
+      last_name: attrs.last_name || '',
+
+      // === DOCUMENTS ===
+      cpf: attrs.cpf || '',
+      cnpj: attrs.cnpj || '',
+      rg: attrs.rg || '',
+
+      // === PERSONAL INFO ===
+      birth: attrs.birth || '',
+      gender: attrs.gender || '',
+      civil_status: attrs.civil_status || '',
+      nationality: attrs.nationality || 'brazilian',
+      capacity: attrs.capacity || 'able',
+
+      // === FAMILY & PERSONAL ===
+      mother_name: attrs.mother_name || '',
+
+      // === PROFESSIONAL ===
+      profession: attrs.profession || '',
+      company: attrs.company || '',
+
+      // === BENEFITS & SOCIAL SECURITY ===
+      number_benefit: attrs.number_benefit || '',
+      nit: attrs.nit || '',
+      inss_password: attrs.inss_password || '',
+
+      // === IDs AND REFERENCES ===
+      accountant_id: attrs.accountant_id || null,
+      created_by_id: attrs.created_by_id || null,
+
+      // === CUSTOMER LOGIN ATTRIBUTES ===
+      customer_attributes: {
+        ...formData.customer_attributes,
+        email: attrs.access_email || '',
+        access_email: attrs.access_email || '',
+        status: customerData.status || 'active'
+      },
+
+      // === CONTACT INFORMATION ===
+      // Phones - handle array from API
+      phones_attributes: attrs.phones && attrs.phones.length > 0
+        ? attrs.phones.map((phone: any) => ({
+          id: phone.id || undefined,
+          phone_number: phone.phone_number || ''
+        }))
+        : [{ phone_number: attrs.default_phone || '' }],
+
+      // Emails - handle array from API
+      emails_attributes: attrs.emails && attrs.emails.length > 0
+        ? attrs.emails.map((email: any) => ({
+          id: email.id || undefined,
+          email: email.email || ''
+        }))
+        : [{ email: attrs.default_email || '' }],
+
+      // === ADDRESS INFORMATION ===
+      // Addresses - handle array from API
+      addresses_attributes: attrs.addresses && attrs.addresses.length > 0
+        ? attrs.addresses.map((addr: any) => ({
+          id: addr.id || undefined,
+          description: addr.description || '',
+          zip_code: addr.zip_code || '',
+          street: addr.street || '',
+          number: addr.number ? addr.number.toString() : '',
+          neighborhood: addr.neighborhood || '',
+          city: addr.city || '',
+          state: addr.state || ''
+        }))
+        : [{
+          description: '',
+          zip_code: '',
+          street: '',
+          number: '',
+          neighborhood: '',
+          city: attrs.city || '',
+          state: ''
+        }],
+
+      // === BANKING INFORMATION ===
+      // Bank Accounts - handle array from API
+      bank_accounts_attributes: attrs.bank_accounts && attrs.bank_accounts.length > 0
+        ? attrs.bank_accounts.map((bank: any) => ({
+          id: bank.id || undefined,
+          bank_name: bank.bank_name || '',
+          type_account: bank.type_account || '',
+          agency: bank.agency || '',
+          account: bank.account || '',
+          operation: bank.operation || '',
+          pix: bank.pix || ''
+        }))
+        : [{
+          bank_name: '',
+          type_account: '',
+          agency: '',
+          account: '',
+          operation: '',
+          pix: ''
+        }]
+    };
+
+    // Set initial form data for dirty checking in edit mode
+    initialFormData = cloneFormData(formData);
+    console.log('🎯 CustomerForm populated with data:', {
+      customer_type: formData.customer_type,
+      name: formData.name,
+      phones: formData.phones_attributes.length,
+      emails: formData.emails_attributes.length,
+      addresses: formData.addresses_attributes.length,
+      bank_accounts: formData.bank_accounts_attributes.length
+    });
+  }
 
   onMount(async () => {
-    // Try to restore form data from localStorage using our utility
-    const savedData = loadFormDraft();
-    if (savedData) {
-      formData = { ...formData, ...savedData };
-      // TODO: Show notification that data was restored
+    // Only try to restore form data from localStorage if not in edit mode
+    if (!customer) {
+      const savedData = loadFormDraft();
+      if (savedData) {
+        formData = { ...formData, ...savedData };
+        // TODO: Show notification that data was restored
+      }
     }
 
-    // Set initial form state for dirty checking
-    initialFormData = cloneFormData(formData);
+    // Set initial form state for dirty checking (if not already set above)
+    if (!customer) {
+      initialFormData = cloneFormData(formData);
+    }
   });
 
   // Reactive declarations for performance optimization

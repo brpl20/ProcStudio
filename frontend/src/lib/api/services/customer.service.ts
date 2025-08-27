@@ -42,7 +42,16 @@ export class CustomerService {
   /**
    * Transform JSON:API customer data to our Customer type
    */
-  private transformJsonApiCustomer(jsonApiData: JsonApiCustomerData): Customer {
+  private transformJsonApiCustomer(jsonApiData: JsonApiCustomerData, includedData?: any[]): Customer {
+    // Find the associated profile_customer in included data
+    let profileCustomer = undefined;
+    if (includedData && jsonApiData.relationships?.profile_customer?.data) {
+      const profileCustomerId = jsonApiData.relationships.profile_customer.data.id;
+      profileCustomer = includedData.find(item => 
+        item.type === 'profile_customer' && item.id === profileCustomerId
+      );
+    }
+
     return {
       id: parseInt(jsonApiData.id),
       email: jsonApiData.attributes.access_email, // A API só retorna access_email
@@ -54,9 +63,40 @@ export class CustomerService {
       created_by_id: jsonApiData.attributes.created_by_id,
       profile_customer_id: jsonApiData.attributes.profile_customer_id,
       created_at: jsonApiData.attributes.created_at,
+      // Include profile_customer data if available
+      profile_customer: profileCustomer ? this.transformProfileCustomer(profileCustomer) : undefined,
       // A API não retorna updated_at e deleted_at no momento
       updated_at: undefined,
       deleted_at: undefined
+    };
+  }
+
+  /**
+   * Transform included profile_customer data
+   */
+  private transformProfileCustomer(includedProfileCustomer: any): ProfileCustomer {
+    return {
+      id: includedProfileCustomer.id,
+      type: includedProfileCustomer.type,
+      attributes: {
+        ...includedProfileCustomer.attributes,
+        customer_type: includedProfileCustomer.attributes.customer_type,
+        name: includedProfileCustomer.attributes.name,
+        last_name: includedProfileCustomer.attributes.last_name,
+        cpf: includedProfileCustomer.attributes.cpf,
+        cnpj: includedProfileCustomer.attributes.cnpj,
+        access_email: includedProfileCustomer.attributes.access_email,
+        default_phone: includedProfileCustomer.attributes.default_phone,
+        default_email: includedProfileCustomer.attributes.default_email,
+        city: includedProfileCustomer.attributes.city,
+        deleted: includedProfileCustomer.attributes.deleted
+      },
+      relationships: {
+        addresses: includedProfileCustomer.attributes.addresses || [],
+        bank_accounts: includedProfileCustomer.attributes.bank_accounts || [],
+        emails: includedProfileCustomer.attributes.emails || [],
+        phones: includedProfileCustomer.attributes.phones || []
+      }
     };
   }
 
@@ -77,7 +117,7 @@ export class CustomerService {
 
       // Transform JSON:API data to our Customer type
       const customers = Array.isArray(response.data)
-        ? response.data.map((jsonApiData) => this.transformJsonApiCustomer(jsonApiData))
+        ? response.data.map((jsonApiData) => this.transformJsonApiCustomer(jsonApiData, response.included))
         : [];
 
       return {
@@ -100,10 +140,25 @@ export class CustomerService {
    */
   async getCustomer(id: number): Promise<CustomerResponse> {
     try {
-      const response: JsonApiCustomerResponse = await this.httpClient.get(`/customers/${id}`);
+      // Add cache-busting header to avoid 304 issues
+      const response: JsonApiCustomerResponse = await this.httpClient.get(`/customers/${id}`, {
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+
+      // Handle empty response (e.g., from 304 Not Modified)
+      if (!response || (!response.data && !response.included)) {
+        return {
+          success: false,
+          data: {} as Customer,
+          message: 'No customer data received (possibly cached). Please refresh and try again.'
+        };
+      }
 
       // Transform JSON:API data to our Customer type
-      const customer = this.transformJsonApiCustomer(response.data);
+      const customer = this.transformJsonApiCustomer(response.data, response.included);
 
       return {
         success: true,
@@ -111,6 +166,7 @@ export class CustomerService {
         message: response.message || 'Cliente carregado com sucesso'
       };
     } catch (error: any) {
+      console.error('getCustomer error:', error);
       return {
         success: false,
         data: {} as Customer,
@@ -260,6 +316,45 @@ export class CustomerService {
 
   /**
    * Get all profile customers
+   * @param typeOfParams - Filter parameter: 'active', 'only_deleted', 'with_deleted', or empty string
+   */
+  async getAllProfileCustomer(typeOfParams: string = ''): Promise<ProfileCustomersListResponse> {
+    try {
+      const url = typeOfParams !== '' ? `/profile_customers?deleted=${typeOfParams}` : '/profile_customers';
+
+      const response = await this.httpClient.get(url);
+
+      // Handle empty response (e.g., from 304 Not Modified)
+      if (!response || (!response.data && !Array.isArray(response))) {
+        return {
+          success: true,
+          data: [],
+          meta: { total_count: 0 },
+          message: 'No profile customers found'
+        };
+      }
+
+      const data = response.data || response;
+      const profileCustomers = Array.isArray(data) ? data : [];
+
+      return {
+        success: true,
+        data: profileCustomers,
+        meta: response.meta,
+        message: response.message || 'Profile customers retrieved successfully'
+      };
+    } catch (error: any) {
+      console.error('getAllProfileCustomer error:', error);
+      return {
+        success: false,
+        data: [],
+        message: error?.message || 'Failed to retrieve profile customers'
+      };
+    }
+  }
+
+  /**
+   * Get all profile customers (legacy method)
    */
   async getProfileCustomers(filters?: {
     deleted?: boolean;
@@ -285,6 +380,44 @@ export class CustomerService {
         success: false,
         data: [],
         message: error?.message || 'Failed to retrieve profile customers'
+      };
+    }
+  }
+
+  /**
+   * Get all customers (following target repository pattern)
+   */
+  async getAllCustomers(): Promise<CustomersListResponse> {
+    try {
+      const response: JsonApiCustomersListResponse = await this.httpClient.get('/customers');
+
+      // Handle empty response (e.g., from 304 Not Modified)
+      if (!response || !response.data) {
+        return {
+          success: true,
+          data: [],
+          meta: { total_count: 0 },
+          message: 'No customers found'
+        };
+      }
+
+      // Transform JSON:API data to our Customer type
+      const customers = Array.isArray(response.data)
+        ? response.data.map((jsonApiData) => this.transformJsonApiCustomer(jsonApiData, response.included))
+        : [];
+
+      return {
+        success: true,
+        data: customers,
+        meta: response.meta,
+        message: response.message || 'Customers retrieved successfully'
+      };
+    } catch (error: any) {
+      console.error('getAllCustomers error:', error);
+      return {
+        success: false,
+        data: [],
+        message: error?.message || 'Failed to retrieve customers'
       };
     }
   }
@@ -364,6 +497,24 @@ export class CustomerService {
         success: false,
         data: {} as ProfileCustomer,
         message: error?.message || 'Failed to update profile customer'
+      };
+    }
+  }
+
+  /**
+   * Inactive/Soft delete a profile customer (following target repository pattern)
+   */
+  async inactiveCustomer(id: number): Promise<DeleteProfileCustomerResponse> {
+    try {
+      await this.httpClient.delete(`/profile_customers/${id}`);
+      return {
+        success: true,
+        message: 'Profile customer inactivated successfully'
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error?.message || 'Failed to inactivate profile customer'
       };
     }
   }

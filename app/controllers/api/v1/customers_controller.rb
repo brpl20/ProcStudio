@@ -9,7 +9,12 @@ module Api
       after_action :verify_authorized
 
       def index
-        customers = current_team.customers
+        customers = current_team.customers.includes(
+          profile_customer: [
+            :customer, :emails, :phones, :addresses, :bank_accounts,
+            :customer_files, :represented_customers, :active_represents
+          ]
+        )
 
         filter_by_deleted_params.each do |key, value|
           next if value.blank?
@@ -19,6 +24,7 @@ module Api
 
         serialized = CustomerSerializer.new(
           customers,
+          include: [:profile_customer],
           meta: {
             total_count: customers.offset(nil).limit(nil).count
           }
@@ -28,15 +34,23 @@ module Api
           success: true,
           message: 'Clientes listados com sucesso',
           data: serialized[:data],
+          included: serialized[:included],
           meta: serialized[:meta]
         }, status: :ok
       end
 
       def show
+        serialized = CustomerSerializer.new(
+          @customer,
+          include: [:profile_customer],
+          params: { action: 'show' }
+        ).serializable_hash
+
         render json: {
           success: true,
           message: 'Cliente encontrado com sucesso',
-          data: CustomerSerializer.new(@customer).serializable_hash[:data]
+          data: serialized[:data],
+          included: serialized[:included]
         }, status: :ok
       end
 
@@ -55,7 +69,7 @@ module Api
           render json: {
             success: true,
             message: 'Cliente criado com sucesso',
-            data: CustomerSerializer.new(customer).serializable_hash[:data]
+            data: CustomerSerializer.new(customer, include: [:profile_customer]).serializable_hash[:data]
           }, status: :created
         else
           error_messages = customer.errors.full_messages
@@ -96,7 +110,7 @@ module Api
           render json: {
             success: true,
             message: 'Cliente atualizado com sucesso',
-            data: CustomerSerializer.new(@customer).serializable_hash[:data]
+            data: CustomerSerializer.new(@customer, include: [:profile_customer]).serializable_hash[:data]
           }, status: :ok
         else
           error_messages = @customer.errors.full_messages
@@ -127,14 +141,19 @@ module Api
       end
 
       def restore
-        customer = current_team.customers.with_deleted.find(params[:id])
+        customer = current_team.customers.with_deleted.includes(
+          profile_customer: [
+            :customer, :emails, :phones, :addresses, :bank_accounts,
+            :customer_files, :represented_customers, :active_represents
+          ]
+        ).find(params[:id])
         authorize customer, :restore?, policy_class: Admin::CustomerPolicy
 
         if customer.recover
           render json: {
             success: true,
             message: 'Cliente restaurado com sucesso',
-            data: CustomerSerializer.new(customer).serializable_hash[:data]
+            data: CustomerSerializer.new(customer, include: [:profile_customer]).serializable_hash[:data]
           }, status: :ok
         else
           error_messages = customer.errors.full_messages
@@ -155,7 +174,12 @@ module Api
       end
 
       def retrieve_customer
-        @customer = current_team.customers.find(params[:id])
+        @customer = current_team.customers.includes(
+          profile_customer: [
+            :customer, :emails, :phones, :addresses, :bank_accounts,
+            :customer_files, :represented_customers, :active_represents
+          ]
+        ).find(params[:id])
       end
 
       def perform_authorization

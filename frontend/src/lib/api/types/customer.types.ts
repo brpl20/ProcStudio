@@ -29,37 +29,64 @@ export type CivilStatus = 'single' | 'married' | 'divorced' | 'widower' | 'union
 export type Capacity = 'able' | 'relatively' | 'unable';
 
 export interface ProfileCustomer {
-  id: number;
-  customer_id: number;
-  customer_type: CustomerType;
-  name: string;
+  id: string;
+  type?: string;
+  name?: string;
+  deleted?: boolean;
+  customer_id?: number;
+  customer_type?: CustomerType;
   last_name?: string;
-  status: CustomerStatus;
+  status?: CustomerStatus;
 
-  // Personal information
-  cpf?: string;
-  cnpj?: string;
-  rg?: string;
-  birth?: string;
-  gender?: Gender;
-  nationality?: Nationality;
-  civil_status?: CivilStatus;
-  capacity?: Capacity;
-  profession?: string;
-  mother_name?: string;
+  attributes: {
+    id?: any;
+    name?: string;
+    customer_type: string;
+    status?: number;
+    customer_id?: number;
+    last_name?: string;
+    cpf?: string;
+    rg?: string;
+    birth?: string;
+    gender?: string;
+    cnpj?: string;
+    civil_status?: string;
+    nationality?: any;
+    capacity?: string;
+    profession?: string;
+    company?: string;
+    number_benefit?: string;
+    nit?: string;
+    mother_name?: string;
+    default_phone?: string;
+    default_email?: string;
+    data?: any;
+    representor?: any;
+    issue_documents?: boolean;
+    access_email?: string;
+    cep?: any;
+    street?: any;
+    state?: any;
+    city?: any;
+    number?: any;
+    description?: any;
+    neighborhood?: any;
+    represent_attributes?: any;
+    profile_customer_id?: number;
+    represent?: any;
+    deleted?: boolean;
+  };
 
-  // Professional information
-  company?: string;
-  accountant_id?: number;
-
-  // Social security
-  number_benefit?: string;
-  nit?: string;
-  inss_password?: string;
+  relationships?: {
+    addresses?: any[];
+    bank_accounts?: any[];
+    emails?: any[];
+    phones?: any[];
+  };
 
   // Timestamps
-  created_at: string;
-  updated_at: string;
+  created_at?: string;
+  updated_at?: string;
   deleted_at?: string | null;
 }
 
@@ -236,12 +263,14 @@ export interface JsonApiCustomerResponse {
   success?: boolean;
   message?: string;
   data: JsonApiCustomerData;
+  included?: any[];
 }
 
 export interface JsonApiCustomersListResponse {
   success?: boolean;
   message?: string;
   data: JsonApiCustomerData[];
+  included?: any[];
   meta?: {
     total_count: number;
   };

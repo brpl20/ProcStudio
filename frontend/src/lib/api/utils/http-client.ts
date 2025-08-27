@@ -79,6 +79,12 @@ export class HttpClient {
   private async handleResponse<T>(response: Response, method: string): Promise<T> {
     let data: any;
 
+    // Handle 304 Not Modified - return empty data as success
+    if (response.status === 304) {
+      ApiLogger.logResponse(method, response, {});
+      return {} as T;
+    }
+
     try {
       const text = await response.text();
       data = text ? JSON.parse(text) : {};
@@ -88,12 +94,13 @@ export class HttpClient {
 
     ApiLogger.logResponse(method, response, data);
 
+    // Check for HTTP errors (excluding 304 which is handled above)
     if (!response.ok) {
       throw {
         status: response.status,
         statusText: response.statusText,
         data,
-        message: data.message || data.error || 'Request failed'
+        message: data.message || data.error || `HTTP Error ${response.status}: ${response.statusText}`
       };
     }
 
