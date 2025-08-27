@@ -47,7 +47,7 @@ export class CustomerService {
     let profileCustomer = undefined;
     if (includedData && jsonApiData.relationships?.profile_customer?.data) {
       const profileCustomerId = jsonApiData.relationships.profile_customer.data.id;
-      profileCustomer = includedData.find(item => 
+      profileCustomer = includedData.find((item) =>
         item.type === 'profile_customer' && item.id === profileCustomerId
       );
     }
@@ -101,7 +101,7 @@ export class CustomerService {
   }
 
   /**
-   * Get all customers
+   * Get all customers - simple load all
    */
   async getCustomers(filters?: { deleted?: boolean }): Promise<CustomersListResponse> {
     try {
@@ -123,7 +123,9 @@ export class CustomerService {
       return {
         success: true,
         data: customers,
-        meta: response.meta,
+        meta: {
+          total_count: customers.length
+        },
         message: response.message || 'Clientes carregados com sucesso'
       };
     } catch (error: any) {

@@ -12,6 +12,7 @@
   const dispatch = createEventDispatcher<{
     edit: Customer;
     editProfile: ProfileCustomer;
+    viewProfile: Customer;
     delete: number;
     deleteProfile: string;
     updateStatus: { id: number; status: CustomerStatus };
@@ -42,6 +43,10 @@
 
   function handleEditProfileClick(profileCustomer: ProfileCustomer): void {
     dispatch('editProfile', profileCustomer);
+  }
+
+  function handleViewProfileClick(customer: Customer): void {
+    dispatch('viewProfile', customer);
   }
 
   function handleStatusChange(customerId: number, newStatus: CustomerStatus): void {
@@ -117,14 +122,28 @@
           {@const customerType = profileCustomer ? translateCustomerType(profileCustomer.attributes.customer_type) : 'Não definido'}
           {@const phone = profileCustomer?.attributes.default_phone ? phoneMask(profileCustomer.attributes.default_phone) : '-'}
           {@const isDeleted = customer.deleted || (profileCustomer?.attributes.deleted || false)}
+          {@const isUnable = profileCustomer?.attributes?.capacity === 'unable'}
+          {@const isRelativelyIncapable = profileCustomer?.attributes?.capacity === 'relatively'}
+          {@const hasCapacityLimitation = isUnable || isRelativelyIncapable}
 
-          <tr class:opacity-60={isDeleted}>
+          <tr class:opacity-60={isDeleted} class:border-l-4={hasCapacityLimitation} class:border-warning={isRelativelyIncapable} class:border-error={isUnable}>
             <td>{customer.id}</td>
             <td class="font-medium">
-              {fullName}
-              {#if isDeleted}
-                <span class="badge badge-error badge-xs ml-2">Inativo</span>
-              {/if}
+              <div class="flex items-center gap-2">
+                <span>{fullName}</span>
+                {#if hasCapacityLimitation}
+                  <div class="flex items-center gap-1">
+                    {#if isUnable}
+                      <span class="text-error" title="Cliente Incapaz - Requer Representação Legal">🚫</span>
+                    {:else if isRelativelyIncapable}
+                      <span class="text-warning" title="Cliente Relativamente Incapaz - Assistência Recomendada">⚠️</span>
+                    {/if}
+                  </div>
+                {/if}
+                {#if isDeleted}
+                  <span class="badge badge-error badge-xs">Inativo</span>
+                {/if}
+              </div>
             </td>
             <td>{customer.access_email || '-'}</td>
             <td>
@@ -190,10 +209,10 @@
                     <li>
                       <button
                         class="flex items-center gap-2"
-                        on:click={() => handleEditClick(customer)}
+                        on:click={() => handleViewProfileClick(customer)}
                         disabled={isLoading}
                       >
-                        👁️ Detalhes
+                        👁️ Ver Perfil
                       </button>
                     </li>
                     <li>
@@ -202,7 +221,7 @@
                         on:click={() => handleEditClick(customer)}
                         disabled={isLoading}
                       >
-                        ✏️ Alterar
+                        ✏️ Editar
                       </button>
                     </li>
                     {#if profileCustomer}

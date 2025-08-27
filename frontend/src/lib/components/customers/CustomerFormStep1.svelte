@@ -131,25 +131,25 @@
     }
 
     switch (event.key) {
-      case 'ArrowDown':
-        event.preventDefault();
-        selectedDropdownIndex = Math.min(selectedDropdownIndex + 1, filteredBanks.length - 1);
-        break;
-      case 'ArrowUp':
-        event.preventDefault();
-        selectedDropdownIndex = Math.max(selectedDropdownIndex - 1, -1);
-        break;
-      case 'Enter':
-        event.preventDefault();
-        if (selectedDropdownIndex >= 0 && selectedDropdownIndex < filteredBanks.length) {
-          selectBank(filteredBanks[selectedDropdownIndex]);
-        }
-        break;
-      case 'Escape':
-        event.preventDefault();
-        showBankDropdown = false;
-        selectedDropdownIndex = -1;
-        break;
+    case 'ArrowDown':
+      event.preventDefault();
+      selectedDropdownIndex = Math.min(selectedDropdownIndex + 1, filteredBanks.length - 1);
+      break;
+    case 'ArrowUp':
+      event.preventDefault();
+      selectedDropdownIndex = Math.max(selectedDropdownIndex - 1, -1);
+      break;
+    case 'Enter':
+      event.preventDefault();
+      if (selectedDropdownIndex >= 0 && selectedDropdownIndex < filteredBanks.length) {
+        selectBank(filteredBanks[selectedDropdownIndex]);
+      }
+      break;
+    case 'Escape':
+      event.preventDefault();
+      showBankDropdown = false;
+      selectedDropdownIndex = -1;
+      break;
     }
   }
 </script>

@@ -18,6 +18,7 @@
   import CustomersPage from './lib/pages/CustomersPage.svelte';
   import CustomersNewPage from './lib/pages/CustomersNewPage.svelte';
   import CustomersEditPage from './lib/pages/CustomersEditPage.svelte';
+  import CustomerProfilePage from './pages/CustomerProfilePage.svelte';
   import ProfileCompletionEnhanced from './lib/pages/ProfileCompletionEnhanced.svelte';
 
   // Reactive stores
@@ -34,6 +35,13 @@
     if (editMatch) {
       return { id: editMatch[1] };
     }
+
+    // Extract ID from paths like /customers/profile/123
+    const profileMatch = path.match(/\/customers\/profile\/(\d+)/);
+    if (profileMatch) {
+      return { customerId: parseInt(profileMatch[1]) };
+    }
+
     return {};
   }
 
@@ -61,6 +69,10 @@
     // Check for dynamic routes
     if (path.match(/\/customers\/edit\/\d+/)) {
       return CustomersEditPage;
+    }
+
+    if (path.match(/\/customers\/profile\/\d+/)) {
+      return CustomerProfilePage;
     }
 
     const routes = {

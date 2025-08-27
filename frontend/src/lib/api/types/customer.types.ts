@@ -168,6 +168,9 @@ export interface CustomersListResponse {
   data: Customer[];
   meta?: {
     total_count: number;
+    current_page?: number;
+    per_page?: number;
+    total_pages?: number;
   };
   message?: string;
 }

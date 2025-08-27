@@ -9,21 +9,103 @@ import type {
 
 // Define store types
 export interface CustomerState {
-  customers: Customer[];
+  allCustomers: Customer[];  // All loaded customers
+  filteredCustomers: Customer[];  // Filtered customers
+  paginatedCustomers: Customer[];  // Current page customers
   currentCustomer: Customer | null;
   isLoading: boolean;
   error: string;
   success: string;
+  // Pagination state
+  pagination: {
+    currentPage: number;
+    perPage: number;
+    totalPages: number;
+    totalRecords: number;
+  };
+  // Filter state
+  filters: {
+    search: string;
+    status: string;
+    capacity: string;
+    customerType: string;
+  };
 }
 
 // Initial state
 const initialState: CustomerState = {
-  customers: [],
+  allCustomers: [],
+  filteredCustomers: [],
+  paginatedCustomers: [],
   currentCustomer: null,
   isLoading: false,
   error: '',
-  success: ''
+  success: '',
+  pagination: {
+    currentPage: 1,
+    perPage: 50,
+    totalPages: 1,
+    totalRecords: 0
+  },
+  filters: {
+    search: '',
+    status: '',
+    capacity: '',
+    customerType: ''
+  }
 };
+
+// Helper functions for filtering
+function filterCustomers(customers: Customer[], filters: CustomerState['filters']): Customer[] {
+  let filtered = [...customers];
+
+  // Search filter (name, email, CPF, CNPJ)
+  if (filters.search && filters.search.trim()) {
+    const searchTerm = filters.search.toLowerCase().trim();
+    filtered = filtered.filter(customer => {
+      const profileCustomer = customer.profile_customer;
+      if (!profileCustomer) return false;
+
+      const name = `${profileCustomer.attributes.name || ''} ${profileCustomer.attributes.last_name || ''}`.toLowerCase();
+      const email = customer.access_email?.toLowerCase() || '';
+      const cpf = profileCustomer.attributes.cpf || '';
+      const cnpj = profileCustomer.attributes.cnpj || '';
+
+      return name.includes(searchTerm) || 
+             email.includes(searchTerm) || 
+             cpf.includes(searchTerm) || 
+             cnpj.includes(searchTerm);
+    });
+  }
+
+  // Status filter
+  if (filters.status) {
+    filtered = filtered.filter(customer => customer.status === filters.status);
+  }
+
+  // Capacity filter
+  if (filters.capacity) {
+    filtered = filtered.filter(customer => 
+      customer.profile_customer?.attributes?.capacity === filters.capacity
+    );
+  }
+
+  // Customer type filter  
+  if (filters.customerType) {
+    filtered = filtered.filter(customer => 
+      customer.profile_customer?.attributes?.customer_type === filters.customerType
+    );
+  }
+
+  return filtered;
+}
+
+// Helper function for pagination
+function paginateCustomers(customers: Customer[], page: number, perPage: number): Customer[] {
+  const startIndex = (page - 1) * perPage;
+  const endIndex = startIndex + perPage;
+  return customers.slice(startIndex, endIndex);
+}
 
 // Create the store
 function createCustomerStore() {
@@ -55,24 +137,44 @@ function createCustomerStore() {
   return {
     subscribe,
 
-    // Load all customers
-    async loadCustomers(filters?: { deleted?: boolean }): Promise<boolean> {
+    // Load all customers (only called once)
+    async loadCustomers(): Promise<boolean> {
       update((state) => ({ ...state, isLoading: true, error: '' }));
 
-      // Use the api.customers service that's already initialized
-      const response = await api.customers.getCustomers(filters);
+      // Load all customers from API once
+      const response = await api.customers.getCustomers();
 
       if (response.success) {
-        update((state) =>
-          showNotification(
-            {
-              ...state,
-              customers: response.data,
-              isLoading: false
+        update((state) => {
+          // Store all customers
+          const allCustomers = response.data;
+          
+          // Apply filters
+          const filtered = filterCustomers(allCustomers, state.filters);
+          
+          // Calculate pagination
+          const totalPages = Math.ceil(filtered.length / state.pagination.perPage);
+          const currentPage = Math.min(state.pagination.currentPage, Math.max(1, totalPages));
+          
+          // Get current page data
+          const paginated = paginateCustomers(filtered, currentPage, state.pagination.perPage);
+          
+          return {
+            ...state,
+            allCustomers,
+            filteredCustomers: filtered,
+            paginatedCustomers: paginated,
+            isLoading: false,
+            pagination: {
+              ...state.pagination,
+              totalRecords: filtered.length,
+              totalPages,
+              currentPage
             },
-            'Clientes carregados com sucesso'
-          )
-        );
+            success: allCustomers.length > 0 ? 'Clientes carregados com sucesso' : '',
+            error: ''
+          };
+        });
         return true;
       } else {
         update((state) =>
@@ -81,12 +183,92 @@ function createCustomerStore() {
               ...state,
               isLoading: false
             },
-            response.message,
+            response.message || 'Erro ao carregar clientes',
             true
           )
         );
         return false;
       }
+    },
+
+    // Apply filters and pagination (no API call)
+    applyFiltersAndPagination(): void {
+      update((state) => {
+        // Apply filters to all customers
+        const filtered = filterCustomers(state.allCustomers, state.filters);
+        
+        // Calculate pagination
+        const totalPages = Math.ceil(filtered.length / state.pagination.perPage);
+        const currentPage = Math.min(state.pagination.currentPage, Math.max(1, totalPages));
+        
+        // Get current page data
+        const paginated = paginateCustomers(filtered, currentPage, state.pagination.perPage);
+        
+        return {
+          ...state,
+          filteredCustomers: filtered,
+          paginatedCustomers: paginated,
+          pagination: {
+            ...state.pagination,
+            totalRecords: filtered.length,
+            totalPages,
+            currentPage
+          }
+        };
+      });
+    },
+
+    // Set search filter (no API call)
+    setSearch(term: string): void {
+      update((state) => ({
+        ...state,
+        filters: { ...state.filters, search: term },
+        pagination: { ...state.pagination, currentPage: 1 }
+      }));
+      this.applyFiltersAndPagination();
+    },
+
+    // Set filters (no API call)
+    setFilters(filters: { status: string; capacity: string; customerType: string }): void {
+      update((state) => ({
+        ...state,
+        filters: { ...state.filters, ...filters },
+        pagination: { ...state.pagination, currentPage: 1 }
+      }));
+      this.applyFiltersAndPagination();
+    },
+
+    // Clear all filters (no API call)
+    clearFilters(): void {
+      update((state) => ({
+        ...state,
+        filters: {
+          search: '',
+          status: '',
+          capacity: '',
+          customerType: ''
+        },
+        pagination: { ...state.pagination, currentPage: 1 }
+      }));
+      this.applyFiltersAndPagination();
+    },
+
+    // Change page (no API call)
+    setPage(page: number): void {
+      update((state) => ({
+        ...state,
+        pagination: { ...state.pagination, currentPage: page }
+      }));
+      this.applyFiltersAndPagination();
+    },
+
+    // Change per page (no API call)
+    setPerPage(perPage: number): void {
+      update((state) => ({
+        ...state,
+        pagination: { ...state.pagination, perPage, currentPage: 1 }
+      }));
+      this.applyFiltersAndPagination();
     },
 
     // Get a single customer

@@ -2,6 +2,8 @@
   import { onMount } from 'svelte';
   import AuthSidebar from '../components/AuthSidebar.svelte';
   import CustomerList from '../components/customers/CustomerList.svelte';
+  import CustomerFilters from '../components/customers/CustomerFilters.svelte';
+  import Pagination from '../components/ui/Pagination.svelte';
   import { customerStore } from '../stores/customerStore';
   import { router } from '../stores/routerStore.js';
   import type { Customer, CustomerStatus } from '../api/types/customer.types';
@@ -30,6 +32,37 @@
   async function handleEditCustomer(event: CustomEvent<Customer>) {
     // Navigate to edit page
     router.navigate(`/customers/edit/${event.detail.id}`);
+  }
+
+  async function handleViewProfile(event: CustomEvent<Customer>) {
+    // Navigate to profile view page
+    router.navigate(`/customers/profile/${event.detail.id}`);
+  }
+
+  // Search and filtering handlers (no API calls needed)
+  function handleSearch(event: CustomEvent<{ term: string }>) {
+    customerStore.setSearch(event.detail.term);
+  }
+
+  function handleFilterChange(event: CustomEvent<{
+    status: string;
+    capacity: string;
+    customerType: string;
+  }>) {
+    customerStore.setFilters(event.detail);
+  }
+
+  function handleClearFilters() {
+    customerStore.clearFilters();
+  }
+
+  // Pagination handlers (no API calls needed)
+  function handlePageChange(event: CustomEvent<{ page: number }>) {
+    customerStore.setPage(event.detail.page);
+  }
+
+  function handlePerPageChange(event: CustomEvent<{ perPage: number }>) {
+    customerStore.setPerPage(event.detail.perPage);
   }
 </script>
 
@@ -61,14 +94,38 @@
           </div>
         {/if}
 
+        <!-- Search and Filters -->
+        <CustomerFilters
+          searchTerm={$customerStore.filters.search}
+          statusFilter={$customerStore.filters.status}
+          capacityFilter={$customerStore.filters.capacity}
+          customerTypeFilter={$customerStore.filters.customerType}
+          isLoading={$customerStore.isLoading}
+          on:search={handleSearch}
+          on:filterChange={handleFilterChange}
+          on:clearFilters={handleClearFilters}
+        />
+
         <!-- Customers List -->
         <CustomerList
-          customers={$customerStore.customers}
+          customers={$customerStore.paginatedCustomers}
           isLoading={$customerStore.isLoading}
           on:edit={handleEditCustomer}
+          on:viewProfile={handleViewProfile}
           on:delete={handleDeleteCustomer}
           on:updateStatus={handleUpdateStatus}
           on:resendConfirmation={handleResendConfirmation}
+        />
+
+        <!-- Pagination -->
+        <Pagination
+          currentPage={$customerStore.pagination.currentPage}
+          totalPages={$customerStore.pagination.totalPages}
+          totalRecords={$customerStore.pagination.totalRecords}
+          perPage={$customerStore.pagination.perPage}
+          isLoading={$customerStore.isLoading}
+          on:pageChange={handlePageChange}
+          on:perPageChange={handlePerPageChange}
         />
 
         <!-- Refresh Button -->

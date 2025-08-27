@@ -112,7 +112,7 @@ export default defineConfig({
               const contentType = proxyRes.headers['content-type'] || '';
               const isJSON =
                 typeof contentType === 'string' && contentType.includes('application/json');
-              
+
               // Format the response body
               let bodyPreview = '';
               if (bodyBuffer.length > 0) {
@@ -120,7 +120,7 @@ export default defineConfig({
               } else {
                 bodyPreview = '(empty response body)';
               }
-              
+
               // Log headers for debugging
               const importantHeaders = {
                 'content-type': proxyRes.headers['content-type'],
@@ -130,24 +130,24 @@ export default defineConfig({
                 'last-modified': proxyRes.headers['last-modified'],
                 'x-cache': proxyRes.headers['x-cache']
               };
-              
+
               const headersInfo = Object.entries(importantHeaders)
                 .filter(([_, value]) => value !== undefined)
                 .map(([key, value]) => `  ${key}: ${value}`)
                 .join('\n');
-              
+
               console.log(`📥 Received Response from Target: ${statusCode} ${req.url}`);
               if (headersInfo) {
                 console.log(`📋 Response Headers:\n${headersInfo}`);
               }
               console.log(`📦 Response Body (${bodyBuffer.length} bytes):\n${bodyPreview}`);
-              
+
               // For 304 responses, add extra debugging info
               if (statusCode === 304) {
-                console.log(`🔄 304 Not Modified Details:`);
-                console.log(`   - This means the resource hasn't changed since last request`);
-                console.log(`   - Client should use cached version`);
-                console.log(`   - Response body is typically empty for 304`);
+                console.log('🔄 304 Not Modified Details:');
+                console.log('   - This means the resource hasn\'t changed since last request');
+                console.log('   - Client should use cached version');
+                console.log('   - Response body is typically empty for 304');
               }
 
               // Forward response to the browser
