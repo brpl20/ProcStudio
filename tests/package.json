@@ -10,6 +10,8 @@
     "test:api": "node test_router.js api",
     "test:api-svelte": "node test_router.js api-svelte",
     "test:e2e": "node test_router.js e2e",
+    "test:e2e:user": "cd e2e && npx playwright test tests/user-profile-creation.e2e.js",
+    "test:e2e:perf": "node e2e/run-tests.js tests/user-profile-creation.e2e.js",
     "test:all": "node test_router.js all",
     "setup": "npm install && npx playwright install",
     "reports": "node test_router.js reports"

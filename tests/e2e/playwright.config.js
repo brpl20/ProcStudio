@@ -3,25 +3,25 @@
  *
  * This configuration sets up Playwright for comprehensive E2E testing
  * of the ProcStudio application (Svelte frontend + Rails API backend).
+ * Configuration is imported from ../config.js for consistency across test suites.
  */
 
-const { defineConfig, devices } = require('@playwright/test');
-const path = require('path');
-const fs = require('fs');
+const { defineConfig, devices } = require("@playwright/test");
+const path = require("path");
 
-// Load test configuration
-const testConfigPath = path.join(__dirname, '../test_config.json');
-const testConfig = fs.existsSync(testConfigPath)
-  ? JSON.parse(fs.readFileSync(testConfigPath, 'utf8'))
-  : {};
+// Import shared configuration from ../config.js
+const { apiTesting } = require("../config.js");
 
-const e2eConfig = testConfig.e2e || {};
-const frontendUrl = process.env.FRONTEND_URL || e2eConfig.baseUrl || 'http://localhost:5173';
-const apiUrl = process.env.BASE_URL || testConfig.api?.baseUrl || 'http://localhost:3000';
+// Extract configuration values
+const baseApiUrl = apiTesting.api.baseUrl;
+const apiUrl = apiTesting.api.baseUrl;
+const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+const timeout = apiTesting.api.timeout * 60; // Convert to milliseconds for Playwright
+const retries = apiTesting.api.retries;
 
 module.exports = defineConfig({
   // Test directory
-  testDir: './tests',
+  testDir: "./tests",
 
   // Run tests in files in parallel
   fullyParallel: true,
@@ -29,26 +29,24 @@ module.exports = defineConfig({
   // Fail the build on CI if you accidentally left test.only in the source code
   forbidOnly: !!process.env.CI,
 
-  // Retry on CI only
-  retries: process.env.CI ? 2 : 0,
+  // Retry configuration from shared config
+  retries: process.env.CI ? retries : 0,
 
   // Opt out of parallel tests on CI
   workers: process.env.CI ? 1 : undefined,
 
   // Reporter to use
   reporter: [
-    ['html', { outputFolder: '../reports/e2e-html-report' }],
-    ['json', { outputFile: '../reports/e2e-results.json' }],
-    ['junit', { outputFile: '../reports/e2e-results.xml' }],
-    process.env.CI ? ['github'] : ['list']
+    ["html", { outputFolder: "../reports/e2e-html-report" }],
+    ["json", { outputFile: "../reports/e2e-results.json" }],
+    ["junit", { outputFile: "../reports/e2e-results.xml" }],
+    process.env.CI ? ["github"] : ["list"],
   ],
 
-  // Global test timeout
-  timeout: e2eConfig.timeout || 60000,
+  // Global test timeout (convert from shared config)
+  timeout: timeout * 1000, // Convert to milliseconds
 
-  // Global setup and teardown
-  globalSetup: require.resolve('./global-setup'),
-  globalTeardown: require.resolve('./global-teardown'),
+  // No global setup/teardown - tests handle their own setup
 
   // Shared settings for all the projects below
   use: {
@@ -56,16 +54,16 @@ module.exports = defineConfig({
     baseURL: frontendUrl,
 
     // Browser context options
-    viewport: e2eConfig.viewport || { width: 1280, height: 720 },
+    viewport: { width: 1280, height: 720 },
 
     // Collect trace when retrying the failed test
-    trace: 'on-first-retry',
+    trace: "on-first-retry",
 
     // Record video on failure
-    video: e2eConfig.videos ? 'retain-on-failure' : 'off',
+    video: "retain-on-failure",
 
     // Take screenshot on failure
-    screenshot: e2eConfig.screenshots ? 'only-on-failure' : 'off',
+    screenshot: "only-on-failure",
 
     // Ignore HTTPS errors
     ignoreHTTPSErrors: true,
@@ -74,90 +72,71 @@ module.exports = defineConfig({
     navigationTimeout: 30000,
 
     // Default action timeout
-    actionTimeout: 10000
+    actionTimeout: 10000,
+
+    // Extra HTTP headers to be sent with every request
+    extraHTTPHeaders: {
+      ...apiTesting.api.headers,
+    },
   },
 
   // Configure projects for major browsers
   projects: [
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
     },
 
     {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      name: "firefox",
+      use: { ...devices["Desktop Firefox"] },
     },
 
     {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
+      name: "webkit",
+      use: { ...devices["Desktop Safari"] },
     },
 
     // Mobile browsers
     {
-      name: 'Mobile Chrome',
-      use: { ...devices['Pixel 5'] },
+      name: "Mobile Chrome",
+      use: { ...devices["Pixel 5"] },
     },
 
     {
-      name: 'Mobile Safari',
-      use: { ...devices['iPhone 12'] },
+      name: "Mobile Safari",
+      use: { ...devices["iPhone 12"] },
     },
 
     // Branded browsers
     {
-      name: 'Microsoft Edge',
-      use: { ...devices['Desktop Edge'], channel: 'msedge' },
+      name: "Microsoft Edge",
+      use: { ...devices["Desktop Edge"], channel: "msedge" },
     },
 
     {
-      name: 'Google Chrome',
-      use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+      name: "Google Chrome",
+      use: { ...devices["Desktop Chrome"], channel: "chrome" },
     },
   ],
 
-  // Run your local dev server before starting the tests
-  webServer: [
-    // Rails API server
-    {
-      command: 'bundle exec rails server -p 3000',
-      port: 3000,
-      cwd: path.resolve(__dirname, '../..'),
-      reuseExistingServer: !process.env.CI,
-      env: {
-        RAILS_ENV: 'test'
-      },
-      timeout: 120000
-    },
-
-    // Svelte frontend server
-    {
-      command: 'npm run dev',
-      port: 5173,
-      cwd: path.resolve(__dirname, '../../frontend'),
-      reuseExistingServer: !process.env.CI,
-      timeout: 120000
-    }
-  ],
+  // Tests will use existing servers - no auto-start
+  // Make sure your servers are running:
+  // Rails API: bundle exec rails server -p 3000
+  // Frontend: npm run dev (port 5173)
 
   // Test match patterns
   testMatch: [
-    '**/*.e2e.js',
-    '**/*.e2e.ts',
-    '**/e2e/**/*.spec.js',
-    '**/e2e/**/*.spec.ts',
-    '**/tests/**/*.test.js',
-    '**/tests/**/*.test.ts'
+    "**/*.e2e.js",
+    "**/*.e2e.ts",
+    "**/e2e/**/*.spec.js",
+    "**/e2e/**/*.spec.ts",
+    "**/tests/**/*.test.js",
+    "**/tests/**/*.test.ts",
   ],
 
   // Files to ignore
-  testIgnore: [
-    '**/node_modules/**',
-    '**/dist/**',
-    '**/build/**',
-    '**/.git/**'
-  ],
+  testIgnore: ["**/node_modules/**", "**/dist/**", "**/build/**", "**/.git/**"],
 
   // Global test configuration
   expect: {
@@ -170,25 +149,31 @@ module.exports = defineConfig({
     // Threshold for text comparison
     toMatchSnapshot: {
       threshold: 0.2,
-      mode: 'pixel'
-    }
+      mode: "pixel",
+    },
   },
 
   // Metadata
   metadata: {
-    'test-environment': process.env.NODE_ENV || 'test',
-    'frontend-url': frontendUrl,
-    'api-url': apiUrl,
-    'ci': !!process.env.CI,
-    'browser-versions': {
-      'chromium': 'latest',
-      'firefox': 'latest',
-      'webkit': 'latest'
-    }
-  }
+    "test-environment": process.env.NODE_ENV || "test",
+    "frontend-url": frontendUrl,
+    "api-url": apiUrl,
+    "api-timeout": apiTesting.api.timeout,
+    "api-retries": apiTesting.api.retries,
+    "auth-type": apiTesting.api.auth.type,
+    "auth-endpoint": apiTesting.api.auth.tokenEndpoint,
+    ci: !!process.env.CI,
+    "browser-versions": {
+      chromium: "latest",
+      firefox: "latest",
+      webkit: "latest",
+    },
+  },
 });
 
 // Export configuration for use in other files
 module.exports.frontendUrl = frontendUrl;
 module.exports.apiUrl = apiUrl;
-module.exports.testConfig = testConfig;
+module.exports.baseApiUrl = baseApiUrl;
+module.exports.apiConfig = apiTesting.api;
+module.exports.authConfig = apiTesting.api.auth;

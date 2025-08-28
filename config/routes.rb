@@ -126,6 +126,11 @@ Rails.application.routes.draw do
       post '/login', to: 'auth#authenticate'
       delete '/logout', to: 'auth#destroy'
 
+      # Mirror auth routes (redirect to main login)
+      namespace :auth do
+        post '/login', to: redirect('/api/v1/login')
+      end
+
       # Test route
       get '/test', to: 'test#index'
 

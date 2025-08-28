@@ -19,7 +19,7 @@
   }>();
 
   let searchInput: HTMLInputElement;
-  let searchTimeout: NodeJS.Timeout;
+  let searchTimeout: ReturnType<typeof setTimeout>;
 
   // Handle search with debounce
   function handleSearchInput(): void {
@@ -56,7 +56,7 @@
       <div class="flex-1">
         <div class="form-control">
           <label class="label" for="customer-search">
-            <span class="label-text font-medium">🔍 Buscar clientes</span>
+            <span class="label-text font-medium">Buscar clientes</span>
           </label>
           <div class="relative">
             <input
@@ -153,9 +153,9 @@
         <!-- Clear Filters Button -->
         {#if hasActiveFilters}
           <div class="form-control">
-            <label class="label">
+            <div class="label">
               <span class="label-text opacity-0">Clear</span>
-            </label>
+            </div>
             <button
               class="btn btn-outline btn-sm"
               on:click={clearAllFilters}
@@ -192,7 +192,11 @@
 
         {#if statusFilter}
           <div class="badge badge-secondary gap-1">
-            Status: {statusFilter === 'active' ? 'Ativo' : statusFilter === 'inactive' ? 'Inativo' : 'Falecido'}
+            Status: {statusFilter === 'active'
+              ? 'Ativo'
+              : statusFilter === 'inactive'
+                ? 'Inativo'
+                : 'Falecido'}
             <button
               class="btn btn-ghost btn-xs p-0 min-h-0 h-auto"
               on:click={() => {
@@ -208,7 +212,11 @@
 
         {#if capacityFilter}
           <div class="badge badge-accent gap-1">
-            Capacidade: {capacityFilter === 'able' ? 'Capaz' : capacityFilter === 'relatively' ? 'Relativamente Incapaz' : 'Incapaz'}
+            Capacidade: {capacityFilter === 'able'
+              ? 'Capaz'
+              : capacityFilter === 'relatively'
+                ? 'Relativamente Incapaz'
+                : 'Incapaz'}
             <button
               class="btn btn-ghost btn-xs p-0 min-h-0 h-auto"
               on:click={() => {
@@ -224,9 +232,13 @@
 
         {#if customerTypeFilter}
           <div class="badge badge-info gap-1">
-            Tipo: {customerTypeFilter === 'physical_person' ? 'Pessoa Física' :
-              customerTypeFilter === 'legal_person' ? 'Pessoa Jurídica' :
-                customerTypeFilter === 'representative' ? 'Representante Legal' : 'Contador'}
+            Tipo: {customerTypeFilter === 'physical_person'
+              ? 'Pessoa Física'
+              : customerTypeFilter === 'legal_person'
+                ? 'Pessoa Jurídica'
+                : customerTypeFilter === 'representative'
+                  ? 'Representante Legal'
+                  : 'Contador'}
             <button
               class="btn btn-ghost btn-xs p-0 min-h-0 h-auto"
               on:click={() => {
