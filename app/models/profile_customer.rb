@@ -99,11 +99,18 @@ class ProfileCustomer < ApplicationRecord
 
   has_many_attached :files
 
-  has_many :customer_addresses, dependent: :destroy
-  has_many :addresses, through: :customer_addresses
-
-  has_many :customer_phones, dependent: :destroy
-  has_many :phones, through: :customer_phones
+  # Polymorphic associations for addresses and phones
+  has_many :addresses, as: :addressable, dependent: :destroy
+  has_many :phones, as: :phoneable, dependent: :destroy
+  
+  # Nested attributes for API
+  accepts_nested_attributes_for :phones, 
+    allow_destroy: true,
+    reject_if: proc { |attrs| attrs['phone_number'].blank? }
+    
+  accepts_nested_attributes_for :addresses, 
+    allow_destroy: true,
+    reject_if: proc { |attrs| attrs['street'].blank? || attrs['city'].blank? }
 
   has_many :customer_emails, dependent: :destroy
   has_many :emails, through: :customer_emails

@@ -92,32 +92,60 @@ office1 = Office.find_or_create_by!(cnpj: '49.609.519/0001-60') do |o|
   o.society = 'individual'
   o.foundation = Date.parse('2023-09-25')
   o.site = 'advocacia.com.br'
-  o.zip_code = '85810-010'
-  o.street = 'Rua Paraná'
-  o.number = '3033'
-  o.neighborhood = 'Centro'
-  o.city = 'Cascavel'
-  o.state = 'PR'
   o.office_type_id = OfficeType.find_by(description: 'Advocacia').id
   o.team = team
   puts "  ✅ Created office: #{o.name}"
 end
 
-Office.find_or_create_by!(cnpj: '12.345.678/0001-90') do |o|
+# Add address for office1
+office1.addresses.find_or_create_by!(
+  zip_code: '85810010',
+  street: 'Rua Paraná',
+  number: '3033'
+) do |a|
+  a.neighborhood = 'Centro'
+  a.city = 'Cascavel'
+  a.state = 'PR'
+  a.address_type = 'main'
+  puts "  ✅ Created address for office: #{office1.name}"
+end
+
+# Add phone for office1
+office1.phones.find_or_create_by!(
+  phone_number: '4532259000'
+) do |p|
+  puts "  ✅ Created phone for office: #{office1.name}"
+end
+
+office2 = Office.find_or_create_by!(cnpj: '12.345.678/0001-90') do |o|
   o.name = 'Escritório Advocacia Secundário'
   o.oab = '12.345 SP'
   o.society = 'company'
   o.foundation = Date.parse('2020-01-15')
   o.site = 'advocacia2.com.br'
-  o.zip_code = '01310-100'
-  o.street = 'Avenida Paulista'
-  o.number = '1500'
-  o.neighborhood = 'Bela Vista'
-  o.city = 'São Paulo'
-  o.state = 'SP'
   o.office_type_id = OfficeType.find_by(description: 'Advocacia').id
   o.team = team2
   puts "  ✅ Created office: #{o.name}"
+end
+
+# Add address for office2
+office2.addresses.find_or_create_by!(
+  zip_code: '01310100',
+  street: 'Avenida Paulista',
+  number: '1500'
+) do |a|
+  a.neighborhood = 'Bela Vista'
+  a.city = 'São Paulo'
+  a.state = 'SP'
+  a.address_type = 'main'
+  puts "  ✅ Created address for office: #{office2.name}"
+end
+
+# Add phone for office2
+office2.phones.find_or_create_by!(
+  phone_number: '1132847000'
+) do |p|
+  puts "  ✅ Created phone for office: #{office2.name}"
 end
 
 # ==========================================
@@ -220,7 +248,7 @@ profile_customer1 = ProfileCustomer.find_or_create_by!(customer: customer1) do |
   pc.customer_type = 'physical_person'
   pc.name = 'Carlos'
   pc.last_name = 'Oliveira Santos'
-  pc.cpf = '111.222.333-44'
+  pc.cpf = '123.456.789-09' # Valid test CPF
   pc.rg = '1234567'
   pc.birth = Date.parse('1985-07-15')
   pc.gender = 'male'
@@ -234,21 +262,24 @@ profile_customer1 = ProfileCustomer.find_or_create_by!(customer: customer1) do |
   puts "  ✅ Created profile customer: #{pc.full_name}"
 end
 
-# Add address for customer 1
-Address.find_or_create_by!(
-  zip_code: '85810-020',
+# Add address for customer 1 using polymorphic association
+profile_customer1.addresses.find_or_create_by!(
+  zip_code: '85810020',
   street: 'Rua Brasil',
   number: '100'
 ) do |a|
   a.neighborhood = 'Centro'
   a.city = 'Cascavel'
   a.state = 'PR'
-  a.description = 'Residencial'
-end.tap do |address|
-  CustomerAddress.find_or_create_by!(
-    profile_customer: profile_customer1,
-    address: address
-  )
+  a.address_type = 'main'
+  puts "  ✅ Created address for customer: #{profile_customer1.full_name}"
+end
+
+# Add phone for customer 1
+profile_customer1.phones.find_or_create_by!(
+  phone_number: '4598765432'
+) do |p|
+  puts "  ✅ Created phone for customer: #{profile_customer1.full_name}"
 end
 
 # Customer 2 - Company
@@ -265,7 +296,7 @@ profile_customer2 = ProfileCustomer.find_or_create_by!(customer: customer2) do |
   pc.name = 'Empresa Exemplo LTDA'
   pc.cnpj = '11.222.333/0001-44'
   pc.company = 'Empresa Exemplo LTDA'
-  pc.cpf = '999.888.777-66' # Representative's CPF
+  pc.cpf = '111.444.777-35' # Representative's CPF - valid test
   pc.rg = '5555555' # Representative's RG
   pc.gender = 'male'
   pc.civil_status = 'married'
@@ -277,21 +308,24 @@ profile_customer2 = ProfileCustomer.find_or_create_by!(customer: customer2) do |
   puts "  ✅ Created profile customer: #{pc.name}"
 end
 
-# Add address for customer 2
-Address.find_or_create_by!(
-  zip_code: '01310-200',
+# Add address for customer 2 using polymorphic association
+profile_customer2.addresses.find_or_create_by!(
+  zip_code: '01310200',
   street: 'Avenida Paulista',
   number: '2000'
 ) do |a|
   a.neighborhood = 'Bela Vista'
   a.city = 'São Paulo'
   a.state = 'SP'
-  a.description = 'Comercial'
-end.tap do |address|
-  CustomerAddress.find_or_create_by!(
-    profile_customer: profile_customer2,
-    address: address
-  )
+  a.address_type = 'main'
+  puts "  ✅ Created address for customer: #{profile_customer2.name}"
+end
+
+# Add phone for customer 2
+profile_customer2.phones.find_or_create_by!(
+  phone_number: '1133445566'
+) do |p|
+  puts "  ✅ Created phone for customer: #{profile_customer2.name}"
 end
 
 # Customer 3 - Individual with representative
@@ -307,7 +341,7 @@ profile_customer3 = ProfileCustomer.find_or_create_by!(customer: customer3) do |
   pc.customer_type = 'physical_person'
   pc.name = 'Pedro'
   pc.last_name = 'Silva Junior'
-  pc.cpf = '555.666.777-88'
+  pc.cpf = '111.222.333-96' # Valid test CPF
   pc.rg = '9876543'
   pc.birth = Date.parse('2008-12-01')
   pc.gender = 'male'
@@ -472,6 +506,10 @@ puts '📊 Database Statistics:'
 puts "  - Teams: #{Team.count}"
 puts "  - Law Areas: #{LawArea.count}"
 puts "  - Offices: #{Office.count}"
+puts "  - Office Addresses: #{Address.where(addressable_type: 'Office').count}"
+puts "  - Office Phones: #{Phone.where(phoneable_type: 'Office').count}"
+puts "  - Customer Addresses: #{Address.where(addressable_type: 'ProfileCustomer').count}"
+puts "  - Customer Phones: #{Phone.where(phoneable_type: 'ProfileCustomer').count}"
 puts "  - Users: #{User.count}"
 puts "  - User Profiles: #{UserProfile.count}"
 puts "  - Customers: #{Customer.count}"

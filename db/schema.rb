@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_26_003002) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_28_190015) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -43,15 +43,23 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_26_003002) do
   end
 
   create_table "addresses", force: :cascade do |t|
-    t.string "description"
-    t.string "zip_code"
-    t.string "street"
-    t.integer "number"
+    t.string "zip_code", null: false
+    t.string "street", null: false
+    t.string "number"
+    t.string "complement"
     t.string "neighborhood"
-    t.string "city"
-    t.string "state"
+    t.string "city", null: false
+    t.string "state", null: false
+    t.string "addressable_type", null: false
+    t.bigint "addressable_id", null: false
+    t.string "address_type", default: "main"
+    t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["addressable_type", "addressable_id"], name: "index_addresses_on_addressable"
+    t.index ["city", "state"], name: "index_addresses_on_city_and_state"
+    t.index ["deleted_at"], name: "index_addresses_on_deleted_at"
+    t.index ["zip_code"], name: "index_addresses_on_zip_code"
   end
 
   create_table "bank_accounts", force: :cascade do |t|
@@ -86,17 +94,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_26_003002) do
     t.index ["user_id"], name: "index_compliance_notifications_on_user_id"
   end
 
-  create_table "customer_addresses", force: :cascade do |t|
-    t.bigint "profile_customer_id", null: false
-    t.bigint "address_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "deleted_at"
-    t.index ["address_id"], name: "index_customer_addresses_on_address_id"
-    t.index ["deleted_at"], name: "index_customer_addresses_on_deleted_at"
-    t.index ["profile_customer_id"], name: "index_customer_addresses_on_profile_customer_id"
-  end
-
   create_table "customer_bank_accounts", force: :cascade do |t|
     t.bigint "profile_customer_id", null: false
     t.bigint "bank_account_id", null: false
@@ -127,17 +124,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_26_003002) do
     t.datetime "deleted_at"
     t.index ["deleted_at"], name: "index_customer_files_on_deleted_at"
     t.index ["profile_customer_id"], name: "index_customer_files_on_profile_customer_id"
-  end
-
-  create_table "customer_phones", force: :cascade do |t|
-    t.bigint "profile_customer_id", null: false
-    t.bigint "phone_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "deleted_at"
-    t.index ["deleted_at"], name: "index_customer_phones_on_deleted_at"
-    t.index ["phone_id"], name: "index_customer_phones_on_phone_id"
-    t.index ["profile_customer_id"], name: "index_customer_phones_on_profile_customer_id"
   end
 
   create_table "customer_works", force: :cascade do |t|
@@ -303,22 +289,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_26_003002) do
     t.index ["parent_area_id"], name: "index_law_areas_on_parent_area_id"
   end
 
-  create_table "notifications", force: :cascade do |t|
-    t.string "title"
-    t.text "message"
-    t.boolean "read", default: false
-    t.integer "user_id"
-    t.string "priority", default: "normal"
-    t.jsonb "metadata", default: {}
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "team_id"
-    t.index ["created_at"], name: "index_notifications_on_created_at"
-    t.index ["read"], name: "index_notifications_on_read"
-    t.index ["team_id"], name: "index_notifications_on_team_id"
-    t.index ["user_id"], name: "index_notifications_on_user_id"
-  end
-
   create_table "office_bank_accounts", force: :cascade do |t|
     t.bigint "bank_account_id", null: false
     t.bigint "office_id", null: false
@@ -339,17 +309,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_26_003002) do
     t.index ["deleted_at"], name: "index_office_emails_on_deleted_at"
     t.index ["email_id"], name: "index_office_emails_on_email_id"
     t.index ["office_id"], name: "index_office_emails_on_office_id"
-  end
-
-  create_table "office_phones", force: :cascade do |t|
-    t.bigint "office_id", null: false
-    t.bigint "phone_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "deleted_at"
-    t.index ["deleted_at"], name: "index_office_phones_on_deleted_at"
-    t.index ["office_id"], name: "index_office_phones_on_office_id"
-    t.index ["phone_id"], name: "index_office_phones_on_phone_id"
   end
 
   create_table "office_types", force: :cascade do |t|
@@ -376,12 +335,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_26_003002) do
     t.string "society"
     t.date "foundation"
     t.string "site"
-    t.string "zip_code"
-    t.string "street"
-    t.integer "number"
-    t.string "neighborhood"
-    t.string "city"
-    t.string "state"
     t.bigint "office_type_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -410,8 +363,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_26_003002) do
 
   create_table "phones", force: :cascade do |t|
     t.string "phone_number"
+    t.string "phoneable_type"
+    t.bigint "phoneable_id"
+    t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["deleted_at"], name: "index_phones_on_deleted_at"
+    t.index ["phoneable_type", "phoneable_id"], name: "index_phones_on_phoneable"
   end
 
   create_table "power_works", force: :cascade do |t|
@@ -531,17 +489,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_26_003002) do
     t.index ["subdomain"], name: "index_teams_on_subdomain", unique: true
   end
 
-  create_table "user_addresses", force: :cascade do |t|
-    t.bigint "address_id", null: false
-    t.bigint "user_profile_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "deleted_at"
-    t.index ["address_id"], name: "index_user_addresses_on_address_id"
-    t.index ["deleted_at"], name: "index_user_addresses_on_deleted_at"
-    t.index ["user_profile_id"], name: "index_user_addresses_on_user_profile_id"
-  end
-
   create_table "user_bank_accounts", force: :cascade do |t|
     t.bigint "bank_account_id", null: false
     t.bigint "user_profile_id", null: false
@@ -562,17 +509,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_26_003002) do
     t.index ["deleted_at"], name: "index_user_emails_on_deleted_at"
     t.index ["email_id"], name: "index_user_emails_on_email_id"
     t.index ["user_profile_id"], name: "index_user_emails_on_user_profile_id"
-  end
-
-  create_table "user_phones", force: :cascade do |t|
-    t.bigint "phone_id", null: false
-    t.bigint "user_profile_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "deleted_at"
-    t.index ["deleted_at"], name: "index_user_phones_on_deleted_at"
-    t.index ["phone_id"], name: "index_user_phones_on_phone_id"
-    t.index ["user_profile_id"], name: "index_user_phones_on_user_profile_id"
   end
 
   create_table "user_profile_works", force: :cascade do |t|
@@ -687,15 +623,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_26_003002) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "compliance_notifications", "teams"
   add_foreign_key "compliance_notifications", "users"
-  add_foreign_key "customer_addresses", "addresses"
-  add_foreign_key "customer_addresses", "profile_customers"
   add_foreign_key "customer_bank_accounts", "bank_accounts"
   add_foreign_key "customer_bank_accounts", "profile_customers"
   add_foreign_key "customer_emails", "emails"
   add_foreign_key "customer_emails", "profile_customers"
   add_foreign_key "customer_files", "profile_customers"
-  add_foreign_key "customer_phones", "phones"
-  add_foreign_key "customer_phones", "profile_customers"
   add_foreign_key "customer_works", "profile_customers"
   add_foreign_key "customer_works", "works"
   add_foreign_key "customers", "users", column: "created_by_id"
@@ -720,8 +652,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_26_003002) do
   add_foreign_key "office_bank_accounts", "offices"
   add_foreign_key "office_emails", "emails"
   add_foreign_key "office_emails", "offices"
-  add_foreign_key "office_phones", "offices"
-  add_foreign_key "office_phones", "phones"
   add_foreign_key "office_works", "offices"
   add_foreign_key "office_works", "works"
   add_foreign_key "offices", "office_types"
@@ -741,14 +671,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_26_003002) do
   add_foreign_key "represents", "teams"
   add_foreign_key "team_customers", "customers"
   add_foreign_key "team_customers", "teams"
-  add_foreign_key "user_addresses", "addresses"
-  add_foreign_key "user_addresses", "user_profiles"
   add_foreign_key "user_bank_accounts", "bank_accounts"
   add_foreign_key "user_bank_accounts", "user_profiles"
   add_foreign_key "user_emails", "emails"
   add_foreign_key "user_emails", "user_profiles"
-  add_foreign_key "user_phones", "phones"
-  add_foreign_key "user_phones", "user_profiles"
   add_foreign_key "user_profile_works", "user_profiles"
   add_foreign_key "user_profile_works", "works"
   add_foreign_key "user_profiles", "offices"

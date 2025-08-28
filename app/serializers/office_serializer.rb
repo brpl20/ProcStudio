@@ -6,19 +6,13 @@
 #
 #  id                    :bigint           not null, primary key
 #  accounting_type       :string
-#  city                  :string
 #  cnpj                  :string
 #  deleted_at            :datetime
 #  foundation            :date
 #  name                  :string
-#  neighborhood          :string
-#  number                :integer
 #  oab                   :string
 #  site                  :string
 #  society               :string
-#  state                 :string
-#  street                :string
-#  zip_code              :string
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
 #  office_type_id        :bigint           not null

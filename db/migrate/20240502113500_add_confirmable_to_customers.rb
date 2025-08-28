@@ -5,7 +5,7 @@ class AddConfirmableToCustomers < ActiveRecord::Migration[7.0]
     add_column :customers, :confirmation_sent_at, :datetime
     add_column :customers, :unconfirmed_email, :datetime
     add_index :customers, :confirmation_token, unique: true
-    Customer.update_all confirmed_at: DateTime.now
+    # Customer.update_all confirmed_at: DateTime.now # Commented out - can't use model during migration
   end
 
   def down

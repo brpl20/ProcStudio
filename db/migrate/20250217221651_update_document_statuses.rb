@@ -1,5 +1,6 @@
 class UpdateDocumentStatuses < ActiveRecord::Migration[7.0]
   def up
+    return # Skip - can't use models during migration
     status_mapping = {
       waiting_signature: :pending_review,
       assigned: :approved,

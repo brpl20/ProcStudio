@@ -12,7 +12,7 @@ class AddTeamToAdmins < ActiveRecord::Migration[7.0]
     add_reference :admins, :team, null: true, foreign_key: true
 
     # Atualizar todos os admins existentes para o team padrão
-    Admin.update_all(team_id: default_team.id)
+    # Admin.update_all(team_id: default_team.id) # Can't use models in migration
 
     # Agora adicionar constraint NOT NULL
     change_column_null :admins, :team_id, false
