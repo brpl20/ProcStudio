@@ -1,11 +1,16 @@
 # TODO List - Next Session
 
 ## 🔍 **Check Enums Old Version x Rails 8 Version Across All System**
-- Audit all enum declarations in the codebase 
-- Convert old syntax `enum attribute: {}` to new Rails 8 syntax `enum :attribute, {}`
-- Check models: Customer, ProfileCustomer, User, UserProfile, Work, Job, Document, etc.
-- Test enum functionality after conversions
-- Update any related code that depends on enum behavior
+- ✅ Audit all enum declarations in the codebase - COMPLETED
+- ✅ Convert old syntax `enum attribute: {}` to new Rails 8 syntax `enum :attribute, {}` - ALL DONE
+- ✅ Fixed UserOffice model enum syntax issue
+- ✅ Verified all other models already using correct Rails 8 syntax
+- ✅ Test enum functionality after conversions - WORKING
+
+## 🔧 **Fix OfficeSerializer Issues**
+- ❌ Remove or fix `office_type_description` attribute (lines 48-50)
+- Office model no longer has `office_type` association after migration
+- Consider what should replace this attribute or remove it entirely
 
 ## 🧪 **Finish New Polymorphic Tests**
 - Create comprehensive RSpec tests for polymorphic Address model
@@ -20,14 +25,14 @@
 
 ### **Considerations:**
 
-**Serializers**: 
+**Serializers**:
 - ✅ `AddressSerializer` and `OfficeSerializer` already updated with new schema
 - ❓ Check if `ProfileCustomerSerializer` needs nested address/phone serialization
 - ❓ Verify JSON:API relationships are properly configured
 
 **Controllers**:
 - ❓ Office controller: May need params updates for nested addresses/phones
-- ❓ ProfileCustomer controller: May need params updates for nested addresses/phones  
+- ❓ ProfileCustomer controller: May need params updates for nested addresses/phones
 - ❓ Check strong parameters permit nested attributes: `addresses_attributes`, `phones_attributes`
 
 **API Endpoints**:
@@ -48,3 +53,7 @@
 
 ---
 *Created: 2025-08-28 - Great work on polymorphic refactoring! 🚀*
+
+
+lembrar do active Office para os dados do Contrato Social
+Criar contrato social

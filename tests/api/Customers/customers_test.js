@@ -6,9 +6,9 @@
 const axios = require("axios");
 const { expect } = require("chai");
 const AuthHelper = require("../auth_helper");
-const { apiTesting } = require("../config");
+const { apiTesting } = require("../../config");
 
-describe("Customer/Customers", function () {
+describe("Customers", function () {
   this.timeout(30000);
 
   let authHelper = null;

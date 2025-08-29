@@ -4,66 +4,59 @@
 #
 # Table name: offices
 #
-#  id                    :bigint           not null, primary key
-#  accounting_type       :string
-#  cnpj                  :string
-#  deleted_at            :datetime
-#  foundation            :date
-#  name                  :string
-#  oab                   :string
-#  site                  :string
-#  society               :string
-#  created_at            :datetime         not null
-#  updated_at            :datetime         not null
-#  office_type_id        :bigint           not null
-#  responsible_lawyer_id :integer
-#  team_id               :bigint           not null
+#  id              :bigint           not null, primary key
+#  accounting_type :string
+#  cnpj            :string
+#  deleted_at      :datetime
+#  foundation      :date
+#  name            :string
+#  oab_inscricao   :string
+#  oab_link        :string
+#  oab_status      :string
+#  site            :string
+#  society         :string
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  created_by_id   :bigint
+#  deleted_by_id   :bigint
+#  oab_id          :string
+#  team_id         :bigint           not null
 #
 # Indexes
 #
-#  index_offices_on_accounting_type        (accounting_type)
-#  index_offices_on_deleted_at             (deleted_at)
-#  index_offices_on_office_type_id         (office_type_id)
-#  index_offices_on_responsible_lawyer_id  (responsible_lawyer_id)
-#  index_offices_on_team_id                (team_id)
+#  index_offices_on_accounting_type  (accounting_type)
+#  index_offices_on_created_by_id    (created_by_id)
+#  index_offices_on_deleted_at       (deleted_at)
+#  index_offices_on_deleted_by_id    (deleted_by_id)
+#  index_offices_on_team_id          (team_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (office_type_id => office_types.id)
+#  fk_rails_...  (created_by_id => users.id)
+#  fk_rails_...  (deleted_by_id => users.id)
 #  fk_rails_...  (team_id => teams.id)
 #
-#  fk_rails_...  (office_type_id => office_types.id)
-#  fk_rails_...  (team_id => teams.id)
-
-
 class Office < ApplicationRecord
   include DeletedFilterConcern
   include CnpjValidatable
 
   acts_as_paranoid
 
-  # puts '🏢 Creating Office Types...'
-  # office_types = ['Advocacia', 'Consultoria', 'Contabilidade']
-  # office_types.each do |type_name|
-  #   OfficeType.find_or_create_by!(description: type_name) do |ot|
-  #     puts "  ✅ Created office type: #{ot.description}"
-  #   end
-  # end
-
-
   belongs_to :team
-  belongs_to :office_type
-  belongs_to :responsible_lawyer, class_name: 'UserProfile', optional: true
+  belongs_to :created_by, class_name: 'User', optional: true
+  belongs_to :deleted_by, class_name: 'User', optional: true
 
-  has_many :user_profiles, dependent: :destroy
+  # Relationships with users/lawyers
+  has_many :user_offices, dependent: :destroy
+  has_many :users, through: :user_offices
+  has_many :compensations, through: :user_offices, class_name: 'UserSocietyCompensation'
 
-  validate :responsible_lawyer_same_team, if: -> { responsible_lawyer.present? }
   has_one_attached :logo
+  has_many_attached :social_contracts # For Contrato Social documents with versioning
 
   enum :society, {
-    sole_proprietorship: 'sole_proprietorship',
-    company: 'company',
-    individual: 'individual'
+    individual: 'individual', # Sociedade Unipessoal
+    company: 'company' # Sociedade
   }
 
   enum :accounting_type, { # enquadramento contabil
@@ -72,55 +65,61 @@ class Office < ApplicationRecord
     presumed_profit: 'presumed_profit' # lucro presumido
   }
 
-  # has_many :office_phones, dependent: :destroy
-  # has_many :phones, through: :office_phones
   has_many :phones, as: :phoneable, dependent: :destroy
-  
   has_many :addresses, as: :addressable, dependent: :destroy
-
-
   has_many :office_emails, dependent: :destroy
   has_many :emails, through: :office_emails
-
   has_many :office_bank_accounts, dependent: :destroy
   has_many :bank_accounts, through: :office_bank_accounts
-
   has_many :office_works, dependent: :destroy
   has_many :works, through: :office_works
 
-   # Scopes
+  # Scopes
   scope :active, -> { where(deleted_at: nil) }
   scope :by_state, ->(state) { joins(:addresses).where(addresses: { state: state.upcase }) }
   scope :with_phones, -> { joins(:phones).distinct }
   scope :with_addresses, -> { joins(:addresses).distinct }
 
-
   # Nested attributes for API
-  accepts_nested_attributes_for :phones, 
-    allow_destroy: true,
-    reject_if: proc { |attrs| attrs['phone_number'].blank? }
-    
-  accepts_nested_attributes_for :addresses, 
-    allow_destroy: true,
-    reject_if: proc { |attrs| attrs['street'].blank? || attrs['city'].blank? }
+  accepts_nested_attributes_for :phones,
+                                allow_destroy: true,
+                                reject_if: proc { |attrs| attrs['phone_number'].blank? }
 
+  accepts_nested_attributes_for :addresses,
+                                allow_destroy: true,
+                                reject_if: proc { |attrs| attrs['street'].blank? || attrs['city'].blank? }
 
-  accepts_nested_attributes_for :emails, :bank_accounts, reject_if: :all_blank
+  accepts_nested_attributes_for :emails, :bank_accounts, :user_offices, reject_if: :all_blank
 
   with_options presence: true do
     validates :name
-    # validates :cnpj # Now handled by CnpjValidatable module
-    # validates :city
-    # validates :zip_code
-    # validates :street
-    # validates :number
-    # validates :neighborhood
-    # validates :state
   end
+
+  validate :unipessoal_must_have_only_one_partner, if: -> { society == 'individual' }
+  validate :partnership_percentage_sum_to_100
+  validate :team_must_exist
 
   private
 
-  def responsible_lawyer_same_team
-    errors.add(:responsible_lawyer, 'deve pertencer ao mesmo team') unless responsible_lawyer.user.team == team
+  def unipessoal_must_have_only_one_partner
+    return unless user_offices.where(partnership_type: 'socio').many?
+
+    errors.add(:society, 'unipessoal deve ter apenas um sócio')
+  end
+
+  def partnership_percentage_sum_to_100
+    # Skip validation if no partners yet or if it's a new record
+    return if new_record? || user_offices.empty?
+
+    total = user_offices.where(partnership_type: 'socio').sum(:partnership_percentage)
+
+    # Allow a small margin of error for decimal precision issues (e.g., 33.33% × 3 = 99.99%)
+    return if (99.98..100.02).cover?(total)
+
+    errors.add(:base, 'A soma das porcentagens de participação dos sócios deve ser 100%')
+  end
+
+  def team_must_exist
+    errors.add(:team_id, 'deve existir') unless Team.exists?(team_id)
   end
 end

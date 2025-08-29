@@ -6,7 +6,7 @@
 const axios = require("axios");
 const { expect } = require("chai");
 const AuthHelper = require("../auth_helper");
-const { apiTesting } = require("../config");
+const { apiTesting } = require("../../config");
 const CPFGenerator = require("../../cpf_generator");
 
 describe("Profile Customers", function () {
@@ -52,7 +52,7 @@ describe("Profile Customers", function () {
         customer_attributes: {
           email: `test_profile_${timestamp}@gmail.com`,
           password: "123456",
-          password_confirmation: "123456"
+          password_confirmation: "123456",
         },
 
         addresses_attributes: [
@@ -63,20 +63,20 @@ describe("Profile Customers", function () {
             number: 1578,
             neighborhood: "Bela Vista",
             city: "São Paulo",
-            state: "SP"
-          }
+            state: "SP",
+          },
         ],
 
         phones_attributes: [
           {
-            phone_number: `+55 11 ${Math.floor(Math.random() * 900000000 + 100000000)}`
-          }
+            phone_number: `+55 11 ${Math.floor(Math.random() * 900000000 + 100000000)}`,
+          },
         ],
 
         emails_attributes: [
           {
-            email: `test_profile_${timestamp}@example.com`
-          }
+            email: `test_profile_${timestamp}@example.com`,
+          },
         ],
 
         bank_accounts_attributes: [
@@ -86,9 +86,9 @@ describe("Profile Customers", function () {
             agency: "1234-5",
             account: `${Math.floor(Math.random() * 100000)}-6`,
             operation: "001",
-            pix: `test_profile_${timestamp}@example.com`
-          }
-        ]
+            pix: `test_profile_${timestamp}@example.com`,
+          },
+        ],
       },
     };
 
@@ -122,7 +122,9 @@ describe("Profile Customers", function () {
       console.log(
         `   Name: ${requestData.profile_customer.name} ${requestData.profile_customer.last_name}`,
       );
-      console.log(`   Email: ${requestData.profile_customer.customer_attributes.email}`);
+      console.log(
+        `   Email: ${requestData.profile_customer.customer_attributes.email}`,
+      );
     } catch (error) {
       if (error.response) {
         console.error(
@@ -394,17 +396,21 @@ describe("Profile Customers", function () {
       expect(response.status).to.equal(200);
       expect(response.data).to.exist;
       expect(response.data.success).to.be.true;
-      expect(response.data.message).to.include('removido com sucesso');
+      expect(response.data.message).to.include("removido com sucesso");
 
       console.log(
         `✅ ${response.status} - Profile Customers - Deletar um registro (soft delete)`,
       );
       console.log(`   Route: ${url}`);
-      console.log(`   Soft deleted profile customer ID: ${profileCustomerToDelete}`);
+      console.log(
+        `   Soft deleted profile customer ID: ${profileCustomerToDelete}`,
+      );
       console.log(`   Message: ${response.data.message}`);
 
       if (profileCustomerToDelete === createdProfileCustomerId) {
-        console.log(`   ✨ Cleaned up test-created profile customer (soft delete)`);
+        console.log(
+          `   ✨ Cleaned up test-created profile customer (soft delete)`,
+        );
       }
     } catch (error) {
       if (error.response) {
