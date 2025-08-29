@@ -115,23 +115,19 @@ module Api
             end
           end
 
-          # Lidar com addresses_attributes (nested)
+          # Lidar com addresses_attributes (nested) - using polymorphic association
           addresses_attrs = params.dig(:user_profile, :addresses_attributes)
           if addresses_attrs.present?
             addresses_attrs.each do |address_attr|
-              address = Address.create!(
+              user_profile.addresses.create!(
                 street: address_attr[:street],
                 number: address_attr[:number],
                 neighborhood: address_attr[:neighborhood],
                 city: address_attr[:city],
                 state: address_attr[:state],
                 zip_code: address_attr[:zip_code],
-                description: address_attr[:description] || 'Principal'
-              )
-
-              UserAddress.create!(
-                user_profile: user_profile,
-                address: address
+                complement: address_attr[:description],
+                address_type: 'main'
               )
             end
           end
@@ -195,21 +191,16 @@ module Api
         # Limpa o telefone (remove formatação)
         clean_phone = phone_number.gsub(/\D/, '')
 
-        # Verifica se já existe um telefone
-        existing_phone_relation = user_profile.user_phones.first
+        # Verifica se já existe um telefone (usando polymorphic association)
+        existing_phone = user_profile.phones.first
 
-        if existing_phone_relation
+        if existing_phone
           # Atualiza o telefone existente
-          existing_phone_relation.phone.update!(phone_number: clean_phone)
+          existing_phone.update!(phone_number: clean_phone)
         else
-          # Cria novo telefone
-          phone = Phone.create!(
+          # Cria novo telefone diretamente pela associação polimórfica
+          user_profile.phones.create!(
             phone_number: clean_phone
-          )
-
-          UserPhone.create!(
-            user_profile: user_profile,
-            phone: phone
           )
         end
       end

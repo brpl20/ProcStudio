@@ -39,14 +39,18 @@
 class OfficeSerializer
   include JSONAPI::Serializer
 
-  attributes :name, :cnpj, :city, :site, :responsible_lawyer_id
+  attributes :name, :cnpj, :site
 
-  attributes :oab, :society, :foundation, :zip_code, :street, :number, :neighborhood,
-             :state, :user_profiles, :phones, :emails, :bank_accounts, :works,
-             :accounting_type, if: proc { |_, options| options[:action] == 'show' }
+  attributes :society, :foundation, :addresses, :phones, :emails, :bank_accounts, :works,
+             :accounting_type, :oab_id, :oab_inscricao, :oab_link, :oab_status,
+             if: proc { |_, options| options[:action] == 'show' }
 
-  attribute :office_type_description do |object|
-    object.office_type.description
+  attribute :city do |object|
+    object.addresses.main_addresses.first&.city
+  end
+
+  attribute :state do |object|
+    object.addresses.main_addresses.first&.state
   end
 
   attribute :deleted do |object|

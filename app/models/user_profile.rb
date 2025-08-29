@@ -83,11 +83,9 @@ class UserProfile < ApplicationRecord
     foreigner: 'foreigner'
   }
 
-  has_many :user_addresses, dependent: :destroy
-  has_many :addresses, through: :user_addresses
-
-  has_many :user_phones, dependent: :destroy
-  has_many :phones, through: :user_phones
+  # Polymorphic associations for addresses and phones
+  has_many :addresses, as: :addressable, dependent: :destroy
+  has_many :phones, as: :phoneable, dependent: :destroy
 
   has_many :user_emails, dependent: :destroy
   has_many :emails, through: :user_emails
@@ -100,7 +98,16 @@ class UserProfile < ApplicationRecord
 
   has_many :jobs, dependent: :destroy
 
-  accepts_nested_attributes_for :user, :addresses, :phones, :emails, :bank_accounts, reject_if: :all_blank
+  # Nested attributes for API
+  accepts_nested_attributes_for :phones,
+                                allow_destroy: true,
+                                reject_if: proc { |attrs| attrs['phone_number'].blank? }
+
+  accepts_nested_attributes_for :addresses,
+                                allow_destroy: true,
+                                reject_if: proc { |attrs| attrs['street'].blank? || attrs['city'].blank? }
+
+  accepts_nested_attributes_for :user, :emails, :bank_accounts, reject_if: :all_blank
 
   with_options presence: true do
     validates :name
@@ -125,19 +132,10 @@ class UserProfile < ApplicationRecord
     emails.last.email
   end
 
-  def emails_attributes=(attributes)
-    current_email_ids = attributes.filter_map { |attr| attr[:id].to_i }
-    user_emails.where.not(email_id: current_email_ids).destroy_all
+  def last_phone
+    return I18n.t('general.without_phone') if phones.blank?
 
-    super
-  end
-
-  def phones_attributes=(attributes)
-    current_phone_ids = attributes.filter_map { |attr| attr[:id].to_i }
-
-    user_phones.where.not(phone_id: current_phone_ids).destroy_all
-
-    super
+    phones.last.phone_number
   end
 
   private

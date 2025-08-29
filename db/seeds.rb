@@ -72,15 +72,15 @@ law_areas_data.each do |data|
 end
 
 # ==========================================
-# OFFICE TYPES
+# OFFICE TYPES - REMOVED (no longer using office_type)
 # ==========================================
-puts '🏢 Creating Office Types...'
-office_types = ['Advocacia', 'Consultoria', 'Contabilidade']
-office_types.each do |type_name|
-  OfficeType.find_or_create_by!(description: type_name) do |ot|
-    puts "  ✅ Created office type: #{ot.description}"
-  end
-end
+# puts '🏢 Creating Office Types...'
+# office_types = ['Advocacia', 'Consultoria', 'Contabilidade']
+# office_types.each do |type_name|
+#   OfficeType.find_or_create_by!(description: type_name) do |ot|
+#     puts "  ✅ Created office type: #{ot.description}"
+#   end
+# end
 
 # ==========================================
 # OFFICES
@@ -88,11 +88,11 @@ end
 puts '🏢 Creating Offices...'
 office1 = Office.find_or_create_by!(cnpj: '49.609.519/0001-60') do |o|
   o.name = 'Escritório Advocacia Principal'
-  o.oab = '15.074 PR'
+  o.oab_id = '15.074 PR'
   o.society = 'individual'
   o.foundation = Date.parse('2023-09-25')
   o.site = 'advocacia.com.br'
-  o.office_type_id = OfficeType.find_by(description: 'Advocacia').id
+  # o.office_type_id = OfficeType.find_by(description: 'Advocacia').id # office_type removed
   o.team = team
   puts "  ✅ Created office: #{o.name}"
 end
@@ -113,17 +113,17 @@ end
 # Add phone for office1
 office1.phones.find_or_create_by!(
   phone_number: '4532259000'
-) do |p|
+) do |_p|
   puts "  ✅ Created phone for office: #{office1.name}"
 end
 
-office2 = Office.find_or_create_by!(cnpj: '12.345.678/0001-90') do |o|
+office2 = Office.find_or_create_by!(cnpj: '11.222.333/0001-81') do |o|
   o.name = 'Escritório Advocacia Secundário'
-  o.oab = '12.345 SP'
+  o.oab_id = '12.345 SP'
   o.society = 'company'
   o.foundation = Date.parse('2020-01-15')
   o.site = 'advocacia2.com.br'
-  o.office_type_id = OfficeType.find_by(description: 'Advocacia').id
+  # o.office_type_id = OfficeType.find_by(description: 'Advocacia').id # office_type removed
   o.team = team2
   puts "  ✅ Created office: #{o.name}"
 end
@@ -144,7 +144,7 @@ end
 # Add phone for office2
 office2.phones.find_or_create_by!(
   phone_number: '1132847000'
-) do |p|
+) do |_p|
   puts "  ✅ Created phone for office: #{office2.name}"
 end
 
@@ -278,7 +278,7 @@ end
 # Add phone for customer 1
 profile_customer1.phones.find_or_create_by!(
   phone_number: '4598765432'
-) do |p|
+) do |_p|
   puts "  ✅ Created phone for customer: #{profile_customer1.full_name}"
 end
 
@@ -324,7 +324,7 @@ end
 # Add phone for customer 2
 profile_customer2.phones.find_or_create_by!(
   phone_number: '1133445566'
-) do |p|
+) do |_p|
   puts "  ✅ Created phone for customer: #{profile_customer2.name}"
 end
 
@@ -358,7 +358,8 @@ end
 # Create representative for minor
 Represent.find_or_create_by!(
   profile_customer: profile_customer3,
-  representor: profile_customer1
+  representor: profile_customer1,
+  team: team
 ) do |_r|
   puts '  ✅ Created representative relationship'
 end

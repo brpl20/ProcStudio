@@ -143,31 +143,22 @@ module Api
         end
 
         def create_address_from_data(user_profile, lawyer_data)
-          address = Address.create!(
-            description: 'Endereço Principal',
+          # Create address directly through polymorphic association
+          user_profile.addresses.create!(
             zip_code: lawyer_data[:zip_code],
             street: extract_street(lawyer_data[:address]),
             number: extract_number(lawyer_data[:address]),
             neighborhood: extract_neighborhood(lawyer_data[:address]),
             city: lawyer_data[:city],
-            state: lawyer_data[:state]
-          )
-
-          UserAddress.create!(
-            user_profile: user_profile,
-            address: address
+            state: lawyer_data[:state],
+            address_type: 'main'
           )
         end
 
         def create_phone_from_data(user_profile, lawyer_data)
-          phone = Phone.create!(
-            phone_type: 'mobile',
-            number: lawyer_data[:phone]
-          )
-
-          UserPhone.create!(
-            user_profile: user_profile,
-            phone: phone
+          # Create phone directly through polymorphic association
+          user_profile.phones.create!(
+            phone_number: lawyer_data[:phone]
           )
         end
 

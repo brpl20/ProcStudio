@@ -70,4 +70,10 @@ class UserProfileSerializer
 
     phones&.map { |phone| PhoneSerializer.new(phone).serializable_hash[:data][:attributes] }
   end
+
+  attribute :addresses do |object|
+    addresses = object.addresses
+
+    addresses&.map { |address| AddressSerializer.new(address).serializable_hash[:data][:attributes] }
+  end
 end
