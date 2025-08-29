@@ -4,6 +4,7 @@ source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 gem 'acts_as_paranoid'
+gem 'ancestry', '~> 4.3' # For hierarchical tree structure of procedures
 gem 'aws-sdk-s3', require: false
 gem 'bootsnap', require: false
 gem 'devise'

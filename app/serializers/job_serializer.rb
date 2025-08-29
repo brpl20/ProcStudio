@@ -103,8 +103,7 @@ class JobSerializer
 
     {
       id: object.work.id,
-      procedure: object.work.procedure,
-      subject: object.work.subject,
+      work_status: object.work.work_status,
       number: object.work.number,
       rate_parceled_exfield: object.work.rate_parceled_exfield,
       folder: object.work.folder,

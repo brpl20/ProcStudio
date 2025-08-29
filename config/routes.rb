@@ -91,6 +91,107 @@ Rails.application.routes.draw do
         end
 
         resources :documents, only: [:update]
+
+        # New nested routes for procedures
+        resources :procedures do
+          member do
+            get :financial_summary
+          end
+
+          collection do
+            get :tree
+          end
+
+          # Child procedures
+          post :create_child, on: :member
+
+          # Procedural parties management
+          resources :procedural_parties do
+            member do
+              post :set_primary
+            end
+
+            collection do
+              put :reorder
+            end
+          end
+
+          # Procedure-specific honoraries
+          resources :honoraries do
+            member do
+              get :summary
+            end
+
+            resources :components, controller: 'honorary_components' do
+              member do
+                post :toggle_active
+                get :calculate
+              end
+
+              collection do
+                put :reorder
+              end
+            end
+
+            resource :legal_cost, only: [:show, :create, :update, :destroy] do
+              member do
+                get :summary
+                get :overdue_entries
+                get :upcoming_entries
+              end
+
+              resources :entries, controller: 'legal_cost_entries' do
+                member do
+                  post :mark_as_paid
+                  post :mark_as_unpaid
+                end
+
+                collection do
+                  post :batch_create
+                  get :by_type
+                end
+              end
+            end
+          end
+        end
+
+        # Work-level (global) honoraries
+        resources :honoraries do
+          member do
+            get :summary
+          end
+
+          resources :components, controller: 'honorary_components' do
+            member do
+              post :toggle_active
+              get :calculate
+            end
+
+            collection do
+              put :reorder
+            end
+          end
+
+          resource :legal_cost, only: [:show, :create, :update, :destroy] do
+            member do
+              get :summary
+              get :overdue_entries
+              get :upcoming_entries
+            end
+
+            resources :entries, controller: 'legal_cost_entries' do
+              member do
+                post :mark_as_paid
+                post :mark_as_unpaid
+              end
+
+              collection do
+                post :batch_create
+                get :by_type
+              end
+            end
+          end
+        end
       end
 
       resources :work_events do

@@ -20,11 +20,9 @@
 #  other_description(Descrição do outro tipo de assunto)                :text
 #  partner_lawyer                                                       :integer
 #  physical_lawyer                                                      :integer
-#  procedure                                                            :string
-#  procedures                                                           :text             default([]), is an Array
 #  rate_parceled_exfield                                                :string
 #  responsible_lawyer                                                   :integer
-#  status                                                               :string           default("in_progress")
+#  work_status                                                          :string           default("active")
 #  created_at                                                           :datetime         not null
 #  updated_at                                                           :datetime         not null
 #  created_by_id                                                        :bigint
@@ -37,6 +35,7 @@
 #  index_works_on_deleted_at     (deleted_at)
 #  index_works_on_law_area_id    (law_area_id)
 #  index_works_on_team_id        (team_id)
+#  index_works_on_work_status    (work_status)
 #
 # Foreign Keys
 #
@@ -72,18 +71,19 @@ class Work < ApplicationRecord
 
   has_many :jobs
 
-  has_one :honorary, dependent: :destroy
+  # New associations for procedures
+  has_many :procedures, dependent: :destroy
+  has_many :root_procedures, -> { roots }, class_name: 'Procedure'
+
+  # Honoraries can be at work level (global) or procedure level
+  has_many :honoraries, dependent: :destroy
+  has_one :global_honorary, -> { where(procedure_id: nil) }, class_name: 'Honorary'
+
   has_one :draft_work, class_name: 'Draft::Work', dependent: :destroy
 
-  enum :procedure, {
-    administrative: 'administrativo',
-    judicial: 'judicial',
-    extrajudicial: 'extrajudicial'
-  }
-
-  enum :status, {
-    in_progress: 'in_progress',
-    paused: 'paused',
+  enum :work_status, {
+    active: 'active',
+    inactive: 'inactive',
     completed: 'completed',
     archived: 'archived'
   }
@@ -91,8 +91,9 @@ class Work < ApplicationRecord
   validates :law_area, presence: true
   validates_with WorkAddressesValidator
 
-  accepts_nested_attributes_for :documents, :pending_documents, :recommendations, :honorary, reject_if: :all_blank,
-                                                                                             allow_destroy: true
+  accepts_nested_attributes_for :documents, :pending_documents, :recommendations,
+                                :procedures, :honoraries, :customer_works, :user_profile_works,
+                                reject_if: :all_blank, allow_destroy: true
 
   scope :filter_by_customer_id, lambda { |customer_id|
     joins(:profile_customers).where(profile_customers: { id: customer_id })
@@ -116,5 +117,53 @@ class Work < ApplicationRecord
     return Power.none unless law_area
 
     law_area.applicable_powers
+  end
+
+  # Procedure management
+  def has_procedures?
+    procedures.any?
+  end
+
+  def active_procedures
+    procedures.where(status: ['in_progress', 'paused'])
+  end
+
+  def add_procedure(type, **attributes)
+    procedures.create!(
+      procedure_type: type,
+      law_area: law_area,
+      **attributes
+    )
+  end
+
+  def judicial_procedures
+    procedures.judicial
+  end
+
+  def administrative_procedures
+    procedures.administrative
+  end
+
+  def extrajudicial_procedures
+    procedures.extrajudicial
+  end
+
+  # Honorary management
+  def has_global_honorary?
+    global_honorary.present?
+  end
+
+  def total_honorary_value
+    honoraries.sum { |h| h.total_estimated_value || 0 }
+  end
+
+  # Financial summary across all procedures
+  def financial_summary
+    {
+      total_claim: procedures.sum(:claim_value),
+      total_conviction: procedures.sum(:conviction_value),
+      total_received: procedures.sum(:received_value),
+      total_honorary: total_honorary_value
+    }
   end
 end

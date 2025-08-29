@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 20_250_828_235_244) do
+ActiveRecord::Schema[8.0].define(version: 20_250_829_145_756) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_catalog.plpgsql'
 
@@ -220,13 +220,36 @@ ActiveRecord::Schema[8.0].define(version: 20_250_828_235_244) do
     t.string 'honorary_type'
     t.string 'percent_honorary_value'
     t.boolean 'parcelling'
-    t.bigint 'work_id', null: false
+    t.bigint 'work_id'
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
     t.datetime 'deleted_at'
     t.integer 'work_prev'
+    t.bigint 'procedure_id'
+    t.string 'name'
+    t.text 'description'
+    t.string 'status', default: 'active'
     t.index ['deleted_at'], name: 'index_honoraries_on_deleted_at'
+    t.index ['procedure_id'], name: 'index_honoraries_on_procedure_id'
+    t.index ['status'], name: 'index_honoraries_on_status'
+    t.index ['work_id', 'procedure_id'], name: 'index_honoraries_on_work_id_and_procedure_id'
     t.index ['work_id'], name: 'index_honoraries_on_work_id'
+    t.check_constraint 'work_id IS NOT NULL AND procedure_id IS NULL OR work_id IS NOT NULL AND procedure_id IS NOT NULL', name: 'check_honorary_attachment'
+  end
+
+  create_table 'honorary_components', force: :cascade do |t|
+    t.bigint 'honorary_id', null: false
+    t.string 'component_type', null: false
+    t.jsonb 'details', default: {}, null: false
+    t.boolean 'active', default: true
+    t.integer 'position'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['component_type'], name: 'index_honorary_components_on_component_type'
+    t.index ['details'], name: 'index_honorary_components_on_details', using: :gin
+    t.index ['honorary_id', 'component_type', 'active'], name: 'index_honorary_components_lookup'
+    t.index ['honorary_id'], name: 'index_honorary_components_on_honorary_id'
+    t.index ['position'], name: 'index_honorary_components_on_position'
   end
 
   create_table 'job_user_profiles', force: :cascade do |t|
@@ -289,6 +312,38 @@ ActiveRecord::Schema[8.0].define(version: 20_250_828_235_244) do
     t.index ['code', 'created_by_team_id', 'parent_area_id'], name: 'index_law_areas_unique_code', unique: true
     t.index ['created_by_team_id'], name: 'index_law_areas_on_created_by_team_id'
     t.index ['parent_area_id'], name: 'index_law_areas_on_parent_area_id'
+  end
+
+  create_table 'legal_cost_entries', force: :cascade do |t|
+    t.bigint 'legal_cost_id', null: false
+    t.string 'cost_type', null: false
+    t.string 'name', null: false
+    t.text 'description'
+    t.decimal 'amount', precision: 10, scale: 2
+    t.boolean 'estimated', default: false
+    t.boolean 'paid', default: false
+    t.date 'due_date'
+    t.date 'payment_date'
+    t.string 'receipt_number'
+    t.string 'payment_method'
+    t.jsonb 'metadata', default: {}
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['cost_type'], name: 'index_legal_cost_entries_on_cost_type'
+    t.index ['due_date'], name: 'index_legal_cost_entries_on_due_date'
+    t.index ['legal_cost_id', 'paid'], name: 'index_legal_cost_entries_on_legal_cost_id_and_paid'
+    t.index ['legal_cost_id'], name: 'index_legal_cost_entries_on_legal_cost_id'
+    t.index ['payment_date'], name: 'index_legal_cost_entries_on_payment_date'
+  end
+
+  create_table 'legal_costs', force: :cascade do |t|
+    t.bigint 'honorary_id', null: false
+    t.boolean 'client_responsible', default: true
+    t.boolean 'include_in_invoices', default: true
+    t.decimal 'admin_fee_percentage', precision: 5, scale: 2, default: '0.0'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['honorary_id'], name: 'index_legal_costs_on_honorary_id'
   end
 
   create_table 'notifications', force: :cascade do |t|
@@ -416,6 +471,68 @@ ActiveRecord::Schema[8.0].define(version: 20_250_828_235_244) do
     t.index ['created_by_team_id'], name: 'index_powers_on_created_by_team_id'
     t.index ['is_base'], name: 'index_powers_on_is_base'
     t.index ['law_area_id'], name: 'index_powers_on_law_area_id'
+  end
+
+  create_table 'procedural_parties', force: :cascade do |t|
+    t.bigint 'procedure_id', null: false
+    t.string 'party_type', null: false
+    t.string 'partyable_type'
+    t.bigint 'partyable_id'
+    t.string 'name'
+    t.string 'cpf_cnpj'
+    t.string 'oab_number'
+    t.boolean 'is_primary', default: false
+    t.integer 'position'
+    t.string 'represented_by'
+    t.text 'notes'
+    t.datetime 'deleted_at'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['cpf_cnpj'], name: 'index_procedural_parties_on_cpf_cnpj'
+    t.index ['deleted_at'], name: 'index_procedural_parties_on_deleted_at'
+    t.index ['party_type'], name: 'index_procedural_parties_on_party_type'
+    t.index ['partyable_type', 'partyable_id'], name: 'index_procedural_parties_on_partyable'
+    t.index ['partyable_type', 'partyable_id'], name: 'index_procedural_parties_on_partyable_type_and_partyable_id'
+    t.index ['procedure_id', 'party_type'], name: 'index_procedural_parties_on_procedure_id_and_party_type'
+    t.index ['procedure_id'], name: 'index_procedural_parties_on_procedure_id'
+  end
+
+  create_table 'procedures', force: :cascade do |t|
+    t.bigint 'work_id', null: false
+    t.bigint 'law_area_id'
+    t.string 'ancestry'
+    t.string 'procedure_type', null: false
+    t.string 'number'
+    t.string 'city'
+    t.string 'state'
+    t.string 'system'
+    t.string 'competence'
+    t.date 'start_date'
+    t.date 'end_date'
+    t.string 'procedure_class'
+    t.string 'responsible'
+    t.decimal 'claim_value', precision: 15, scale: 2
+    t.decimal 'conviction_value', precision: 15, scale: 2
+    t.decimal 'received_value', precision: 15, scale: 2
+    t.string 'status', default: 'in_progress'
+    t.boolean 'justice_free', default: false
+    t.boolean 'conciliation', default: false
+    t.boolean 'priority', default: false
+    t.string 'priority_type'
+    t.text 'notes'
+    t.datetime 'deleted_at'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['ancestry'], name: 'index_procedures_on_ancestry'
+    t.index ['competence'], name: 'index_procedures_on_competence'
+    t.index ['deleted_at'], name: 'index_procedures_on_deleted_at'
+    t.index ['law_area_id'], name: 'index_procedures_on_law_area_id'
+    t.index ['number'], name: 'index_procedures_on_number'
+    t.index ['procedure_type'], name: 'index_procedures_on_procedure_type'
+    t.index ['status'], name: 'index_procedures_on_status'
+    t.index ['system'], name: 'index_procedures_on_system'
+    t.index ['work_id', 'procedure_type'], name: 'index_procedures_on_work_id_and_procedure_type'
+    t.index ['work_id'], name: 'index_procedures_on_work_id'
   end
 
   create_table 'profile_customers', force: :cascade do |t|
@@ -637,7 +754,6 @@ ActiveRecord::Schema[8.0].define(version: 20_250_828_235_244) do
   end
 
   create_table 'works', force: :cascade do |t|
-    t.string 'procedure'
     t.integer 'number'
     t.string 'rate_parceled_exfield'
     t.string 'folder'
@@ -656,16 +772,16 @@ ActiveRecord::Schema[8.0].define(version: 20_250_828_235_244) do
     t.integer 'intern'
     t.integer 'bachelor'
     t.integer 'initial_atendee'
-    t.text 'procedures', default: [], array: true
     t.bigint 'created_by_id'
-    t.string 'status', default: 'in_progress'
     t.datetime 'deleted_at'
     t.bigint 'team_id', null: false
     t.bigint 'law_area_id'
+    t.string 'work_status', default: 'active'
     t.index ['created_by_id'], name: 'index_works_on_created_by_id'
     t.index ['deleted_at'], name: 'index_works_on_deleted_at'
     t.index ['law_area_id'], name: 'index_works_on_law_area_id'
     t.index ['team_id'], name: 'index_works_on_team_id'
+    t.index ['work_status'], name: 'index_works_on_work_status'
   end
 
   add_foreign_key 'active_storage_attachments', 'active_storage_blobs', column: 'blob_id'
@@ -686,7 +802,9 @@ ActiveRecord::Schema[8.0].define(version: 20_250_828_235_244) do
   add_foreign_key 'drafts', 'customers'
   add_foreign_key 'drafts', 'teams'
   add_foreign_key 'drafts', 'users'
+  add_foreign_key 'honoraries', 'procedures'
   add_foreign_key 'honoraries', 'works'
+  add_foreign_key 'honorary_components', 'honoraries'
   add_foreign_key 'job_user_profiles', 'jobs'
   add_foreign_key 'job_user_profiles', 'user_profiles'
   add_foreign_key 'job_works', 'jobs'
@@ -697,6 +815,8 @@ ActiveRecord::Schema[8.0].define(version: 20_250_828_235_244) do
   add_foreign_key 'jobs', 'users', column: 'created_by_id'
   add_foreign_key 'law_areas', 'law_areas', column: 'parent_area_id'
   add_foreign_key 'law_areas', 'teams', column: 'created_by_team_id'
+  add_foreign_key 'legal_cost_entries', 'legal_costs'
+  add_foreign_key 'legal_costs', 'honoraries'
   add_foreign_key 'office_bank_accounts', 'bank_accounts'
   add_foreign_key 'office_bank_accounts', 'offices'
   add_foreign_key 'office_emails', 'emails'
@@ -712,6 +832,9 @@ ActiveRecord::Schema[8.0].define(version: 20_250_828_235_244) do
   add_foreign_key 'power_works', 'works'
   add_foreign_key 'powers', 'law_areas'
   add_foreign_key 'powers', 'teams', column: 'created_by_team_id'
+  add_foreign_key 'procedural_parties', 'procedures'
+  add_foreign_key 'procedures', 'law_areas'
+  add_foreign_key 'procedures', 'works'
   add_foreign_key 'profile_customers', 'customers'
   add_foreign_key 'profile_customers', 'users', column: 'created_by_id'
   add_foreign_key 'recommendations', 'profile_customers'
