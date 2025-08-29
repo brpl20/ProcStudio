@@ -62,7 +62,6 @@ class Work < ApplicationRecord
   has_many :powers, through: :power_works
 
   has_many :documents, dependent: :destroy
-
   has_many :pending_documents, dependent: :destroy
 
   has_many :office_works, dependent: :destroy
