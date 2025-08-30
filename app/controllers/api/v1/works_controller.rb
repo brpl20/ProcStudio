@@ -46,25 +46,42 @@ module Api
       end
 
       def create
-        work = Work.new(work_params)
+        work_attributes = work_params
+
+        # Debug: Log the parameters to see what's being received
+        Rails.logger.info "Work params: #{work_attributes.inspect}"
+
+        work = Work.new(work_attributes)
         work.team = current_team
         work.created_by_id = current_user&.id
 
         if work.save
           Works::CreateDocumentService.call(work)
 
-          render json: WorkSerializer.new(work), status: :created
+          # Reload to get all associations
+          work.reload
+
+          # Get the serialized data without the outer "data" wrapper
+          serialized = WorkSerializer.new(work).serializable_hash
+
+          render json: {
+            success: true,
+            message: 'Work created successfully',
+            data: serialized[:data] # Extract just the data part, not the wrapper
+          }, status: :created
         else
-          render(
-            status: :bad_request,
-            json: { errors: [{ code: work.errors.full_messages }] }
-          )
+          render json: {
+            success: false,
+            message: work.errors.full_messages.first || 'Failed to create work',
+            errors: work.errors.full_messages
+          }, status: :unprocessable_entity
         end
       rescue StandardError => e
-        render(
-          status: :bad_request,
-          json: { errors: [{ code: e }] }
-        )
+        render json: {
+          success: false,
+          message: e.message,
+          errors: [e.message]
+        }, status: :bad_request
       end
 
       def update
@@ -72,14 +89,22 @@ module Api
 
         if @work.update(work_params)
           Works::CreateDocumentService.call(@work) if truthy_param?(:regenerate_documents)
-          render json: WorkSerializer.new(
-            @work
-          ), status: :ok
+
+          # Reload to get updated associations
+          @work.reload
+          serialized = WorkSerializer.new(@work).serializable_hash
+
+          render json: {
+            success: true,
+            message: 'Work updated successfully',
+            data: serialized[:data]
+          }, status: :ok
         else
-          render(
-            status: :bad_request,
-            json: { errors: [{ code: @work.errors.full_messages }] }
-          )
+          render json: {
+            success: false,
+            message: @work.errors.full_messages.first || 'Failed to update work',
+            errors: @work.errors.full_messages
+          }, status: :unprocessable_entity
         end
       end
 
@@ -132,20 +157,38 @@ module Api
 
       def work_params
         params.expect(
-          work: [:procedure, :law_area_id, :number, :folder, :initial_atendee, :note, :extra_pending_document,
+          work: [:law_area_id, :number, :folder, :initial_atendee, :note, :extra_pending_document,
                  :other_description, :compensations_five_years, :compensations_service, :lawsuit, :gain_projection,
                  :physical_lawyer, :responsible_lawyer, :partner_lawyer, :intern, :bachelor, :rate_parceled_exfield,
-                 :status,
-                 { documents_attributes: [:id, :document_type, :profile_customer_id],
-                   pending_documents_attributes: [:id, :description, :profile_customer_id],
-                   recommendations_attributes: [:id, :percentage, :commission, :profile_customer_id],
-                   honorary_attributes: [:id, :fixed_honorary_value, :parcelling_value, :honorary_type,
-                                         :percent_honorary_value, :parcelling, :work_prev],
+                 :work_status,
+                 { documents_attributes: [:id, :document_type, :profile_customer_id, :name, :description, :_destroy],
+                   pending_documents_attributes: [:id, :description, :profile_customer_id, :name, :due_date, :_destroy],
+                   recommendations_attributes: [:id, :percentage, :commission, :profile_customer_id, :title, :description, :priority, :due_date, :_destroy],
+                   procedures_attributes: [
+                     :id, :procedure_type, :law_area_id, :number, :city, :state, :system, :competence,
+                     :start_date, :end_date, :procedure_class, :responsible, :claim_value, :conviction_value,
+                     :received_value, :status, :justice_free, :conciliation, :priority, :priority_type, :notes, :_destroy,
+                     { procedural_parties_attributes: [:id, :party_type, :partyable_type, :partyable_id, :name,
+                                                       :cpf_cnpj, :oab_number, :is_primary, :represented_by, :notes, :_destroy],
+                       honoraries_attributes: [:id, :name, :description, :status, :honorary_type, :fixed_honorary_value,
+                                               :percent_honorary_value, :parcelling, :parcelling_value, :_destroy,
+                                               { components_attributes: [:id, :component_type, :active, :position, :details, :_destroy] }] }
+                   ],
+                   honoraries_attributes: [
+                     :id, :name, :description, :status, :honorary_type, :fixed_honorary_value,
+                     :percent_honorary_value, :parcelling, :parcelling_value, :work_prev, :_destroy,
+                     { components_attributes: [:id, :component_type, :active, :position, :details, :_destroy],
+                       legal_cost_attributes: [:id, :client_responsible, :include_in_invoices, :admin_fee_percentage, :_destroy,
+                                               { entries_attributes: [:id, :cost_type, :name, :description, :amount, :estimated,
+                                                                      :paid, :due_date, :payment_date, :receipt_number,
+                                                                      :payment_method, :metadata, :_destroy] }] }
+                   ],
+                   customer_works_attributes: [:id, :profile_customer_id, :_destroy],
+                   user_profile_works_attributes: [:id, :user_profile_id, :_destroy],
                    power_ids: [],
                    profile_customer_ids: [],
                    user_profile_ids: [],
-                   office_ids: [],
-                   procedures: [] }]
+                   office_ids: [] }]
         )
       end
 

@@ -20,11 +20,9 @@
 #  other_description(Descrição do outro tipo de assunto)                :text
 #  partner_lawyer                                                       :integer
 #  physical_lawyer                                                      :integer
-#  procedure                                                            :string
-#  procedures                                                           :text             default([]), is an Array
 #  rate_parceled_exfield                                                :string
 #  responsible_lawyer                                                   :integer
-#  status                                                               :string           default("in_progress")
+#  work_status                                                          :string           default("active")
 #  created_at                                                           :datetime         not null
 #  updated_at                                                           :datetime         not null
 #  created_by_id                                                        :bigint
@@ -37,6 +35,7 @@
 #  index_works_on_deleted_at     (deleted_at)
 #  index_works_on_law_area_id    (law_area_id)
 #  index_works_on_team_id        (team_id)
+#  index_works_on_work_status    (work_status)
 #
 # Foreign Keys
 #
@@ -47,10 +46,54 @@
 class WorkSerializer
   include JSONAPI::Serializer
 
-  attributes :procedure, :law_area_id, :number, :other_description, :physical_lawyer, :responsible_lawyer,
+  attributes :law_area_id, :number, :other_description, :physical_lawyer, :responsible_lawyer,
              :partner_lawyer, :intern, :bachelor, :initial_atendee, :note, :folder, :rate_parceled_exfield,
              :extra_pending_document, :compensations_five_years, :compensations_service, :lawsuit,
-             :gain_projection, :procedures, :honorary, :created_by_id, :status
+             :gain_projection, :created_by_id, :work_status
+
+  # New procedures relationship
+  attribute :procedures do |object|
+    object.procedures.map do |procedure|
+      {
+        id: procedure.id,
+        procedure_type: procedure.procedure_type,
+        number: procedure.number,
+        status: procedure.status,
+        city: procedure.city,
+        state: procedure.state
+      }
+    end
+  end
+
+  # New honoraries relationship (plural)
+  attribute :honoraries do |object|
+    object.honoraries.map do |honorary|
+      {
+        id: honorary.id,
+        name: honorary.name,
+        description: honorary.description,
+        status: honorary.status,
+        honorary_type: honorary.honorary_type,
+        is_global: honorary.is_global?,
+        procedure_id: honorary.procedure_id
+      }
+    end
+  end
+
+  # Legacy support - returns first honorary or global honorary
+  attribute :honorary do |object|
+    honorary = object.global_honorary || object.honoraries.first
+    if honorary
+      {
+        id: honorary.id,
+        fixed_honorary_value: honorary.fixed_honorary_value,
+        parcelling_value: honorary.parcelling_value,
+        honorary_type: honorary.honorary_type,
+        percent_honorary_value: honorary.percent_honorary_value,
+        parcelling: honorary.parcelling
+      }
+    end
+  end
 
   attribute :procurations_created do |object|
     object.documents.procurations.size

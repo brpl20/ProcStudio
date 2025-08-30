@@ -25,26 +25,27 @@ class Draft::WorkSerializer
 
   attributes :name, :work_id
 
-  attributes :procedure, :law_area_id, :number, :other_description, :physical_lawyer,
+  attributes :law_area_id, :number, :other_description, :physical_lawyer,
              :responsible_lawyer, :partner_lawyer, :intern, :bachelor, :initial_atendee,
              :note, :folder, :rate_parceled_exfield, :extra_pending_document,
              :compensations_five_years, :compensations_service, :lawsuit, :gain_projection,
-             :procedures, :offices, :honorary, :profile_customers, :user_profiles,
+             :offices, :profile_customers, :user_profiles,
              :powers, :recommendations, :jobs, :pending_documents, :documents, :law_area,
              if: proc { |_, options| options[:action] == 'show' }
 
+  # Legacy support for honorary
   attribute :honorary do |object|
-    honorary = object.honorary
+    honorary = object.global_honorary || object.honoraries.first
 
-    next if honorary.blank?
-
-    {
-      fixed_honorary_value: honorary&.fixed_honorary_value,
-      parcelling_value: honorary&.parcelling_value,
-      honorary_type: honorary&.honorary_type,
-      percent_honorary_value: honorary&.percent_honorary_value,
-      parcelling: honorary&.parcelling
-    }
+    if honorary.present?
+      {
+        fixed_honorary_value: honorary.fixed_honorary_value,
+        parcelling_value: honorary.parcelling_value,
+        honorary_type: honorary.honorary_type,
+        percent_honorary_value: honorary.percent_honorary_value,
+        parcelling: honorary.parcelling
+      }
+    end
   end
 
   attribute :offices do |object|

@@ -1,0 +1,75 @@
+{
+  "work": {
+    "law_area_id": 1,
+    "number": 2024001,
+    "folder": "PASTA-2024-001",
+    "note": "Caso complexo envolvendo múltiplos procedimentos",
+    "work_status": "active",
+    "responsible_lawyer": 5,
+    "physical_lawyer": 5,
+    "lawsuit": true,
+    "compensations_five_years": true,
+    "compensations_service": false,
+    "gain_projection": "Alta probabilidade de êxito",
+    
+    "procedures_attributes": [
+      {
+        "procedure_type": "judicial",
+        "law_area_id": 1,
+        "number": "1234567-89.2024.8.16.0000",
+        "city": "Cascavel",
+        "state": "PR",
+        "system": "Projudi",
+        "competence": "Justiça Estadual",
+        "start_date": "2024-01-15",
+        "procedure_class": "Procedimento Comum",
+        "responsible": "Dr. João Silva",
+        "claim_value": 100000.00,
+        "status": "in_progress",
+        "justice_free": false,
+        "conciliation": true,
+        "priority": false,
+        "notes": "Processo principal",
+        
+        "procedural_parties_attributes": [
+          {
+            "party_type": "plaintiff",
+            "name": "José Santos",
+            "cpf_cnpj": "123.456.789-00",
+            "is_primary": true,
+            "represented_by": "Escritório",
+            "notes": "Cliente principal"
+          },
+          {
+            "party_type": "defendant",
+            "name": "Empresa XYZ Ltda",
+            "cpf_cnpj": "12.345.678/0001-90",
+            "is_primary": true,
+            "notes": "Empresa ré"
+          }
+        ]
+      }
+    ],
+    
+    "honoraries_attributes": [
+      {
+        "name": "Honorários Contratuais",
+        "description": "Honorários do trabalho",
+        "status": "active",
+        "honorary_type": "work"
+      }
+    ],
+    
+    "customer_works_attributes": [
+      {
+        "profile_customer_id": 3
+      }
+    ],
+    
+    "user_profile_works_attributes": [
+      {
+        "user_profile_id": 5
+      }
+    ]
+  }
+}

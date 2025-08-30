@@ -4,10 +4,11 @@ source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 gem 'acts_as_paranoid'
+gem 'ancestry', '~> 4.3' # For hierarchical tree structure of procedures
 gem 'aws-sdk-s3', require: false
 gem 'bootsnap', require: false
 gem 'devise'
-gem 'docx'
+gem 'docx', path: '/Users/brpl/code/ruby-docx'  # Using forked gem with universal field replacement
 gem 'down'
 gem 'httparty'
 gem 'i18n'

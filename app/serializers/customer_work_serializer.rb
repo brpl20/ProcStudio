@@ -25,10 +25,25 @@
 class CustomerWorkSerializer
   include JSONAPI::Serializer
 
-  attributes :procedure, :law_area_id, :number, :other_description, :physical_lawyer, :responsible_lawyer,
+  attributes :law_area_id, :number, :other_description, :physical_lawyer, :responsible_lawyer,
              :partner_lawyer, :intern, :bachelor, :initial_atendee, :note, :folder, :rate_parceled_exfield,
              :extra_pending_document, :compensations_five_years, :compensations_service, :lawsuit,
-             :gain_projection, :procedures, :honorary, :status
+             :gain_projection, :work_status
+
+  # Legacy support for honorary
+  attribute :honorary do |object|
+    honorary = object.global_honorary || object.honoraries.first
+    if honorary
+      {
+        id: honorary.id,
+        fixed_honorary_value: honorary.fixed_honorary_value,
+        parcelling_value: honorary.parcelling_value,
+        honorary_type: honorary.honorary_type,
+        percent_honorary_value: honorary.percent_honorary_value,
+        parcelling: honorary.parcelling
+      }
+    end
+  end
 
   attribute :procurations_created do |object|
     object.documents.procurations.size

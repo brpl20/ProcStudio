@@ -20,11 +20,9 @@
 #  other_description(Descrição do outro tipo de assunto)                :text
 #  partner_lawyer                                                       :integer
 #  physical_lawyer                                                      :integer
-#  procedure                                                            :string
-#  procedures                                                           :text             default([]), is an Array
 #  rate_parceled_exfield                                                :string
 #  responsible_lawyer                                                   :integer
-#  status                                                               :string           default("in_progress")
+#  work_status                                                          :string           default("active")
 #  created_at                                                           :datetime         not null
 #  updated_at                                                           :datetime         not null
 #  created_by_id                                                        :bigint
@@ -37,6 +35,7 @@
 #  index_works_on_deleted_at     (deleted_at)
 #  index_works_on_law_area_id    (law_area_id)
 #  index_works_on_team_id        (team_id)
+#  index_works_on_work_status    (work_status)
 #
 # Foreign Keys
 #

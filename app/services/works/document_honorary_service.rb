@@ -10,7 +10,7 @@ module Works
     def initialize(document_id)
       @document = Document.find(document_id)
       @work     = document.work
-      @honorary = work.honorary
+      @honorary = work.global_honorary || work.honoraries.first
       @office   = work.offices.first
       @lawyers  = work.profile_admins.lawyer
       @customer = document.profile_customer
