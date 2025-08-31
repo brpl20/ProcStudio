@@ -8,7 +8,7 @@ gem 'ancestry', '~> 4.3' # For hierarchical tree structure of procedures
 gem 'aws-sdk-s3', require: false
 gem 'bootsnap', require: false
 gem 'devise'
-gem 'docx'
+gem 'docx', path: '/Users/brpl/code/ruby-docx'  # Using forked gem with universal field replacement
 gem 'down'
 gem 'httparty'
 gem 'i18n'
