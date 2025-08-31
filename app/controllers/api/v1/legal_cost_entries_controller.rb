@@ -15,7 +15,7 @@ module Api
         entries = apply_filters(entries)
         entries = entries.order(created_at: :desc)
 
-        render json: LegalCostEntrySerializer.new(
+        serialized = LegalCostEntrySerializer.new(
           entries,
           meta: {
             total_count: entries.count,
@@ -23,39 +23,82 @@ module Api
             paid_amount: entries.paid.sum(:amount),
             pending_amount: entries.pending.sum(:amount)
           }
-        ), status: :ok
+        ).serializable_hash
+
+        render json: {
+          success: true,
+          message: 'Lançamentos de custos legais listados com sucesso',
+          data: serialized[:data],
+          meta: serialized[:meta]
+        }, status: :ok
       end
 
       def show
-        render json: LegalCostEntrySerializer.new(@entry), status: :ok
+        serialized = LegalCostEntrySerializer.new(@entry).serializable_hash
+
+        render json: {
+          success: true,
+          message: 'Lançamento de custo legal encontrado com sucesso',
+          data: serialized[:data]
+        }, status: :ok
       end
 
       def create
-        entry = @legal_cost.add_entry(
-          params[:entry][:cost_type],
-          params[:entry][:name],
-          params[:entry][:amount],
-          entry_params.except(:cost_type, :name, :amount)
-        )
+        # Create entry directly with all params - the model handles cost_type via legal_cost_type_id
+        entry = @legal_cost.entries.build(entry_params)
 
-        if entry.persisted?
-          render json: LegalCostEntrySerializer.new(entry), status: :created
+        if entry.save
+          serialized = LegalCostEntrySerializer.new(entry).serializable_hash
+
+          render json: {
+            success: true,
+            message: 'Lançamento de custo legal criado com sucesso',
+            data: serialized[:data]
+          }, status: :created
         else
-          render json: { errors: entry.errors.full_messages }, status: :unprocessable_entity
+          error_messages = entry.errors.full_messages
+          render json: {
+            success: false,
+            message: error_messages.first || 'Erro ao criar lançamento de custo legal',
+            errors: error_messages
+          }, status: :unprocessable_entity
         end
       end
 
       def update
         if @entry.update(entry_params)
-          render json: LegalCostEntrySerializer.new(@entry), status: :ok
+          serialized = LegalCostEntrySerializer.new(@entry).serializable_hash
+
+          render json: {
+            success: true,
+            message: 'Lançamento de custo legal atualizado com sucesso',
+            data: serialized[:data]
+          }, status: :ok
         else
-          render json: { errors: @entry.errors.full_messages }, status: :unprocessable_entity
+          error_messages = @entry.errors.full_messages
+          render json: {
+            success: false,
+            message: error_messages.first || 'Erro ao atualizar lançamento de custo legal',
+            errors: error_messages
+          }, status: :unprocessable_entity
         end
       end
 
       def destroy
-        @entry.destroy
-        head :no_content
+        if @entry.destroy
+          render json: {
+            success: true,
+            message: 'Lançamento de custo legal excluído com sucesso',
+            data: nil
+          }, status: :ok
+        else
+          error_messages = @entry.errors.full_messages
+          render json: {
+            success: false,
+            message: error_messages.first || 'Erro ao excluir lançamento de custo legal',
+            errors: error_messages
+          }, status: :unprocessable_entity
+        end
       end
 
       # Custom endpoints
@@ -66,12 +109,37 @@ module Api
           method: params[:payment_method]
         )
 
-        render json: LegalCostEntrySerializer.new(@entry), status: :ok
+        serialized = LegalCostEntrySerializer.new(@entry).serializable_hash
+
+        render json: {
+          success: true,
+          message: 'Lançamento marcado como pago com sucesso',
+          data: serialized[:data]
+        }, status: :ok
+      rescue StandardError => e
+        render json: {
+          success: false,
+          message: 'Erro ao marcar lançamento como pago',
+          errors: [e.message]
+        }, status: :unprocessable_entity
       end
 
       def mark_as_unpaid
         @entry.mark_as_unpaid!
-        render json: LegalCostEntrySerializer.new(@entry), status: :ok
+
+        serialized = LegalCostEntrySerializer.new(@entry).serializable_hash
+
+        render json: {
+          success: true,
+          message: 'Lançamento marcado como não pago com sucesso',
+          data: serialized[:data]
+        }, status: :ok
+      rescue StandardError => e
+        render json: {
+          success: false,
+          message: 'Erro ao marcar lançamento como não pago',
+          errors: [e.message]
+        }, status: :unprocessable_entity
       end
 
       def batch_create
@@ -89,11 +157,21 @@ module Api
         end
 
         if errors.empty?
-          render json: LegalCostEntrySerializer.new(entries), status: :created
+          serialized = LegalCostEntrySerializer.new(entries).serializable_hash
+
+          render json: {
+            success: true,
+            message: "#{entries.count} lançamento(s) criado(s) com sucesso",
+            data: serialized[:data]
+          }, status: :created
         else
           render json: {
-            created: entries.count,
-            failed: errors.count,
+            success: false,
+            message: "Erro ao criar lançamentos em lote. #{entries.count} criado(s), #{errors.count} falharam",
+            data: {
+              created: entries.count,
+              failed: errors.count
+            },
             errors: errors
           }, status: :unprocessable_entity
         end
@@ -111,7 +189,11 @@ module Api
           }
         end
 
-        render json: { data: formatted_data }, status: :ok
+        render json: {
+          success: true,
+          message: 'Lançamentos agrupados por tipo obtidos com sucesso',
+          data: formatted_data
+        }, status: :ok
       end
 
       private
@@ -127,18 +209,31 @@ module Api
 
         @legal_cost = honorary.legal_cost
         raise ActiveRecord::RecordNotFound unless @legal_cost
+      rescue ActiveRecord::RecordNotFound
+        render json: {
+          success: false,
+          message: 'Custos legais não encontrados',
+          errors: ['Custos legais não encontrados para este honorário']
+        }, status: :not_found
       end
 
       def set_entry
         @entry = @legal_cost.entries.find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+        render json: {
+          success: false,
+          message: 'Lançamento de custo legal não encontrado',
+          errors: ['Lançamento de custo legal não encontrado']
+        }, status: :not_found
       end
 
       def entry_params
-        params.expect(entry: [permitted_params])
+        params.expect(legal_cost_entry: permitted_params)
       end
 
       def permitted_params
         [
+          :legal_cost_type_id,
           :cost_type,
           :name,
           :description,

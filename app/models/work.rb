@@ -92,7 +92,8 @@ class Work < ApplicationRecord
   validates_with WorkAddressesValidator
 
   accepts_nested_attributes_for :documents, :pending_documents, :recommendations,
-                                :procedures, :honoraries, :customer_works, :user_profile_works,
+                                reject_if: :all_blank, allow_destroy: true
+  accepts_nested_attributes_for :procedures, :honoraries, :customer_works, :user_profile_works,
                                 reject_if: :all_blank, allow_destroy: true
 
   scope :filter_by_customer_id, lambda { |customer_id|

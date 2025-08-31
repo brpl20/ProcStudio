@@ -28,6 +28,7 @@ class Team < ApplicationRecord
   has_many :users, dependent: :destroy
   has_many :offices, dependent: :destroy
   has_many :works, dependent: :destroy
+  has_many :legal_cost_types, dependent: :destroy
   has_many :jobs, dependent: :destroy
   has_many :compliance_notifications, dependent: :destroy
 

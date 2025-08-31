@@ -75,7 +75,20 @@ class WorkSerializer
         status: honorary.status,
         honorary_type: honorary.honorary_type,
         is_global: honorary.is_global?,
-        procedure_id: honorary.procedure_id
+        procedure_id: honorary.procedure_id,
+        total_estimated_value: honorary.total_estimated_value,
+        components: honorary.components.map do |component|
+          {
+            id: component.id,
+            component_type: component.component_type,
+            active: component.active,
+            position: component.position,
+            details: component.details,
+            calculated_total: component.calculate_total,
+            display_name: component.display_name,
+            formatted_details: component.formatted_details
+          }
+        end
       }
     end
   end

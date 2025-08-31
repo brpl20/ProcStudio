@@ -140,6 +140,7 @@ class HonoraryComponent < ApplicationRecord
       monthly_amount: format_currency(details['monthly_amount']),
       months: details['months'],
       total: format_currency(calculate_total)
+      # TD: Due Date
     }
   end
 
@@ -148,6 +149,8 @@ class HonoraryComponent < ApplicationRecord
       percentage: "#{details['percentage']}%",
       minimum: format_currency(details['minimum_amount']),
       maximum: format_currency(details['maximum_amount'])
+      # TD: Max - Mim ? Relevante?
+      # TD: Como combinar com o valor da causa?
     }
   end
 
@@ -157,6 +160,9 @@ class HonoraryComponent < ApplicationRecord
       monthly_income: format_currency(details['monthly_income_average']),
       months: details['benefit_months'],
       estimated_total: format_currency(calculate_total)
+      # TD: Valor fixo em parcelas de benefício
+      # TD: Valor variável em
+      # TD: Parcelamento?
     }
   end
 
@@ -171,6 +177,7 @@ class HonoraryComponent < ApplicationRecord
     validate_required_fields(required_fields)
     validate_numeric_field('amount')
     validate_numeric_field('installments', required: false)
+    # TD: Parcelamento?
   end
 
   def validate_hourly_rate_schema
@@ -179,6 +186,7 @@ class HonoraryComponent < ApplicationRecord
     validate_numeric_field('rate')
     validate_numeric_field('estimated_hours', required: false)
     validate_numeric_field('minimum_hours', required: false)
+    # TD: Horas total
   end
 
   def validate_monthly_retainer_schema
@@ -205,6 +213,8 @@ class HonoraryComponent < ApplicationRecord
   def validate_sucumbencia_fee_schema
     validate_numeric_field('percentage', required: false)
     validate_numeric_field('base_amount', required: false)
+    # TD: Sucumbencia no contrato - True or False
+    # TD: Sucumbencia esperada?
   end
 
   def validate_consultation_fee_schema
@@ -212,6 +222,7 @@ class HonoraryComponent < ApplicationRecord
     validate_required_fields(required_fields)
     validate_numeric_field('amount')
     validate_numeric_field('duration_minutes', required: false)
+    # TD: Consulta -> Contrato simplificado?
   end
 
   def validate_performance_fee_schema
@@ -221,10 +232,12 @@ class HonoraryComponent < ApplicationRecord
   def validate_required_fields(fields)
     fields.each do |field|
       errors.add(:details, "#{field} is required") if details[field].blank?
+      # TD: Entender melhor isso
     end
   end
 
   def validate_numeric_field(field, required: true)
+    # TD: Type Safety manual -> Estudar Mais
     return unless required || details[field].present?
 
     value = details[field]

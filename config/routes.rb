@@ -217,6 +217,12 @@ Rails.application.routes.draw do
       resources :office_types
       resources :powers
       resources :teams
+      
+      resources :legal_cost_types do
+        collection do
+          get :by_category
+        end
+      end
 
       # My Team routes
       get 'my_team', to: 'my_team#show'

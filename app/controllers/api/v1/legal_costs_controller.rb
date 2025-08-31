@@ -10,42 +10,87 @@ module Api
       after_action :verify_authorized
 
       def show
-        render json: LegalCostSerializer.new(
-          @legal_cost,
-          include: [:entries]
-        ), status: :ok
+        serialized = LegalCostSerializer.new(@legal_cost).serializable_hash
+
+        render json: {
+          success: true,
+          message: 'Custos legais encontrados com sucesso',
+          data: serialized[:data]
+        }, status: :ok
       end
 
       def create
         legal_cost = @honorary.build_legal_cost(legal_cost_params)
 
         if legal_cost.save
-          render json: LegalCostSerializer.new(legal_cost), status: :created
+          serialized = LegalCostSerializer.new(legal_cost).serializable_hash
+
+          render json: {
+            success: true,
+            message: 'Custos legais criados com sucesso',
+            data: serialized[:data]
+          }, status: :created
         else
-          render json: { errors: legal_cost.errors.full_messages }, status: :unprocessable_entity
+          error_messages = legal_cost.errors.full_messages
+          render json: {
+            success: false,
+            message: error_messages.first || 'Erro ao criar custos legais',
+            errors: error_messages
+          }, status: :unprocessable_entity
         end
       end
 
       def update
         if @legal_cost.update(legal_cost_params)
-          render json: LegalCostSerializer.new(@legal_cost), status: :ok
+          serialized = LegalCostSerializer.new(@legal_cost).serializable_hash
+
+          render json: {
+            success: true,
+            message: 'Custos legais atualizados com sucesso',
+            data: serialized[:data]
+          }, status: :ok
         else
-          render json: { errors: @legal_cost.errors.full_messages }, status: :unprocessable_entity
+          error_messages = @legal_cost.errors.full_messages
+          render json: {
+            success: false,
+            message: error_messages.first || 'Erro ao atualizar custos legais',
+            errors: error_messages
+          }, status: :unprocessable_entity
         end
       end
 
       def destroy
-        @legal_cost.destroy
-        head :no_content
+        if @legal_cost.destroy
+          render json: {
+            success: true,
+            message: 'Custos legais excluídos com sucesso',
+            data: nil
+          }, status: :ok
+        else
+          error_messages = @legal_cost.errors.full_messages
+          render json: {
+            success: false,
+            message: error_messages.first || 'Erro ao excluir custos legais',
+            errors: error_messages
+          }, status: :unprocessable_entity
+        end
       end
 
       # Custom endpoints
       def summary
         legal_cost = @honorary.legal_cost
 
-        return render json: { error: 'No legal cost found' }, status: :not_found unless legal_cost
+        unless legal_cost
+          return render json: {
+            success: false,
+            message: 'Custos legais não encontrados',
+            errors: ['Custos legais não encontrados para este honorário']
+          }, status: :not_found
+        end
 
         render json: {
+          success: true,
+          message: 'Resumo de custos legais obtido com sucesso',
           data: legal_cost.summary.merge(
             overdue_count: legal_cost.overdue_entries.count,
             upcoming_count: legal_cost.upcoming_entries.count,
@@ -57,35 +102,59 @@ module Api
       def overdue_entries
         legal_cost = @honorary.legal_cost
 
-        return render json: { error: 'No legal cost found' }, status: :not_found unless legal_cost
+        unless legal_cost
+          return render json: {
+            success: false,
+            message: 'Custos legais não encontrados',
+            errors: ['Custos legais não encontrados para este honorário']
+          }, status: :not_found
+        end
 
         entries = legal_cost.overdue_entries.order(:due_date)
-
-        render json: LegalCostEntrySerializer.new(
+        serialized = LegalCostEntrySerializer.new(
           entries,
           meta: {
             total_count: entries.count,
             total_amount: entries.sum(:amount)
           }
-        ), status: :ok
+        ).serializable_hash
+
+        render json: {
+          success: true,
+          message: 'Lançamentos vencidos obtidos com sucesso',
+          data: serialized[:data],
+          meta: serialized[:meta]
+        }, status: :ok
       end
 
       def upcoming_entries
         legal_cost = @honorary.legal_cost
         days = params[:days]&.to_i || 30
 
-        return render json: { error: 'No legal cost found' }, status: :not_found unless legal_cost
+        unless legal_cost
+          return render json: {
+            success: false,
+            message: 'Custos legais não encontrados',
+            errors: ['Custos legais não encontrados para este honorário']
+          }, status: :not_found
+        end
 
         entries = legal_cost.upcoming_entries(days).order(:due_date)
-
-        render json: LegalCostEntrySerializer.new(
+        serialized = LegalCostEntrySerializer.new(
           entries,
           meta: {
             total_count: entries.count,
             total_amount: entries.sum(:amount),
             days_ahead: days
           }
-        ), status: :ok
+        ).serializable_hash
+
+        render json: {
+          success: true,
+          message: 'Próximos lançamentos obtidos com sucesso',
+          data: serialized[:data],
+          meta: serialized[:meta]
+        }, status: :ok
       end
 
       private
@@ -98,11 +167,23 @@ module Api
         else
           @honorary = work.honoraries.find(params[:honorary_id])
         end
+      rescue ActiveRecord::RecordNotFound
+        render json: {
+          success: false,
+          message: 'Registro não encontrado',
+          errors: ['Work, procedimento ou honorário não encontrado']
+        }, status: :not_found
       end
 
       def set_legal_cost
         @legal_cost = @honorary.legal_cost
         raise ActiveRecord::RecordNotFound unless @legal_cost
+      rescue ActiveRecord::RecordNotFound
+        render json: {
+          success: false,
+          message: 'Custos legais não encontrados',
+          errors: ['Custos legais não encontrados para este honorário']
+        }, status: :not_found
       end
 
       def legal_cost_params

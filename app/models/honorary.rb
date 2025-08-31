@@ -51,6 +51,9 @@ class Honorary < ApplicationRecord
   validates :name, presence: true
   validate :attached_to_work_or_procedure
 
+  # Accept nested attributes
+  accepts_nested_attributes_for :components, allow_destroy: true
+
   # Enums
   enum :status, {
     active: 'active',
