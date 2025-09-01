@@ -208,17 +208,17 @@ module Api
       private
 
       def user_profiles_params
-        params.expect(
-          user_profile: [:role, :status, :user_id, :office_id, :name, :last_name, :gender, :oab,
-                         :rg, :cpf, :nationality, :civil_status, :birth, :mother_name, :origin,
-                         { user_attributes: [:id, :email, :access_email, :password, :password_confirmation],
-                           office_attributes: [:name, :cnpj],
-                           addresses_attributes: [:id, :description, :zip_code, :street, :number, :neighborhood, :city,
-                                                  :state, :complement, :address_type],
-                           bank_accounts_attributes: [:id, :bank_name, :type_account, :agency, :account, :operation,
-                                                      :pix],
-                           phones_attributes: [:id, :phone_number] }]
+        params.require(:user_profile).permit(
+          :role, :status, :user_id, :office_id, :name, :last_name, :gender, :oab,
+          :rg, :cpf, :nationality, :civil_status, :birth, :mother_name, :origin,
+          user_attributes: [:id, :email, :access_email, :password, :password_confirmation],
+          office_attributes: [:name, :cnpj],
+          addresses_attributes: [:id, :description, :zip_code, :street, :number, :neighborhood, :city,
+                                 :state, :complement, :address_type],
+          bank_accounts_attributes: [:id, :bank_name, :type_account, :agency, :account, :operation, :pix],
+          phones_attributes: [:id, :phone_number]
         )
+        # rubocop:enable Rails/StrongParametersExpect
       end
 
       def retrieve_user_profile

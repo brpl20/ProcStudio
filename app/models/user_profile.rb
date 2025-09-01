@@ -104,7 +104,11 @@ class UserProfile < ApplicationRecord
                                 allow_destroy: true,
                                 reject_if: proc { |attrs| attrs['street'].blank? || attrs['city'].blank? }
 
-  accepts_nested_attributes_for :user, :bank_accounts,
+  accepts_nested_attributes_for :bank_accounts,
+                                allow_destroy: true,
+                                reject_if: :all_blank
+
+  accepts_nested_attributes_for :user,
                                 reject_if: :all_blank
 
   with_options presence: true do

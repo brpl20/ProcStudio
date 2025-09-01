@@ -120,20 +120,21 @@ module Api
       end
 
       def offices_params
-        params.expect(
-          office: [:name, :cnpj, :oab_id, :oab_status, :oab_inscricao, :oab_link,
-                   :society, :foundation, :site, :accounting_type, :team_id,
-                   :quote_value, :number_of_quotes,
-                   :logo,
-                   { phones_attributes: [:id, :phone_number, :_destroy],
-                     addresses_attributes: [:id, :street, :number, :complement, :neighborhood,
-                                            :city, :state, :zip_code, :address_type, :_destroy],
-                     emails_attributes: [:id, :email, :_destroy],
-                     bank_accounts_attributes: [:id, :bank_name, :type_account, :agency,
-                                                :account, :operation, :pix, :_destroy],
-                     user_offices_attributes: [:id, :user_id, :partnership_type,
-                                               :partnership_percentage, :_destroy] }]
+        params.require(:office).permit(
+          :name, :cnpj, :oab_id, :oab_status, :oab_inscricao, :oab_link,
+          :society, :foundation, :site, :accounting_type, :team_id,
+          :quote_value, :number_of_quotes,
+          :logo,
+          phones_attributes: [:id, :phone_number, :_destroy],
+          addresses_attributes: [:id, :street, :number, :complement, :neighborhood,
+                                 :city, :state, :zip_code, :address_type, :_destroy],
+          emails_attributes: [:id, :email, :_destroy],
+          bank_accounts_attributes: [:id, :bank_name, :type_account, :agency,
+                                     :account, :operation, :pix, :_destroy],
+          user_offices_attributes: [:id, :user_id, :partnership_type,
+                                    :partnership_percentage, :_destroy]
         )
+        # rubocop:enable Rails/StrongParametersExpect
       end
 
       def perform_authorization

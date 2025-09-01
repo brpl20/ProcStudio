@@ -90,58 +90,58 @@ export interface ProfileCompletionResponse {
 //   data?: any;
 // }
 
-// export interface Address {
-//   description?: string;
-//   zip_code: string;
-//   street: string;
-//   number: number;
-//   neighborhood: string;
-//   city: string;
-//   state: string;
-// }
+export interface Address {
+  description?: string;
+  zip_code: string;
+  street: string;
+  number: number;
+  neighborhood: string;
+  city: string;
+  state: string;
+}
 
-// export interface BankAccount {
-//   bank_name: string;
-//   type_account: string;
-//   agency: string;
-//   account: string;
-//   operation?: string;
-//   pix?: string;
-// }
+export interface BankAccount {
+  bank_name: string;
+  type_account: string;
+  agency: string;
+  account: string;
+  operation?: string;
+  pix?: string;
+}
 
-// export interface Phone {
-//   phone_number: string;
-// }
+export interface Phone {
+  phone_number: string;
+}
 
-// export interface Email {
-//   email: string;
-// }
+export interface Email {
+  email: string;
+}
 
-// export interface ProfileCreationData {
-//   role: string;
-//   name: string; // required*
-//   last_name?: string;
-//   gender?: string;
-//   oab: string; // required*
-//   rg?: string;
-//   cpf?: string;
-//   nationality?: string;
-//   civil_status?: string;
-//   birth?: string; // Using string for date format like "3/30/1980"
-//   mother_name?: string;
-//   status?: string;
-//   user_id: number; // required*
-//   created_at?: string; // required* (but might be auto-generated)
-//   updated_at?: string; // required* (but might be auto-generated)
-//   office_id?: number | null;
-//   origin?: string;
-//   deleted_at?: string;
-//   addresses_attributes?: Address[];
-//   bank_accounts_attributes?: BankAccount[];
-//   phones_attributes?: Phone[];
-//   emails_attributes?: Email[];
-// }
+export interface ProfileCreationData {
+  role: string;
+  name: string; // required*
+  last_name?: string;
+  gender?: string;
+  oab: string; // required*
+  rg?: string;
+  cpf?: string;
+  nationality?: string;
+  civil_status?: string;
+  birth?: string; // Using string for date format like "3/30/1980"
+  mother_name?: string;
+  status?: string;
+  user_id: number; // required*
+  created_at?: string; // required* (but might be auto-generated)
+  updated_at?: string; // required* (but might be auto-generated)
+  office_id?: number | null;
+  origin?: string;
+  deleted_at?: string;
+  addresses_attributes?: Address[];
+  bank_accounts_attributes?: BankAccount[];
+  phones_attributes?: Phone[];
+  emails_attributes?: Email[];
+}
 
-// export interface UserProfilePayload {
-//   user_profile: ProfileCreationData;
-// }
+export interface UserProfilePayload {
+  user_profile: ProfileCreationData;
+}

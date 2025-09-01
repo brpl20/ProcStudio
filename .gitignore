@@ -47,6 +47,9 @@
 .claude-on-rails/sessions/
 swarm.log
 
+# AiTools-Tokens
+/aitools/.auth-token.json
+
 # Node modules in tests directory
 tests/node_modules/
 node_modules/

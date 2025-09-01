@@ -156,40 +156,41 @@ module Api
       end
 
       def work_params
-        params.expect(
-          work: [:law_area_id, :number, :folder, :initial_atendee, :note, :extra_pending_document,
-                 :other_description, :compensations_five_years, :compensations_service, :lawsuit, :gain_projection,
-                 :physical_lawyer, :responsible_lawyer, :partner_lawyer, :intern, :bachelor, :rate_parceled_exfield,
-                 :work_status,
-                 { documents_attributes: [:id, :document_type, :profile_customer_id, :name, :description, :_destroy],
-                   pending_documents_attributes: [:id, :description, :profile_customer_id, :name, :due_date, :_destroy],
-                   recommendations_attributes: [:id, :percentage, :commission, :profile_customer_id, :title, :description, :priority, :due_date, :_destroy],
-                   procedures_attributes: [
-                     :id, :procedure_type, :law_area_id, :number, :city, :state, :system, :competence,
-                     :start_date, :end_date, :procedure_class, :responsible, :claim_value, :conviction_value,
-                     :received_value, :status, :justice_free, :conciliation, :priority, :priority_type, :notes, :_destroy,
-                     { procedural_parties_attributes: [:id, :party_type, :partyable_type, :partyable_id, :name,
-                                                       :cpf_cnpj, :oab_number, :is_primary, :represented_by, :notes, :_destroy],
-                       honoraries_attributes: [:id, :name, :description, :status, :honorary_type, :fixed_honorary_value,
-                                               :percent_honorary_value, :parcelling, :parcelling_value, :_destroy,
-                                               { components_attributes: [:id, :component_type, :active, :position, :details, :_destroy] }] }
-                   ],
-                   honoraries_attributes: [
-                     :id, :name, :description, :status, :honorary_type, :fixed_honorary_value,
-                     :percent_honorary_value, :parcelling, :parcelling_value, :work_prev, :_destroy,
-                     { components_attributes: [:id, :component_type, :active, :position, :details, :_destroy],
-                       legal_cost_attributes: [:id, :client_responsible, :include_in_invoices, :admin_fee_percentage, :_destroy,
-                                               { entries_attributes: [:id, :cost_type, :name, :description, :amount, :estimated,
-                                                                      :paid, :due_date, :payment_date, :receipt_number,
-                                                                      :payment_method, :metadata, :_destroy] }] }
-                   ],
-                   customer_works_attributes: [:id, :profile_customer_id, :_destroy],
-                   user_profile_works_attributes: [:id, :user_profile_id, :_destroy],
-                   power_ids: [],
-                   profile_customer_ids: [],
-                   user_profile_ids: [],
-                   office_ids: [] }]
+        params.require(:work).permit(
+          :law_area_id, :number, :folder, :initial_atendee, :note, :extra_pending_document,
+          :other_description, :compensations_five_years, :compensations_service, :lawsuit, :gain_projection,
+          :physical_lawyer, :responsible_lawyer, :partner_lawyer, :intern, :bachelor, :rate_parceled_exfield,
+          :work_status,
+          documents_attributes: [:id, :document_type, :profile_customer_id, :name, :description, :_destroy],
+          pending_documents_attributes: [:id, :description, :profile_customer_id, :name, :due_date, :_destroy],
+          recommendations_attributes: [:id, :percentage, :commission, :profile_customer_id, :title, :description, :priority, :due_date, :_destroy],
+          procedures_attributes: [
+            :id, :procedure_type, :law_area_id, :number, :city, :state, :system, :competence,
+            :start_date, :end_date, :procedure_class, :responsible, :claim_value, :conviction_value,
+            :received_value, :status, :justice_free, :conciliation, :priority, :priority_type, :notes, :_destroy,
+            { procedural_parties_attributes: [:id, :party_type, :partyable_type, :partyable_id, :name,
+                                              :cpf_cnpj, :oab_number, :is_primary, :represented_by, :notes, :_destroy],
+              honoraries_attributes: [:id, :name, :description, :status, :honorary_type, :fixed_honorary_value,
+                                      :percent_honorary_value, :parcelling, :parcelling_value, :_destroy,
+                                      { components_attributes: [:id, :component_type, :active, :position, :details, :_destroy] }] }
+          ],
+          honoraries_attributes: [
+            :id, :name, :description, :status, :honorary_type, :fixed_honorary_value,
+            :percent_honorary_value, :parcelling, :parcelling_value, :work_prev, :_destroy,
+            { components_attributes: [:id, :component_type, :active, :position, :details, :_destroy],
+              legal_cost_attributes: [:id, :client_responsible, :include_in_invoices, :admin_fee_percentage, :_destroy,
+                                      { entries_attributes: [:id, :cost_type, :name, :description, :amount, :estimated,
+                                                             :paid, :due_date, :payment_date, :receipt_number,
+                                                             :payment_method, :metadata, :_destroy] }] }
+          ],
+          customer_works_attributes: [:id, :profile_customer_id, :_destroy],
+          user_profile_works_attributes: [:id, :user_profile_id, :_destroy],
+          power_ids: [],
+          profile_customer_ids: [],
+          user_profile_ids: [],
+          office_ids: []
         )
+        # rubocop:enable Rails/StrongParametersExpect
       end
 
       def filtering_params

@@ -146,6 +146,7 @@ Metrics/ClassLength:
   Exclude:
     - spec/**/*
     - app/controllers/api/v1/jobs_controller.rb
+    - app/controllers/api/v1/user_profiles_controller.rb
 
 Metrics/ModuleLength:
   Max: 200
@@ -190,6 +191,11 @@ Naming/ConstantName:
 # Rails Cops
 Rails:
   Enabled: true
+
+# Disable Rails/StrongParametersExpect cop that converts require().permit() to expect()
+# This is needed for nested attributes to work properly with complex nested hashes
+Rails/StrongParametersExpect:
+  Enabled: false
 
 Rails/UnknownEnv:
   Environments:
