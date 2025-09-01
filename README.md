@@ -4,10 +4,10 @@ API RESTful desenvolvida em Ruby on Rails para o sistema ProcStudio.
 
 ## Índice
 
-- (API)[./docs/API.md]
-- (Works)[./docs/Works.md]
-- (WorksProcedures)[./docs/WorksProcedures.md]
-- (Works-Honoraries-LegalCosts)[./docs/Works-Honoraries-LegalCosts.md]
+- [API](./docs/API.md)
+- [Works](./docs/Works.md)
+- [Works Procedures](./docs/Works-Procedures.md)
+- [Works - Honoraries & Legal Costs](./docs/Works-Honoraries-LegalCosts.md)
 
 ## 🚀 Início Rápido
 
