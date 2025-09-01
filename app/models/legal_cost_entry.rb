@@ -4,21 +4,22 @@
 #
 # Table name: legal_cost_entries
 #
-#  id             :bigint           not null, primary key
-#  amount         :decimal(10, 2)
-#  cost_type      :string           not null
-#  description    :text
-#  due_date       :date
-#  estimated      :boolean          default(FALSE)
-#  metadata       :jsonb
-#  name           :string           not null
-#  paid           :boolean          default(FALSE)
-#  payment_date   :date
-#  payment_method :string
-#  receipt_number :string
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
-#  legal_cost_id  :bigint           not null
+#  id                 :bigint           not null, primary key
+#  amount             :decimal(10, 2)
+#  cost_type          :string           not null
+#  description        :text
+#  due_date           :date
+#  estimated          :boolean          default(FALSE)
+#  metadata           :jsonb
+#  name               :string           not null
+#  paid               :boolean          default(FALSE)
+#  payment_date       :date
+#  payment_method     :string
+#  receipt_number     :string
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  legal_cost_id      :bigint           not null
+#  legal_cost_type_id :bigint
 #
 # Indexes
 #
@@ -26,11 +27,13 @@
 #  index_legal_cost_entries_on_due_date                (due_date)
 #  index_legal_cost_entries_on_legal_cost_id           (legal_cost_id)
 #  index_legal_cost_entries_on_legal_cost_id_and_paid  (legal_cost_id,paid)
+#  index_legal_cost_entries_on_legal_cost_type_id      (legal_cost_type_id)
 #  index_legal_cost_entries_on_payment_date            (payment_date)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (legal_cost_id => legal_costs.id)
+#  fk_rails_...  (legal_cost_type_id => legal_cost_types.id)
 #
 class LegalCostEntry < ApplicationRecord
   belongs_to :legal_cost

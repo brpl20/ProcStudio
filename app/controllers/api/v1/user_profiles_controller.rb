@@ -10,7 +10,12 @@ module Api
       after_action :verify_authorized
 
       def index
-        user_profiles = UserProfile.all
+        # Super admin vê todos os perfis, outros usuários veem apenas do seu team
+        user_profiles = if super_admin_access?
+                          UserProfile.includes(:user)
+                        else
+                          UserProfile.joins(:user).where(users: { team: current_team }).includes(:user)
+                        end
 
         filter_by_deleted_params.each do |key, value|
           next if value.blank?
@@ -34,22 +39,58 @@ module Api
       end
 
       def create
-        user_profile = UserProfile.new(user_profiles_params)
+        profile_params = user_profiles_params
+
+        # If user_attributes are present but user_id is not, we're creating a new user
+        if profile_params[:user_attributes].present? && !profile_params[:user_id]
+          user_attrs = profile_params[:user_attributes]
+          user_attrs[:team_id] = current_team.id
+          user_attrs[:access_email] ||= user_attrs[:email]
+
+          # Build the user first
+          user = User.new(user_attrs)
+          profile_params.delete(:user_attributes)
+
+          # Build the profile with the user
+          user_profile = user.build_user_profile(profile_params)
+        else
+          user_profile = UserProfile.new(profile_params)
+
+          # If creating a new user through nested attributes, set the team
+          if user_profile.user&.new_record?
+            user_profile.user.team_id = current_team.id
+            user_profile.user.access_email = user_profile.user.email
+          end
+        end
+
         if user_profile.save
+          # Reload to ensure all associations are loaded
+          user_profile.reload
+
           render json: UserProfileSerializer.new(
             user_profile,
             params: { action: 'show' }
           ), status: :created
         else
+          error_messages = user_profile.errors.full_messages
           render(
             status: :bad_request,
-            json: { errors: [{ code: user_profile.errors.full_messages }] }
+            json: {
+              success: false,
+              message: error_messages.first,
+              errors: error_messages
+            }
           )
         end
       rescue StandardError => e
+        error_message = e.message
         render(
           status: :bad_request,
-          json: { errors: [{ code: e }] }
+          json: {
+            success: false,
+            message: error_message,
+            errors: [error_message]
+          }
         )
       end
 
@@ -59,9 +100,14 @@ module Api
             @user_profile
           ), status: :ok
         else
+          error_messages = @user_profile.errors.full_messages
           render(
             status: :bad_request,
-            json: { errors: [{ code: @user_profile.errors.full_messages }] }
+            json: {
+              success: false,
+              message: error_messages.first,
+              errors: error_messages
+            }
           )
         end
       end
@@ -81,9 +127,14 @@ module Api
             @user_profile
           ), status: :ok
         else
+          error_messages = @user_profile.errors.full_messages
           render(
             status: :bad_request,
-            json: { errors: [{ code: @user_profile.errors.full_messages }] }
+            json: {
+              success: false,
+              message: error_messages.first,
+              errors: error_messages
+            }
           )
         end
       end
@@ -163,20 +214,29 @@ module Api
                          { user_attributes: [:id, :email, :access_email, :password, :password_confirmation],
                            office_attributes: [:name, :cnpj],
                            addresses_attributes: [:id, :description, :zip_code, :street, :number, :neighborhood, :city,
-                                                  :state],
+                                                  :state, :complement, :address_type],
                            bank_accounts_attributes: [:id, :bank_name, :type_account, :agency, :account, :operation,
                                                       :pix],
-                           phones_attributes: [:id, :phone_number],
-                           emails_attributes: [:id, :email] }]
+                           phones_attributes: [:id, :phone_number] }]
         )
       end
 
       def retrieve_user_profile
-        @user_profile = UserProfile.find(params[:id])
+        # Super admin pode acessar qualquer perfil
+        @user_profile = if super_admin_access?
+                          UserProfile.find(params[:id])
+                        else
+                          UserProfile.joins(:user).where(users: { team: current_team }).find(params[:id])
+                        end
       end
 
       def retrieve_deleted_user_profile
-        @user_profile = UserProfile.with_deleted.find(params[:id])
+        # Super admin pode acessar qualquer perfil deletado
+        @user_profile = if super_admin_access?
+                          UserProfile.with_deleted.find(params[:id])
+                        else
+                          UserProfile.with_deleted.joins(:user).where(users: { team: current_team }).find(params[:id])
+                        end
       end
 
       def profile_completion_params

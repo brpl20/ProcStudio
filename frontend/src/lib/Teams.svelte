@@ -1,352 +1,174 @@
 <script lang="ts">
-  import api from './api/index';
-  import type {
-    TeamData,
-    MyTeamResponse,
-    TeamResponse,
-    UpdateTeamResponse,
-    TeamMembersResponse
-  } from './api/index';
+  import { router } from './stores/routerStore.js';
 
-  // Estados para renderização de dados
-  let myTeamResult: {
-    success: boolean;
-    data?: MyTeamResponse;
-    error?: string;
-    message: string;
-  } | null = null;
+  let activeTab = 'advogados';
 
-  let teamByIdResult: {
-    success: boolean;
-    data?: TeamResponse;
-    error?: string;
-    message: string;
-  } | null = null;
+  // Mock data for demonstration
+  const advogados = [
+    { id: 1, name: 'Ana Silva', email: 'ana.silva@exemplo.com', oab: 'OAB/SP 123456' },
+    { id: 2, name: 'Carlos Santos', email: 'carlos.santos@exemplo.com', oab: 'OAB/RJ 654321' }
+  ];
 
-  let updateTeamResult: {
-    success: boolean;
-    data?: UpdateTeamResponse;
-    error?: string;
-    message: string;
-  } | null = null;
+  const escritorios = [
+    { id: 1, name: 'Escritório Silva & Advogados', cnpj: '12.345.678/0001-90', endereco: 'São Paulo, SP' },
+    { id: 2, name: 'Santos Advocacia', cnpj: '98.765.432/0001-12', endereco: 'Rio de Janeiro, RJ' }
+  ];
 
-  let teamMembersResult: {
-    success: boolean;
-    data?: TeamMembersResponse;
-    error?: string;
-    message: string;
-    count?: number;
-  } | null = null;
-
-  // Estados de loading
-  let isTestingMyTeam = false;
-  let isTestingTeamById = false;
-  let isUpdatingTeam = false;
-  let isTestingMembers = false;
-
-  // Inputs
-  let teamIdInput = '';
-  let updateTeamName = '';
-  let updateTeamDescription = '';
-  let currentTeamId = '';
-
-  // Função para testar meu time
-  async function testMyTeam() {
-    isTestingMyTeam = true;
-    myTeamResult = null;
-
-    try {
-      const data = await api.teams.getMyTeam();
-      myTeamResult = {
-        success: true,
-        data: data,
-        message: 'Meu time carregado com sucesso!'
-      };
-
-      // Guarda o ID do time para usar no update
-      if (data?.data?.id) {
-        currentTeamId = data.data.id;
-        updateTeamName = data.data.attributes?.name || '';
-        updateTeamDescription = data.data.attributes?.description || '';
-      }
-    } catch (error: any) {
-      console.error('Get my team error:', error);
-      myTeamResult = {
-        success: false,
-        error: error?.message || error?.data?.message || 'Erro desconhecido',
-        message: 'Erro ao buscar meu time'
-      };
-    } finally {
-      isTestingMyTeam = false;
-    }
+  function setActiveTab(tab: string) {
+    activeTab = tab;
   }
 
-  // Função para testar busca de time por ID
-  async function testTeamById() {
-    if (!teamIdInput.trim()) {
-      teamByIdResult = {
-        success: false,
-        error: 'ID do time é obrigatório',
-        message: 'Erro: ID vazio'
-      };
-      return;
-    }
-
-    isTestingTeamById = true;
-    teamByIdResult = null;
-
-    try {
-      const data = await api.teams.getTeam(teamIdInput.trim());
-      teamByIdResult = {
-        success: true,
-        data: data,
-        message: `Time #${teamIdInput} carregado com sucesso!`
-      };
-    } catch (error: any) {
-      console.error('Get team by ID error:', error);
-      teamByIdResult = {
-        success: false,
-        error: error?.message || error?.data?.message || 'Erro desconhecido',
-        message: `Erro ao buscar time #${teamIdInput}`
-      };
-    } finally {
-      isTestingTeamById = false;
-    }
+  function navigateToAdvogadoCreate() {
+    router.navigate('/teams/advogados/new');
   }
 
-  // Função para atualizar time
-  async function updateTeam() {
-    if (!currentTeamId) {
-      updateTeamResult = {
-        success: false,
-        error: 'Busque seu time primeiro para obter o ID',
-        message: 'Erro: ID do time não encontrado'
-      };
-      return;
-    }
-
-    if (!updateTeamName.trim()) {
-      updateTeamResult = {
-        success: false,
-        error: 'Nome do time é obrigatório',
-        message: 'Erro: Nome vazio'
-      };
-      return;
-    }
-
-    isUpdatingTeam = true;
-    updateTeamResult = null;
-
-    try {
-      const data = await api.teams.updateMyTeam({
-        team: {
-          name: updateTeamName.trim(),
-          description: updateTeamDescription.trim()
-        }
-      });
-      updateTeamResult = {
-        success: true,
-        data: data,
-        message: 'Time atualizado com sucesso!'
-      };
-    } catch (error: any) {
-      console.error('Update team error:', error);
-      updateTeamResult = {
-        success: false,
-        error: error?.message || error?.data?.message || 'Erro desconhecido',
-        message: 'Erro ao atualizar time'
-      };
-    } finally {
-      isUpdatingTeam = false;
-    }
+  function navigateToEscritorioCreate() {
+    router.navigate('/teams/escritorios/new');
   }
 
-  // Função para buscar membros do time
-  async function testTeamMembers() {
-    isTestingMembers = true;
-    teamMembersResult = null;
+  function navigateToAdvogadoView(id: number) {
+    router.navigate(`/teams/advogados/${id}`);
+  }
 
-    try {
-      const data = await api.teams.getMyTeamMembers();
-      teamMembersResult = {
-        success: true,
-        data: data,
-        count: Array.isArray(data) ? data.length : data.data ? data.data.length : 0,
-        message: 'Membros do time carregados com sucesso!'
-      };
-    } catch (error: any) {
-      console.error('Get team members error:', error);
-      teamMembersResult = {
-        success: false,
-        error: error?.message || error?.data?.message || 'Erro desconhecido',
-        message: 'Erro ao buscar membros do time'
-      };
-    } finally {
-      isTestingMembers = false;
-    }
+  function navigateToEscritorioView(id: number) {
+    router.navigate(`/teams/escritorios/${id}`);
   }
 </script>
 
-<div>
-  <h1>Gerenciamento de Times</h1>
-
-  <div>
-    <h3>Operações com Times</h3>
-
-    <!-- Meu Time -->
-    <div>
-      <h4>Meu Time</h4>
-      <button on:click={testMyTeam} disabled={isTestingMyTeam}>
-        {isTestingMyTeam ? 'Carregando...' : 'Buscar Meu Time'}
-      </button>
-    </div>
-
-    <!-- Buscar Time por ID -->
-    <div>
-      <h4>Buscar Time por ID</h4>
-      <input
-        type="text"
-        bind:value={teamIdInput}
-        placeholder="ID do time"
-        disabled={isTestingTeamById}
-      />
-      <button on:click={testTeamById} disabled={isTestingTeamById || !teamIdInput.trim()}>
-        {isTestingTeamById ? 'Carregando...' : 'Buscar Time'}
-      </button>
-    </div>
-
-    <!-- Atualizar Meu Time -->
-    <div>
-      <h4>Atualizar Meu Time</h4>
-      <p>Current Team ID: {currentTeamId || 'Busque seu time primeiro'}</p>
-      <div>
-        <label for="update-team-name">Nome:</label>
-        <input
-          type="text"
-          id="update-team-name"
-          bind:value={updateTeamName}
-          placeholder="Nome do time"
-          disabled={isUpdatingTeam}
-        />
-      </div>
-      <div>
-        <label for="update-team-description">Descrição:</label>
-        <textarea
-          id="update-team-description"
-          bind:value={updateTeamDescription}
-          placeholder="Descrição do time"
-          disabled={isUpdatingTeam}
-          rows="3"
-        ></textarea>
-      </div>
-      <button on:click={updateTeam} disabled={isUpdatingTeam || !currentTeamId}>
-        {isUpdatingTeam ? 'Atualizando...' : 'Atualizar Time'}
-      </button>
-    </div>
-
-    <!-- Membros do Time -->
-    <div>
-      <h4>Membros do Meu Time</h4>
-      <button on:click={testTeamMembers} disabled={isTestingMembers}>
-        {isTestingMembers ? 'Carregando...' : 'Buscar Membros'}
-      </button>
-    </div>
+<div class="container mx-auto px-4 py-6">
+  <!-- Header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-base-content mb-2">Times</h1>
+    <p class="text-base-content/70">Gerencie equipes, advogados e escritórios</p>
   </div>
 
-  <!-- Resultados -->
-  <div>
-    <h3>Resultados</h3>
+  <!-- Tabs -->
+  <div class="tabs tabs-boxed mb-6 bg-base-200">
+    <button
+      class="tab {activeTab === 'equipe' ? 'tab-active' : ''}"
+      on:click={() => setActiveTab('equipe')}
+    >
+      Equipe
+    </button>
+    <button
+      class="tab {activeTab === 'advogados' ? 'tab-active' : ''}"
+      on:click={() => setActiveTab('advogados')}
+    >
+      Advogados
+    </button>
+    <button
+      class="tab {activeTab === 'escritorios' ? 'tab-active' : ''}"
+      on:click={() => setActiveTab('escritorios')}
+    >
+      Escritórios
+    </button>
+  </div>
 
-    <!-- Resultado do Meu Time -->
-    {#if myTeamResult}
-      <div>
-        <h4>{myTeamResult.success ? 'OK' : 'ERRO'} - {myTeamResult.message}</h4>
-        {#if myTeamResult.success && myTeamResult.data}
-          <h5>DEBUG - Meu Time:</h5>
-          <pre>{JSON.stringify(myTeamResult.data, null, 2)}</pre>
-
-          {#if myTeamResult.data.data}
-            <h5>Time Processado:</h5>
-            <div>
-              <p>ID: {myTeamResult.data.data.id}</p>
-              <p>Nome: {myTeamResult.data.data.attributes?.name || 'N/A'}</p>
-              <p>Descrição: {myTeamResult.data.data.attributes?.description || 'N/A'}</p>
-              <p>Status: {myTeamResult.data.data.attributes?.status || 'N/A'}</p>
-              <p>Deleted: {String(myTeamResult.data.data.attributes?.deleted)}</p>
-              <p>Criado em: {myTeamResult.data.data.attributes?.created_at || 'N/A'}</p>
-            </div>
-          {/if}
-        {:else if myTeamResult.error}
-          <p>Erro: {myTeamResult.error}</p>
-        {/if}
-        <hr />
+  <!-- Tab Content -->
+  <div class="tab-content">
+    {#if activeTab === 'equipe'}
+      <!-- Equipe Tab - Empty for now -->
+      <div class="card bg-base-100 shadow-lg">
+        <div class="card-body">
+          <h2 class="card-title">Equipe</h2>
+          <p class="text-base-content/70">Em desenvolvimento...</p>
+        </div>
       </div>
     {/if}
 
-    <!-- Resultado do Team por ID -->
-    {#if teamByIdResult}
-      <div>
-        <h4>{teamByIdResult.success ? 'OK' : 'ERRO'} - {teamByIdResult.message}</h4>
-        {#if teamByIdResult.success && teamByIdResult.data}
-          <h5>DEBUG - Team por ID:</h5>
-          <pre>{JSON.stringify(teamByIdResult.data, null, 2)}</pre>
+    {#if activeTab === 'advogados'}
+      <!-- Advogados Tab -->
+      <div class="space-y-6">
+        <!-- Header with Create Button -->
+        <div class="flex justify-between items-center">
+          <h2 class="text-2xl font-semibold">Advogados</h2>
+          <button class="btn btn-primary" on:click={navigateToAdvogadoCreate}>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Novo Advogado
+          </button>
+        </div>
 
-          {#if teamByIdResult.data.data}
-            <h5>Time Processado:</h5>
-            <div>
-              <p>ID: {teamByIdResult.data.data.id}</p>
-              <p>Nome: {teamByIdResult.data.data.attributes?.name || 'N/A'}</p>
-              <p>Descrição: {teamByIdResult.data.data.attributes?.description || 'N/A'}</p>
-              <p>Status: {teamByIdResult.data.data.attributes?.status || 'N/A'}</p>
-              <p>Deleted: {String(teamByIdResult.data.data.attributes?.deleted)}</p>
-              <p>Criado em: {teamByIdResult.data.data.attributes?.created_at || 'N/A'}</p>
-            </div>
-          {/if}
-        {:else if teamByIdResult.error}
-          <p>Erro: {teamByIdResult.error}</p>
-        {/if}
-        <hr />
-      </div>
-    {/if}
-
-    <!-- Resultado do Update Team -->
-    {#if updateTeamResult}
-      <div>
-        <h4>{updateTeamResult.success ? 'OK' : 'ERRO'} - {updateTeamResult.message}</h4>
-        {#if updateTeamResult.success && updateTeamResult.data}
-          <h5>DEBUG - Team Atualizado:</h5>
-          <pre>{JSON.stringify(updateTeamResult.data, null, 2)}</pre>
-        {:else if updateTeamResult.error}
-          <p>Erro: {updateTeamResult.error}</p>
-        {/if}
-        <hr />
-      </div>
-    {/if}
-
-    <!-- Resultado dos Membros -->
-    {#if teamMembersResult}
-      <div>
-        <h4>{teamMembersResult.success ? 'OK' : 'ERRO'} - {teamMembersResult.message}</h4>
-        {#if teamMembersResult.success}
-          <p>Total de membros: {teamMembersResult.count}</p>
-          <h5>DEBUG - Membros:</h5>
-          <pre>{JSON.stringify(teamMembersResult.data, null, 2)}</pre>
-
-          {#if teamMembersResult.data && (Array.isArray(teamMembersResult.data) ? teamMembersResult.data : teamMembersResult.data.data)}
-            <h5>Membros Processados:</h5>
-            {#each Array.isArray(teamMembersResult.data) ? teamMembersResult.data : teamMembersResult.data.data || [] as member}
-              <div>
-                <p>ID: {member.id}</p>
-                <p>Email: {member.attributes?.access_email || 'N/A'}</p>
-                <p>Status: {member.attributes?.status || 'N/A'}</p>
-                <p>Role: {member.attributes?.role || 'N/A'}</p>
-                <hr />
+        <!-- Advogados List -->
+        <div class="grid gap-4">
+          {#each advogados as advogado}
+            <div class="card bg-base-100 shadow hover:shadow-lg transition-shadow">
+              <div class="card-body">
+                <div class="flex justify-between items-start">
+                  <div class="flex-1">
+                    <h3 class="card-title text-lg">{advogado.name}</h3>
+                    <p class="text-base-content/70 text-sm">{advogado.email}</p>
+                    <p class="text-base-content/70 text-sm">{advogado.oab}</p>
+                  </div>
+                  <button
+                    class="btn btn-outline btn-sm"
+                    on:click={() => navigateToAdvogadoView(advogado.id)}
+                  >
+                    Ver Detalhes
+                  </button>
+                </div>
               </div>
-            {/each}
+            </div>
+          {/each}
+
+          {#if advogados.length === 0}
+            <div class="text-center py-12">
+              <p class="text-base-content/70">Nenhum advogado cadastrado</p>
+              <button class="btn btn-primary btn-sm mt-4" on:click={navigateToAdvogadoCreate}>
+                Cadastrar Primeiro Advogado
+              </button>
+            </div>
           {/if}
-        {:else if teamMembersResult.error}
-          <p>Erro: {teamMembersResult.error}</p>
-        {/if}
+        </div>
+      </div>
+    {/if}
+
+    {#if activeTab === 'escritorios'}
+      <!-- Escritórios Tab -->
+      <div class="space-y-6">
+        <!-- Header with Create Button -->
+        <div class="flex justify-between items-center">
+          <h2 class="text-2xl font-semibold">Escritórios</h2>
+          <button class="btn btn-primary" on:click={navigateToEscritorioCreate}>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Novo Escritório
+          </button>
+        </div>
+
+        <!-- Escritórios List -->
+        <div class="grid gap-4">
+          {#each escritorios as escritorio}
+            <div class="card bg-base-100 shadow hover:shadow-lg transition-shadow">
+              <div class="card-body">
+                <div class="flex justify-between items-start">
+                  <div class="flex-1">
+                    <h3 class="card-title text-lg">{escritorio.name}</h3>
+                    <p class="text-base-content/70 text-sm">{escritorio.cnpj}</p>
+                    <p class="text-base-content/70 text-sm">{escritorio.endereco}</p>
+                  </div>
+                  <button
+                    class="btn btn-outline btn-sm"
+                    on:click={() => navigateToEscritorioView(escritorio.id)}
+                  >
+                    Ver Detalhes
+                  </button>
+                </div>
+              </div>
+            </div>
+          {/each}
+
+          {#if escritorios.length === 0}
+            <div class="text-center py-12">
+              <p class="text-base-content/70">Nenhum escritório cadastrado</p>
+              <button class="btn btn-primary btn-sm mt-4" on:click={navigateToEscritorioCreate}>
+                Cadastrar Primeiro Escritório
+              </button>
+            </div>
+          {/if}
+        </div>
       </div>
     {/if}
   </div>

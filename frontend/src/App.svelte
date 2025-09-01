@@ -20,6 +20,10 @@
   import CustomersEditPage from './lib/pages/CustomersEditPage.svelte';
   import CustomerProfilePage from './pages/CustomerProfilePage.svelte';
   import ProfileCompletionEnhanced from './lib/pages/ProfileCompletionEnhanced.svelte';
+  import AdvogadoCreatePage from './lib/pages/AdvogadoCreatePage.svelte';
+  import AdvogadoViewPage from './lib/pages/AdvogadoViewPage.svelte';
+  import EscritorioCreatePage from './lib/pages/EscritorioCreatePage.svelte';
+  import EscritorioViewPage from './lib/pages/EscritorioViewPage.svelte';
 
   // Reactive stores
   $: ({ isAuthenticated, showProfileCompletion, profileData, missingFields } = $authStore);
@@ -40,6 +44,18 @@
     const profileMatch = path.match(/\/customers\/profile\/(\d+)/);
     if (profileMatch) {
       return { customerId: parseInt(profileMatch[1]) };
+    }
+
+    // Extract ID from paths like /teams/advogados/123
+    const advogadoViewMatch = path.match(/\/teams\/advogados\/(\d+)/);
+    if (advogadoViewMatch) {
+      return { id: advogadoViewMatch[1] };
+    }
+
+    // Extract ID from paths like /teams/escritorios/123
+    const escritorioViewMatch = path.match(/\/teams\/escritorios\/(\d+)/);
+    if (escritorioViewMatch) {
+      return { id: escritorioViewMatch[1] };
     }
 
     return {};
@@ -73,6 +89,22 @@
 
     if (path.match(/\/customers\/profile\/\d+/)) {
       return CustomerProfilePage;
+    }
+
+    if (path.match(/\/teams\/advogados\/new/)) {
+      return AdvogadoCreatePage;
+    }
+
+    if (path.match(/\/teams\/advogados\/\d+/)) {
+      return AdvogadoViewPage;
+    }
+
+    if (path.match(/\/teams\/escritorios\/new/)) {
+      return EscritorioCreatePage;
+    }
+
+    if (path.match(/\/teams\/escritorios\/\d+/)) {
+      return EscritorioViewPage;
     }
 
     const routes = {

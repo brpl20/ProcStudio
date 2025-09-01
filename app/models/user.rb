@@ -48,7 +48,7 @@ class User < ApplicationRecord
   alias_attribute :access_email, :email
 
   belongs_to :team
-  has_one :user_profile, dependent: :destroy
+  has_one :user_profile, dependent: :destroy, inverse_of: :user
   has_many :user_offices, dependent: :destroy
   has_many :offices, through: :user_offices
 

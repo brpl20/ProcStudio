@@ -41,7 +41,7 @@ class UserProfile < ApplicationRecord
 
   acts_as_paranoid
 
-  belongs_to :user
+  belongs_to :user, inverse_of: :user_profile
   belongs_to :office, optional: true
 
   delegate :team, to: :user
@@ -87,9 +87,6 @@ class UserProfile < ApplicationRecord
   has_many :addresses, as: :addressable, dependent: :destroy
   has_many :phones, as: :phoneable, dependent: :destroy
 
-  has_many :user_emails, dependent: :destroy
-  has_many :emails, through: :user_emails
-
   has_many :user_bank_accounts, dependent: :destroy
   has_many :bank_accounts, through: :user_bank_accounts
 
@@ -107,7 +104,8 @@ class UserProfile < ApplicationRecord
                                 allow_destroy: true,
                                 reject_if: proc { |attrs| attrs['street'].blank? || attrs['city'].blank? }
 
-  accepts_nested_attributes_for :user, :emails, :bank_accounts, reject_if: :all_blank
+  accepts_nested_attributes_for :user, :bank_accounts,
+                                reject_if: :all_blank
 
   with_options presence: true do
     validates :name
@@ -124,12 +122,6 @@ class UserProfile < ApplicationRecord
 
   def full_name
     "#{name} #{last_name}".squish
-  end
-
-  def last_email
-    return I18n.t('general.without_email') if emails.blank?
-
-    emails.last.email
   end
 
   def last_phone

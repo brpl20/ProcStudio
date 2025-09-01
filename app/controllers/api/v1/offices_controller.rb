@@ -123,6 +123,7 @@ module Api
         params.expect(
           office: [:name, :cnpj, :oab_id, :oab_status, :oab_inscricao, :oab_link,
                    :society, :foundation, :site, :accounting_type, :team_id,
+                   :quote_value, :number_of_quotes,
                    :logo,
                    { phones_attributes: [:id, :phone_number, :_destroy],
                      addresses_attributes: [:id, :street, :number, :complement, :neighborhood,

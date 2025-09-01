@@ -3,7 +3,7 @@
 class OfficeWithLawyersSerializer
   include JSONAPI::Serializer
 
-  attributes :name
+  attributes :name, :quote_value, :number_of_quotes, :total_quotes_value
 
   attribute :lawyers do |object|
     # Get users with OAB (lawyers) associated with this office

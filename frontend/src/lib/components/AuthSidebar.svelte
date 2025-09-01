@@ -68,12 +68,14 @@
     if (!name || name === 'Carregando...') {
       return '?';
     }
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2) || 'U';
+    return (
+      name
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2) || 'U'
+    );
   }
 
   function handleLogout(): void {
@@ -93,191 +95,193 @@
 </script>
 
 <AuthGuard>
-<div class="drawer lg:drawer-open">
-  <input id="admin-drawer" type="checkbox" class="drawer-toggle" />
-  <div class="drawer-content flex flex-col min-h-screen">
-    <!-- Top Bar -->
-    <TopBar showMenuButton={true} />
+  <div class="drawer lg:drawer-open">
+    <input id="admin-drawer" type="checkbox" class="drawer-toggle" />
+    <div class="drawer-content flex flex-col min-h-screen">
+      <!-- Top Bar -->
+      <TopBar showMenuButton={true} />
 
-    <!-- Breadcrumbs -->
-    <Breadcrumbs />
+      <!-- Breadcrumbs -->
+      <Breadcrumbs />
 
-    <!-- Conteúdo principal -->
-    <div class="flex-1 container px-6 lg:px-12 py-3 lg:py-6">
-      <slot />
+      <!-- Conteúdo principal -->
+      <div class="flex-1 container px-6 lg:px-12 py-3 lg:py-6">
+        <slot />
+      </div>
+
+      <!-- Footer -->
+      <Footer />
     </div>
 
-    <!-- Footer -->
-    <Footer />
-  </div>
+    <!-- Menu lateral -->
+    <div class="drawer-side">
+      <label for="admin-drawer" class="drawer-overlay"></label>
+      <ul class="menu menu-lg p-4 w-80 min-h-full bg-base-100 lg:border-r text-primary">
+        <!-- Título -->
+        <li>
+          <div class="normal-case menu-title text-xl font-bold text-primary flex flex-row">
+            <a href="/" class="grow" on:click|preventDefault={() => router.navigate('/')}>
+              {WebsiteName}
+            </a>
+            <label for="admin-drawer" class="lg:hidden ml-3"> ✕ </label>
+          </div>
+        </li>
 
-  <!-- Menu lateral -->
-  <div class="drawer-side">
-    <label for="admin-drawer" class="drawer-overlay"></label>
-    <ul class="menu menu-lg p-4 w-80 min-h-full bg-base-100 lg:border-r text-primary">
-      <!-- Título -->
-      <li>
-        <div class="normal-case menu-title text-xl font-bold text-primary flex flex-row">
-          <a href="/" class="grow" on:click|preventDefault={() => router.navigate('/')}>
-            {WebsiteName}
+        <!-- Dashboard -->
+        <li>
+          <a
+            href="/dashboard"
+            class={currentPath === '/dashboard' ? 'active' : ''}
+            on:click|preventDefault={() => {
+              router.navigate('/dashboard');
+              closeDrawer();
+            }}
+          >
+            <Icon name="dashboard" />
+            Dashboard
           </a>
-          <label for="admin-drawer" class="lg:hidden ml-3"> ✕ </label>
-        </div>
-      </li>
+        </li>
 
-      <!-- Dashboard -->
-      <li>
-        <a
-          href="/dashboard"
-          class={currentPath === '/dashboard' ? 'active' : ''}
-          on:click|preventDefault={() => {
-            router.navigate('/dashboard');
-            closeDrawer();
-          }}
-        >
-          <Icon name="dashboard" />
-          Dashboard
-        </a>
-      </li>
+        <!-- Admin -->
+        <li>
+          <a
+            href="/admin"
+            class={currentPath === '/admin' ? 'active' : ''}
+            on:click|preventDefault={() => {
+              router.navigate('/admin');
+              closeDrawer();
+            }}
+          >
+            <Icon name="admin" />
+            Admin
+          </a>
+        </li>
 
-      <!-- Admin -->
-      <li>
-        <a
-          href="/admin"
-          class={currentPath === '/admin' ? 'active' : ''}
-          on:click|preventDefault={() => {
-            router.navigate('/admin');
-            closeDrawer();
-          }}
-        >
-          <Icon name="admin" />
-          Admin
-        </a>
-      </li>
+        <!-- Configurações -->
+        <li>
+          <a
+            href="/settings"
+            class={currentPath === '/settings' ? 'active' : ''}
+            on:click|preventDefault={() => {
+              router.navigate('/settings');
+              closeDrawer();
+            }}
+          >
+            <Icon name="settings" />
+            Configurações
+          </a>
+        </li>
 
-      <!-- Configurações -->
-      <li>
-        <a
-          href="/settings"
-          class={currentPath === '/settings' ? 'active' : ''}
-          on:click|preventDefault={() => {
-            router.navigate('/settings');
-            closeDrawer();
-          }}
-        >
-          <Icon name="settings" />
-          Configurações
-        </a>
-      </li>
+        <!-- Relatórios -->
+        <li>
+          <a
+            href="/reports"
+            class={currentPath === '/reports' ? 'active' : ''}
+            on:click|preventDefault={() => {
+              router.navigate('/reports');
+              closeDrawer();
+            }}
+          >
+            <Icon name="reports" />
+            Relatórios
+          </a>
+        </li>
 
-      <!-- Relatórios -->
-      <li>
-        <a
-          href="/reports"
-          class={currentPath === '/reports' ? 'active' : ''}
-          on:click|preventDefault={() => {
-            router.navigate('/reports');
-            closeDrawer();
-          }}
-        >
-          <Icon name="reports" />
-          Relatórios
-        </a>
-      </li>
+        <!-- Tarefas -->
+        <li>
+          <a
+            href="/tasks"
+            class={currentPath === '/tasks' ? 'active' : ''}
+            on:click|preventDefault={() => {
+              router.navigate('/tasks');
+              closeDrawer();
+            }}
+          >
+            <Icon name="tasks" />
+            Tarefas
+          </a>
+        </li>
 
-      <!-- Tarefas -->
-      <li>
-        <a
-          href="/tasks"
-          class={currentPath === '/tasks' ? 'active' : ''}
-          on:click|preventDefault={() => {
-            router.navigate('/tasks');
-            closeDrawer();
-          }}
-        >
-          <Icon name="tasks" />
-          Tarefas
-        </a>
-      </li>
+        <!-- Time -->
+        <li>
+          <a
+            href="/teams"
+            class={currentPath === '/teams' ? 'active' : ''}
+            on:click|preventDefault={() => {
+              router.navigate('/teams');
+              closeDrawer();
+            }}
+          >
+            <Icon name="teams" />
+            Time
+          </a>
+        </li>
 
-      <!-- Equipes -->
-      <li>
-        <a
-          href="/teams"
-          class={currentPath === '/teams' ? 'active' : ''}
-          on:click|preventDefault={() => {
-            router.navigate('/teams');
-            closeDrawer();
-          }}
-        >
-          <Icon name="teams" />
-          Equipes
-        </a>
-      </li>
+        <!-- Trabalhos -->
+        <li>
+          <a
+            href="/works"
+            class={currentPath === '/works' ? 'active' : ''}
+            on:click|preventDefault={() => {
+              router.navigate('/works');
+              closeDrawer();
+            }}
+          >
+            <Icon name="work" />
+            Trabalhos
+          </a>
+        </li>
 
-      <!-- Trabalhos -->
-      <li>
-        <a
-          href="/works"
-          class={currentPath === '/works' ? 'active' : ''}
-          on:click|preventDefault={() => {
-            router.navigate('/works');
-            closeDrawer();
-          }}
-        >
-          <Icon name="work" />
-          Trabalhos
-        </a>
-      </li>
+        <!-- Clientes -->
+        <li>
+          <a
+            href="/customers"
+            class={currentPath === '/customers' ? 'active' : ''}
+            on:click|preventDefault={() => {
+              router.navigate('/customers');
+              closeDrawer();
+            }}
+          >
+            <Icon name="customer" />
+            Clientes
+          </a>
+        </li>
 
-      <!-- Clientes -->
-      <li>
-        <a
-          href="/customers"
-          class={currentPath === '/customers' ? 'active' : ''}
-          on:click|preventDefault={() => {
-            router.navigate('/customers');
-            closeDrawer();
-          }}
-        >
-          <Icon name="customer" />
-          Clientes
-        </a>
-      </li>
-
-      <!-- User Menu no final -->
-      {#if isAuthenticated}
-        <li class="mt-auto">
-          <div class="dropdown dropdown-top w-full">
-            <button
-              type="button"
-              class="btn btn-ghost w-full justify-start px-4 py-3 hover:bg-base-200"
-            >
-              <div class="flex items-center gap-3 w-full">
-                <div class="avatar placeholder">
-                  <div class="bg-primary text-primary-content rounded-full w-8">
-                    <span class="text-sm">{userInitials}</span>
-                  </div>
-                </div>
-                <div class="flex-1 text-left">
-                  {#if isLoadingProfile}
-                    <div class="loading loading-spinner loading-xs"></div>
-                  {:else}
-                    <div class="text-sm font-medium">
-                      {userDisplayName}
+        <!-- User Menu no final -->
+        {#if isAuthenticated}
+          <li class="mt-auto">
+            <div class="dropdown dropdown-top w-full">
+              <button
+                type="button"
+                class="btn btn-ghost w-full justify-start px-4 py-3 hover:bg-base-200"
+              >
+                <div class="flex items-center gap-3 w-full">
+                  <div class="avatar placeholder">
+                    <div class="bg-primary text-primary-content rounded-full w-8">
+                      <span class="text-sm">{userInitials}</span>
                     </div>
-                    {#if userRole}
-                      <div class="text-xs opacity-70">
-                        {userRole}
+                  </div>
+                  <div class="flex-1 text-left">
+                    {#if isLoadingProfile}
+                      <div class="loading loading-spinner loading-xs"></div>
+                    {:else}
+                      <div class="text-sm font-medium">
+                        {userDisplayName}
                       </div>
+                      {#if userRole}
+                        <div class="text-xs opacity-70">
+                          {userRole}
+                        </div>
+                      {/if}
                     {/if}
-                  {/if}
+                  </div>
+                  <Icon name="chevron-up" className="w-4 h-4 opacity-50" strokeWidth="1.5" />
                 </div>
-                <Icon name="chevron-up" className="w-4 h-4 opacity-50" strokeWidth="1.5" />
-              </div>
-            </button>
+              </button>
 
-            <ul class="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-72 mb-2 border border-base-300 z-[100]">
+              <ul
+                class="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-72 mb-2 border border-base-300 z-[100]"
+              >
                 <!-- User info section -->
                 <li class="px-3 py-2">
                   <div class="flex items-center gap-3 pointer-events-none">
@@ -329,12 +333,12 @@
                   </button>
                 </li>
               </ul>
-          </div>
-        </li>
-      {/if}
-    </ul>
+            </div>
+          </li>
+        {/if}
+      </ul>
+    </div>
   </div>
-</div>
 </AuthGuard>
 
 <style>

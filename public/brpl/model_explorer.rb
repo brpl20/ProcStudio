@@ -11,7 +11,9 @@ class ModelExplorer
     model_name = model_class.name
 
     # Create markdown file
-    file_path = Rails.root.join("#{model_name.underscore}_info.md")
+    docs_dir = Rails.root.join('docs/models')
+    FileUtils.mkdir_p(docs_dir) unless docs_dir.exist?
+    file_path = docs_dir.join("#{model_name.underscore}_info.md")
     File.open(file_path, 'w') do |file|
       file.puts "# #{model_name} Model Information\n\n"
 
@@ -21,8 +23,20 @@ class ModelExplorer
       file.puts "#{model_name}.new"
       file.puts ''
 
+      # Get required fields from validations
+      required_fields = Set.new
+      model_class.validators.each do |validator|
+        if validator.is_a?(ActiveModel::Validations::PresenceValidator) && validator.respond_to?(:attributes)
+          required_fields.merge(validator.attributes.map(&:to_s))
+        end
+      end
+
       model_class.columns_hash.each do |name, column|
-        file.puts "#{name}, # #{column.type}"
+        annotations = []
+        annotations << column.type.to_s
+        annotations << 'required*' if required_fields.include?(name) || !column.null
+        annotation_str = annotations.join(' # ')
+        file.puts "#{name}, # #{annotation_str}"
       end
 
       file.puts "```\n\n"

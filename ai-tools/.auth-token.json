@@ -1,0 +1,40 @@
+{
+  "user1": {
+    "token": "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo1LCJhZG1pbl9pZCI6NSwiZXhwIjoxNzU2ODIwODcxLCJuYW1lIjoiQnJ1bm8iLCJsYXN0X25hbWUiOiJQZWxsaXp6ZXR0aSIsInJvbGUiOiJsYXd5ZXIifQ.LJJyGOiNW4UUew6bHreMf4wo_fLtzQqP_5M109NjfT8",
+    "userData": {
+      "email": "u1@gmail.com",
+      "token": "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo1LCJhZG1pbl9pZCI6NSwiZXhwIjoxNzU2ODIwODcxLCJuYW1lIjoiQnJ1bm8iLCJsYXN0X25hbWUiOiJQZWxsaXp6ZXR0aSIsInJvbGUiOiJsYXd5ZXIifQ.LJJyGOiNW4UUew6bHreMf4wo_fLtzQqP_5M109NjfT8",
+      "needs_profile_completion": false,
+      "message": "Login realizado com sucesso",
+      "role": "lawyer",
+      "name": "Bruno",
+      "last_name": "Pellizzetti",
+      "oab": "PR_54159",
+      "gender": "male"
+    },
+    "timestamp": "2025-09-01T13:47:51.110Z"
+  },
+  "user2": {
+    "token": "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxMSwiYWRtaW5faWQiOjExLCJleHAiOjE3NTY4MjA5MDl9.Bs51hSFU_UY0mZzQYAxQ9XZDRw5BmERK-MpOm1QTckU",
+    "userData": {
+      "email": "u2@gmail.com",
+      "token": "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxMSwiYWRtaW5faWQiOjExLCJleHAiOjE3NTY4MjA5MDl9.Bs51hSFU_UY0mZzQYAxQ9XZDRw5BmERK-MpOm1QTckU",
+      "needs_profile_completion": true,
+      "missing_fields": [
+        "name",
+        "last_name",
+        "cpf",
+        "rg",
+        "role",
+        "gender",
+        "civil_status",
+        "nationality",
+        "birth",
+        "phone",
+        "address"
+      ],
+      "message": "Perfil incompleto. Por favor complete as informações necessárias."
+    },
+    "timestamp": "2025-09-01T13:48:29.995Z"
+  }
+}

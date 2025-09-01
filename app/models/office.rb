@@ -4,23 +4,25 @@
 #
 # Table name: offices
 #
-#  id              :bigint           not null, primary key
-#  accounting_type :string
-#  cnpj            :string
-#  deleted_at      :datetime
-#  foundation      :date
-#  name            :string
-#  oab_inscricao   :string
-#  oab_link        :string
-#  oab_status      :string
-#  site            :string
-#  society         :string
-#  created_at      :datetime         not null
-#  updated_at      :datetime         not null
-#  created_by_id   :bigint
-#  deleted_by_id   :bigint
-#  oab_id          :string
-#  team_id         :bigint           not null
+#  id                                       :bigint           not null, primary key
+#  accounting_type                          :string
+#  cnpj                                     :string
+#  deleted_at                               :datetime
+#  foundation                               :date
+#  name                                     :string
+#  number_of_quotes(Total number of quotes) :integer          default(0)
+#  oab_inscricao                            :string
+#  oab_link                                 :string
+#  oab_status                               :string
+#  quote_value(Value per quote in BRL)      :decimal(10, 2)
+#  site                                     :string
+#  society                                  :string
+#  created_at                               :datetime         not null
+#  updated_at                               :datetime         not null
+#  created_by_id                            :bigint
+#  deleted_by_id                            :bigint
+#  oab_id                                   :string
+#  team_id                                  :bigint           not null
 #
 # Indexes
 #
@@ -99,6 +101,16 @@ class Office < ApplicationRecord
   validate :unipessoal_must_have_only_one_partner, if: -> { society == 'individual' }
   validate :partnership_percentage_sum_to_100
   validate :team_must_exist
+
+  def total_quotes_value
+    return 0.0 unless quote_value.present? && number_of_quotes.present?
+
+    quote_value * number_of_quotes
+  end
+
+  def formatted_total_quotes_value
+    "R$ #{format('%.2f', total_quotes_value).tr('.', ',')}"
+  end
 
   private
 

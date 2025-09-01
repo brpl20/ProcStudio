@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 20_250_829_145_756) do
+ActiveRecord::Schema[8.0].define(version: 20_250_901_090_009) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_catalog.plpgsql'
 
@@ -329,11 +329,33 @@ ActiveRecord::Schema[8.0].define(version: 20_250_829_145_756) do
     t.jsonb 'metadata', default: {}
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
+    t.bigint 'legal_cost_type_id'
     t.index ['cost_type'], name: 'index_legal_cost_entries_on_cost_type'
     t.index ['due_date'], name: 'index_legal_cost_entries_on_due_date'
     t.index ['legal_cost_id', 'paid'], name: 'index_legal_cost_entries_on_legal_cost_id_and_paid'
     t.index ['legal_cost_id'], name: 'index_legal_cost_entries_on_legal_cost_id'
+    t.index ['legal_cost_type_id'], name: 'index_legal_cost_entries_on_legal_cost_type_id'
     t.index ['payment_date'], name: 'index_legal_cost_entries_on_payment_date'
+  end
+
+  create_table 'legal_cost_types', force: :cascade do |t|
+    t.string 'key', null: false
+    t.string 'name', null: false
+    t.text 'description'
+    t.string 'category'
+    t.boolean 'active', default: true
+    t.boolean 'is_system', default: false, null: false
+    t.bigint 'team_id'
+    t.integer 'display_order'
+    t.jsonb 'metadata', default: {}
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['active'], name: 'index_legal_cost_types_on_active'
+    t.index ['category'], name: 'index_legal_cost_types_on_category'
+    t.index ['display_order'], name: 'index_legal_cost_types_on_display_order'
+    t.index ['is_system'], name: 'index_legal_cost_types_on_is_system'
+    t.index ['key', 'team_id'], name: 'index_legal_cost_types_on_key_and_team_id', unique: true
+    t.index ['team_id'], name: 'index_legal_cost_types_on_team_id'
   end
 
   create_table 'legal_costs', force: :cascade do |t|
@@ -418,6 +440,8 @@ ActiveRecord::Schema[8.0].define(version: 20_250_829_145_756) do
     t.string 'oab_link'
     t.bigint 'created_by_id'
     t.bigint 'deleted_by_id'
+    t.decimal 'quote_value', precision: 10, scale: 2, comment: 'Value per quote in BRL'
+    t.integer 'number_of_quotes', default: 0, comment: 'Total number of quotes'
     t.index ['accounting_type'], name: 'index_offices_on_accounting_type'
     t.index ['created_by_id'], name: 'index_offices_on_created_by_id'
     t.index ['deleted_at'], name: 'index_offices_on_deleted_at'
@@ -815,7 +839,9 @@ ActiveRecord::Schema[8.0].define(version: 20_250_829_145_756) do
   add_foreign_key 'jobs', 'users', column: 'created_by_id'
   add_foreign_key 'law_areas', 'law_areas', column: 'parent_area_id'
   add_foreign_key 'law_areas', 'teams', column: 'created_by_team_id'
+  add_foreign_key 'legal_cost_entries', 'legal_cost_types'
   add_foreign_key 'legal_cost_entries', 'legal_costs'
+  add_foreign_key 'legal_cost_types', 'teams'
   add_foreign_key 'legal_costs', 'honoraries'
   add_foreign_key 'office_bank_accounts', 'bank_accounts'
   add_foreign_key 'office_bank_accounts', 'offices'

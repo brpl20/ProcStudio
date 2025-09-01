@@ -40,6 +40,9 @@ module Api
 
       def create
         user = User.new(users_params)
+        # Automaticamente atribui o team do usuário atual ao novo usuário
+        user.team = current_team || @current_user.team
+
         if user.save
           render json: UserSerializer.new(
             user

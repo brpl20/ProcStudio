@@ -44,36 +44,25 @@ class UserProfileSerializer
     object.user.email
   end
 
-  attributes :status, :user_id, :office_id, :gender, :oab, :rg, :cpf,
-             :nationality, :origin, :civil_status, :birth, :mother_name,
-             :office_id, :addresses, :phones, :bank_accounts,
-             if: proc { |_, options| options[:action] == 'show' }
+  attributes :user_id, :office_id, :gender, :oab, :rg, :cpf,
+             :nationality, :origin, :civil_status, :birth, :mother_name
 
   attribute :deleted do |object|
     object.deleted_at.present?
   end
 
-  attribute :emails do |object|
-    emails = object.emails
-
-    emails&.map { |email| EmailSerializer.new(email).serializable_hash[:data][:attributes] }
-  end
-
   attribute :bank_accounts do |object|
     bank_accounts = object.bank_accounts
-
-    bank_accounts&.map { |email| BankAccountSerializer.new(email).serializable_hash[:data][:attributes] }
+    bank_accounts&.map { |bank_account| BankAccountSerializer.new(bank_account).serializable_hash[:data][:attributes] }
   end
 
   attribute :phones do |object|
     phones = object.phones
-
     phones&.map { |phone| PhoneSerializer.new(phone).serializable_hash[:data][:attributes] }
   end
 
   attribute :addresses do |object|
     addresses = object.addresses
-
     addresses&.map { |address| AddressSerializer.new(address).serializable_hash[:data][:attributes] }
   end
 end
