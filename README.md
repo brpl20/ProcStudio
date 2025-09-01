@@ -1,6 +1,13 @@
 # Backend - PRC API
 
-API RESTful desenvolvida em Ruby on Rails para o sistema PRC.
+API RESTful desenvolvida em Ruby on Rails para o sistema ProcStudio.
+
+## Índice
+
+- (API)[./docs/API.md]
+- (Works)[./docs/Works.md]
+- (WorksProcedures)[./docs/WorksProcedures.md]
+- (Works-Honoraries-LegalCosts)[./docs/Works-Honoraries-LegalCosts.md]
 
 ## 🚀 Início Rápido
 
@@ -140,35 +147,35 @@ bundle exec rubocop -A # RuboCop com auto-correção
 
 class UserService
   MAX_RETRIES = 3
-  
+
   def initialize(user)
     @user = user
   end
-  
+
   def process_user
     return false unless @user.valid?
-    
+
     if @user.premium?
       process_premium_user
     else
       process_regular_user
     end
   end
-  
+
   private
-  
+
   def process_premium_user
     # Método pequeno e focado
     @user.update(status: 'premium_processed')
   end
-  
+
   # Enum com sintaxe posicional
   enum status: ['pending', 'active', 'suspended']
-  
+
   # Validações sem presence redundante para belongs_to
   belongs_to :team
   validates :name, presence: true
-  
+
   # Timezone correto
   scope :recent, -> { where(created_at: Time.current..1.day.ago) }
 end
@@ -181,7 +188,7 @@ class UserService
   def initialize(user)
     @user = user
   end
-  
+
   # Método muito longo (>20 linhas)
   def process_user
     if @user.present?
@@ -195,14 +202,14 @@ class UserService
     end
     # Muito código...
   end
-  
+
   # Enum com keyword arguments (deprecado)
   enum status: { pending: 0, active: 1 }
-  
+
   # Validação redundante
   belongs_to :team
   validates :team, presence: true  # ❌ Redundante
-  
+
   # Timezone incorreto
   scope :recent, -> { where(created_at: Time.now..1.day.ago) } # ❌ Usar Time.current
 end
@@ -280,7 +287,7 @@ O projeto utiliza Husky para executar verificações antes dos commits:
 - Usar cache quando apropriado
 - Background jobs para operações lentas
 
-#### 
+####
 
 ### Padrões de API
 

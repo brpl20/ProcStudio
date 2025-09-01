@@ -29,13 +29,16 @@ RSpec.describe Office, type: :model do
   end
 
   describe 'Relationships' do
-    it { is_expected.to belong_to(:office_type) }
-    it { is_expected.to belong_to(:responsible_lawyer).class_name('ProfileAdmin').optional }
+    it { is_expected.to belong_to(:team) }
+    it { is_expected.to belong_to(:created_by).class_name('User').optional }
+    it { is_expected.to belong_to(:deleted_by).class_name('User').optional }
 
-    it { is_expected.to have_many(:profile_admins) }
+    it { is_expected.to have_many(:user_offices) }
+    it { is_expected.to have_many(:users).through(:user_offices) }
+    it { is_expected.to have_many(:compensations).through(:user_offices) }
 
-    it { is_expected.to have_many(:office_phones) }
-    it { is_expected.to have_many(:phones).through(:office_phones) }
+    it { is_expected.to have_many(:phones) }
+    it { is_expected.to have_many(:addresses) }
 
     it { is_expected.to have_many(:office_emails) }
     it { is_expected.to have_many(:emails).through(:office_emails) }

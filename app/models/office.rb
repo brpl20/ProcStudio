@@ -50,6 +50,7 @@ class Office < ApplicationRecord
   has_many :user_offices, dependent: :destroy
   has_many :users, through: :user_offices
   has_many :compensations, through: :user_offices, class_name: 'UserSocietyCompensation'
+  has_many :user_profiles, dependent: :nullify
 
   has_one_attached :logo
   has_many_attached :social_contracts # For Contrato Social documents with versioning

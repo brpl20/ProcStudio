@@ -7,13 +7,16 @@ class OfficeFilter
     end
 
     def retrieve_offices
-      Office.includes(:office_phones, :office_emails, :office_bank_accounts, :office_type).all
+      Office.includes(:phones, :addresses, :office_emails, :office_bank_accounts).all
     end
 
     def retrieve_offices_with_lawyers
+      # Get all offices that have users with OAB (lawyers)
       Office
-        .includes(:user_profiles)
-        .where(user_profiles: { role: 'lawyer' })
+        .joins(:users)
+        .includes(:users, :user_offices)
+        .where.not(users: { oab: [nil, ''] })
+        .distinct
     end
   end
 end

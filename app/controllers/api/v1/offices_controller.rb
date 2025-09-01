@@ -35,28 +35,45 @@ module Api
 
       def create
         @office = Office.new(offices_params)
+        @office.team_id ||= current_user.team_id if current_user.respond_to?(:team_id)
+        @office.created_by = current_user if current_user
+
         if @office.save
-          render json: @office, status: :created
+          render json: OfficeSerializer.new(
+            @office,
+            { params: { action: 'show' } }
+          ), status: :created
         else
           render(
-            status: :bad_request,
-            json: { errors: [{ code: @office.errors.full_messages }] }
+            status: :unprocessable_entity,
+            json: {
+              errors: @office.errors.full_messages,
+              details: @office.errors.details
+            }
           )
         end
       rescue StandardError => e
+        Rails.logger.error "Office creation failed: #{e.message}"
+        Rails.logger.error e.backtrace.join("\n")
         render(
-          status: :bad_request,
-          json: { errors: [{ code: e }] }
+          status: :internal_server_error,
+          json: { errors: ["An error occurred while creating the office: #{e.message}"] }
         )
       end
 
       def update
         if @office.update(offices_params)
-          head :ok
+          render json: OfficeSerializer.new(
+            @office,
+            { params: { action: 'show' } }
+          ), status: :ok
         else
           render(
-            status: :bad_request,
-            json: { errors: [{ code: @office.errors.full_messages }] }
+            status: :unprocessable_entity,
+            json: {
+              errors: @office.errors.full_messages,
+              details: @office.errors.details
+            }
           )
         end
       end
@@ -104,19 +121,17 @@ module Api
 
       def offices_params
         params.expect(
-          office: [:name, :cnpj,
-                   :oab, :society,
-                   :foundation, :site,
-                   :zip_code, :street,
-                   :number, :neighborhood,
-                   :city, :state,
+          office: [:name, :cnpj, :oab_id, :oab_status, :oab_inscricao, :oab_link,
+                   :society, :foundation, :site, :accounting_type, :team_id,
                    :logo,
-                   :accounting_type,
-                   :office_type_id,
-                   :responsible_lawyer_id,
-                   { phones_attributes: [:id, :phone_number],
-                     emails_attributes: [:id, :email],
-                     bank_accounts_attributes: [:id, :bank_name, :type_account, :agency, :account, :operation, :pix] }]
+                   { phones_attributes: [:id, :phone_number, :_destroy],
+                     addresses_attributes: [:id, :street, :number, :complement, :neighborhood,
+                                            :city, :state, :zip_code, :address_type, :_destroy],
+                     emails_attributes: [:id, :email, :_destroy],
+                     bank_accounts_attributes: [:id, :bank_name, :type_account, :agency,
+                                                :account, :operation, :pix, :_destroy],
+                     user_offices_attributes: [:id, :user_id, :partnership_type,
+                                               :partnership_percentage, :_destroy] }]
         )
       end
 

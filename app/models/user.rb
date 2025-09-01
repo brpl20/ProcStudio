@@ -49,6 +49,8 @@ class User < ApplicationRecord
 
   belongs_to :team
   has_one :user_profile, dependent: :destroy
+  has_many :user_offices, dependent: :destroy
+  has_many :offices, through: :user_offices
 
   validates :email, presence: true
   accepts_nested_attributes_for :user_profile, reject_if: :all_blank
