@@ -10,7 +10,12 @@
   ];
 
   const escritorios = [
-    { id: 1, name: 'Escritório Silva & Advogados', cnpj: '12.345.678/0001-90', endereco: 'São Paulo, SP' },
+    {
+      id: 1,
+      name: 'Escritório Silva & Advogados',
+      cnpj: '12.345.678/0001-90',
+      endereco: 'São Paulo, SP'
+    },
     { id: 2, name: 'Santos Advocacia', cnpj: '98.765.432/0001-12', endereco: 'Rio de Janeiro, RJ' }
   ];
 
@@ -83,8 +88,19 @@
         <div class="flex justify-between items-center">
           <h2 class="text-2xl font-semibold">Advogados</h2>
           <button class="btn btn-primary" on:click={navigateToAdvogadoCreate}>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 4v16m8-8H4"
+              />
             </svg>
             Novo Advogado
           </button>
@@ -131,8 +147,19 @@
         <div class="flex justify-between items-center">
           <h2 class="text-2xl font-semibold">Escritórios</h2>
           <button class="btn btn-primary" on:click={navigateToEscritorioCreate}>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 4v16m8-8H4"
+              />
             </svg>
             Novo Escritório
           </button>

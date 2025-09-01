@@ -1,6 +1,6 @@
 <script>
   import AuthSidebar from '../components/AuthSidebar.svelte';
-  import Teams from '../Teams.svelte';
+  import Teams from '../components/teams/Teams.svelte';
 </script>
 
 <AuthSidebar activeSection="teams">

@@ -56,39 +56,7 @@ export interface ProfileCompletionResponse {
   data?: any;
 }
 
-/// NEW METHODS FOR USER CREATION
-
-// export interface ProfileCreationData {
-//   role: string;
-//   name: string; // required*
-//   last_name: string;
-//   gender: string; // male fimeale
-//   oab: string; // required*
-//   rg: string;
-//   cpf: string;
-//   nationality: string;
-//   civil_status: string;
-//   birth: Date;
-//   mother_name: string;
-//   status?: string;
-// }
-
-// export interface ProfileCreationResponse {
-//   success: boolean;
-//   message?: string;
-//   data?: any;
-// }
-
-// ///
-// //
-// //
-// //
-
-// export interface ProfileCompletionResponse {
-//   success: boolean;
-//   message?: string;
-//   data?: any;
-// }
+// NOVOS TYPES PARA CRIAÇÃO DE USUÁRIO POR OUTRO USUÁRIO
 
 export interface Address {
   description?: string;
