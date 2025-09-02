@@ -44,11 +44,13 @@
     customerStore.setSearch(event.detail.term);
   }
 
-  function handleFilterChange(event: CustomEvent<{
-    status: string;
-    capacity: string;
-    customerType: string;
-  }>) {
+  function handleFilterChange(
+    event: CustomEvent<{
+      status: string;
+      capacity: string;
+      customerType: string;
+    }>
+  ) {
     customerStore.setFilters(event.detail);
   }
 

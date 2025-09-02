@@ -55,7 +55,9 @@
 
 <svelte:head>
   <title>
-    {customer ? `Perfil - ${customer.profile_customer?.attributes?.name || 'Cliente'}` : 'Carregando...'}
+    {customer
+      ? `Perfil - ${customer.profile_customer?.attributes?.name || 'Cliente'}`
+      : 'Carregando...'}
   </title>
 </svelte:head>
 
@@ -72,8 +74,18 @@
   {:else if error}
     <div class="container mx-auto px-4 py-8">
       <div class="alert alert-error max-w-md mx-auto">
-        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="stroke-current shrink-0 h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
         </svg>
         <div>
           <h3 class="font-bold">Erro ao carregar cliente</h3>
@@ -88,17 +100,22 @@
       </div>
     </div>
   {:else if customer}
-    <CustomerProfileView
-      {customer}
-      {isLoading}
-      on:edit={handleEdit}
-      on:close={handleClose}
-    />
+    <CustomerProfileView {customer} {isLoading} on:edit={handleEdit} on:close={handleClose} />
   {:else}
     <div class="container mx-auto px-4 py-8">
       <div class="alert alert-warning max-w-md mx-auto">
-        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="stroke-current shrink-0 h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+          />
         </svg>
         <div>
           <h3 class="font-bold">Cliente não encontrado</h3>

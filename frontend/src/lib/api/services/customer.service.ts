@@ -42,13 +42,16 @@ export class CustomerService {
   /**
    * Transform JSON:API customer data to our Customer type
    */
-  private transformJsonApiCustomer(jsonApiData: JsonApiCustomerData, includedData?: any[]): Customer {
+  private transformJsonApiCustomer(
+    jsonApiData: JsonApiCustomerData,
+    includedData?: any[]
+  ): Customer {
     // Find the associated profile_customer in included data
     let profileCustomer = undefined;
     if (includedData && jsonApiData.relationships?.profile_customer?.data) {
       const profileCustomerId = jsonApiData.relationships.profile_customer.data.id;
-      profileCustomer = includedData.find((item) =>
-        item.type === 'profile_customer' && item.id === profileCustomerId
+      profileCustomer = includedData.find(
+        (item) => item.type === 'profile_customer' && item.id === profileCustomerId
       );
     }
 
@@ -64,7 +67,9 @@ export class CustomerService {
       profile_customer_id: jsonApiData.attributes.profile_customer_id,
       created_at: jsonApiData.attributes.created_at,
       // Include profile_customer data if available
-      profile_customer: profileCustomer ? this.transformProfileCustomer(profileCustomer) : undefined,
+      profile_customer: profileCustomer
+        ? this.transformProfileCustomer(profileCustomer)
+        : undefined,
       // A API não retorna updated_at e deleted_at no momento
       updated_at: undefined,
       deleted_at: undefined
@@ -117,7 +122,9 @@ export class CustomerService {
 
       // Transform JSON:API data to our Customer type
       const customers = Array.isArray(response.data)
-        ? response.data.map((jsonApiData) => this.transformJsonApiCustomer(jsonApiData, response.included))
+        ? response.data.map((jsonApiData) =>
+            this.transformJsonApiCustomer(jsonApiData, response.included)
+          )
         : [];
 
       return {
@@ -146,7 +153,7 @@ export class CustomerService {
       const response: JsonApiCustomerResponse = await this.httpClient.get(`/customers/${id}`, {
         headers: {
           'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
+          Pragma: 'no-cache'
         }
       });
 
@@ -182,7 +189,9 @@ export class CustomerService {
    */
   async createCustomer(customerData: CreateCustomerRequest): Promise<CreateCustomerResponse> {
     try {
-      const response: JsonApiCustomerResponse = await this.httpClient.post('/customers', { customer: customerData });
+      const response: JsonApiCustomerResponse = await this.httpClient.post('/customers', {
+        customer: customerData
+      });
 
       // Transform JSON:API data to our Customer type
       const customer = this.transformJsonApiCustomer(response.data);
@@ -234,7 +243,9 @@ export class CustomerService {
     customerData: UpdateCustomerRequest
   ): Promise<UpdateCustomerResponse> {
     try {
-      const response: JsonApiCustomerResponse = await this.httpClient.patch(`/customers/${id}`, { customer: customerData });
+      const response: JsonApiCustomerResponse = await this.httpClient.patch(`/customers/${id}`, {
+        customer: customerData
+      });
 
       // Transform JSON:API data to our Customer type
       const customer = this.transformJsonApiCustomer(response.data);
@@ -322,7 +333,8 @@ export class CustomerService {
    */
   async getAllProfileCustomer(typeOfParams: string = ''): Promise<ProfileCustomersListResponse> {
     try {
-      const url = typeOfParams !== '' ? `/profile_customers?deleted=${typeOfParams}` : '/profile_customers';
+      const url =
+        typeOfParams !== '' ? `/profile_customers?deleted=${typeOfParams}` : '/profile_customers';
 
       const response = await this.httpClient.get(url);
 
@@ -405,7 +417,9 @@ export class CustomerService {
 
       // Transform JSON:API data to our Customer type
       const customers = Array.isArray(response.data)
-        ? response.data.map((jsonApiData) => this.transformJsonApiCustomer(jsonApiData, response.included))
+        ? response.data.map((jsonApiData) =>
+            this.transformJsonApiCustomer(jsonApiData, response.included)
+          )
         : [];
 
       return {

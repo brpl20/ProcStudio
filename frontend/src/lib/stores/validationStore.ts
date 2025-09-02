@@ -170,10 +170,7 @@ import { validationRules } from '../validation/index';
 // Basic customer validation config (for CustomerForm without CPF)
 export const customerBasicValidationConfig = {
   email: [validateEmailRequired],
-  password: [
-    validatePasswordRequired,
-    validatePasswordMinLength(6)
-  ],
+  password: [validatePasswordRequired, validatePasswordMinLength(6)],
   password_confirmation: [validationRules.required('Confirmação de senha é obrigatória')]
 };
 
@@ -181,10 +178,7 @@ export const customerBasicValidationConfig = {
 export const customerValidationConfig = {
   email: [validateEmailRequired],
   cpf: [validateCPFRequired],
-  password: [
-    validatePasswordRequired,
-    validatePasswordMinLength(6)
-  ],
+  password: [validatePasswordRequired, validatePasswordMinLength(6)],
   password_confirmation: [validationRules.required('Confirmação de senha é obrigatória')]
 };
 

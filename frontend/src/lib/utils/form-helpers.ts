@@ -34,7 +34,10 @@ export function generateStrongPassword(length: number = 12): string {
   }
 
   // Shuffle the password
-  return password.split('').sort(() => Math.random() - 0.5).join('');
+  return password
+    .split('')
+    .sort(() => Math.random() - 0.5)
+    .join('');
 }
 
 /**
@@ -139,7 +142,10 @@ export function getNationalityLabel(nationality: string, gender: string): string
  * @param representedBirth - Represented person's birth date
  * @returns Validation result
  */
-export function validateGuardianAge(guardianBirth: string, representedBirth: string): {
+export function validateGuardianAge(
+  guardianBirth: string,
+  representedBirth: string
+): {
   isValid: boolean;
   message: string;
 } {

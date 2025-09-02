@@ -37,12 +37,14 @@
   }
 
   function getUserInitials(name: string): string {
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2) || 'U';
+    return (
+      name
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2) || 'U'
+    );
   }
 
   function handleLogout(): void {
@@ -81,15 +83,15 @@
             </div>
           </div>
         </label>
-        <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+        <ul
+          tabindex="0"
+          class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
+        >
           <li class="menu-title">
             <span>{userDisplayName}</span>
           </li>
           <li>
-            <a
-              href="/settings"
-              on:click|preventDefault={() => router.navigate('/settings')}
-            >
+            <a href="/settings" on:click|preventDefault={() => router.navigate('/settings')}>
               <Icon name="settings" />
               Configurações
             </a>

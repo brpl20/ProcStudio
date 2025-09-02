@@ -21,15 +21,21 @@
 
     if (isAuthenticated) {
       // Set warning timer
-      warningId = setTimeout(() => {
-        showWarning = true;
-        startCountdown();
-      }, (timeoutMinutes - warningMinutes) * 60 * 1000);
+      warningId = setTimeout(
+        () => {
+          showWarning = true;
+          startCountdown();
+        },
+        (timeoutMinutes - warningMinutes) * 60 * 1000
+      );
 
       // Set logout timer
-      timeoutId = setTimeout(() => {
-        handleTimeout();
-      }, timeoutMinutes * 60 * 1000);
+      timeoutId = setTimeout(
+        () => {
+          handleTimeout();
+        },
+        timeoutMinutes * 60 * 1000
+      );
     }
   }
 
@@ -89,16 +95,12 @@
     <div class="modal-box">
       <h3 class="font-bold text-lg">Sessão Expirando</h3>
       <p class="py-4">
-        Sua sessão expirará em {remainingTime} {remainingTime === 1 ? 'minuto' : 'minutos'}.
-        Deseja continuar?
+        Sua sessão expirará em {remainingTime}
+        {remainingTime === 1 ? 'minuto' : 'minutos'}. Deseja continuar?
       </p>
       <div class="modal-action">
-        <button class="btn btn-primary" on:click={extendSession}>
-          Continuar Sessão
-        </button>
-        <button class="btn btn-ghost" on:click={() => authStore.logout()}>
-          Sair
-        </button>
+        <button class="btn btn-primary" on:click={extendSession}> Continuar Sessão </button>
+        <button class="btn btn-ghost" on:click={() => authStore.logout()}> Sair </button>
       </div>
     </div>
   </div>

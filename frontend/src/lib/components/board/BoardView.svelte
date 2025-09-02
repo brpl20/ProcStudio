@@ -135,6 +135,8 @@
   }
 
   :global(.task-drag-over) {
-    box-shadow: 0 0 0 2px hsl(var(--b1)), 0 0 0 4px hsl(var(--p));
+    box-shadow:
+      0 0 0 2px hsl(var(--b1)),
+      0 0 0 4px hsl(var(--p));
   }
 </style>

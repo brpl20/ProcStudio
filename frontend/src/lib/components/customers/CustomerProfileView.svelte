@@ -35,38 +35,38 @@
 
   function getCapacityDisplay(capacity?: string): { text: string; color: string; icon: string } {
     switch (capacity) {
-    case 'unable':
-      return {
-        text: 'Incapaz',
-        color: 'badge-error',
-        icon: '🚫'
-      };
-    case 'relatively':
-      return {
-        text: 'Relativamente Incapaz',
-        color: 'badge-warning',
-        icon: '⚠️'
-      };
-    case 'able':
-    default:
-      return {
-        text: 'Capaz',
-        color: 'badge-success',
-        icon: '✅'
-      };
+      case 'unable':
+        return {
+          text: 'Incapaz',
+          color: 'badge-error',
+          icon: '🚫'
+        };
+      case 'relatively':
+        return {
+          text: 'Relativamente Incapaz',
+          color: 'badge-warning',
+          icon: '⚠️'
+        };
+      case 'able':
+      default:
+        return {
+          text: 'Capaz',
+          color: 'badge-success',
+          icon: '✅'
+        };
     }
   }
 
   function getStatusDisplay(status?: string): { text: string; color: string } {
     switch (status) {
-    case 'active':
-      return { text: 'Ativo', color: 'badge-success' };
-    case 'inactive':
-      return { text: 'Inativo', color: 'badge-warning' };
-    case 'deceased':
-      return { text: 'Falecido', color: 'badge-error' };
-    default:
-      return { text: status || 'Desconhecido', color: 'badge-neutral' };
+      case 'active':
+        return { text: 'Ativo', color: 'badge-success' };
+      case 'inactive':
+        return { text: 'Inativo', color: 'badge-warning' };
+      case 'deceased':
+        return { text: 'Falecido', color: 'badge-error' };
+      default:
+        return { text: status || 'Desconhecido', color: 'badge-neutral' };
     }
   }
 
@@ -96,19 +96,10 @@
         {/if}
       </div>
       <div class="flex gap-2">
-        <button
-          class="btn btn-primary btn-sm"
-          on:click={handleEdit}
-          disabled={isLoading}
-        >
+        <button class="btn btn-primary btn-sm" on:click={handleEdit} disabled={isLoading}>
           ✏️ Editar
         </button>
-        <button
-          class="btn btn-ghost btn-sm btn-circle"
-          on:click={handleClose}
-        >
-          ✕
-        </button>
+        <button class="btn btn-ghost btn-sm btn-circle" on:click={handleClose}> ✕ </button>
       </div>
     </div>
 
@@ -124,7 +115,6 @@
     {:else}
       <!-- Main Content Grid -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
         <!-- Personal Information Card -->
         <div class="card bg-base-200 shadow-sm">
           <div class="card-body">
@@ -165,7 +155,9 @@
                         class="btn btn-xs btn-ghost"
                         on:click={() => {
                           if (navigator?.clipboard) {
-                            navigator.clipboard.writeText(getProfileCustomerCpfOrCpnj(profileCustomer));
+                            navigator.clipboard.writeText(
+                              getProfileCustomerCpfOrCpnj(profileCustomer)
+                            );
                           }
                         }}
                         title="Copiar"
@@ -197,7 +189,9 @@
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label class="text-sm font-semibold opacity-70">Estado Civil</label>
-                  <p class="capitalize">{profileCustomer.attributes.civil_status || 'Não informado'}</p>
+                  <p class="capitalize">
+                    {profileCustomer.attributes.civil_status || 'Não informado'}
+                  </p>
                 </div>
 
                 <div>
@@ -232,7 +226,11 @@
 
               <div>
                 <label class="text-sm font-semibold opacity-70">Telefone Principal</label>
-                <p>{profileCustomer.attributes.default_phone ? phoneMask(profileCustomer.attributes.default_phone) : 'Não informado'}</p>
+                <p>
+                  {profileCustomer.attributes.default_phone
+                    ? phoneMask(profileCustomer.attributes.default_phone)
+                    : 'Não informado'}
+                </p>
               </div>
 
               <!-- Additional phones if available -->
@@ -270,7 +268,10 @@
             <div class="space-y-3">
               <div>
                 <label class="text-sm font-semibold opacity-70">Profissão</label>
-                <p>{profileCustomer.attributes.profession || (isUnable ? 'N/A - Cliente incapaz' : 'Não informado')}</p>
+                <p>
+                  {profileCustomer.attributes.profession ||
+                    (isUnable ? 'N/A - Cliente incapaz' : 'Não informado')}
+                </p>
               </div>
 
               <div>
@@ -281,7 +282,9 @@
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label class="text-sm font-semibold opacity-70">Benefício INSS</label>
-                  <p class="font-mono">{profileCustomer.attributes.number_benefit || 'Não informado'}</p>
+                  <p class="font-mono">
+                    {profileCustomer.attributes.number_benefit || 'Não informado'}
+                  </p>
                 </div>
 
                 <div>
@@ -333,14 +336,29 @@
                     <h5 class="font-semibold text-sm">{bank.bank_name || `Conta ${index + 1}`}</h5>
 
                     <div class="text-sm space-y-1">
-                      <p><span class="font-semibold">Tipo:</span> {bank.type_account || 'Não informado'}</p>
-                      <p><span class="font-semibold">Agência:</span> <span class="font-mono">{bank.agency || 'Não informado'}</span></p>
-                      <p><span class="font-semibold">Conta:</span> <span class="font-mono">{bank.account || 'Não informado'}</span></p>
+                      <p>
+                        <span class="font-semibold">Tipo:</span>
+                        {bank.type_account || 'Não informado'}
+                      </p>
+                      <p>
+                        <span class="font-semibold">Agência:</span>
+                        <span class="font-mono">{bank.agency || 'Não informado'}</span>
+                      </p>
+                      <p>
+                        <span class="font-semibold">Conta:</span>
+                        <span class="font-mono">{bank.account || 'Não informado'}</span>
+                      </p>
                       {#if bank.operation}
-                        <p><span class="font-semibold">Operação:</span> <span class="font-mono">{bank.operation}</span></p>
+                        <p>
+                          <span class="font-semibold">Operação:</span>
+                          <span class="font-mono">{bank.operation}</span>
+                        </p>
                       {/if}
                       {#if bank.pix}
-                        <p><span class="font-semibold">PIX:</span> <span class="font-mono">{bank.pix}</span></p>
+                        <p>
+                          <span class="font-semibold">PIX:</span>
+                          <span class="font-mono">{bank.pix}</span>
+                        </p>
                       {/if}
                     </div>
                   </div>
@@ -372,9 +390,11 @@
               </h4>
               <p class="text-sm">
                 {#if isUnable}
-                  Este cliente é juridicamente incapaz e deve ser representado por um responsável legal em todos os atos jurídicos.
+                  Este cliente é juridicamente incapaz e deve ser representado por um responsável
+                  legal em todos os atos jurídicos.
                 {:else}
-                  Este cliente possui capacidade civil limitada e pode necessitar de assistência em determinados atos jurídicos.
+                  Este cliente possui capacidade civil limitada e pode necessitar de assistência em
+                  determinados atos jurídicos.
                 {/if}
               </p>
 
@@ -383,16 +403,19 @@
                 <div class="mt-3 p-3 bg-base-100 rounded-lg">
                   <h5 class="font-semibold text-sm mb-2">📋 Responsável Legal:</h5>
                   <p class="text-sm">
-                    <strong>Nome:</strong> {profileCustomer.attributes.represent.name || 'Não informado'}
+                    <strong>Nome:</strong>
+                    {profileCustomer.attributes.represent.name || 'Não informado'}
                   </p>
                   <p class="text-sm">
-                    <strong>Relacionamento:</strong> {profileCustomer.attributes.represent.relationship_type || 'Não informado'}
+                    <strong>Relacionamento:</strong>
+                    {profileCustomer.attributes.represent.relationship_type || 'Não informado'}
                   </p>
                 </div>
               {:else}
                 <div class="mt-3 p-3 bg-warning/10 rounded-lg">
                   <p class="text-sm text-warning-content">
-                    ⚠️ Nenhum responsável legal cadastrado. É necessário associar um responsável a este cliente.
+                    ⚠️ Nenhum responsável legal cadastrado. É necessário associar um responsável a
+                    este cliente.
                   </p>
                 </div>
               {/if}

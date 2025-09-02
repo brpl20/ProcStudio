@@ -67,29 +67,29 @@
       let comparison = 0;
 
       switch (sortColumn) {
-      case 'title':
-        comparison = a.title.localeCompare(b.title);
-        break;
-      case 'status':
-        comparison = a.status.localeCompare(b.status);
-        break;
-      case 'priority': {
-        const priorityOrder = { low: 1, medium: 2, high: 3, critical: 4 };
-        comparison = priorityOrder[a.priority] - priorityOrder[b.priority];
-        break;
-      }
-      case 'dueDate': {
-        const dateA = a.dueDate ? new Date(a.dueDate).getTime() : 0;
-        const dateB = b.dueDate ? new Date(b.dueDate).getTime() : 0;
-        comparison = dateA - dateB;
-        break;
-      }
-      case 'assignedTo': {
-        const assignedA = a.assignedTo?.[0] || '';
-        const assignedB = b.assignedTo?.[0] || '';
-        comparison = assignedA.localeCompare(assignedB);
-        break;
-      }
+        case 'title':
+          comparison = a.title.localeCompare(b.title);
+          break;
+        case 'status':
+          comparison = a.status.localeCompare(b.status);
+          break;
+        case 'priority': {
+          const priorityOrder = { low: 1, medium: 2, high: 3, critical: 4 };
+          comparison = priorityOrder[a.priority] - priorityOrder[b.priority];
+          break;
+        }
+        case 'dueDate': {
+          const dateA = a.dueDate ? new Date(a.dueDate).getTime() : 0;
+          const dateB = b.dueDate ? new Date(b.dueDate).getTime() : 0;
+          comparison = dateA - dateB;
+          break;
+        }
+        case 'assignedTo': {
+          const assignedA = a.assignedTo?.[0] || '';
+          const assignedB = b.assignedTo?.[0] || '';
+          comparison = assignedA.localeCompare(assignedB);
+          break;
+        }
       }
 
       return sortDirection === 'asc' ? comparison : -comparison;
@@ -133,53 +133,53 @@
 
   function getStatusBadgeClass(status: TaskStatus) {
     switch (status) {
-    case 'completed':
-      return 'badge-success';
-    case 'in_progress':
-      return 'badge-info';
-    case 'cancelled':
-      return 'badge-error';
-    default:
-      return 'badge-warning';
+      case 'completed':
+        return 'badge-success';
+      case 'in_progress':
+        return 'badge-info';
+      case 'cancelled':
+        return 'badge-error';
+      default:
+        return 'badge-warning';
     }
   }
 
   function getPriorityBadgeClass(priority: TaskPriority) {
     switch (priority) {
-    case 'critical':
-      return 'badge-error';
-    case 'high':
-      return 'badge-warning';
-    case 'medium':
-      return 'badge-info';
-    default:
-      return 'badge-ghost';
+      case 'critical':
+        return 'badge-error';
+      case 'high':
+        return 'badge-warning';
+      case 'medium':
+        return 'badge-info';
+      default:
+        return 'badge-ghost';
     }
   }
 
   function getStatusLabel(status: TaskStatus) {
     switch (status) {
-    case 'completed':
-      return 'Concluído';
-    case 'in_progress':
-      return 'Em Progresso';
-    case 'cancelled':
-      return 'Cancelado';
-    default:
-      return 'Pendente';
+      case 'completed':
+        return 'Concluído';
+      case 'in_progress':
+        return 'Em Progresso';
+      case 'cancelled':
+        return 'Cancelado';
+      default:
+        return 'Pendente';
     }
   }
 
   function getPriorityLabel(priority: TaskPriority) {
     switch (priority) {
-    case 'critical':
-      return 'Crítica';
-    case 'high':
-      return 'Alta';
-    case 'medium':
-      return 'Média';
-    default:
-      return 'Baixa';
+      case 'critical':
+        return 'Crítica';
+      case 'high':
+        return 'Alta';
+      case 'medium':
+        return 'Média';
+      default:
+        return 'Baixa';
     }
   }
 
@@ -266,10 +266,7 @@
           <thead>
             <tr>
               <th>
-                <button
-                  class="btn btn-ghost btn-xs gap-1"
-                  on:click={() => handleSort('title')}
-                >
+                <button class="btn btn-ghost btn-xs gap-1" on:click={() => handleSort('title')}>
                   Título
                   {#if sortColumn === 'title'}
                     <span class="text-primary">
@@ -279,10 +276,7 @@
                 </button>
               </th>
               <th>
-                <button
-                  class="btn btn-ghost btn-xs gap-1"
-                  on:click={() => handleSort('status')}
-                >
+                <button class="btn btn-ghost btn-xs gap-1" on:click={() => handleSort('status')}>
                   Status
                   {#if sortColumn === 'status'}
                     <span class="text-primary">
@@ -292,10 +286,7 @@
                 </button>
               </th>
               <th>
-                <button
-                  class="btn btn-ghost btn-xs gap-1"
-                  on:click={() => handleSort('priority')}
-                >
+                <button class="btn btn-ghost btn-xs gap-1" on:click={() => handleSort('priority')}>
                   Prioridade
                   {#if sortColumn === 'priority'}
                     <span class="text-primary">
@@ -305,10 +296,7 @@
                 </button>
               </th>
               <th>
-                <button
-                  class="btn btn-ghost btn-xs gap-1"
-                  on:click={() => handleSort('dueDate')}
-                >
+                <button class="btn btn-ghost btn-xs gap-1" on:click={() => handleSort('dueDate')}>
                   Prazo
                   {#if sortColumn === 'dueDate'}
                     <span class="text-primary">

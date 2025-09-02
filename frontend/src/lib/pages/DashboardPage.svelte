@@ -8,7 +8,6 @@
 </script>
 
 <AuthSidebar activeSection="dashboard">
-
   <div class="">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Conteúdo Principal -->

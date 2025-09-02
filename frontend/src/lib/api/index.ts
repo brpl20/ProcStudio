@@ -15,14 +15,15 @@ import {
   PowerService,
   JobService,
   WorkService,
-  CustomerService
+  CustomerService,
+  OfficeService
 } from './services';
 
 // Re-export types for convenience
 export * from './types';
 
 // Re-export configuration
-export { API_CONFIG, API_ENDPOINTS } from './config.ts';
+export { API_CONFIG, API_ENDPOINTS } from './config';
 
 /**
  * Main API class that aggregates all services
@@ -42,6 +43,7 @@ export class API {
   public jobs: JobService;
   public works: WorkService;
   public customers: CustomerService;
+  public offices: OfficeService;
 
   constructor() {
     // Initialize HTTP client
@@ -56,6 +58,7 @@ export class API {
     this.jobs = new JobService(this.httpClient);
     this.works = new WorkService(this.httpClient);
     this.customers = new CustomerService(this.httpClient);
+    this.offices = new OfficeService(this.httpClient);
 
     // Initialize auth from stored token
     this.auth.initializeAuth();

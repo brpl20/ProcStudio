@@ -67,7 +67,8 @@
     <!-- Records info -->
     <div class="text-sm text-base-content/70">
       {#if totalRecords > 0}
-        Mostrando <span class="font-medium">{startRecord}</span> a <span class="font-medium">{endRecord}</span>
+        Mostrando <span class="font-medium">{startRecord}</span> a
+        <span class="font-medium">{endRecord}</span>
         de <span class="font-medium">{totalRecords}</span> registros
       {:else}
         Nenhum registro encontrado

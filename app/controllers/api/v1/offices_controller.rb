@@ -10,7 +10,7 @@ module Api
       after_action :verify_authorized
 
       def index
-        @offices = OfficeFilter.retrieve_offices
+        @offices = OfficeFilter.retrieve_offices(current_team)
 
         filter_by_deleted_params.each do |key, value|
           next if value.blank?
@@ -18,111 +18,176 @@ module Api
           @offices = @offices.public_send("filter_by_#{key}", value.strip)
         end
 
-        render json: OfficeSerializer.new(
+        serialized = OfficeSerializer.new(
           @offices,
           meta: {
             total_count: @offices.offset(nil).limit(nil).count
           }
-        ), status: :ok
+        ).serializable_hash
+
+        render json: {
+          success: true,
+          message: 'Escritórios listados com sucesso',
+          data: serialized[:data],
+          meta: serialized[:meta]
+        }, status: :ok
       end
 
       def show
-        render json: OfficeSerializer.new(
+        serialized = OfficeSerializer.new(
           @office,
           { params: { action: 'show' } }
-        ), status: :ok
+        ).serializable_hash
+
+        render json: {
+          success: true,
+          message: 'Escritório encontrado com sucesso',
+          data: serialized[:data]
+        }, status: :ok
       end
 
       def create
-        @office = Office.new(offices_params)
-        @office.team_id ||= current_user.team_id if current_user.respond_to?(:team_id)
+        @office = current_team.offices.build(offices_params)
         @office.created_by = current_user if current_user
 
         if @office.save
-          render json: OfficeSerializer.new(
+          serialized = OfficeSerializer.new(
             @office,
             { params: { action: 'show' } }
-          ), status: :created
+          ).serializable_hash
+
+          render json: {
+            success: true,
+            message: 'Escritório criado com sucesso',
+            data: serialized[:data]
+          }, status: :created
         else
-          render(
-            status: :unprocessable_entity,
-            json: {
-              errors: @office.errors.full_messages,
-              details: @office.errors.details
-            }
-          )
+          error_messages = @office.errors.full_messages
+          render json: {
+            success: false,
+            message: error_messages.first,
+            errors: error_messages
+          }, status: :unprocessable_entity
         end
       rescue StandardError => e
         Rails.logger.error "Office creation failed: #{e.message}"
-        Rails.logger.error e.backtrace.join("\n")
-        render(
-          status: :internal_server_error,
-          json: { errors: ["An error occurred while creating the office: #{e.message}"] }
-        )
+        Rails.logger.error e.backtrace.first(10).join("\n") if e.backtrace
+        error_message = 'Erro ao criar escritório. Tente novamente.'
+        render json: {
+          success: false,
+          message: error_message,
+          errors: [error_message]
+        }, status: :internal_server_error
       end
 
       def update
         if @office.update(offices_params)
-          render json: OfficeSerializer.new(
+          serialized = OfficeSerializer.new(
             @office,
             { params: { action: 'show' } }
-          ), status: :ok
+          ).serializable_hash
+
+          render json: {
+            success: true,
+            message: 'Escritório atualizado com sucesso',
+            data: serialized[:data]
+          }, status: :ok
         else
-          render(
-            status: :unprocessable_entity,
-            json: {
-              errors: @office.errors.full_messages,
-              details: @office.errors.details
-            }
-          )
+          error_messages = @office.errors.full_messages
+          render json: {
+            success: false,
+            message: error_messages.first,
+            errors: error_messages
+          }, status: :unprocessable_entity
         end
       end
 
       def destroy
         if destroy_fully?
-          Office.with_deleted.find(params[:id]).destroy_fully!
+          office = current_team.offices.with_deleted.find(params[:id])
+          office.destroy_fully!
+          message = 'Escritório removido permanentemente'
         else
           retrieve_office
+          @office.deleted_by = current_user if current_user
           @office.destroy
+          message = 'Escritório removido com sucesso'
         end
+
+        render json: {
+          success: true,
+          message: message,
+          data: { id: params[:id] }
+        }, status: :ok
+      rescue ActiveRecord::RecordNotFound
+        render json: {
+          success: false,
+          message: 'Escritório não encontrado',
+          errors: ['Escritório não encontrado']
+        }, status: :not_found
       end
 
       def with_lawyers
         authorize [:admin, :office], :index?
 
-        offices = OfficeFilter.retrieve_offices_with_lawyers
-        render json: OfficeWithLawyersSerializer.new(
-          offices
-        ), status: :ok
+        offices = OfficeFilter.retrieve_offices_with_lawyers(current_team)
+        serialized = OfficeWithLawyersSerializer.new(offices).serializable_hash
+
+        render json: {
+          success: true,
+          message: 'Escritórios com advogados listados com sucesso',
+          data: serialized[:data]
+        }, status: :ok
       end
 
       def restore
         if @office.recover
-          head :ok
+          serialized = OfficeSerializer.new(
+            @office,
+            { params: { action: 'show' } }
+          ).serializable_hash
+
+          render json: {
+            success: true,
+            message: 'Escritório restaurado com sucesso',
+            data: serialized[:data]
+          }, status: :ok
         else
-          render(
-            status: :bad_request,
-            json: { errors: [{ code: @office.errors.full_messages }] }
-          )
+          error_messages = @office.errors.full_messages
+          render json: {
+            success: false,
+            message: error_messages.first,
+            errors: error_messages
+          }, status: :unprocessable_entity
         end
       end
 
       private
 
       def retrieve_office
-        @office = OfficeFilter.retrieve_office(params[:id])
+        @office = OfficeFilter.retrieve_office(params[:id], current_team)
       rescue ActiveRecord::RecordNotFound
-        head :not_found
+        render json: {
+          success: false,
+          message: 'Escritório não encontrado',
+          errors: ['Escritório não encontrado']
+        }, status: :not_found
       end
 
       def retrieve_deleted_office
-        @office = Office.with_deleted.find(params[:id])
+        @office = current_team.offices.with_deleted.find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+        render json: {
+          success: false,
+          message: 'Escritório não encontrado',
+          errors: ['Escritório não encontrado']
+        }, status: :not_found
       end
 
       def offices_params
         params.require(:office).permit(
           :name, :cnpj, :oab_id, :oab_status, :oab_inscricao, :oab_link,
-          :society, :foundation, :site, :accounting_type, :team_id,
+          :society, :foundation, :site, :accounting_type,
           :quote_value, :number_of_quotes,
           :logo,
           phones_attributes: [:id, :phone_number, :_destroy],

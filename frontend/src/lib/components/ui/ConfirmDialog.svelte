@@ -33,7 +33,11 @@
       <div class="modal-action">
         <button class="btn btn-ghost" on:click={cancel}>{cancelText}</button>
         <button
-          class="btn {type === 'danger' ? 'btn-error' : type === 'info' ? 'btn-info' : 'btn-warning'}"
+          class="btn {type === 'danger'
+            ? 'btn-error'
+            : type === 'info'
+              ? 'btn-info'
+              : 'btn-warning'}"
           on:click={confirm}
         >
           {confirmText}

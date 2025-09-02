@@ -10,3 +10,4 @@ export { PowerService } from './power.service';
 export { JobService } from './job.service';
 export { WorkService } from './work.service';
 export { CustomerService } from './customer.service';
+export { OfficeService } from './office.service';

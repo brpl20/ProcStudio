@@ -126,7 +126,7 @@ export default defineConfig({
                 'content-type': proxyRes.headers['content-type'],
                 'content-length': proxyRes.headers['content-length'],
                 'cache-control': proxyRes.headers['cache-control'],
-                'etag': proxyRes.headers['etag'],
+                etag: proxyRes.headers['etag'],
                 'last-modified': proxyRes.headers['last-modified'],
                 'x-cache': proxyRes.headers['x-cache']
               };
@@ -145,7 +145,7 @@ export default defineConfig({
               // For 304 responses, add extra debugging info
               if (statusCode === 304) {
                 console.log('🔄 304 Not Modified Details:');
-                console.log('   - This means the resource hasn\'t changed since last request');
+                console.log("   - This means the resource hasn't changed since last request");
                 console.log('   - Client should use cached version');
                 console.log('   - Response body is typically empty for 304');
               }

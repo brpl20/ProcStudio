@@ -56,7 +56,13 @@
       <!-- Back button -->
       <div class="breadcrumbs text-sm">
         <ul>
-          <li><button type="button" class="link link-hover" on:click={() => router.navigate('/customers')}>Clientes</button></li>
+          <li>
+            <button
+              type="button"
+              class="link link-hover"
+              on:click={() => router.navigate('/customers')}>Clientes</button
+            >
+          </li>
           <li>Editar Cliente</li>
         </ul>
       </div>

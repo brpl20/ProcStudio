@@ -58,10 +58,17 @@ export class HttpClient {
     };
 
     if (body && method !== 'GET') {
-      requestOptions.body = JSON.stringify(body);
+      // Check if body is FormData
+      if (body instanceof FormData) {
+        // Don't set Content-Type for FormData, let browser set it with boundary
+        delete requestOptions.headers!['Content-Type'];
+        requestOptions.body = body;
+      } else {
+        requestOptions.body = JSON.stringify(body);
+      }
     }
 
-    ApiLogger.logRequest(method, url, body);
+    ApiLogger.logRequest(method, url, body instanceof FormData ? 'FormData' : body);
 
     try {
       const response = await fetch(url, requestOptions);
@@ -100,7 +107,8 @@ export class HttpClient {
         status: response.status,
         statusText: response.statusText,
         data,
-        message: data.message || data.error || `HTTP Error ${response.status}: ${response.statusText}`
+        message:
+          data.message || data.error || `HTTP Error ${response.status}: ${response.statusText}`
       };
     }
 

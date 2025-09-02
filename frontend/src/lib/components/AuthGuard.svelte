@@ -45,10 +45,7 @@
           <span>{message}</span>
         </div>
         <div class="mt-4">
-          <button
-            class="btn btn-primary"
-            on:click={() => router.navigate(redirectTo)}
-          >
+          <button class="btn btn-primary" on:click={() => router.navigate(redirectTo)}>
             Fazer Login
           </button>
         </div>

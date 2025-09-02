@@ -77,12 +77,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Outros Créditos",
-      "Pessoal",
-      "Veículos"
-    ],
+    "Products": ["Consignado", "Outros Créditos", "Pessoal", "Veículos"],
     "Url": "https://www.banconordeste.gov.br",
     "DateOperationStarted": "2002-04-22",
     "DatePixStarted": "2020-11-03 06:30:00",
@@ -174,12 +169,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Outros Créditos.",
-      "Pessoal",
-      "Veiculos"
-    ],
+    "Products": ["Consignado", "Outros Créditos.", "Pessoal", "Veiculos"],
     "Url": "https://www.bancoinbursa.com",
     "DateOperationStarted": "2017-05-04",
     "DatePixStarted": "2020-11-03 06:30:00",
@@ -382,11 +372,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Pessoal",
-      "Veículos"
-    ],
+    "Products": ["Consignado", "Pessoal", "Veículos"],
     "Url": null,
     "DateOperationStarted": "2002-04-22",
     "DatePixStarted": "2020-11-03 06:30:00",
@@ -409,13 +395,7 @@
     "PCR": null,
     "PCRP": null,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Imobiliário",
-      "Pessoal",
-      "Troca de Modalidade",
-      "Veículos"
-    ],
+    "Products": ["Consignado", "Imobiliário", "Pessoal", "Troca de Modalidade", "Veículos"],
     "Url": "https://www.itau.com.br",
     "DateOperationStarted": "2002-04-22",
     "DatePixStarted": null,
@@ -655,12 +635,7 @@
     "PCR": null,
     "PCRP": null,
     "SalaryPortability": null,
-    "Products": [
-      "Imobiliário",
-      "Pessoal",
-      "Troca de Modalidade",
-      "Veículos"
-    ],
+    "Products": ["Imobiliário", "Pessoal", "Troca de Modalidade", "Veículos"],
     "Url": null,
     "DateOperationStarted": "2002-04-22",
     "DatePixStarted": null,
@@ -759,10 +734,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": "Destinatário",
-    "Products": [
-      "Consignado",
-      "Pessoal"
-    ],
+    "Products": ["Consignado", "Pessoal"],
     "Url": "https://www.crefisa.com.br",
     "DateOperationStarted": "2005-11-18",
     "DatePixStarted": "2020-11-03 06:30:00",
@@ -785,12 +757,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": "Banco folha e Destinatário",
-    "Products": [
-      "Consignado",
-      "Imobiliário",
-      "Pessoal",
-      "Veículos"
-    ],
+    "Products": ["Consignado", "Imobiliário", "Pessoal", "Veículos"],
     "Url": "https://www.brb.com.br",
     "DateOperationStarted": "2002-04-22",
     "DatePixStarted": "2020-11-03 06:30:00",
@@ -882,13 +849,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": "Banco folha e Destinatário",
-    "Products": [
-      "Capital de Giro",
-      "Consignado",
-      "Imobiliário",
-      "Pessoal",
-      "Troca de Modalidade"
-    ],
+    "Products": ["Capital de Giro", "Consignado", "Imobiliário", "Pessoal", "Troca de Modalidade"],
     "Url": "https://www.bancointer.com.br",
     "DateOperationStarted": "2008-08-15",
     "DatePixStarted": "2020-11-03 06:30:00",
@@ -934,10 +895,7 @@
     "PCR": true,
     "PCRP": false,
     "SalaryPortability": null,
-    "Products": [
-      "Crédito Consiginado",
-      "troca de modalidade."
-    ],
+    "Products": ["Crédito Consiginado", "troca de modalidade."],
     "Url": "https://www.bancooriginal.com.br",
     "DateOperationStarted": "2008-07-25",
     "DatePixStarted": "2023-04-17 10:00:00",
@@ -983,10 +941,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Pessoal"
-    ],
+    "Products": ["Consignado", "Pessoal"],
     "Url": "https://www.rendimento.com.br",
     "DateOperationStarted": "2008-10-24",
     "DatePixStarted": "2020-11-03 06:30:00",
@@ -1062,12 +1017,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": "Banco folha e Destinatário",
-    "Products": [
-      "Consignado",
-      "Imobiliário Pessoal",
-      "Troca de Modalidade",
-      "Veículos"
-    ],
+    "Products": ["Consignado", "Imobiliário Pessoal", "Troca de Modalidade", "Veículos"],
     "Url": "https://www.sisprimedobrasil.com.br/",
     "DateOperationStarted": "2009-11-24",
     "DatePixStarted": "2020-11-03 06:30:00",
@@ -1495,11 +1445,7 @@
     "PCR": null,
     "PCRP": null,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Pessoal",
-      "Troca de Modalidade"
-    ],
+    "Products": ["Consignado", "Pessoal", "Troca de Modalidade"],
     "Url": "https://www.lecca.com.br/",
     "DateOperationStarted": "2011-12-27",
     "DatePixStarted": null,
@@ -1545,10 +1491,7 @@
     "PCR": null,
     "PCRP": null,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Pessoal e Veículos"
-    ],
+    "Products": ["Consignado", "Pessoal e Veículos"],
     "Url": "https://www.portocred.com.br/",
     "DateOperationStarted": "2011-11-03",
     "DatePixStarted": null,
@@ -1693,13 +1636,7 @@
     "PCR": true,
     "PCRP": false,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Imobiliário",
-      "Pessoal",
-      "Troca de Modalidade",
-      "Veículos"
-    ],
+    "Products": ["Consignado", "Imobiliário", "Pessoal", "Troca de Modalidade", "Veículos"],
     "Url": "https://www.rodobens.com.br",
     "DateOperationStarted": "2012-02-06",
     "DatePixStarted": null,
@@ -1722,12 +1659,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": "Destinatário",
-    "Products": [
-      "Cheque Especial",
-      "Consignado",
-      "Pessoal",
-      "Troca de Modalidade"
-    ],
+    "Products": ["Cheque Especial", "Consignado", "Pessoal", "Troca de Modalidade"],
     "Url": "https://www.agibank.com.br",
     "DateOperationStarted": "2012-04-04",
     "DatePixStarted": "2020-11-03 06:30:00",
@@ -2274,9 +2206,7 @@
     "PCR": null,
     "PCRP": null,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado"
-    ],
+    "Products": ["Consignado"],
     "Url": null,
     "DateOperationStarted": "2015-07-08",
     "DatePixStarted": null,
@@ -2391,10 +2321,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": "Banco folha e Destinatário",
-    "Products": [
-      "Outros Créditos",
-      "Pessoal"
-    ],
+    "Products": ["Outros Créditos", "Pessoal"],
     "Url": null,
     "DateOperationStarted": "2017-11-21",
     "DatePixStarted": "2020-11-03 06:30:00",
@@ -2532,10 +2459,7 @@
     "PCR": null,
     "PCRP": null,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Troca de Modalidade"
-    ],
+    "Products": ["Consignado", "Troca de Modalidade"],
     "Url": null,
     "DateOperationStarted": "2017-06-05",
     "DatePixStarted": null,
@@ -2758,9 +2682,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": "Banco folha e Destinatário",
-    "Products": [
-      "Consignado"
-    ],
+    "Products": ["Consignado"],
     "Url": "https://www.bancoarbi.com.br",
     "DateOperationStarted": "2002-04-22",
     "DatePixStarted": "2020-11-03 06:30:00",
@@ -2806,9 +2728,7 @@
     "PCR": true,
     "PCRP": false,
     "SalaryPortability": "Destinatário",
-    "Products": [
-      "Consignado"
-    ],
+    "Products": ["Consignado"],
     "Url": "https://www.bs2.com/banco/",
     "DateOperationStarted": "2002-04-22",
     "DatePixStarted": "2020-11-03 06:30:00",
@@ -3092,13 +3012,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Imobiliário",
-      "Pessoal",
-      "Troca de Modalidade",
-      "Veículos"
-    ],
+    "Products": ["Consignado", "Imobiliário", "Pessoal", "Troca de Modalidade", "Veículos"],
     "Url": "https://www.paranabanco.com.br",
     "DateOperationStarted": "2002-04-22",
     "DatePixStarted": "2020-11-03 06:30:00",
@@ -3213,12 +3127,7 @@
     "PCR": null,
     "PCRP": null,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Imobiliário",
-      "Pessoal",
-      "Veículos"
-    ],
+    "Products": ["Consignado", "Imobiliário", "Pessoal", "Veículos"],
     "Url": null,
     "DateOperationStarted": "2017-12-21",
     "DatePixStarted": null,
@@ -3356,12 +3265,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": null,
-    "Products": [
-      "Capital de Giro",
-      "Outros Créditos",
-      "Pessoal",
-      "Troca de Modalidade"
-    ],
+    "Products": ["Capital de Giro", "Outros Créditos", "Pessoal", "Troca de Modalidade"],
     "Url": null,
     "DateOperationStarted": "2019-09-10",
     "DatePixStarted": "2020-11-03 06:30:00",
@@ -3384,9 +3288,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": "Banco Folha",
-    "Products": [
-      "Consignado"
-    ],
+    "Products": ["Consignado"],
     "Url": null,
     "DateOperationStarted": "2018-06-12",
     "DatePixStarted": "2021-04-16 09:00:00",
@@ -3455,10 +3357,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": null,
-    "Products": [
-      "Crédito Pessoal",
-      "Troca de Modalidade"
-    ],
+    "Products": ["Crédito Pessoal", "Troca de Modalidade"],
     "Url": null,
     "DateOperationStarted": "2018-05-10",
     "DatePixStarted": "2024-03-19 10:00:00",
@@ -3734,10 +3633,7 @@
     "PCR": true,
     "PCRP": false,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Pessoal e Veículos"
-    ],
+    "Products": ["Consignado", "Pessoal e Veículos"],
     "Url": null,
     "DateOperationStarted": "2018-12-03",
     "DatePixStarted": "2023-05-15 10:00:00",
@@ -4013,13 +3909,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": "Banco folha e Destinatário",
-    "Products": [
-      "Consignado",
-      "Imobiliário",
-      "Pessoal",
-      "Troca de Modalidade",
-      "Veículos"
-    ],
+    "Products": ["Consignado", "Imobiliário", "Pessoal", "Troca de Modalidade", "Veículos"],
     "Url": "https://www.bancobmg.com.br",
     "DateOperationStarted": "2002-04-22",
     "DatePixStarted": "2020-11-03 06:30:00",
@@ -4065,12 +3955,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Imobiliário",
-      "Pessoal",
-      "Veículos"
-    ],
+    "Products": ["Consignado", "Imobiliário", "Pessoal", "Veículos"],
     "Url": null,
     "DateOperationStarted": "2002-04-22",
     "DatePixStarted": null,
@@ -4162,12 +4047,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Imobiliário",
-      "Pessoal",
-      "Troca de Modalidade."
-    ],
+    "Products": ["Consignado", "Imobiliário", "Pessoal", "Troca de Modalidade."],
     "Url": null,
     "DateOperationStarted": "2020-09-16",
     "DatePixStarted": "2020-11-03 06:30:00",
@@ -4213,10 +4093,7 @@
     "PCR": null,
     "PCRP": null,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Pessoal"
-    ],
+    "Products": ["Consignado", "Pessoal"],
     "Url": null,
     "DateOperationStarted": "2020-01-07",
     "DatePixStarted": "2020-11-03 06:30:00",
@@ -4262,13 +4139,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Imobiliário",
-      "Outros Créditos",
-      "Pessoal",
-      "Veículos"
-    ],
+    "Products": ["Consignado", "Imobiliário", "Outros Créditos", "Pessoal", "Veículos"],
     "Url": null,
     "DateOperationStarted": "2019-04-30",
     "DatePixStarted": "2021-06-14 09:00:00",
@@ -4291,13 +4162,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Imobiliário",
-      "Pessoal",
-      "Troca de Modalidade",
-      "Veículos"
-    ],
+    "Products": ["Consignado", "Imobiliário", "Pessoal", "Troca de Modalidade", "Veículos"],
     "Url": null,
     "DateOperationStarted": "2019-07-22",
     "DatePixStarted": "2021-02-25 09:00:00",
@@ -4389,10 +4254,7 @@
     "PCR": null,
     "PCRP": null,
     "SalaryPortability": "Destinatário",
-    "Products": [
-      "Consignado",
-      "Outros Créditos"
-    ],
+    "Products": ["Consignado", "Outros Créditos"],
     "Url": "https://www.digio.com.br",
     "DateOperationStarted": "2019-11-25",
     "DatePixStarted": "2020-11-03 06:30:00",
@@ -4547,11 +4409,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": "Destinatário",
-    "Products": [
-      "Capital de Giro",
-      "Pessoal",
-      "Troca de Modalidade"
-    ],
+    "Products": ["Capital de Giro", "Pessoal", "Troca de Modalidade"],
     "Url": null,
     "DateOperationStarted": "2019-11-01",
     "DatePixStarted": "2021-06-01 10:00:00",
@@ -4697,9 +4555,7 @@
     "PCR": null,
     "PCRP": null,
     "SalaryPortability": "Destinatário",
-    "Products": [
-      "Pessoal"
-    ],
+    "Products": ["Pessoal"],
     "Url": null,
     "DateOperationStarted": "2021-02-01",
     "DatePixStarted": "2021-07-19 15:00:00",
@@ -4915,11 +4771,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": null,
-    "Products": [
-      "Cheque Especial",
-      "Crédito consignado",
-      "Troca de modalidade"
-    ],
+    "Products": ["Cheque Especial", "Crédito consignado", "Troca de modalidade"],
     "Url": null,
     "DateOperationStarted": "2020-05-25",
     "DatePixStarted": "2022-10-31 10:00:00",
@@ -5017,10 +4869,7 @@
     "PCR": null,
     "PCRP": null,
     "SalaryPortability": null,
-    "Products": [
-      "Outros Créditos",
-      "Pessoal"
-    ],
+    "Products": ["Outros Créditos", "Pessoal"],
     "Url": null,
     "DateOperationStarted": "2020-09-16",
     "DatePixStarted": "2021-04-14 12:00:00",
@@ -5043,9 +4892,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": null,
-    "Products": [
-      "Pessoal"
-    ],
+    "Products": ["Pessoal"],
     "Url": "https://www.jpmorgan.com",
     "DateOperationStarted": "2002-04-22",
     "DatePixStarted": "2022-10-01 10:00:00",
@@ -5173,10 +5020,7 @@
     "PCR": null,
     "PCRP": null,
     "SalaryPortability": null,
-    "Products": [
-      "Pessoal",
-      "Veículos"
-    ],
+    "Products": ["Pessoal", "Veículos"],
     "Url": "https://www.bancomercedes-benz.com.br",
     "DateOperationStarted": "2020-05-25",
     "DatePixStarted": null,
@@ -5291,11 +5135,7 @@
     "PCR": null,
     "PCRP": null,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Pessoal",
-      "Troca de Modalidade"
-    ],
+    "Products": ["Consignado", "Pessoal", "Troca de Modalidade"],
     "Url": null,
     "DateOperationStarted": "2021-01-12",
     "DatePixStarted": null,
@@ -5318,9 +5158,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": null,
-    "Products": [
-      "Veículos"
-    ],
+    "Products": ["Veículos"],
     "Url": "https://institucional.bancotoyota.com.br",
     "DateOperationStarted": "2020-07-21",
     "DatePixStarted": null,
@@ -5374,9 +5212,7 @@
     "PCR": null,
     "PCRP": null,
     "SalaryPortability": null,
-    "Products": [
-      "Veículos"
-    ],
+    "Products": ["Veículos"],
     "Url": null,
     "DateOperationStarted": "2020-07-22",
     "DatePixStarted": null,
@@ -5422,12 +5258,7 @@
     "PCR": true,
     "PCRP": false,
     "SalaryPortability": null,
-    "Products": [
-      "Capital de Giro",
-      "Consignado",
-      "Troca de Modalidade",
-      "Veículos"
-    ],
+    "Products": ["Capital de Giro", "Consignado", "Troca de Modalidade", "Veículos"],
     "Url": "https://www.bancovw.com.br",
     "DateOperationStarted": "2020-08-17",
     "DatePixStarted": null,
@@ -5450,12 +5281,7 @@
     "PCR": null,
     "PCRP": null,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Pessoal",
-      "Troca de Modalidade",
-      "Veículos"
-    ],
+    "Products": ["Consignado", "Pessoal", "Troca de Modalidade", "Veículos"],
     "Url": "https://www.bradescofinanciamentos.com.br",
     "DateOperationStarted": "2002-04-22",
     "DatePixStarted": null,
@@ -5662,11 +5488,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": null,
-    "Products": [
-      "Capital Giro",
-      "Cheque Especial",
-      "Troca de Modalidade"
-    ],
+    "Products": ["Capital Giro", "Cheque Especial", "Troca de Modalidade"],
     "Url": null,
     "DateOperationStarted": "2020-09-29",
     "DatePixStarted": "2023-03-24 09:10:00",
@@ -5804,10 +5626,7 @@
     "PCR": null,
     "PCRP": null,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Pessoal"
-    ],
+    "Products": ["Consignado", "Pessoal"],
     "Url": null,
     "DateOperationStarted": "2021-02-22",
     "DatePixStarted": "2021-06-24 10:00:00",
@@ -6069,13 +5888,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Imobiliário",
-      "Outros Créditos",
-      "Pessoal",
-      "Veículos"
-    ],
+    "Products": ["Consignado", "Imobiliário", "Outros Créditos", "Pessoal", "Veículos"],
     "Url": null,
     "DateOperationStarted": "2021-07-27",
     "DatePixStarted": "2022-12-30 10:00:00",
@@ -6098,12 +5911,7 @@
     "PCR": null,
     "PCRP": null,
     "SalaryPortability": null,
-    "Products": [
-      "Crédito Consignado",
-      "Crédito Pessoal",
-      "Outros",
-      "Troca de Modalidade"
-    ],
+    "Products": ["Crédito Consignado", "Crédito Pessoal", "Outros", "Troca de Modalidade"],
     "Url": null,
     "DateOperationStarted": "2021-05-21",
     "DatePixStarted": null,
@@ -6126,10 +5934,7 @@
     "PCR": null,
     "PCRP": null,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Troca de Modalidade"
-    ],
+    "Products": ["Consignado", "Troca de Modalidade"],
     "Url": null,
     "DateOperationStarted": "2021-04-26",
     "DatePixStarted": "2022-11-22 13:00:00",
@@ -6152,10 +5957,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": null,
-    "Products": [
-      "Crédito Pessoal",
-      "Troca de Modalidade"
-    ],
+    "Products": ["Crédito Pessoal", "Troca de Modalidade"],
     "Url": null,
     "DateOperationStarted": "2021-04-20",
     "DatePixStarted": "2022-02-14 15:00:00",
@@ -6178,12 +5980,7 @@
     "PCR": true,
     "PCRP": false,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Pessoal",
-      "Troca de Modalidade",
-      "Veículos"
-    ],
+    "Products": ["Consignado", "Pessoal", "Troca de Modalidade", "Veículos"],
     "Url": null,
     "DateOperationStarted": "2021-09-08",
     "DatePixStarted": null,
@@ -6689,10 +6486,7 @@
     "PCR": null,
     "PCRP": null,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Troca de Modalidade"
-    ],
+    "Products": ["Consignado", "Troca de Modalidade"],
     "Url": null,
     "DateOperationStarted": "2021-11-04",
     "DatePixStarted": null,
@@ -6876,12 +6670,7 @@
     "PCR": null,
     "PCRP": null,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Outros Créditos",
-      "Pessoal",
-      "Veículos"
-    ],
+    "Products": ["Consignado", "Outros Créditos", "Pessoal", "Veículos"],
     "Url": null,
     "DateOperationStarted": "2022-02-09",
     "DatePixStarted": "2022-03-14 14:00:00",
@@ -6996,9 +6785,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": null,
-    "Products": [
-      "Veículos"
-    ],
+    "Products": ["Veículos"],
     "Url": null,
     "DateOperationStarted": "2022-09-05",
     "DatePixStarted": null,
@@ -7511,11 +7298,7 @@
     "PCR": null,
     "PCRP": null,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Pessoal",
-      "Troca de Modalidade"
-    ],
+    "Products": ["Consignado", "Pessoal", "Troca de Modalidade"],
     "Url": null,
     "DateOperationStarted": "2022-10-24",
     "DatePixStarted": null,
@@ -8038,9 +7821,7 @@
     "PCR": null,
     "PCRP": null,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado"
-    ],
+    "Products": ["Consignado"],
     "Url": null,
     "DateOperationStarted": "2023-04-17",
     "DatePixStarted": null,
@@ -8408,10 +8189,7 @@
     "PCR": null,
     "PCRP": null,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Troca de Modalidade"
-    ],
+    "Products": ["Consignado", "Troca de Modalidade"],
     "Url": null,
     "DateOperationStarted": null,
     "DatePixStarted": null,
@@ -8664,11 +8442,7 @@
     "PCR": null,
     "PCRP": null,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Outros Créditos",
-      "Veículos"
-    ],
+    "Products": ["Consignado", "Outros Créditos", "Veículos"],
     "Url": null,
     "DateOperationStarted": "2023-08-28",
     "DatePixStarted": null,
@@ -9312,12 +9086,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Imobiliário",
-      "Pessoal",
-      "Veículos"
-    ],
+    "Products": ["Consignado", "Imobiliário", "Pessoal", "Veículos"],
     "Url": "https://bancoluso.com.br/",
     "DateOperationStarted": "2002-04-22",
     "DatePixStarted": "2021-12-17 10:00:00",
@@ -9340,10 +9109,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Pessoal"
-    ],
+    "Products": ["Consignado", "Pessoal"],
     "Url": "https://www.bancoindustrial.com.br",
     "DateOperationStarted": "2002-04-22",
     "DatePixStarted": "2020-11-03 06:30:00",
@@ -9389,11 +9155,7 @@
     "PCR": true,
     "PCRP": false,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Imobiliário",
-      "Troca de Modalidade"
-    ],
+    "Products": ["Consignado", "Imobiliário", "Troca de Modalidade"],
     "Url": "https://www.bancopaulista.com.br",
     "DateOperationStarted": "2002-04-22",
     "DatePixStarted": "2025-02-10 00:00:00",
@@ -9439,11 +9201,7 @@
     "PCR": true,
     "PCRP": false,
     "SalaryPortability": null,
-    "Products": [
-      "Outros Créditos",
-      "Pessoal",
-      "Veículos"
-    ],
+    "Products": ["Outros Créditos", "Pessoal", "Veículos"],
     "Url": null,
     "DateOperationStarted": "2002-04-22",
     "DatePixStarted": "2021-05-27 08:00:00",
@@ -9588,10 +9346,7 @@
     "PCR": null,
     "PCRP": null,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Veículos"
-    ],
+    "Products": ["Consignado", "Veículos"],
     "Url": null,
     "DateOperationStarted": "2002-04-22",
     "DatePixStarted": null,
@@ -9660,12 +9415,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": null,
-    "Products": [
-      "Capital de Giro",
-      "Cheque Especial",
-      "Pessoal",
-      "Troca de Modalidade"
-    ],
+    "Products": ["Capital de Giro", "Cheque Especial", "Pessoal", "Troca de Modalidade"],
     "Url": "https://www.rendimento.com.br",
     "DateOperationStarted": "2002-04-22",
     "DatePixStarted": "2020-11-03 06:30:00",
@@ -9688,10 +9438,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": "Banco folha",
-    "Products": [
-      "Cheque Especial",
-      "Troca de Modalidade"
-    ],
+    "Products": ["Cheque Especial", "Troca de Modalidade"],
     "Url": "https://www.tribanco.com.br",
     "DateOperationStarted": "2002-04-22",
     "DatePixStarted": "2020-11-03 06:30:00",
@@ -9768,12 +9515,7 @@
     "PCR": true,
     "PCRP": false,
     "SalaryPortability": null,
-    "Products": [
-      "Capital de Giro",
-      "Consignado",
-      "Troca de Modalidade",
-      "Veículos"
-    ],
+    "Products": ["Capital de Giro", "Consignado", "Troca de Modalidade", "Veículos"],
     "Url": "https://www.pine.com",
     "DateOperationStarted": "2002-04-22",
     "DatePixStarted": "2025-07-02 10:00:00",
@@ -9911,13 +9653,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": null,
-    "Products": [
-      "Capital de Giro",
-      "Consignado",
-      "Pessoal",
-      "Troca de Modalidade",
-      "Veículos"
-    ],
+    "Products": ["Capital de Giro", "Consignado", "Pessoal", "Troca de Modalidade", "Veículos"],
     "Url": null,
     "DateOperationStarted": "2002-04-22",
     "DatePixStarted": "2020-11-03 06:30:00",
@@ -10832,10 +10568,7 @@
     "PCR": null,
     "PCRP": null,
     "SalaryPortability": null,
-    "Products": [
-      "Pessoal",
-      "Veículos"
-    ],
+    "Products": ["Pessoal", "Veículos"],
     "Url": "https://www.bancornx.com.br/",
     "DateOperationStarted": "2021-02-24",
     "DatePixStarted": null,
@@ -10888,12 +10621,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Imobiliário",
-      "Pessoal",
-      "Veículos"
-    ],
+    "Products": ["Consignado", "Imobiliário", "Pessoal", "Veículos"],
     "Url": "https://www.brp.com.br",
     "DateOperationStarted": "2002-04-22",
     "DatePixStarted": "2020-11-03 06:30:00",
@@ -10916,10 +10644,7 @@
     "PCR": true,
     "PCRP": false,
     "SalaryPortability": "Banco folha e Destinatário",
-    "Products": [
-      "Consignado",
-      "Pessoal"
-    ],
+    "Products": ["Consignado", "Pessoal"],
     "Url": "https://www.bancosemear.com.br",
     "DateOperationStarted": "2002-04-22",
     "DatePixStarted": "2021-12-22 10:00:00",
@@ -10942,11 +10667,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado",
-      "Imobiliário",
-      "Pessoal"
-    ],
+    "Products": ["Consignado", "Imobiliário", "Pessoal"],
     "Url": "https://www.citibank.com.br",
     "DateOperationStarted": "2002-04-22",
     "DatePixStarted": "2021-09-03 06:30:00",
@@ -11101,9 +10822,7 @@
     "PCR": true,
     "PCRP": false,
     "SalaryPortability": null,
-    "Products": [
-      "Consignado"
-    ],
+    "Products": ["Consignado"],
     "Url": "https://www.nbcbank.com.br",
     "DateOperationStarted": "2002-04-22",
     "DatePixStarted": "2023-12-18 00:01:00",
@@ -11149,10 +10868,7 @@
     "PCR": true,
     "PCRP": true,
     "SalaryPortability": null,
-    "Products": [
-      "Capital de Giro",
-      "Troca de Modalidade"
-    ],
+    "Products": ["Capital de Giro", "Troca de Modalidade"],
     "Url": "https://www.ml.com",
     "DateOperationStarted": "2007-11-09",
     "DatePixStarted": "2023-01-23 09:00:00",

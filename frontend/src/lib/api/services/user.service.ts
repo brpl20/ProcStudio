@@ -11,7 +11,8 @@ import type {
   CreateUserRequest,
   UpdateUserRequest,
   UpdateUserProfileRequest,
-  UserProfileData
+  UserProfileData,
+  ApiSuccessResponse
 } from '../types';
 
 export class UserService {
@@ -48,21 +49,15 @@ export class UserService {
   /**
    * Soft delete a user
    */
-  async deleteUser(
-    userId: string
-  ): Promise<{ success: boolean; message: string; data: { id: string } }> {
-    return this.http.delete<{ success: boolean; message: string; data: { id: string } }>(
-      `${API_ENDPOINTS.USERS}/${userId}`
-    );
+  async deleteUser(userId: string): Promise<ApiSuccessResponse<{ id: string }>> {
+    return this.http.delete<ApiSuccessResponse<{ id: string }>>(`${API_ENDPOINTS.USERS}/${userId}`);
   }
 
   /**
    * Hard delete a user (permanent)
    */
-  async deleteUserPermanently(
-    userId: string
-  ): Promise<{ success: boolean; message: string; data: { id: string } }> {
-    return this.http.delete<{ success: boolean; message: string; data: { id: string } }>(
+  async deleteUserPermanently(userId: string): Promise<ApiSuccessResponse<{ id: string }>> {
+    return this.http.delete<ApiSuccessResponse<{ id: string }>>(
       `${API_ENDPOINTS.USERS}/${userId}?destroy_fully=true`
     );
   }
@@ -79,6 +74,13 @@ export class UserService {
    */
   async getUserProfiles(): Promise<{ data: UserProfileData[] }> {
     return this.http.get<{ data: UserProfileData[] }>(API_ENDPOINTS.USER_PROFILES);
+  }
+
+  /**
+   * Create a new user profile
+   */
+  async createUserProfile(profileData: any): Promise<{ data: UserProfileData }> {
+    return this.http.post<{ data: UserProfileData }>(API_ENDPOINTS.USER_PROFILES, profileData);
   }
 
   /**
@@ -104,10 +106,8 @@ export class UserService {
   /**
    * Soft delete a user profile
    */
-  async deleteUserProfile(
-    profileId: string
-  ): Promise<{ success: boolean; message: string; data: { id: string } }> {
-    return this.http.delete<{ success: boolean; message: string; data: { id: string } }>(
+  async deleteUserProfile(profileId: string): Promise<ApiSuccessResponse<{ id: string }>> {
+    return this.http.delete<ApiSuccessResponse<{ id: string }>>(
       `${API_ENDPOINTS.USER_PROFILES}/${profileId}`
     );
   }
@@ -117,8 +117,8 @@ export class UserService {
    */
   async deleteUserProfilePermanently(
     profileId: string
-  ): Promise<{ success: boolean; message: string; data: { id: string } }> {
-    return this.http.delete<{ success: boolean; message: string; data: { id: string } }>(
+  ): Promise<ApiSuccessResponse<{ id: string }>> {
+    return this.http.delete<ApiSuccessResponse<{ id: string }>>(
       `${API_ENDPOINTS.USER_PROFILES}/${profileId}?destroy_fully=true`
     );
   }
@@ -149,8 +149,8 @@ export class UserService {
       if (userData?.relationships?.user_profile?.data) {
         const profileId = userData.relationships.user_profile.data.id;
         return response.included.find(
-          (item: any) => item.type === 'user_profile' && item.id === profileId
-        ) as UserProfileData;
+          (item): item is UserProfileData => item.type === 'user_profile' && item.id === profileId
+        );
       }
     }
     return undefined;

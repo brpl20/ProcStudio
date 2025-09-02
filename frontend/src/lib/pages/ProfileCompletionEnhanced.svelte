@@ -1,4 +1,3 @@
-
 <script lang="ts">
   import api from '../api/index';
   import { BRAZILIAN_STATES } from '../constants/brazilian-states';
@@ -150,14 +149,20 @@
 
     missingFields.forEach((field) => {
       if (field === 'address') {
-        if (!formData.address.street || !formData.address.number ||
-            !formData.address.city || !formData.address.state ||
-            !formData.address.zip_code) {
+        if (
+          !formData.address.street ||
+          !formData.address.number ||
+          !formData.address.city ||
+          !formData.address.state ||
+          !formData.address.zip_code
+        ) {
           requiredFieldErrors.push('endereço');
         }
-      } else if (!formData[field as keyof typeof formData] ||
-                 (typeof formData[field as keyof typeof formData] === 'string' &&
-                  formData[field as keyof typeof formData].trim() === '')) {
+      } else if (
+        !formData[field as keyof typeof formData] ||
+        (typeof formData[field as keyof typeof formData] === 'string' &&
+          formData[field as keyof typeof formData].trim() === '')
+      ) {
         requiredFieldErrors.push(field);
       }
     });
@@ -217,22 +222,26 @@
 
       // Add address as nested attributes if needed
       if (isFieldRequired('address') && formData.address.street) {
-        dataToSend.addresses_attributes = [{
-          street: formData.address.street,
-          number: formData.address.number,
-          neighborhood: formData.address.neighborhood || '',
-          city: formData.address.city,
-          state: formData.address.state,
-          zip_code: formData.address.zip_code,
-          description: formData.address.description
-        }];
+        dataToSend.addresses_attributes = [
+          {
+            street: formData.address.street,
+            number: formData.address.number,
+            neighborhood: formData.address.neighborhood || '',
+            city: formData.address.city,
+            state: formData.address.state,
+            zip_code: formData.address.zip_code,
+            description: formData.address.description
+          }
+        ];
       }
 
       // Add phone as nested attribute
       if (formData.phone) {
-        dataToSend.phones_attributes = [{
-          phone_number: formData.phone
-        }];
+        dataToSend.phones_attributes = [
+          {
+            phone_number: formData.phone
+          }
+        ];
       }
 
       const result = await api.auth.completeProfile(dataToSend);
@@ -298,10 +307,23 @@
 
         {#if hasCriticalMissingFields}
           <div class="alert alert-warning mb-6">
-            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="stroke-current shrink-0 h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
             </svg>
-            <span>Alguns dados não foram preenchidos automaticamente. Por favor, complete as informações manualmente.</span>
+            <span
+              >Alguns dados não foram preenchidos automaticamente. Por favor, complete as
+              informações manualmente.</span
+            >
           </div>
         {/if}
 
@@ -384,7 +406,9 @@
                   disabled={loading}
                 />
                 <label class="label">
-                  <span class="label-text-alt">Digite apenas os números ou o formato completo (ex: PR123456)</span>
+                  <span class="label-text-alt"
+                    >Digite apenas os números ou o formato completo (ex: PR123456)</span
+                  >
                 </label>
               </div>
             {/if}

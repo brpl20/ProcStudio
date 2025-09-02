@@ -259,7 +259,9 @@
           class:text-success={task.status === 'completed'}
           on:click|stopPropagation={handleStatusToggle}
           title={task.status === 'completed' ? 'Marcar como pendente' : 'Marcar como concluída'}
-          aria-label={task.status === 'completed' ? 'Marcar como pendente' : 'Marcar como concluída'}
+          aria-label={task.status === 'completed'
+            ? 'Marcar como pendente'
+            : 'Marcar como concluída'}
         >
           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path

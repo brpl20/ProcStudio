@@ -9,9 +9,9 @@ import type {
 
 // Define store types
 export interface CustomerState {
-  allCustomers: Customer[];  // All loaded customers
-  filteredCustomers: Customer[];  // Filtered customers
-  paginatedCustomers: Customer[];  // Current page customers
+  allCustomers: Customer[]; // All loaded customers
+  filteredCustomers: Customer[]; // Filtered customers
+  paginatedCustomers: Customer[]; // Current page customers
   currentCustomer: Customer | null;
   isLoading: boolean;
   error: string;
@@ -62,38 +62,43 @@ function filterCustomers(customers: Customer[], filters: CustomerState['filters'
   // Search filter (name, email, CPF, CNPJ)
   if (filters.search && filters.search.trim()) {
     const searchTerm = filters.search.toLowerCase().trim();
-    filtered = filtered.filter(customer => {
+    filtered = filtered.filter((customer) => {
       const profileCustomer = customer.profile_customer;
-      if (!profileCustomer) return false;
+      if (!profileCustomer) {
+        return false;
+      }
 
-      const name = `${profileCustomer.attributes.name || ''} ${profileCustomer.attributes.last_name || ''}`.toLowerCase();
+      const name =
+        `${profileCustomer.attributes.name || ''} ${profileCustomer.attributes.last_name || ''}`.toLowerCase();
       const email = customer.access_email?.toLowerCase() || '';
       const cpf = profileCustomer.attributes.cpf || '';
       const cnpj = profileCustomer.attributes.cnpj || '';
 
-      return name.includes(searchTerm) || 
-             email.includes(searchTerm) || 
-             cpf.includes(searchTerm) || 
-             cnpj.includes(searchTerm);
+      return (
+        name.includes(searchTerm) ||
+        email.includes(searchTerm) ||
+        cpf.includes(searchTerm) ||
+        cnpj.includes(searchTerm)
+      );
     });
   }
 
   // Status filter
   if (filters.status) {
-    filtered = filtered.filter(customer => customer.status === filters.status);
+    filtered = filtered.filter((customer) => customer.status === filters.status);
   }
 
   // Capacity filter
   if (filters.capacity) {
-    filtered = filtered.filter(customer => 
-      customer.profile_customer?.attributes?.capacity === filters.capacity
+    filtered = filtered.filter(
+      (customer) => customer.profile_customer?.attributes?.capacity === filters.capacity
     );
   }
 
-  // Customer type filter  
+  // Customer type filter
   if (filters.customerType) {
-    filtered = filtered.filter(customer => 
-      customer.profile_customer?.attributes?.customer_type === filters.customerType
+    filtered = filtered.filter(
+      (customer) => customer.profile_customer?.attributes?.customer_type === filters.customerType
     );
   }
 
@@ -148,17 +153,13 @@ function createCustomerStore() {
         update((state) => {
           // Store all customers
           const allCustomers = response.data;
-          
           // Apply filters
           const filtered = filterCustomers(allCustomers, state.filters);
-          
           // Calculate pagination
           const totalPages = Math.ceil(filtered.length / state.pagination.perPage);
           const currentPage = Math.min(state.pagination.currentPage, Math.max(1, totalPages));
-          
           // Get current page data
           const paginated = paginateCustomers(filtered, currentPage, state.pagination.perPage);
-          
           return {
             ...state,
             allCustomers,
@@ -196,14 +197,11 @@ function createCustomerStore() {
       update((state) => {
         // Apply filters to all customers
         const filtered = filterCustomers(state.allCustomers, state.filters);
-        
         // Calculate pagination
         const totalPages = Math.ceil(filtered.length / state.pagination.perPage);
         const currentPage = Math.min(state.pagination.currentPage, Math.max(1, totalPages));
-        
         // Get current page data
         const paginated = paginateCustomers(filtered, currentPage, state.pagination.perPage);
-        
         return {
           ...state,
           filteredCustomers: filtered,
@@ -538,35 +536,21 @@ function createCustomerStore() {
 export const customerStore = createCustomerStore();
 
 // Export derived stores for easy access to specific parts of state
-export const customers = derived(
-  customerStore,
-  ($store: CustomerState) => $store.customers
+export const customers = derived(customerStore, ($store: CustomerState) => $store.customers);
+
+export const activeCustomers = derived(customerStore, ($store: CustomerState) =>
+  $store.customers.filter((c) => c.status === 'active')
 );
 
-export const activeCustomers = derived(
-  customerStore,
-  ($store: CustomerState) => $store.customers.filter((c) => c.status === 'active')
+export const inactiveCustomers = derived(customerStore, ($store: CustomerState) =>
+  $store.customers.filter((c) => c.status === 'inactive')
 );
 
-export const inactiveCustomers = derived(
-  customerStore,
-  ($store: CustomerState) => $store.customers.filter((c) => c.status === 'inactive')
-);
+export const isLoading = derived(customerStore, ($store: CustomerState) => $store.isLoading);
 
-export const isLoading = derived(
-  customerStore,
-  ($store: CustomerState) => $store.isLoading
-);
+export const error = derived(customerStore, ($store: CustomerState) => $store.error);
 
-export const error = derived(
-  customerStore,
-  ($store: CustomerState) => $store.error
-);
-
-export const success = derived(
-  customerStore,
-  ($store: CustomerState) => $store.success
-);
+export const success = derived(customerStore, ($store: CustomerState) => $store.success);
 
 export const currentCustomer = derived(
   customerStore,

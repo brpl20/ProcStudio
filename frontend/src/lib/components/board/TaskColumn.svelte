@@ -144,7 +144,9 @@
         {#each tasks as task, index (task.id)}
           <!-- Drop zone before task -->
           {#if canDropTask && isDragOver && dropPosition === index}
-            <div class="h-2 bg-primary bg-opacity-20 rounded border-2 border-dashed border-primary"></div>
+            <div
+              class="h-2 bg-primary bg-opacity-20 rounded border-2 border-dashed border-primary"
+            ></div>
           {/if}
 
           <TaskCard {task} />
@@ -152,7 +154,9 @@
 
         <!-- Drop zone after last task -->
         {#if canDropTask && isDragOver && dropPosition === tasks.length}
-          <div class="h-2 bg-primary bg-opacity-20 rounded border-2 border-dashed border-primary"></div>
+          <div
+            class="h-2 bg-primary bg-opacity-20 rounded border-2 border-dashed border-primary"
+          ></div>
         {/if}
       </div>
     {/if}
