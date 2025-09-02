@@ -114,11 +114,33 @@ module Api
 
       def destroy
         if destroy_fully?
-          UserProfile.with_deleted.find(params[:id]).destroy_fully!
+          user_profile = UserProfile.with_deleted.find(params[:id])
+          user_profile.destroy_fully!
+          message = 'Perfil de usuário removido permanentemente'
         else
           retrieve_user_profile
           @user_profile.destroy
+          message = 'Perfil de usuário removido com sucesso'
         end
+
+        render json: {
+          success: true,
+          message: message,
+          data: { id: params[:id] }
+        }, status: :ok
+      rescue ActiveRecord::RecordNotFound
+        render json: {
+          success: false,
+          message: 'Perfil de usuário não encontrado',
+          errors: ['Perfil de usuário não encontrado']
+        }, status: :not_found
+      rescue StandardError => e
+        error_message = e.message
+        render json: {
+          success: false,
+          message: error_message,
+          errors: [error_message]
+        }, status: :unprocessable_entity
       end
 
       def restore

@@ -93,7 +93,8 @@ class UserProfile < ApplicationRecord
   has_many :user_profile_works, dependent: :destroy
   has_many :works, through: :user_profile_works
 
-  has_many :jobs, dependent: :destroy
+  has_many :job_user_profiles, dependent: :destroy
+  has_many :jobs, through: :job_user_profiles
 
   # Nested attributes for API
   accepts_nested_attributes_for :phones,

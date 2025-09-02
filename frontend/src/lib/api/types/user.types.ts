@@ -134,3 +134,18 @@ export interface UpdateUserProfileRequest {
     office_id: number;
   }>;
 }
+
+// Standardized API Response Types
+export interface ApiSuccessResponse<T = unknown> {
+  success: true;
+  message: string;
+  data: T;
+}
+
+export interface ApiErrorResponse {
+  success: false;
+  message: string;
+  errors: string[];
+}
+
+export type ApiResponse<T = unknown> = ApiSuccessResponse<T> | ApiErrorResponse;

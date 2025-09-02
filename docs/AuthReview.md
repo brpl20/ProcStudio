@@ -421,3 +421,30 @@ For authentication issues or questions:
 - Check application logs for detailed error messages
 - Review Devise and JWT documentation
 - Contact system administrators for account issues
+
+---
+
+# Final Auth Checking
+
+When checking a Ruby on Rails app for the quality of user authentication, there are several key areas to focus on. Here's what you should look for:
+Security Best Practices
+
+Password storage - Ensure passwords are properly hashed (not encrypted or stored as plaintext). Rails uses bcrypt by default with has_secure_password, which is good practice.
+Password requirements - Check if the app enforces strong password policies with minimum length, complexity requirements, and rejection of commonly used passwords.
+Brute force protection - Look for account lockout mechanisms or rate limiting on login attempts to prevent brute force attacks.
+Session management - Verify proper session handling with secure session cookies that have appropriate expiration, HttpOnly and Secure flags.
+CSRF protection - Rails has built-in CSRF protection via authenticity tokens, but verify it's actually enabled and used consistently.
+
+Implementation Quality
+
+Authentication gem - Check if the app uses a well-maintained gem like Devise, Clearance, or Authlogic rather than a custom implementation.
+Multi-factor authentication - See if 2FA/MFA is implemented, particularly for admin or sensitive user accounts.
+Secure password reset flow - Ensure the password reset process uses time-limited tokens sent to verified email addresses.
+Secure account recovery - Look for robust account recovery methods that don't bypass security.
+Proper authorization - Check that authentication is paired with proper authorization (using gems like CanCanCan, Pundit).
+
+Usability Considerations
+
+Login UX - Evaluate the login experience for usability while maintaining security.
+Error messages - Check that error messages don't reveal too much information (e.g., whether a username exists).
+Remember me functionality - If implemented, ensure it's done securely.

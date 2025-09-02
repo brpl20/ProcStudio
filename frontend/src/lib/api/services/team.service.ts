@@ -10,9 +10,9 @@ import type {
   TeamResponse,
   MyTeamResponse,
   UpdateTeamRequest,
-  UpdateTeamResponse,
   TeamMembersResponse,
-  TeamData
+  TeamData,
+  ApiSuccessResponse
 } from '../types';
 
 export class TeamService {
@@ -42,8 +42,8 @@ export class TeamService {
   /**
    * Update current user's team
    */
-  async updateMyTeam(teamData: UpdateTeamRequest): Promise<UpdateTeamResponse> {
-    return this.http.put<UpdateTeamResponse>(API_ENDPOINTS.MY_TEAM, teamData);
+  async updateMyTeam(teamData: UpdateTeamRequest): Promise<ApiSuccessResponse<TeamData>> {
+    return this.http.put<ApiSuccessResponse<TeamData>>(API_ENDPOINTS.MY_TEAM, teamData);
   }
 
   /**
@@ -52,8 +52,11 @@ export class TeamService {
   async updateTeam(
     teamId: string | number,
     teamData: UpdateTeamRequest
-  ): Promise<UpdateTeamResponse> {
-    return this.http.put<UpdateTeamResponse>(`${API_ENDPOINTS.TEAMS}/${teamId}`, teamData);
+  ): Promise<ApiSuccessResponse<TeamData>> {
+    return this.http.put<ApiSuccessResponse<TeamData>>(
+      `${API_ENDPOINTS.TEAMS}/${teamId}`,
+      teamData
+    );
   }
 
   /**
@@ -66,15 +69,17 @@ export class TeamService {
   /**
    * Create a new team (admin only)
    */
-  async createTeam(teamData: UpdateTeamRequest): Promise<TeamResponse> {
-    return this.http.post<TeamResponse>(API_ENDPOINTS.TEAMS, teamData);
+  async createTeam(teamData: UpdateTeamRequest): Promise<ApiSuccessResponse<TeamData>> {
+    return this.http.post<ApiSuccessResponse<TeamData>>(API_ENDPOINTS.TEAMS, teamData);
   }
 
   /**
    * Delete a team (admin only)
    */
-  async deleteTeam(teamId: string | number): Promise<void> {
-    return this.http.delete<void>(`${API_ENDPOINTS.TEAMS}/${teamId}`);
+  async deleteTeam(teamId: string | number): Promise<ApiSuccessResponse<{ id: string | number }>> {
+    return this.http.delete<ApiSuccessResponse<{ id: string | number }>>(
+      `${API_ENDPOINTS.TEAMS}/${teamId}`
+    );
   }
 
   /**

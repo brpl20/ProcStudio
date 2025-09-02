@@ -24,12 +24,16 @@ module Api
 
         if team.save
           render json: {
-            team: team.as_json(only: [:id, :name, :subdomain, :created_at]),
-            message: 'Team criado com sucesso!'
+            success: true,
+            message: 'Team criado com sucesso',
+            data: team.as_json(only: [:id, :name, :subdomain, :created_at])
           }, status: :created
         else
+          error_messages = team.errors.full_messages
           render json: {
-            errors: team.errors.full_messages
+            success: false,
+            message: error_messages.first,
+            errors: error_messages
           }, status: :unprocessable_entity
         end
       end
@@ -40,12 +44,16 @@ module Api
       def update
         if @team.update(team_params)
           render json: {
-            team: @team.as_json(only: [:id, :name, :subdomain, :settings, :created_at]),
-            message: 'Team atualizado com sucesso!'
-          }
+            success: true,
+            message: 'Team atualizado com sucesso',
+            data: @team.as_json(only: [:id, :name, :subdomain, :settings, :created_at])
+          }, status: :ok
         else
+          error_messages = @team.errors.full_messages
           render json: {
-            errors: @team.errors.full_messages
+            success: false,
+            message: error_messages.first,
+            errors: error_messages
           }, status: :unprocessable_entity
         end
       end
@@ -53,7 +61,17 @@ module Api
       # DELETE /api/v1/teams/1
       def destroy
         @team.destroy
-        render json: { message: 'Team excluído com sucesso!' }
+        render json: {
+          success: true,
+          message: 'Team excluído com sucesso',
+          data: { id: @team.id }
+        }, status: :ok
+      rescue StandardError => e
+        render json: {
+          success: false,
+          message: e.message,
+          errors: [e.message]
+        }, status: :unprocessable_entity
       end
 
       private
@@ -77,7 +95,12 @@ module Api
           'destroy' => 'destroy?'
         }
         error_key = action_map[action_name] || 'default'
-        render json: { error: I18n.t("pundit.team.#{error_key}") }, status: :forbidden
+        error_message = I18n.t("pundit.team.#{error_key}")
+        render json: {
+          success: false,
+          message: error_message,
+          errors: [error_message]
+        }, status: :forbidden
       end
 
       def check_team_access!
@@ -88,18 +111,31 @@ module Api
         if action_name == 'update'
           # Permitir update apenas se for o próprio team e tiver role lawyer
           if @team != @current_user.team
-            render json: { error: 'Não autorizado a atualizar este team. Você só pode atualizar o seu próprio team.' },
-                   status: :forbidden
+            error_message = 'Não autorizado a atualizar este team. Você só pode atualizar o seu próprio team.'
+            render json: {
+              success: false,
+              message: error_message,
+              errors: [error_message]
+            }, status: :forbidden
             nil
           elsif !@current_user.user_profile&.lawyer?
-            render json: { error: 'Não autorizado a atualizar teams. Apenas usuários com role lawyer ou super_admin podem executar esta ação.' },
-                   status: :forbidden
+            error_message = 'Não autorizado a atualizar teams. Apenas usuários com role lawyer ou super_admin podem executar esta ação.'
+            render json: {
+              success: false,
+              message: error_message,
+              errors: [error_message]
+            }, status: :forbidden
             nil
           end
         else
           # Para show, qualquer usuário pode ver o próprio team
           unless @team == @current_user.team
-            render json: { error: I18n.t('pundit.team.show?') }, status: :forbidden
+            error_message = I18n.t('pundit.team.show?')
+            render json: {
+              success: false,
+              message: error_message,
+              errors: [error_message]
+            }, status: :forbidden
             nil
           end
         end

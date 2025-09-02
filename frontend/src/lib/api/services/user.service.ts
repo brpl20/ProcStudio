@@ -46,10 +46,32 @@ export class UserService {
   }
 
   /**
-   * Delete a user
+   * Soft delete a user
    */
-  async deleteUser(userId: string): Promise<void> {
-    return this.http.delete<void>(`${API_ENDPOINTS.USERS}/${userId}`);
+  async deleteUser(
+    userId: string
+  ): Promise<{ success: boolean; message: string; data: { id: string } }> {
+    return this.http.delete<{ success: boolean; message: string; data: { id: string } }>(
+      `${API_ENDPOINTS.USERS}/${userId}`
+    );
+  }
+
+  /**
+   * Hard delete a user (permanent)
+   */
+  async deleteUserPermanently(
+    userId: string
+  ): Promise<{ success: boolean; message: string; data: { id: string } }> {
+    return this.http.delete<{ success: boolean; message: string; data: { id: string } }>(
+      `${API_ENDPOINTS.USERS}/${userId}?destroy_fully=true`
+    );
+  }
+
+  /**
+   * Restore a soft-deleted user
+   */
+  async restoreUser(userId: string): Promise<UserResponse> {
+    return this.http.post<UserResponse>(`${API_ENDPOINTS.USERS}/${userId}/restore`, {});
   }
 
   /**
@@ -76,6 +98,38 @@ export class UserService {
     return this.http.put<{ data: UserProfileData }>(
       `${API_ENDPOINTS.USER_PROFILES}/${profileId}`,
       profileData
+    );
+  }
+
+  /**
+   * Soft delete a user profile
+   */
+  async deleteUserProfile(
+    profileId: string
+  ): Promise<{ success: boolean; message: string; data: { id: string } }> {
+    return this.http.delete<{ success: boolean; message: string; data: { id: string } }>(
+      `${API_ENDPOINTS.USER_PROFILES}/${profileId}`
+    );
+  }
+
+  /**
+   * Hard delete a user profile (permanent)
+   */
+  async deleteUserProfilePermanently(
+    profileId: string
+  ): Promise<{ success: boolean; message: string; data: { id: string } }> {
+    return this.http.delete<{ success: boolean; message: string; data: { id: string } }>(
+      `${API_ENDPOINTS.USER_PROFILES}/${profileId}?destroy_fully=true`
+    );
+  }
+
+  /**
+   * Restore a soft-deleted user profile
+   */
+  async restoreUserProfile(profileId: string): Promise<{ data: UserProfileData }> {
+    return this.http.post<{ data: UserProfileData }>(
+      `${API_ENDPOINTS.USER_PROFILES}/${profileId}/restore`,
+      {}
     );
   }
 
