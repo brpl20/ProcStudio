@@ -116,7 +116,7 @@
     <!-- Menu lateral -->
     <div class="drawer-side">
       <label for="admin-drawer" class="drawer-overlay"></label>
-      <ul class="menu menu-lg p-4 w-80 min-h-full bg-base-100 lg:border-r text-primary">
+      <ul class="menu menu-lg p-4 w-80 min-h-full bg-base-100 lg:border-r text-base-content">
         <!-- Título -->
         <li>
           <div class="normal-case menu-title text-xl font-bold text-primary flex flex-row">
@@ -365,5 +365,27 @@
     height: 1px;
     background: var(--fallback-bc, oklch(var(--bc) / 0.1));
     margin: 0.5rem 0;
+  }
+
+  /* Keep icons blue while text stays dark */
+  .menu :global(svg) {
+    color: var(--color-primary);
+  }
+
+  .menu li a {
+    color: var(--color-base-content);
+  }
+
+  .menu li a:hover {
+    color: var(--color-base-content);
+  }
+
+  .menu li a.active {
+    background-color: var(--color-primary);
+    color: var(--color-primary-content);
+  }
+
+  .menu li a.active :global(svg) {
+    color: var(--color-primary-content);
   }
 </style>

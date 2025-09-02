@@ -1,0 +1,30 @@
+# Color and Styling
+
+## Color Base
+Neutral colors:
+#FEFEFA
+#FOF4F3
+#B5192B
+#FD7964
+#999999
+#373F45
+
+Blue:
+#0277EE
+#CBEEFE
+#98D9FD
+#0057B0
+#002272
+
+Yellow:
+#FDF4DD
+#A4872F
+
+Red:
+#FC3C32
+#BOBOBO
+#EDEDED
+
+Green:
+#0B5F1F
+#E7FCD8
