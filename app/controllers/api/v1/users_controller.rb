@@ -22,20 +22,45 @@ module Api
           users = users.public_send("filter_by_#{key}", value.strip)
         end
 
-        render json: UserSerializer.new(
+        serialized_data = UserSerializer.new(
           users,
           meta: {
             total_count: users.offset(nil).limit(nil).count
           },
           include: [:user_profile]
-        ), status: :ok
+        ).serializable_hash
+
+        render json: {
+          success: true,
+          message: 'Usuários obtidos com sucesso',
+          data: serialized_data[:data],
+          meta: serialized_data[:meta]
+        }, status: :ok
+      rescue StandardError => e
+        render json: {
+          success: false,
+          message: e.message,
+          errors: [e.message]
+        }, status: :internal_server_error
       end
 
       def show
-        render json: UserSerializer.new(
+        serialized_data = UserSerializer.new(
           @user,
           include: [:user_profile]
-        ), status: :ok
+        ).serializable_hash
+
+        render json: {
+          success: true,
+          message: 'Usuário obtido com sucesso',
+          data: serialized_data[:data]
+        }, status: :ok
+      rescue StandardError => e
+        render json: {
+          success: false,
+          message: e.message,
+          errors: [e.message]
+        }, status: :internal_server_error
       end
 
       def create
@@ -44,9 +69,16 @@ module Api
         user.team = current_team || @current_user.team
 
         if user.save
-          render json: UserSerializer.new(
-            user
-          ), status: :created
+          serialized_data = UserSerializer.new(
+            user,
+            include: [:user_profile]
+          ).serializable_hash
+
+          render json: {
+            success: true,
+            message: 'Usuário criado com sucesso',
+            data: serialized_data[:data]
+          }, status: :created
         else
           error_messages = user.errors.full_messages
           render(
@@ -72,20 +104,30 @@ module Api
 
       def update
         if @user.update(users_params)
-          render json: UserSerializer.new(
-            @user
-          ), status: :ok
+          serialized_data = UserSerializer.new(
+            @user,
+            include: [:user_profile]
+          ).serializable_hash
+
+          render json: {
+            success: true,
+            message: 'Usuário atualizado com sucesso',
+            data: serialized_data[:data]
+          }, status: :ok
         else
           error_messages = @user.errors.full_messages
-          render(
-            status: :bad_request,
-            json: {
-              success: false,
-              message: error_messages.first,
-              errors: error_messages
-            }
-          )
+          render json: {
+            success: false,
+            message: error_messages.first,
+            errors: error_messages
+          }, status: :unprocessable_entity
         end
+      rescue StandardError => e
+        render json: {
+          success: false,
+          message: e.message,
+          errors: [e.message]
+        }, status: :internal_server_error
       end
 
       def destroy
@@ -122,20 +164,36 @@ module Api
       def restore
         user = User.with_deleted.find(params[:id])
         if user.recover
-          render json: UserSerializer.new(
-            user
-          ), status: :ok
+          serialized_data = UserSerializer.new(
+            user,
+            include: [:user_profile]
+          ).serializable_hash
+
+          render json: {
+            success: true,
+            message: 'Usuário restaurado com sucesso',
+            data: serialized_data[:data]
+          }, status: :ok
         else
           error_messages = user.errors.full_messages
-          render(
-            status: :bad_request,
-            json: {
-              success: false,
-              message: error_messages.first,
-              errors: error_messages
-            }
-          )
+          render json: {
+            success: false,
+            message: error_messages.first,
+            errors: error_messages
+          }, status: :unprocessable_entity
         end
+      rescue ActiveRecord::RecordNotFound
+        render json: {
+          success: false,
+          message: 'Usuário não encontrado',
+          errors: ['Usuário não encontrado']
+        }, status: :not_found
+      rescue StandardError => e
+        render json: {
+          success: false,
+          message: e.message,
+          errors: [e.message]
+        }, status: :internal_server_error
       end
 
       private

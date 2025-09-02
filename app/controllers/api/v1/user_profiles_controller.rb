@@ -23,19 +23,44 @@ module Api
           user_profiles = user_profiles.public_send("filter_by_#{key}", value.strip)
         end
 
-        render json: UserProfileSerializer.new(
+        serialized_data = UserProfileSerializer.new(
           user_profiles,
           meta: {
             total_count: user_profiles.offset(nil).limit(nil).count
           }
-        ), status: :ok
+        ).serializable_hash
+
+        render json: {
+          success: true,
+          message: 'Perfis de usuário obtidos com sucesso',
+          data: serialized_data[:data],
+          meta: serialized_data[:meta]
+        }, status: :ok
+      rescue StandardError => e
+        render json: {
+          success: false,
+          message: e.message,
+          errors: [e.message]
+        }, status: :internal_server_error
       end
 
       def show
-        render json: UserProfileSerializer.new(
+        serialized_data = UserProfileSerializer.new(
           @user_profile,
           params: { action: 'show' }
-        ), status: :ok
+        ).serializable_hash
+
+        render json: {
+          success: true,
+          message: 'Perfil de usuário obtido com sucesso',
+          data: serialized_data[:data]
+        }, status: :ok
+      rescue StandardError => e
+        render json: {
+          success: false,
+          message: e.message,
+          errors: [e.message]
+        }, status: :internal_server_error
       end
 
       def create
@@ -67,49 +92,59 @@ module Api
           # Reload to ensure all associations are loaded
           user_profile.reload
 
-          render json: UserProfileSerializer.new(
+          serialized_data = UserProfileSerializer.new(
             user_profile,
             params: { action: 'show' }
-          ), status: :created
+          ).serializable_hash
+
+          render json: {
+            success: true,
+            message: 'Perfil de usuário criado com sucesso',
+            data: serialized_data[:data]
+          }, status: :created
         else
           error_messages = user_profile.errors.full_messages
-          render(
-            status: :bad_request,
-            json: {
-              success: false,
-              message: error_messages.first,
-              errors: error_messages
-            }
-          )
+          render json: {
+            success: false,
+            message: error_messages.first,
+            errors: error_messages
+          }, status: :unprocessable_entity
         end
       rescue StandardError => e
         error_message = e.message
-        render(
-          status: :bad_request,
-          json: {
-            success: false,
-            message: error_message,
-            errors: [error_message]
-          }
-        )
+        render json: {
+          success: false,
+          message: error_message,
+          errors: [error_message]
+        }, status: :unprocessable_entity
       end
 
       def update
         if @user_profile.update(user_profiles_params)
-          render json: UserProfileSerializer.new(
-            @user_profile
-          ), status: :ok
+          serialized_data = UserProfileSerializer.new(
+            @user_profile,
+            params: { action: 'show' }
+          ).serializable_hash
+
+          render json: {
+            success: true,
+            message: 'Perfil de usuário atualizado com sucesso',
+            data: serialized_data[:data]
+          }, status: :ok
         else
           error_messages = @user_profile.errors.full_messages
-          render(
-            status: :bad_request,
-            json: {
-              success: false,
-              message: error_messages.first,
-              errors: error_messages
-            }
-          )
+          render json: {
+            success: false,
+            message: error_messages.first,
+            errors: error_messages
+          }, status: :unprocessable_entity
         end
+      rescue StandardError => e
+        render json: {
+          success: false,
+          message: e.message,
+          errors: [e.message]
+        }, status: :internal_server_error
       end
 
       def destroy
@@ -145,20 +180,36 @@ module Api
 
       def restore
         if @user_profile.recover
-          render json: UserProfileSerializer.new(
-            @user_profile
-          ), status: :ok
+          serialized_data = UserProfileSerializer.new(
+            @user_profile,
+            params: { action: 'show' }
+          ).serializable_hash
+
+          render json: {
+            success: true,
+            message: 'Perfil de usuário restaurado com sucesso',
+            data: serialized_data[:data]
+          }, status: :ok
         else
           error_messages = @user_profile.errors.full_messages
-          render(
-            status: :bad_request,
-            json: {
-              success: false,
-              message: error_messages.first,
-              errors: error_messages
-            }
-          )
+          render json: {
+            success: false,
+            message: error_messages.first,
+            errors: error_messages
+          }, status: :unprocessable_entity
         end
+      rescue ActiveRecord::RecordNotFound
+        render json: {
+          success: false,
+          message: 'Perfil de usuário não encontrado',
+          errors: ['Perfil de usuário não encontrado']
+        }, status: :not_found
+      rescue StandardError => e
+        render json: {
+          success: false,
+          message: e.message,
+          errors: [e.message]
+        }, status: :internal_server_error
       end
 
       def complete_profile

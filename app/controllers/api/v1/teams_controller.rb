@@ -10,12 +10,32 @@ module Api
       # GET /api/v1/teams
       def index
         teams = Team.all
-        render json: { teams: teams.as_json(only: [:id, :name, :subdomain, :created_at]) }
+        render json: {
+          success: true,
+          message: 'Teams obtidos com sucesso',
+          data: teams.as_json(only: [:id, :name, :subdomain, :created_at])
+        }, status: :ok
+      rescue StandardError => e
+        render json: {
+          success: false,
+          message: e.message,
+          errors: [e.message]
+        }, status: :internal_server_error
       end
 
       # GET /api/v1/teams/1
       def show
-        render json: { team: @team.as_json(only: [:id, :name, :subdomain, :settings, :created_at]) }
+        render json: {
+          success: true,
+          message: 'Team obtido com sucesso',
+          data: @team.as_json(only: [:id, :name, :subdomain, :settings, :created_at])
+        }, status: :ok
+      rescue StandardError => e
+        render json: {
+          success: false,
+          message: e.message,
+          errors: [e.message]
+        }, status: :internal_server_error
       end
 
       # POST /api/v1/teams
@@ -36,6 +56,12 @@ module Api
             errors: error_messages
           }, status: :unprocessable_entity
         end
+      rescue StandardError => e
+        render json: {
+          success: false,
+          message: e.message,
+          errors: [e.message]
+        }, status: :internal_server_error
       end
 
       # PATCH/PUT /api/v1/teams/1
@@ -56,6 +82,12 @@ module Api
             errors: error_messages
           }, status: :unprocessable_entity
         end
+      rescue StandardError => e
+        render json: {
+          success: false,
+          message: e.message,
+          errors: [e.message]
+        }, status: :internal_server_error
       end
 
       # DELETE /api/v1/teams/1
@@ -78,6 +110,12 @@ module Api
 
       def set_team
         @team = Team.find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+        render json: {
+          success: false,
+          message: 'Team não encontrado',
+          errors: ['Team não encontrado']
+        }, status: :not_found
       end
 
       def team_params
