@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class BackofficeController < ApplicationController
+  skip_before_action :verify_authenticity_token
   include JwtAuth
   include Pundit::Authorization
   include TeamScoped

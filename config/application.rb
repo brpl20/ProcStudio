@@ -15,6 +15,7 @@ require "action_mailer/railtie"
 # require "action_text/engine"
 require "action_view/railtie"
 # require "action_cable/engine"
+require "sprockets/railtie" # Enable asset pipeline for CSS/JS
 require "rails/test_unit/railtie"
 
 # Require the gems listed in Gemfile, including any gems
@@ -24,7 +25,7 @@ Bundler.require(*Rails.groups)
 module Procstudio_api
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.api_only = true
+    config.api_only = false
     config.load_defaults 7.0
     config.i18n.default_locale = :'pt-BR'
     config.time_zone = 'Brasilia'

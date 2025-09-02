@@ -1,0 +1,144 @@
+<div class="container">
+  <div class="page-header">
+    <h1>Novo Usuário</h1>
+    <%= link_to "Voltar", users_path, class: "btn btn-secondary" %>
+  </div>
+
+  <div class="form-container">
+    <% if flash[:alert] %>
+      <div class="alert alert-error">
+        <%= flash[:alert] %>
+      </div>
+    <% end %>
+
+    <%= form_with model: @user_profile, url: users_path, local: true, authenticity_token: true, class: "user-form" do |f| %>
+      <%= f.fields_for :user do |user_fields| %>
+        <div class="form-section">
+          <h3>Dados de Acesso</h3>
+          
+          <div class="form-group">
+            <%= user_fields.label :email, "E-mail", class: "form-label" %>
+            <%= user_fields.email_field :email, class: "form-input", required: true %>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <%= user_fields.label :password, "Senha", class: "form-label" %>
+              <%= user_fields.password_field :password, class: "form-input", required: true %>
+              <small class="form-hint">Mínimo de 6 caracteres</small>
+            </div>
+
+            <div class="form-group">
+              <%= user_fields.label :password_confirmation, "Confirmar Senha", class: "form-label" %>
+              <%= user_fields.password_field :password_confirmation, class: "form-input", required: true %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+      
+      <div class="form-section">
+        <h3>Dados Pessoais</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <%= f.label :name, "Nome", class: "form-label" %>
+            <%= f.text_field :name, class: "form-input", required: true %>
+          </div>
+
+          <div class="form-group">
+            <%= f.label :last_name, "Sobrenome", class: "form-label" %>
+            <%= f.text_field :last_name, class: "form-input", required: true %>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <%= f.label :cpf, "CPF", class: "form-label" %>
+            <%= f.text_field :cpf, class: "form-input", required: true, 
+                placeholder: "000.000.000-00" %>
+          </div>
+
+          <div class="form-group">
+            <%= f.label :rg, "RG", class: "form-label" %>
+            <%= f.text_field :rg, class: "form-input", required: true %>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <%= f.label :birth, "Data de Nascimento", class: "form-label" %>
+            <%= f.date_field :birth, class: "form-input", required: true %>
+          </div>
+
+          <div class="form-group">
+            <%= f.label :gender, "Gênero", class: "form-label" %>
+            <%= f.select :gender, 
+                options_for_select([
+                  ["Masculino", "male"],
+                  ["Feminino", "female"],
+                  ["Outro", "other"]
+                ]), 
+                { prompt: "Selecione..." }, 
+                class: "form-input", required: true %>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <%= f.label :civil_status, "Estado Civil", class: "form-label" %>
+            <%= f.select :civil_status,
+                options_for_select([
+                  ["Solteiro(a)", "single"],
+                  ["Casado(a)", "married"],
+                  ["Divorciado(a)", "divorced"],
+                  ["Viúvo(a)", "widower"],
+                  ["União Estável", "union"]
+                ]),
+                { prompt: "Selecione..." },
+                class: "form-input", required: true %>
+          </div>
+
+          <div class="form-group">
+            <%= f.label :nationality, "Nacionalidade", class: "form-label" %>
+            <%= f.select :nationality,
+                options_for_select([
+                  ["Brasileiro(a)", "brazilian"],
+                  ["Estrangeiro(a)", "foreigner"]
+                ], "brazilian"),
+                {},
+                class: "form-input", required: true %>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <%= f.label :oab, "OAB", class: "form-label" %>
+            <%= f.text_field :oab, class: "form-input", placeholder: "PR_54159" %>
+          </div>
+
+          <div class="form-group">
+            <%= f.label :role, "Função", class: "form-label" %>
+            <%= f.select :role,
+                options_for_select([
+                  ["Advogado", "lawyer"],
+                  ["Paralegal", "paralegal"],
+                  ["Estagiário", "trainee"],
+                  ["Secretário", "secretary"],
+                  ["Contador", "counter"],
+                  ["Ex-Contador", "excounter"],
+                  ["Representante", "representant"],
+                  ["Super Admin", "super_admin"]
+                ]),
+                { prompt: "Selecione..." },
+                class: "form-input", required: true %>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <%= f.submit "Criar Usuário", class: "btn btn-primary" %>
+        <%= link_to "Cancelar", users_path, class: "btn btn-secondary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

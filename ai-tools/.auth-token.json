@@ -1,18 +1,22 @@
 {
   "user1": {
-    "token": "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo1LCJhZG1pbl9pZCI6NSwiZXhwIjoxNzU2ODQ3MTQyLCJuYW1lIjoiQnJ1bm8iLCJsYXN0X25hbWUiOiJQZWxsaXp6ZXR0aSIsInJvbGUiOiJsYXd5ZXIifQ.lM8y1CY5UZD9KdDmWKnw5wPkYq3jA_GjEwplytxAuQI",
+    "token": "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo1LCJhZG1pbl9pZCI6NSwiZXhwIjoxNzU2ODkxMTg3LCJuYW1lIjoiTGFuZSIsImxhc3RfbmFtZSI6IkRvZSIsInJvbGUiOiJsYXd5ZXIifQ.qG51NekL6Q5uu_Y6G3etogMgK089NwUzXnN_msvLN3E",
     "userData": {
       "email": "u1@gmail.com",
-      "token": "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo1LCJhZG1pbl9pZCI6NSwiZXhwIjoxNzU2ODQ3MTQyLCJuYW1lIjoiQnJ1bm8iLCJsYXN0X25hbWUiOiJQZWxsaXp6ZXR0aSIsInJvbGUiOiJsYXd5ZXIifQ.lM8y1CY5UZD9KdDmWKnw5wPkYq3jA_GjEwplytxAuQI",
-      "needs_profile_completion": false,
-      "message": "Login realizado com sucesso",
+      "token": "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo1LCJhZG1pbl9pZCI6NSwiZXhwIjoxNzU2ODkxMTg3LCJuYW1lIjoiTGFuZSIsImxhc3RfbmFtZSI6IkRvZSIsInJvbGUiOiJsYXd5ZXIifQ.qG51NekL6Q5uu_Y6G3etogMgK089NwUzXnN_msvLN3E",
+      "needs_profile_completion": true,
+      "missing_fields": [
+        "phone",
+        "address"
+      ],
+      "message": "Perfil incompleto. Por favor complete as informações necessárias.",
       "role": "lawyer",
-      "name": "Bruno",
-      "last_name": "Pellizzetti",
-      "oab": "PR_54159",
-      "gender": "male"
+      "name": "Lane",
+      "last_name": "Doe",
+      "oab": "151515 OAB/MS",
+      "gender": "other"
     },
-    "timestamp": "2025-09-01T21:05:42.626Z"
+    "timestamp": "2025-09-02T09:19:47.257Z"
   },
   "user2": {
     "token": "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxMSwiYWRtaW5faWQiOjExLCJleHAiOjE3NTY4MjA5MDl9.Bs51hSFU_UY0mZzQYAxQ9XZDRw5BmERK-MpOm1QTckU",

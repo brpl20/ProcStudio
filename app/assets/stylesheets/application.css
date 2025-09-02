@@ -1,0 +1,310 @@
+/*
+ * This is a manifest file that'll be compiled into application.css
+ */
+
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+/* Global Base Styles */
+@layer base {
+  :root {
+    /* Neutral Colors */
+    --color-snow: #FEFEFA;
+    --color-alabaster: #F0F4F3;
+    --color-crimson: #B5192B;
+    --color-salmon: #FD7964;
+    --color-gray-medium: #999999;
+    --color-charcoal: #373F45;
+    
+    /* Blue Colors */
+    --color-azure: #0277EE;
+    --color-sky-light: #CBEEFE;
+    --color-sky: #98D9FD;
+    --color-cobalt: #0057B0;
+    --color-navy: #002272;
+    
+    /* Yellow Colors */
+    --color-cream: #FDF4DD;
+    --color-gold: #A4872F;
+    
+    /* Red Colors */
+    --color-coral: #FC3C32;
+    --color-silver: #B0B0B0;
+    --color-pearl: #EDEDED;
+    
+    /* Green Colors */
+    --color-forest: #0B5F1F;
+    --color-mint: #E7FCD8;
+  }
+
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    @apply bg-snow text-charcoal;
+    @apply min-h-screen;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold text-charcoal;
+  }
+
+  h1 { @apply text-4xl lg:text-5xl; }
+  h2 { @apply text-3xl lg:text-4xl; }
+  h3 { @apply text-2xl lg:text-3xl; }
+  h4 { @apply text-xl lg:text-2xl; }
+  h5 { @apply text-lg lg:text-xl; }
+  h6 { @apply text-base lg:text-lg; }
+
+  a {
+    @apply text-azure hover:text-cobalt transition-colors;
+  }
+
+  p {
+    @apply leading-relaxed;
+  }
+}
+
+/* Component Styles */
+@layer components {
+  /* Button Styles */
+  .btn-primary-custom {
+    @apply bg-azure text-snow hover:bg-cobalt;
+    @apply px-6 py-3 rounded-md font-medium;
+    @apply transition-all duration-200 ease-in-out;
+    @apply shadow-sm hover:shadow-md;
+  }
+
+  .btn-secondary-custom {
+    @apply bg-crimson text-snow hover:bg-crimson/90;
+    @apply px-6 py-3 rounded-md font-medium;
+    @apply transition-all duration-200 ease-in-out;
+    @apply shadow-sm hover:shadow-md;
+  }
+
+  .btn-accent-custom {
+    @apply bg-salmon text-navy hover:bg-salmon/90;
+    @apply px-6 py-3 rounded-md font-medium;
+    @apply transition-all duration-200 ease-in-out;
+    @apply shadow-sm hover:shadow-md;
+  }
+
+  /* Card Styles */
+  .card-custom {
+    @apply bg-snow rounded-lg shadow-md;
+    @apply border border-pearl;
+    @apply p-6;
+  }
+
+  .card-hover {
+    @apply hover:shadow-lg transition-shadow duration-200;
+  }
+
+  /* Form Styles */
+  .form-input-custom {
+    @apply w-full px-4 py-2;
+    @apply bg-snow border border-pearl rounded-md;
+    @apply focus:outline-none focus:ring-2 focus:ring-azure focus:border-transparent;
+    @apply transition-all duration-200;
+  }
+
+  .form-label-custom {
+    @apply block text-sm font-medium text-charcoal mb-2;
+  }
+
+  .form-group {
+    @apply mb-4;
+  }
+
+  /* Alert Styles */
+  .alert-success-custom {
+    @apply bg-mint text-forest;
+    @apply border-l-4 border-forest;
+    @apply p-4 rounded-md;
+  }
+
+  .alert-error-custom {
+    @apply bg-coral/10 text-coral;
+    @apply border-l-4 border-coral;
+    @apply p-4 rounded-md;
+  }
+
+  .alert-warning-custom {
+    @apply bg-cream text-gold;
+    @apply border-l-4 border-gold;
+    @apply p-4 rounded-md;
+  }
+
+  .alert-info-custom {
+    @apply bg-sky-light text-navy;
+    @apply border-l-4 border-azure;
+    @apply p-4 rounded-md;
+  }
+
+  /* Badge Styles */
+  .badge-custom {
+    @apply inline-flex items-center px-3 py-1;
+    @apply text-xs font-medium rounded-full;
+  }
+
+  .badge-primary {
+    @apply bg-azure/10 text-azure;
+  }
+
+  .badge-success {
+    @apply bg-mint text-forest;
+  }
+
+  .badge-warning {
+    @apply bg-cream text-gold;
+  }
+
+  .badge-error {
+    @apply bg-coral/10 text-coral;
+  }
+
+  /* Navigation Styles */
+  .nav-link {
+    @apply text-charcoal hover:text-azure;
+    @apply px-3 py-2 rounded-md;
+    @apply transition-colors duration-200;
+  }
+
+  .nav-link-active {
+    @apply bg-alabaster text-azure;
+  }
+
+  /* Container Styles */
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Section Styles */
+  .section-custom {
+    @apply py-12 lg:py-16;
+  }
+
+  /* Grid Styles */
+  .grid-responsive {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+  }
+}
+
+/* Utility Styles */
+@layer utilities {
+  /* Text Utilities */
+  .text-gradient {
+    @apply bg-gradient-to-r from-azure to-cobalt;
+    @apply bg-clip-text text-transparent;
+  }
+
+  /* Background Utilities */
+  .bg-gradient-primary {
+    @apply bg-gradient-to-r from-azure to-cobalt;
+  }
+
+  .bg-gradient-secondary {
+    @apply bg-gradient-to-r from-crimson to-salmon;
+  }
+
+  /* Shadow Utilities */
+  .shadow-custom {
+    box-shadow: 0 4px 6px -1px rgba(55, 63, 69, 0.1), 
+                0 2px 4px -1px rgba(55, 63, 69, 0.06);
+  }
+
+  .shadow-custom-lg {
+    box-shadow: 0 10px 15px -3px rgba(55, 63, 69, 0.1), 
+                0 4px 6px -2px rgba(55, 63, 69, 0.05);
+  }
+
+  /* Animation Utilities */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from { 
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to { 
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Hover Effects */
+  .hover-lift {
+    @apply transition-transform duration-200;
+    @apply hover:-translate-y-1;
+  }
+
+  .hover-grow {
+    @apply transition-transform duration-200;
+    @apply hover:scale-105;
+  }
+}
+
+/* DaisyUI Theme Overrides */
+[data-theme="procstudio"] {
+  /* Custom component overrides for DaisyUI */
+  .btn {
+    @apply font-medium;
+  }
+
+  .btn-primary {
+    @apply shadow-sm hover:shadow-md;
+  }
+
+  .card {
+    @apply border border-pearl;
+  }
+
+  .input, .textarea, .select {
+    @apply border-pearl focus:border-azure;
+  }
+
+  .modal-box {
+    @apply bg-snow border border-pearl;
+  }
+
+  .dropdown-content {
+    @apply bg-snow border border-pearl shadow-custom-lg;
+  }
+
+  .navbar {
+    @apply bg-snow/95 backdrop-blur-sm border-b border-pearl;
+  }
+
+  .drawer-side {
+    @apply bg-alabaster;
+  }
+
+  .tabs-boxed {
+    @apply bg-alabaster;
+  }
+
+  .table {
+    @apply text-charcoal;
+  }
+
+  .table thead {
+    @apply text-charcoal bg-alabaster;
+  }
+
+  .table tbody tr:hover {
+    @apply bg-alabaster/50;
+  }
+}

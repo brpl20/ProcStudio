@@ -1,0 +1,43 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <h2 class="auth-title">Registro</h2>
+    
+    <% if flash[:alert] %>
+      <div class="alert alert-error">
+        <%= flash[:alert] %>
+      </div>
+    <% end %>
+
+    <%= form_with model: @user, url: register_path, local: true, class: "auth-form" do |f| %>
+      <div class="form-group">
+        <%= f.label :email, "E-mail", class: "form-label" %>
+        <%= f.email_field :email, class: "form-input", required: true, autofocus: true %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :password, "Senha", class: "form-label" %>
+        <%= f.password_field :password, class: "form-input", required: true %>
+        <small class="form-hint">Mínimo de 6 caracteres</small>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :password_confirmation, "Confirmar Senha", class: "form-label" %>
+        <%= f.password_field :password_confirmation, class: "form-input", required: true %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :oab, "OAB", class: "form-label" %>
+        <%= f.text_field :oab, class: "form-input", placeholder: "PR_54159", required: true %>
+        <small class="form-hint">Formato: UF_NÚMERO (ex: PR_54159)</small>
+      </div>
+
+      <div class="form-actions">
+        <%= f.submit "Registrar", class: "btn btn-primary" %>
+      </div>
+    <% end %>
+
+    <div class="auth-links">
+      <p>Já tem uma conta? <%= link_to "Faça login", login_path, class: "link" %></p>
+    </div>
+  </div>
+</div>

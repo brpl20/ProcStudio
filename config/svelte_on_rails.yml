@@ -1,0 +1,44 @@
+frontend_folder: "app/frontend"
+# the entrypoint that is your web root, example for vite: where @ points to
+# relative to Rails.root
+
+components_folder: "javascript/components"
+# relative to frontend_folder
+# where your svelte components are located
+
+ssr: :auto
+# options: true, false, :auto
+# :auto: render server side if request is initial request (works only with turbo, because it checks for the X-Turbo-Request-ID header)
+# when not server-side rendered the components must be built as custom elements, see node-package @csedl/svelte-on-rails
+
+non_ssr_request_header: 'X-Turbo-Request-ID'
+# when ssr: :auto =>
+# when this header contains any value (not blank), we are skipping server-side rendering
+# when this header is empty we assume initial request and doing server-side rendering
+
+# redis_cache_store:
+#   url: 'redis://localhost:6379/2'
+#   expires_in: 90.minutes (=> default / fallback: 1 hour)
+#   namespace: 'my-app-svelte-on-rails'
+
+turbo_stream:
+  # this part you need when you want to be able to trigger javascript actions on svelte-components from the backend
+  target_html_id: 'svelte-on-rails-stream-actions-box'
+  # html-id of any element that must exist for being able to receive actions (turbo streams can only work this way)
+  channel: 'public'
+
+action_cable:
+  # if you want to use it
+  channel: "svelte_on_rails_channel"
+
+development:
+  watch_changes: true
+  # Check on every request if any file within the svelte components folder have changed, for recompiling
+  # Case sensitive path checking, even the file system is case insensitive
+  # Make sure this ist set to tue for development and test, but not for production
+
+test:
+  watch_changes: true
+  cache_expiration_hours: 15
+
+production:

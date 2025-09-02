@@ -1,0 +1,96 @@
+<div class="container">
+  <div class="page-header">
+    <h1>Detalhes do Usuário</h1>
+    <div class="header-actions">
+      <%= link_to "Editar", edit_user_path(@user), class: "btn btn-warning" %>
+      <%= link_to "Voltar", users_path, class: "btn btn-secondary" %>
+    </div>
+  </div>
+
+  <% if flash[:success] %>
+    <div class="alert alert-success">
+      <%= flash[:success] %>
+    </div>
+  <% end %>
+
+  <div class="user-details">
+    <div class="detail-section">
+      <h3>Informações de Acesso</h3>
+      <div class="detail-grid">
+        <div class="detail-item">
+          <label>E-mail:</label>
+          <span><%= @user.email %></span>
+        </div>
+        <div class="detail-item">
+          <label>OAB:</label>
+          <span><%= @user.oab || "Não informado" %></span>
+        </div>
+        <div class="detail-item">
+          <label>Status:</label>
+          <span class="badge <%= @user.active? ? 'badge-success' : 'badge-danger' %>">
+            <%= @user.status.humanize %>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <% if @user.user_profile %>
+      <div class="detail-section">
+        <h3>Dados Pessoais</h3>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <label>Nome Completo:</label>
+            <span><%= "#{@user.user_profile.name} #{@user.user_profile.last_name}" %></span>
+          </div>
+          <div class="detail-item">
+            <label>CPF:</label>
+            <span><%= @user.user_profile.cpf || "Não informado" %></span>
+          </div>
+          <div class="detail-item">
+            <label>RG:</label>
+            <span><%= @user.user_profile.rg || "Não informado" %></span>
+          </div>
+          <div class="detail-item">
+            <label>Data de Nascimento:</label>
+            <span><%= @user.user_profile.birth&.strftime("%d/%m/%Y") || "Não informado" %></span>
+          </div>
+          <div class="detail-item">
+            <label>Gênero:</label>
+            <span><%= @user.user_profile.gender&.humanize || "Não informado" %></span>
+          </div>
+          <div class="detail-item">
+            <label>Estado Civil:</label>
+            <span><%= @user.user_profile.civil_status&.humanize || "Não informado" %></span>
+          </div>
+          <div class="detail-item">
+            <label>Nacionalidade:</label>
+            <span><%= @user.user_profile.nationality || "Não informado" %></span>
+          </div>
+          <div class="detail-item">
+            <label>Função:</label>
+            <span><%= @user.user_profile.role&.humanize || "Não informado" %></span>
+          </div>
+        </div>
+      </div>
+    <% else %>
+      <div class="alert alert-warning">
+        <p>Este usuário ainda não completou seu perfil.</p>
+        <%= link_to "Completar Perfil", edit_user_path(@user), class: "btn btn-primary" %>
+      </div>
+    <% end %>
+
+    <div class="detail-section">
+      <h3>Informações do Sistema</h3>
+      <div class="detail-grid">
+        <div class="detail-item">
+          <label>Criado em:</label>
+          <span><%= @user.created_at.strftime("%d/%m/%Y às %H:%M") %></span>
+        </div>
+        <div class="detail-item">
+          <label>Última atualização:</label>
+          <span><%= @user.updated_at.strftime("%d/%m/%Y às %H:%M") %></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

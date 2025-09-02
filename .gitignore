@@ -53,3 +53,6 @@ swarm.log
 # Node modules in tests directory
 tests/node_modules/
 node_modules/
+
+/app/assets/builds/*
+!/app/assets/builds/.keep

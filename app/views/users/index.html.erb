@@ -1,0 +1,67 @@
+<div class="container">
+  <div class="page-header">
+    <h1>Usuários</h1>
+    <%= link_to "Novo Usuário", new_user_path, class: "btn btn-primary" %>
+  </div>
+
+  <% if flash[:success] %>
+    <div class="alert alert-success">
+      <%= flash[:success] %>
+    </div>
+  <% end %>
+
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>E-mail</th>
+          <th>OAB</th>
+          <th>Função</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @users.each do |user| %>
+          <tr>
+            <td>
+              <% if user.user_profile %>
+                <%= "#{user.user_profile.name} #{user.user_profile.last_name}" %>
+              <% else %>
+                <span class="text-muted">Perfil incompleto</span>
+              <% end %>
+            </td>
+            <td><%= user.email %></td>
+            <td><%= user.oab || "-" %></td>
+            <td>
+              <% if user.user_profile %>
+                <%= user.user_profile.role&.humanize || "-" %>
+              <% else %>
+                -
+              <% end %>
+            </td>
+            <td>
+              <span class="badge <%= user.active? ? 'badge-success' : 'badge-danger' %>">
+                <%= user.status.humanize %>
+              </span>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <%= link_to "Ver", user_path(user), class: "btn btn-sm btn-info" %>
+                <%= link_to "Editar", edit_user_path(user), class: "btn btn-sm btn-warning" %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <% if @users.empty? %>
+      <div class="empty-state">
+        <p>Nenhum usuário cadastrado ainda.</p>
+        <%= link_to "Criar primeiro usuário", new_user_path, class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

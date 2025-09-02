@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ProcStudio</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    
+    <link rel="stylesheet" href="/assets/tailwind.css">
+    <%= javascript_importmap_tags %>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background: #f5f5f5;
+        color: #333;
+        line-height: 1.6;
+      }
+
+      /* Navigation */
+      nav {
+        background: #2c3e50;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+
+      .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 60px;
+      }
+
+      .nav-brand {
+        color: white;
+        font-size: 24px;
+        font-weight: bold;
+        text-decoration: none;
+      }
+
+      .nav-menu {
+        display: flex;
+        list-style: none;
+        gap: 20px;
+        align-items: center;
+      }
+
+      .nav-menu a {
+        color: white;
+        text-decoration: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        transition: background 0.3s;
+      }
+
+      .nav-menu a:hover {
+        background: rgba(255,255,255,0.1);
+      }
+
+      /* Container */
+      .container {
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 0 20px;
+      }
+
+      /* Page Header */
+      .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #e0e0e0;
+      }
+
+      .page-header h1 {
+        color: #2c3e50;
+        font-size: 32px;
+      }
+
+      .header-actions {
+        display: flex;
+        gap: 10px;
+      }
+
+      /* Authentication Forms */
+      .auth-container {
+        min-height: calc(100vh - 60px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .auth-card {
+        background: white;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        width: 100%;
+        max-width: 400px;
+      }
+
+      .auth-title {
+        color: #2c3e50;
+        margin-bottom: 30px;
+        text-align: center;
+        font-size: 28px;
+      }
+
+      .auth-form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .auth-links {
+        margin-top: 20px;
+        text-align: center;
+      }
+
+      .auth-links a {
+        color: #3498db;
+        text-decoration: none;
+      }
+
+      .auth-links a:hover {
+        text-decoration: underline;
+      }
+
+      /* Forms */
+      .form-container {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+
+      .form-section {
+        margin-bottom: 30px;
+      }
+
+      .form-section h3 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+        flex: 1;
+      }
+
+      .form-row {
+        display: flex;
+        gap: 20px;
+      }
+
+      .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #555;
+      }
+
+      .form-input {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 16px;
+        transition: border-color 0.3s;
+      }
+
+      .form-input:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+      }
+
+      .form-hint {
+        display: block;
+        margin-top: 5px;
+        font-size: 14px;
+        color: #777;
+      }
+
+      .form-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 30px;
+      }
+
+      /* Buttons */
+      .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s;
+      }
+
+      .btn-primary {
+        background: #3498db;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #2980b9;
+      }
+
+      .btn-secondary {
+        background: #95a5a6;
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background: #7f8c8d;
+      }
+
+      .btn-warning {
+        background: #f39c12;
+        color: white;
+      }
+
+      .btn-warning:hover {
+        background: #e67e22;
+      }
+
+      .btn-info {
+        background: #17a2b8;
+        color: white;
+      }
+
+      .btn-info:hover {
+        background: #138496;
+      }
+
+      .btn-sm {
+        padding: 5px 10px;
+        font-size: 14px;
+      }
+
+      /* Tables */
+      .table-container {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .data-table thead {
+        background: #f8f9fa;
+      }
+
+      .data-table th {
+        padding: 15px;
+        text-align: left;
+        font-weight: 600;
+        color: #555;
+        border-bottom: 2px solid #dee2e6;
+      }
+
+      .data-table td {
+        padding: 15px;
+        border-bottom: 1px solid #dee2e6;
+      }
+
+      .data-table tbody tr:hover {
+        background: #f8f9fa;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 5px;
+      }
+
+      /* User Details */
+      .user-details {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+
+      .detail-section {
+        margin-bottom: 30px;
+      }
+
+      .detail-section h3 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+      }
+
+      .detail-item {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .detail-item label {
+        font-weight: 600;
+        color: #555;
+        margin-bottom: 5px;
+      }
+
+      .detail-item span {
+        color: #333;
+      }
+
+      /* Badges */
+      .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .badge-success {
+        background: #28a745;
+        color: white;
+      }
+
+      .badge-danger {
+        background: #dc3545;
+        color: white;
+      }
+
+      /* Alerts */
+      .alert {
+        padding: 15px 20px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+      }
+
+      .alert-success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+
+      .alert-error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+
+      .alert-warning {
+        background: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeeba;
+      }
+
+      /* Empty State */
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #777;
+      }
+
+      .empty-state p {
+        margin-bottom: 20px;
+        font-size: 18px;
+      }
+
+      .text-muted {
+        color: #999;
+      }
+
+      .link {
+        color: #3498db;
+        text-decoration: none;
+      }
+
+      .link:hover {
+        text-decoration: underline;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .form-row {
+          flex-direction: column;
+        }
+
+        .detail-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .page-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 15px;
+        }
+
+        .nav-menu {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <nav>
+      <div class="nav-container">
+        <%= link_to "ProcStudio", root_path, class: "nav-brand" %>
+        <ul class="nav-menu">
+          <% if logged_in? %>
+            <li><%= link_to "Início", root_path %></li>
+            <li><%= link_to "Usuários", users_path %></li>
+            <li>
+              <span style="color: white; margin-right: 10px;">
+                <%= current_user.email %>
+              </span>
+            </li>
+            <li><%= link_to "Sair", logout_path, method: :delete, class: "btn btn-sm btn-secondary" %></li>
+          <% else %>
+            <li><%= link_to "Login", login_path %></li>
+            <li><%= link_to "Registrar", register_path %></li>
+          <% end %>
+        </ul>
+      </div>
+    </nav>
+
+    <%= yield %>
+  </body>
+</html>

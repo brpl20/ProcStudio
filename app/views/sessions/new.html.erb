@@ -1,0 +1,31 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <h2 class="auth-title">Login</h2>
+    
+    <% if flash[:alert] %>
+      <div class="alert alert-error">
+        <%= flash[:alert] %>
+      </div>
+    <% end %>
+
+    <%= form_with url: login_path, local: true, class: "auth-form" do |f| %>
+      <div class="form-group">
+        <%= f.label :email, "E-mail", class: "form-label" %>
+        <%= f.email_field :email, class: "form-input", required: true, autofocus: true %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :password, "Senha", class: "form-label" %>
+        <%= f.password_field :password, class: "form-input", required: true %>
+      </div>
+
+      <div class="form-actions">
+        <%= f.submit "Entrar", class: "btn btn-primary" %>
+      </div>
+    <% end %>
+
+    <div class="auth-links">
+      <p>Não tem uma conta? <%= link_to "Registre-se", register_path, class: "link" %></p>
+    </div>
+  </div>
+</div>

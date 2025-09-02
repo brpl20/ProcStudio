@@ -6,7 +6,28 @@ Rails.application.routes.draw do
   # Mount Sidekiq Web UI (only in development/staging, protect in production)
   mount Sidekiq::Web => '/sidekiq' if Rails.env.development? || Rails.env.staging?
 
-  root to: proc { [200, {}, ['API running']] }
+  root to: 'hello#index'
+
+  # Style test routes
+  get 'style_test', to: 'style_test#index'
+  post 'style_test/form_test', to: 'style_test#form_test'
+
+  # Authentication routes
+  get 'login', to: 'sessions#new'
+  post 'login', to: 'sessions#create'
+  delete 'logout', to: 'sessions#destroy'
+  get 'logout', to: 'sessions#destroy'
+
+  get 'register', to: 'registrations#new'
+  post 'register', to: 'registrations#create'
+
+  # User management routes
+  resources :users
+
+  # Customer management routes (Rails Views)
+  resources :customers do
+    resources :profile_customers, only: [:edit, :update]
+  end
 
   get '/api/v1/customer/document' => 'profile_customers#prepare_document'
 

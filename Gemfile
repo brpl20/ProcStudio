@@ -62,3 +62,12 @@ group :development do
 end
 
 gem 'extensobr'
+
+gem "svelte-on-rails", "~> 8.1"
+
+# Frontend assets and JavaScript
+gem "sprockets-rails", "~> 3.5"   # Asset pipeline
+gem "importmap-rails", "~> 2.0"  # For ES modules without transpiling
+gem "turbo-rails", "~> 2.0"       # SPA-like experience
+gem "stimulus-rails", "~> 1.3"    # Modest JavaScript framework
+gem "tailwindcss-rails", "~> 3.0" # Tailwind CSS for Rails
