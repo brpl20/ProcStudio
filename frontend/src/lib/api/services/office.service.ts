@@ -20,7 +20,11 @@ import type {
   JsonApiOfficeWithLawyersData,
   JsonApiOfficeResponse,
   JsonApiOfficesListResponse,
-  JsonApiOfficesWithLawyersResponse
+  JsonApiOfficesWithLawyersResponse,
+  UploadLogoRequest,
+  UploadContractsRequest,
+  UpdateAttachmentMetadataRequest,
+  AttachmentOperationResponse
 } from '../types/office.types';
 
 export class OfficeService {
@@ -58,7 +62,10 @@ export class OfficeService {
       oab_inscricao: jsonApiData.attributes.oab_inscricao,
       oab_link: jsonApiData.attributes.oab_link,
       oab_status: jsonApiData.attributes.oab_status,
-      formatted_total_quotes_value: jsonApiData.attributes.formatted_total_quotes_value
+      formatted_total_quotes_value: jsonApiData.attributes.formatted_total_quotes_value,
+      // Attachments
+      logo_url: jsonApiData.attributes.logo_url,
+      social_contracts_with_metadata: jsonApiData.attributes.social_contracts_with_metadata
     };
   }
 
@@ -429,5 +436,163 @@ export class OfficeService {
         data: {} as Office
       };
     }
+  }
+
+  /**
+   * Upload logo with metadata using dedicated endpoint
+   */
+  async uploadLogoWithMetadata(
+    officeId: number,
+    request: UploadLogoRequest
+  ): Promise<AttachmentOperationResponse> {
+    try {
+      const formData = new FormData();
+      formData.append('logo', request.logo);
+      
+      if (request.document_date) {
+        formData.append('document_date', request.document_date);
+      }
+      if (request.description) {
+        formData.append('description', request.description);
+      }
+      if (request.custom_metadata) {
+        formData.append('custom_metadata', JSON.stringify(request.custom_metadata));
+      }
+
+      const response = await this.httpClient.post(`/offices/${officeId}/upload_logo`, formData, {
+        headers: {} // Let browser set Content-Type with boundary
+      });
+
+      return response as AttachmentOperationResponse;
+    } catch (error: any) {
+      console.error('Logo upload with metadata error:', error);
+      return {
+        success: false,
+        message: error?.message || 'Erro ao fazer upload do logo',
+        errors: error?.data?.errors
+      };
+    }
+  }
+
+  /**
+   * Upload contracts with metadata using dedicated endpoint
+   */
+  async uploadContractsWithMetadata(
+    officeId: number,
+    request: UploadContractsRequest
+  ): Promise<AttachmentOperationResponse> {
+    try {
+      const formData = new FormData();
+      
+      // Add contract files
+      request.contracts.forEach((file) => {
+        formData.append('contracts[]', file);
+      });
+      
+      // Add global metadata
+      if (request.document_date) {
+        formData.append('document_date', request.document_date);
+      }
+      if (request.description) {
+        formData.append('description', request.description);
+      }
+      if (request.custom_metadata) {
+        formData.append('custom_metadata', JSON.stringify(request.custom_metadata));
+      }
+      
+      // Add per-file metadata if provided
+      if (request.contract_metadata) {
+        Object.entries(request.contract_metadata).forEach(([filename, metadata]) => {
+          if (metadata.document_date) {
+            formData.append(`document_date_${filename}`, metadata.document_date);
+          }
+          if (metadata.description) {
+            formData.append(`description_${filename}`, metadata.description);
+          }
+          if (metadata.custom_metadata) {
+            formData.append(`custom_metadata_${filename}`, JSON.stringify(metadata.custom_metadata));
+          }
+        });
+      }
+
+      const response = await this.httpClient.post(`/offices/${officeId}/upload_contracts`, formData, {
+        headers: {} // Let browser set Content-Type with boundary
+      });
+
+      return response as AttachmentOperationResponse;
+    } catch (error: any) {
+      console.error('Contracts upload with metadata error:', error);
+      return {
+        success: false,
+        message: error?.message || 'Erro ao fazer upload dos contratos',
+        errors: error?.data?.errors
+      };
+    }
+  }
+
+  /**
+   * Remove a specific attachment
+   */
+  async removeAttachment(
+    officeId: number,
+    attachmentId: number
+  ): Promise<AttachmentOperationResponse> {
+    try {
+      const response = await this.httpClient.delete(
+        `/offices/${officeId}/attachments/${attachmentId}`
+      );
+
+      return response as AttachmentOperationResponse;
+    } catch (error: any) {
+      console.error('Remove attachment error:', error);
+      return {
+        success: false,
+        message: error?.message || 'Erro ao remover anexo',
+        errors: error?.data?.errors
+      };
+    }
+  }
+
+  /**
+   * Update attachment metadata
+   */
+  async updateAttachmentMetadata(
+    officeId: number,
+    request: UpdateAttachmentMetadataRequest
+  ): Promise<AttachmentOperationResponse> {
+    try {
+      const response = await this.httpClient.patch(
+        `/offices/${officeId}/attachments/metadata`,
+        request
+      );
+
+      return response as AttachmentOperationResponse;
+    } catch (error: any) {
+      console.error('Update attachment metadata error:', error);
+      return {
+        success: false,
+        message: error?.message || 'Erro ao atualizar metadados do anexo',
+        errors: error?.data?.errors
+      };
+    }
+  }
+
+  /**
+   * Validate file type for contracts (PDF and DOCX only)
+   */
+  validateContractFile(file: File): boolean {
+    const validTypes = [
+      'application/pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
+    return validTypes.includes(file.type);
+  }
+
+  /**
+   * Validate file type for logo (images only)
+   */
+  validateLogoFile(file: File): boolean {
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    return validTypes.includes(file.type);
   }
 }

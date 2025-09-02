@@ -126,3 +126,6 @@ class CnpjGenerator
     end
   end
 end
+
+# Run when script is executed directly
+puts "Generated CNPJ: #{CnpjGenerator.generate}" if __FILE__ == $PROGRAM_NAME

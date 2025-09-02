@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 20_250_901_090_009) do
+ActiveRecord::Schema[8.0].define(version: 20_250_902_204_620) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_catalog.plpgsql'
 
@@ -382,6 +382,22 @@ ActiveRecord::Schema[8.0].define(version: 20_250_901_090_009) do
     t.index ['read'], name: 'index_notifications_on_read'
     t.index ['team_id'], name: 'index_notifications_on_team_id'
     t.index ['user_id'], name: 'index_notifications_on_user_id'
+  end
+
+  create_table 'office_attachment_metadata', force: :cascade do |t|
+    t.bigint 'office_id', null: false
+    t.bigint 'blob_id', null: false
+    t.date 'document_date'
+    t.string 'document_type'
+    t.string 'description'
+    t.json 'custom_metadata'
+    t.bigint 'uploaded_by_id'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['blob_id'], name: 'index_office_attachment_metadata_on_blob_id'
+    t.index ['office_id', 'document_type'], name: 'idx_on_office_id_document_type_167734bb2a'
+    t.index ['office_id'], name: 'index_office_attachment_metadata_on_office_id'
+    t.index ['uploaded_by_id'], name: 'index_office_attachment_metadata_on_uploaded_by_id'
   end
 
   create_table 'office_bank_accounts', force: :cascade do |t|
@@ -843,6 +859,9 @@ ActiveRecord::Schema[8.0].define(version: 20_250_901_090_009) do
   add_foreign_key 'legal_cost_entries', 'legal_costs'
   add_foreign_key 'legal_cost_types', 'teams'
   add_foreign_key 'legal_costs', 'honoraries'
+  add_foreign_key 'office_attachment_metadata', 'active_storage_blobs', column: 'blob_id'
+  add_foreign_key 'office_attachment_metadata', 'offices'
+  add_foreign_key 'office_attachment_metadata', 'users', column: 'uploaded_by_id'
   add_foreign_key 'office_bank_accounts', 'bank_accounts'
   add_foreign_key 'office_bank_accounts', 'offices'
   add_foreign_key 'office_emails', 'emails'

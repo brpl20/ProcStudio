@@ -221,4 +221,9 @@ class CNPJGenerator {
   }
 }
 
+// Run when script is executed directly (not required as module)
+if (require.main === module) {
+  console.log("Generated CNPJ:", CNPJGenerator.generate());
+}
+
 module.exports = CNPJGenerator;

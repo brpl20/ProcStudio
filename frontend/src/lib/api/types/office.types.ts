@@ -53,6 +53,35 @@ export interface UserOffice {
   _destroy?: boolean;
 }
 
+// Attachment types
+export interface AttachmentMetadata {
+  id?: number;
+  blob_id: number;
+  document_date?: string;
+  document_type: 'logo' | 'social_contract';
+  description?: string;
+  custom_metadata?: Record<string, any>;
+  uploaded_by_id?: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface SocialContract {
+  id: number;
+  blob_id: number;
+  filename: string;
+  content_type: string;
+  byte_size: number;
+  created_at: string;
+  url: string;
+  download_url: string;
+  // Metadata fields
+  document_date?: string;
+  description?: string;
+  uploaded_by_id?: number;
+  custom_metadata?: Record<string, any>;
+}
+
 export interface Lawyer {
   id: number;
   email: string;
@@ -93,6 +122,10 @@ export interface Office {
   bank_accounts?: BankAccount[];
   user_offices?: UserOffice[];
   works?: any[];
+  
+  // Attachments
+  logo_url?: string;
+  social_contracts_with_metadata?: SocialContract[];
 
   // Timestamps
   created_at?: string;
@@ -235,6 +268,9 @@ export interface JsonApiOfficeData {
     oab_link?: string;
     oab_status?: string;
     formatted_total_quotes_value?: string;
+    // Attachments
+    logo_url?: string;
+    social_contracts_with_metadata?: SocialContract[];
   };
 }
 
@@ -269,4 +305,42 @@ export interface JsonApiOfficesWithLawyersResponse {
   success: boolean;
   message: string;
   data: JsonApiOfficeWithLawyersData[];
+}
+
+// Attachment-specific request types
+export interface UploadLogoRequest {
+  logo: File;
+  document_date?: string;
+  description?: string;
+  custom_metadata?: Record<string, any>;
+}
+
+export interface UploadContractsRequest {
+  contracts: File[];
+  document_date?: string;
+  description?: string;
+  custom_metadata?: Record<string, any>;
+  // Support for per-file metadata
+  contract_metadata?: {
+    [filename: string]: {
+      document_date?: string;
+      description?: string;
+      custom_metadata?: Record<string, any>;
+    };
+  };
+}
+
+export interface UpdateAttachmentMetadataRequest {
+  blob_id: number;
+  document_date?: string;
+  description?: string;
+  custom_metadata?: Record<string, any>;
+}
+
+// Attachment-specific response types
+export interface AttachmentOperationResponse {
+  success: boolean;
+  message: string;
+  data?: any;
+  errors?: string[];
 }

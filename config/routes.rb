@@ -41,6 +41,14 @@ Rails.application.routes.draw do
       resources :offices do
         member do
           post :restore
+          post :upload_logo
+          post :upload_contracts
+          delete 'attachments/:attachment_id', action: :remove_attachment
+          patch 'attachments/metadata', action: :update_attachment_metadata
+        end
+
+        collection do
+          get :with_lawyers
         end
       end
 

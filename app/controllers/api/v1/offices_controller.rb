@@ -162,6 +162,156 @@ module Api
         end
       end
 
+      # Attachment-specific actions
+
+      def upload_logo
+        retrieve_office
+
+        # Validate file type
+        unless params[:logo].content_type.in?(['image/jpeg', 'image/png', 'image/gif', 'image/webp'])
+          return render json: {
+            success: false,
+            message: 'Formato de arquivo inválido. Use imagens JPEG, PNG, GIF ou WEBP'
+          }, status: :unprocessable_entity
+        end
+
+        metadata_params = {
+          document_date: params[:document_date],
+          description: params[:description],
+          custom_metadata: params[:custom_metadata],
+          uploaded_by_id: current_user.id
+        }
+
+        @office.attach_logo_with_metadata(params[:logo], metadata_params)
+
+        serialized = OfficeSerializer.new(
+          @office,
+          { params: { action: 'show' } }
+        ).serializable_hash
+
+        render json: {
+          success: true,
+          message: 'Logo atualizado com sucesso',
+          data: serialized[:data]
+        }, status: :ok
+      rescue StandardError => e
+        Rails.logger.error "Logo upload failed: #{e.message}"
+        render json: {
+          success: false,
+          message: 'Erro ao fazer upload do logo',
+          errors: [e.message]
+        }, status: :internal_server_error
+      end
+
+      def upload_contracts
+        retrieve_office
+
+        contracts = params[:contracts] || []
+        uploaded_contracts = []
+
+        contracts.each do |contract|
+          # Validate file type (PDF and DOCX)
+          unless contract.content_type.in?(['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'])
+            return render json: {
+              success: false,
+              message: "Formato de arquivo inválido para #{contract.original_filename}. Use PDF ou DOCX"
+            }, status: :unprocessable_entity
+          end
+
+          metadata_params = {
+            document_date: params["document_date_#{contract.original_filename}"] || params[:document_date],
+            description: params["description_#{contract.original_filename}"] || params[:description],
+            custom_metadata: params["custom_metadata_#{contract.original_filename}"] || params[:custom_metadata],
+            uploaded_by_id: current_user.id
+          }
+
+          @office.attach_social_contract_with_metadata(contract, metadata_params)
+          uploaded_contracts << contract.original_filename
+        end
+
+        serialized = OfficeSerializer.new(
+          @office,
+          { params: { action: 'show' } }
+        ).serializable_hash
+
+        render json: {
+          success: true,
+          message: "#{uploaded_contracts.count} contrato(s) adicionado(s) com sucesso",
+          data: serialized[:data]
+        }, status: :ok
+      rescue StandardError => e
+        Rails.logger.error "Contract upload failed: #{e.message}"
+        render json: {
+          success: false,
+          message: 'Erro ao fazer upload dos contratos',
+          errors: [e.message]
+        }, status: :internal_server_error
+      end
+
+      def remove_attachment
+        retrieve_office
+
+        attachment = @office.social_contracts.find(params[:attachment_id])
+
+        # Remove metadata
+        @office.attachment_metadata.find_by(blob_id: attachment.blob.id)&.destroy
+
+        # Remove attachment
+        attachment.purge
+
+        render json: {
+          success: true,
+          message: 'Anexo removido com sucesso',
+          data: { id: params[:attachment_id] }
+        }, status: :ok
+      rescue ActiveRecord::RecordNotFound
+        render json: {
+          success: false,
+          message: 'Anexo não encontrado'
+        }, status: :not_found
+      rescue StandardError => e
+        Rails.logger.error "Attachment removal failed: #{e.message}"
+        render json: {
+          success: false,
+          message: 'Erro ao remover anexo',
+          errors: [e.message]
+        }, status: :internal_server_error
+      end
+
+      def update_attachment_metadata
+        retrieve_office
+
+        metadata = @office.attachment_metadata.find_by(blob_id: params[:blob_id])
+
+        unless metadata
+          return render json: {
+            success: false,
+            message: 'Metadados do anexo não encontrados'
+          }, status: :not_found
+        end
+
+        metadata_params = params.permit(:document_date, :description, :custom_metadata)
+
+        if metadata.update(metadata_params)
+          render json: {
+            success: true,
+            message: 'Metadados atualizados com sucesso',
+            data: {
+              blob_id: metadata.blob_id,
+              document_date: metadata.document_date,
+              description: metadata.description,
+              custom_metadata: metadata.custom_metadata
+            }
+          }, status: :ok
+        else
+          render json: {
+            success: false,
+            message: 'Erro ao atualizar metadados',
+            errors: metadata.errors.full_messages
+          }, status: :unprocessable_entity
+        end
+      end
+
       private
 
       def retrieve_office
@@ -190,6 +340,7 @@ module Api
           :society, :foundation, :site, :accounting_type,
           :quote_value, :number_of_quotes,
           :logo,
+          social_contracts: [],
           phones_attributes: [:id, :phone_number, :_destroy],
           addresses_attributes: [:id, :street, :number, :complement, :neighborhood,
                                  :city, :state, :zip_code, :address_type, :_destroy],

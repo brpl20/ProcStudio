@@ -54,8 +54,11 @@ class Office < ApplicationRecord
   has_many :compensations, through: :user_offices, class_name: 'UserSocietyCompensation'
   has_many :user_profiles, dependent: :nullify
 
-  has_one_attached :logo
-  has_many_attached :social_contracts # For Contrato Social documents with versioning
+  has_one_attached :logo, dependent: :purge_later
+  has_many_attached :social_contracts, dependent: :purge_later # For Contrato Social documents with versioning
+
+  # Attachment metadata
+  has_many :attachment_metadata, class_name: 'OfficeAttachmentMetadata', dependent: :destroy
 
   enum :society, {
     individual: 'individual', # Sociedade Unipessoal
@@ -110,6 +113,77 @@ class Office < ApplicationRecord
 
   def formatted_total_quotes_value
     "R$ #{format('%.2f', total_quotes_value).tr('.', ',')}"
+  end
+
+  # Get logo URL
+  def logo_url
+    return nil unless logo.attached?
+
+    Rails.application.routes.url_helpers.rails_blob_url(logo, only_path: true)
+  end
+
+  # Get social contracts with metadata
+  def social_contracts_with_metadata
+    return [] unless social_contracts.attached?
+
+    social_contracts.map do |contract|
+      metadata = attachment_metadata.find_by(blob_id: contract.blob.id)
+
+      {
+        id: contract.id,
+        blob_id: contract.blob.id,
+        filename: contract.filename.to_s,
+        content_type: contract.content_type,
+        byte_size: contract.byte_size,
+        created_at: contract.created_at,
+        url: Rails.application.routes.url_helpers.rails_blob_url(contract, only_path: true),
+        download_url: Rails.application.routes.url_helpers.rails_blob_url(contract, disposition: 'attachment', only_path: true),
+        # Metadata fields
+        document_date: metadata&.document_date,
+        description: metadata&.description,
+        uploaded_by_id: metadata&.uploaded_by_id,
+        custom_metadata: metadata&.custom_metadata
+      }
+    end
+  end
+
+  # Attach social contract with metadata
+  def attach_social_contract_with_metadata(file, metadata_params = {})
+    contract = social_contracts.attach(file)
+
+    if contract && metadata_params.present?
+      attachment_metadata.create!(
+        blob_id: contract.last.blob.id,
+        document_type: 'social_contract',
+        document_date: metadata_params[:document_date],
+        description: metadata_params[:description],
+        custom_metadata: metadata_params[:custom_metadata],
+        uploaded_by_id: metadata_params[:uploaded_by_id]
+      )
+    end
+
+    contract
+  end
+
+  # Attach logo with metadata
+  def attach_logo_with_metadata(file, metadata_params = {})
+    # Remove existing logo metadata if any
+    attachment_metadata.logos.destroy_all if logo.attached?
+
+    logo.attach(file)
+
+    if logo.attached? && metadata_params.present?
+      attachment_metadata.create!(
+        blob_id: logo.blob.id,
+        document_type: 'logo',
+        document_date: metadata_params[:document_date],
+        description: metadata_params[:description],
+        custom_metadata: metadata_params[:custom_metadata],
+        uploaded_by_id: metadata_params[:uploaded_by_id]
+      )
+    end
+
+    logo
   end
 
   private
