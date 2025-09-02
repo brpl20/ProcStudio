@@ -72,8 +72,8 @@ export class UserService {
   /**
    * Get all user profiles
    */
-  async getUserProfiles(): Promise<{ data: UserProfileData[] }> {
-    return this.http.get<{ data: UserProfileData[] }>(API_ENDPOINTS.USER_PROFILES);
+  async getUserProfiles(): Promise<ApiSuccessResponse<UserProfileData[]>> {
+    return this.http.get<ApiSuccessResponse<UserProfileData[]>>(API_ENDPOINTS.USER_PROFILES);
   }
 
   /**

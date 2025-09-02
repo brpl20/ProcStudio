@@ -122,7 +122,7 @@ export interface Office {
   bank_accounts?: BankAccount[];
   user_offices?: UserOffice[];
   works?: any[];
-  
+
   // Attachments
   logo_url?: string;
   social_contracts_with_metadata?: SocialContract[];

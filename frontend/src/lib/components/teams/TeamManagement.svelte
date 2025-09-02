@@ -29,7 +29,9 @@
   }
 
   async function handleSave() {
-    if (!myTeam) return;
+    if (!myTeam) {
+      return;
+    }
 
     try {
       loading = true;

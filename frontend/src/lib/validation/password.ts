@@ -10,36 +10,36 @@ import type { ValidationRule } from './types';
  */
 export const validatePasswordMinLength =
   (minLength = 6): ValidationRule =>
-  (value) => {
-    if (!value) {
+    (value) => {
+      if (!value) {
+        return null;
+      }
+
+      const password = value as string;
+      if (password.length < minLength) {
+        return `Senha deve ter pelo menos ${minLength} caracteres`;
+      }
+
       return null;
-    }
-
-    const password = value as string;
-    if (password.length < minLength) {
-      return `Senha deve ter pelo menos ${minLength} caracteres`;
-    }
-
-    return null;
-  };
+    };
 
 /**
  * Maximum length validation
  */
 export const validatePasswordMaxLength =
   (maxLength = 128): ValidationRule =>
-  (value) => {
-    if (!value) {
+    (value) => {
+      if (!value) {
+        return null;
+      }
+
+      const password = value as string;
+      if (password.length > maxLength) {
+        return `Senha deve ter no máximo ${maxLength} caracteres`;
+      }
+
       return null;
-    }
-
-    const password = value as string;
-    if (password.length > maxLength) {
-      return `Senha deve ter no máximo ${maxLength} caracteres`;
-    }
-
-    return null;
-  };
+    };
 
 /**
  * Required password validation
@@ -160,20 +160,20 @@ export const validatePasswordNotCommon: ValidationRule = (value) => {
  */
 export const createPasswordConfirmationValidator =
   (getPassword: () => string): ValidationRule =>
-  (value) => {
-    if (!value) {
-      return 'Confirmação de senha é obrigatória';
-    }
+    (value) => {
+      if (!value) {
+        return 'Confirmação de senha é obrigatória';
+      }
 
-    const password = getPassword();
-    const confirmation = value as string;
+      const password = getPassword();
+      const confirmation = value as string;
 
-    if (password !== confirmation) {
-      return 'As senhas não coincidem';
-    }
+      if (password !== confirmation) {
+        return 'As senhas não coincidem';
+      }
 
-    return null;
-  };
+      return null;
+    };
 
 /**
  * Calculate password strength score (0-4)
@@ -213,18 +213,18 @@ export const calculatePasswordStrength = (password: string): number => {
  */
 export const getPasswordStrengthLabel = (strength: number): string => {
   switch (strength) {
-    case 0:
-      return 'Muito fraca';
-    case 1:
-      return 'Fraca';
-    case 2:
-      return 'Razoável';
-    case 3:
-      return 'Boa';
-    case 4:
-      return 'Excelente';
-    default:
-      return 'Muito fraca';
+  case 0:
+    return 'Muito fraca';
+  case 1:
+    return 'Fraca';
+  case 2:
+    return 'Razoável';
+  case 3:
+    return 'Boa';
+  case 4:
+    return 'Excelente';
+  default:
+    return 'Muito fraca';
   }
 };
 

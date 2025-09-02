@@ -76,7 +76,9 @@
   }
 
   async function handleDeleteConfirm() {
-    if (!deletingUser) return;
+    if (!deletingUser) {
+      return;
+    }
 
     try {
       const response = await api.users.deleteUserProfile(deletingUser.id);
@@ -102,16 +104,16 @@
 
   function getRoleBadgeClass(role) {
     switch (role) {
-      case 'lawyer':
-        return 'badge-primary';
-      case 'paralegal':
-        return 'badge-secondary';
-      case 'trainee':
-        return 'badge-accent';
-      case 'secretary':
-        return 'badge-info';
-      default:
-        return 'badge-ghost';
+    case 'lawyer':
+      return 'badge-primary';
+    case 'paralegal':
+      return 'badge-secondary';
+    case 'trainee':
+      return 'badge-accent';
+    case 'secretary':
+      return 'badge-info';
+    default:
+      return 'badge-ghost';
     }
   }
 

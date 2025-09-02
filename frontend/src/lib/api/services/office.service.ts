@@ -448,7 +448,7 @@ export class OfficeService {
     try {
       const formData = new FormData();
       formData.append('logo', request.logo);
-      
+
       if (request.document_date) {
         formData.append('document_date', request.document_date);
       }
@@ -483,12 +483,12 @@ export class OfficeService {
   ): Promise<AttachmentOperationResponse> {
     try {
       const formData = new FormData();
-      
+
       // Add contract files
       request.contracts.forEach((file) => {
         formData.append('contracts[]', file);
       });
-      
+
       // Add global metadata
       if (request.document_date) {
         formData.append('document_date', request.document_date);
@@ -499,7 +499,7 @@ export class OfficeService {
       if (request.custom_metadata) {
         formData.append('custom_metadata', JSON.stringify(request.custom_metadata));
       }
-      
+
       // Add per-file metadata if provided
       if (request.contract_metadata) {
         Object.entries(request.contract_metadata).forEach(([filename, metadata]) => {

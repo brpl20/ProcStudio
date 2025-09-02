@@ -3,6 +3,7 @@
   import api from '../../api';
   import TeamManagement from './TeamManagement.svelte';
   import AdvogadosManagement from './AdvogadosManagement.svelte';
+  import OfficeManagement from './OfficeManagement.svelte';
 
   let activeTab = 'teams';
   let myTeam = null;
@@ -11,7 +12,8 @@
 
   const tabs = [
     { id: 'teams', label: 'Gerenciar Equipe', icon: '👥' },
-    { id: 'advogados', label: 'Gerenciar Usuários', icon: '⚖️' }
+    { id: 'advogados', label: 'Gerenciar Usuários', icon: '⚖️' },
+    { id: 'offices', label: 'Escritórios', icon: '🏢' }
   ];
 
   async function loadMyTeam() {
@@ -86,6 +88,8 @@
       <TeamManagement {myTeam} on:teamUpdated={loadMyTeam} />
     {:else if activeTab === 'advogados'}
       <AdvogadosManagement />
+    {:else if activeTab === 'offices'}
+      <OfficeManagement />
     {/if}
   </div>
 </div>

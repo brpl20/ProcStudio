@@ -144,18 +144,18 @@
       phones_attributes:
         attrs.phones && attrs.phones.length > 0
           ? attrs.phones.map((phone: any) => ({
-              id: phone.id || undefined,
-              phone_number: phone.phone_number || ''
-            }))
+            id: phone.id || undefined,
+            phone_number: phone.phone_number || ''
+          }))
           : [{ phone_number: attrs.default_phone || '' }],
 
       // Emails - handle array from API
       emails_attributes:
         attrs.emails && attrs.emails.length > 0
           ? attrs.emails.map((email: any) => ({
-              id: email.id || undefined,
-              email: email.email || ''
-            }))
+            id: email.id || undefined,
+            email: email.email || ''
+          }))
           : [{ email: attrs.default_email || '' }],
 
       // === ADDRESS INFORMATION ===
@@ -163,50 +163,50 @@
       addresses_attributes:
         attrs.addresses && attrs.addresses.length > 0
           ? attrs.addresses.map((addr: any) => ({
-              id: addr.id || undefined,
-              description: addr.description || '',
-              zip_code: addr.zip_code || '',
-              street: addr.street || '',
-              number: addr.number ? addr.number.toString() : '',
-              neighborhood: addr.neighborhood || '',
-              city: addr.city || '',
-              state: addr.state || ''
-            }))
+            id: addr.id || undefined,
+            description: addr.description || '',
+            zip_code: addr.zip_code || '',
+            street: addr.street || '',
+            number: addr.number ? addr.number.toString() : '',
+            neighborhood: addr.neighborhood || '',
+            city: addr.city || '',
+            state: addr.state || ''
+          }))
           : [
-              {
-                description: '',
-                zip_code: '',
-                street: '',
-                number: '',
-                neighborhood: '',
-                city: attrs.city || '',
-                state: ''
-              }
-            ],
+            {
+              description: '',
+              zip_code: '',
+              street: '',
+              number: '',
+              neighborhood: '',
+              city: attrs.city || '',
+              state: ''
+            }
+          ],
 
       // === BANKING INFORMATION ===
       // Bank Accounts - handle array from API
       bank_accounts_attributes:
         attrs.bank_accounts && attrs.bank_accounts.length > 0
           ? attrs.bank_accounts.map((bank: any) => ({
-              id: bank.id || undefined,
-              bank_name: bank.bank_name || '',
-              type_account: bank.type_account || '',
-              agency: bank.agency || '',
-              account: bank.account || '',
-              operation: bank.operation || '',
-              pix: bank.pix || ''
-            }))
+            id: bank.id || undefined,
+            bank_name: bank.bank_name || '',
+            type_account: bank.type_account || '',
+            agency: bank.agency || '',
+            account: bank.account || '',
+            operation: bank.operation || '',
+            pix: bank.pix || ''
+          }))
           : [
-              {
-                bank_name: '',
-                type_account: '',
-                agency: '',
-                account: '',
-                operation: '',
-                pix: ''
-              }
-            ]
+            {
+              bank_name: '',
+              type_account: '',
+              agency: '',
+              account: '',
+              operation: '',
+              pix: ''
+            }
+          ]
     };
 
     // Set initial form data for dirty checking in edit mode
@@ -580,10 +580,10 @@
           // For unable persons, don't send email if it's empty
           emails_attributes: formData.customer_attributes.email
             ? [
-                {
-                  email: formData.customer_attributes.email
-                }
-              ]
+              {
+                email: formData.customer_attributes.email
+              }
+            ]
             : [],
           // Don't send empty email in customer_attributes either
           customer_attributes: {

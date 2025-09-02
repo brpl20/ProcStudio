@@ -123,8 +123,8 @@ export class CustomerService {
       // Transform JSON:API data to our Customer type
       const customers = Array.isArray(response.data)
         ? response.data.map((jsonApiData) =>
-            this.transformJsonApiCustomer(jsonApiData, response.included)
-          )
+          this.transformJsonApiCustomer(jsonApiData, response.included)
+        )
         : [];
 
       return {
@@ -418,8 +418,8 @@ export class CustomerService {
       // Transform JSON:API data to our Customer type
       const customers = Array.isArray(response.data)
         ? response.data.map((jsonApiData) =>
-            this.transformJsonApiCustomer(jsonApiData, response.included)
-          )
+          this.transformJsonApiCustomer(jsonApiData, response.included)
+        )
         : [];
 
       return {

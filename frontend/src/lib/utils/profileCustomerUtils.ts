@@ -137,16 +137,16 @@ function isValidCNPJ(cnpj: string): boolean {
  */
 export function translateCustomerType(customerType: string): string {
   switch (customerType?.toLowerCase()) {
-    case 'physical_person':
-      return 'Pessoa Física';
-    case 'legal_person':
-      return 'Pessoa Jurídica';
-    case 'counter':
-      return 'Contador';
-    case 'representative':
-      return 'Representante Legal';
-    default:
-      return customerType || 'Não definido';
+  case 'physical_person':
+    return 'Pessoa Física';
+  case 'legal_person':
+    return 'Pessoa Jurídica';
+  case 'counter':
+    return 'Contador';
+  case 'representative':
+    return 'Representante Legal';
+  default:
+    return customerType || 'Não definido';
   }
 }
 

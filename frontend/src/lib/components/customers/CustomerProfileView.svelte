@@ -35,38 +35,38 @@
 
   function getCapacityDisplay(capacity?: string): { text: string; color: string; icon: string } {
     switch (capacity) {
-      case 'unable':
-        return {
-          text: 'Incapaz',
-          color: 'badge-error',
-          icon: '🚫'
-        };
-      case 'relatively':
-        return {
-          text: 'Relativamente Incapaz',
-          color: 'badge-warning',
-          icon: '⚠️'
-        };
-      case 'able':
-      default:
-        return {
-          text: 'Capaz',
-          color: 'badge-success',
-          icon: '✅'
-        };
+    case 'unable':
+      return {
+        text: 'Incapaz',
+        color: 'badge-error',
+        icon: '🚫'
+      };
+    case 'relatively':
+      return {
+        text: 'Relativamente Incapaz',
+        color: 'badge-warning',
+        icon: '⚠️'
+      };
+    case 'able':
+    default:
+      return {
+        text: 'Capaz',
+        color: 'badge-success',
+        icon: '✅'
+      };
     }
   }
 
   function getStatusDisplay(status?: string): { text: string; color: string } {
     switch (status) {
-      case 'active':
-        return { text: 'Ativo', color: 'badge-success' };
-      case 'inactive':
-        return { text: 'Inativo', color: 'badge-warning' };
-      case 'deceased':
-        return { text: 'Falecido', color: 'badge-error' };
-      default:
-        return { text: status || 'Desconhecido', color: 'badge-neutral' };
+    case 'active':
+      return { text: 'Ativo', color: 'badge-success' };
+    case 'inactive':
+      return { text: 'Inativo', color: 'badge-warning' };
+    case 'deceased':
+      return { text: 'Falecido', color: 'badge-error' };
+    default:
+      return { text: status || 'Desconhecido', color: 'badge-neutral' };
     }
   }
 
