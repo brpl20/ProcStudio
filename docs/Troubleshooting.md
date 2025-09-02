@@ -1,3 +1,5 @@
+[Back](../README.md)
+
 # Troubleshooting
 
 - Lembre-se: 90% das vezes o problema não é da máquina, mas de você.

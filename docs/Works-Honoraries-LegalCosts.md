@@ -1,3 +1,5 @@
+[Back](../README.md)
+
 Esse endpoint é para permitir que o User tenha liberdade para criar suas próprias entradas de LegalCosts (Custas Processuais) uma vez que existe uma gama muito grande desse tipo de despesas que é impossível de prever.
 How the LegalCostType Key Works:
 System Types (Pre-defined)

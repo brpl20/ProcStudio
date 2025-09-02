@@ -1,3 +1,5 @@
+[Back](../README.md)
+
 ## Início Rápido
 
 ### Requisitos
@@ -57,7 +59,7 @@ rails db:seed
 ```
 
 #### 4. Configurar variáveis de ambiente
-Para API keys e senhas diversas busque no BitWarden por segurança. 
+Para API keys e senhas diversas busque no BitWarden por segurança.
 
 ```bash
 # Copiar arquivo de exemplo

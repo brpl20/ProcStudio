@@ -1,0 +1,45 @@
+{
+  "api": {
+    "timeout": 30000,
+    "retries": 3,
+    "auth": {
+      "testCredentials": {
+        "email": "u1@gmail.com",
+        "password": "123456"
+      }
+    }
+  },
+  "frontend": {
+    "timeout": 10000
+  },
+  "database": {
+    "resetBetweenTests": false
+  },
+  "environments": {
+    "development": {
+      "railsPort": 3000,
+      "frontendPort": 5173,
+      "database": "postgres://localhost/procstudio_development"
+    },
+    "test": {
+      "railsPort": 3000,
+      "frontendPort": 5173,
+      "database": "postgres://localhost/procstudio_test"
+    },
+    "production": {
+      "railsPort": 3000,
+      "frontendPort": 80,
+      "database": "postgres://localhost/procstudio_production"
+    }
+  },
+  "testUsers": {
+    "primary": {
+      "email": "u1@gmail.com",
+      "password": "123456"
+    },
+    "secondary": {
+      "email": "u2@gmail.com",
+      "password": "123456"
+    }
+  }
+}

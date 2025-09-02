@@ -5,6 +5,7 @@ API RESTful desenvolvida em Ruby on Rails para o sistema ProcStudio.
 ## Índice
 
 - [API](./docs/API.md)
+- [Authentication System](./docs/AuthReview.md)
 - [Offices](./docs/Offices.md)
 - [Works](./docs/Works.md)
 - [Works Procedures](./docs/Works-Procedures.md)

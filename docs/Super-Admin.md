@@ -1,3 +1,5 @@
+[Back](../README.md)
+
 A ideia é ter um super usuário que poderá gerenciar as configurações do sistema, receber relatórios, ter acesso aos registros mas não é uma terefa fácil, talvez seja melhor apenas criar queries para o banco de dados para saber das métricas ao invés de criar toda a confusão com um administrador do sistema, vai ter que gerar todo um fluxo de autorizações.
 
 -> Manter a ideia do Super Admin

@@ -1,0 +1,1988 @@
+{
+  "generated_at": "2025-09-02T14:07:57-03:00",
+  "total_users": 102,
+  "users": [
+    {
+      "id": 1,
+      "email": "joao.prado@advocacia.com.br",
+      "status": "active",
+      "oab": null,
+      "team_id": 1,
+      "team_name": "Escritório Principal",
+      "team_subdomain": "principal",
+      "profile_name": "Lane",
+      "role": "lawyer",
+      "created_at": "2025-08-29T05:57:28-03:00"
+    },
+    {
+      "id": 2,
+      "email": "maria.silva@advocacia.com.br",
+      "status": "active",
+      "oab": null,
+      "team_id": 1,
+      "team_name": "Escritório Principal",
+      "team_subdomain": "principal",
+      "profile_name": "Maria",
+      "role": "lawyer",
+      "created_at": "2025-08-29T05:57:29-03:00"
+    },
+    {
+      "id": 3,
+      "email": "ana.secretaria@advocacia.com.br",
+      "status": "active",
+      "oab": null,
+      "team_id": 1,
+      "team_name": "Escritório Principal",
+      "team_subdomain": "principal",
+      "profile_name": "Ana",
+      "role": "secretary",
+      "created_at": "2025-08-29T05:57:29-03:00"
+    },
+    {
+      "id": 4,
+      "email": "a@gmail.com",
+      "status": "active",
+      "oab": "PR_54159",
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": "Bruno",
+      "role": "lawyer",
+      "created_at": "2025-08-29T14:05:44-03:00"
+    },
+    {
+      "id": 6,
+      "email": "lawyer2@test.com",
+      "status": "active",
+      "oab": "SP987654",
+      "team_id": 1,
+      "team_name": "Escritório Principal",
+      "team_subdomain": "principal",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-08-31T21:43:57-03:00"
+    },
+    {
+      "id": 5,
+      "email": "u1@gmail.com",
+      "status": "active",
+      "oab": "PR_54159",
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": "Bruno",
+      "role": "lawyer",
+      "created_at": "2025-08-29T14:06:06-03:00"
+    },
+    {
+      "id": 7,
+      "email": "test_team_member@example.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": "Updated1756831337985",
+      "role": "paralegal",
+      "created_at": "2025-09-01T06:53:58-03:00"
+    },
+    {
+      "id": 11,
+      "email": "u2@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-01T08:56:05-03:00"
+    },
+    {
+      "id": 12,
+      "email": "test_nested@example.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 1,
+      "team_name": "Escritório Principal",
+      "team_subdomain": "principal",
+      "profile_name": "Test",
+      "role": "lawyer",
+      "created_at": "2025-09-01T09:02:18-03:00"
+    },
+    {
+      "id": 13,
+      "email": "test_user_profile@example.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 1,
+      "team_name": "Escritório Principal",
+      "team_subdomain": "principal",
+      "profile_name": "Test",
+      "role": "lawyer",
+      "created_at": "2025-09-01T10:23:56-03:00"
+    },
+    {
+      "id": 14,
+      "email": "c19@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": "Updated1756830915911",
+      "role": "lawyer",
+      "created_at": "2025-09-01T10:33:38-03:00"
+    },
+    {
+      "id": 15,
+      "email": "u19@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": "KLABUNCIO",
+      "role": "lawyer",
+      "created_at": "2025-09-01T10:35:12-03:00"
+    },
+    {
+      "id": 16,
+      "email": "u12@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": "KLABUNCIO",
+      "role": "lawyer",
+      "created_at": "2025-09-01T17:53:31-03:00"
+    },
+    {
+      "id": 17,
+      "email": "u1dddd2@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": "KLABUNCIO",
+      "role": "lawyer",
+      "created_at": "2025-09-01T17:54:05-03:00"
+    },
+    {
+      "id": 18,
+      "email": "u1ddddk2@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": "KLABUNCIO",
+      "role": "lawyer",
+      "created_at": "2025-09-01T18:00:35-03:00"
+    },
+    {
+      "id": 19,
+      "email": "u1ddddk22@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": "KLABUNCIO",
+      "role": "lawyer",
+      "created_at": "2025-09-01T18:04:18-03:00"
+    },
+    {
+      "id": 20,
+      "email": "u1ddddk22lj@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": "KLABUNCIO",
+      "role": "lawyer",
+      "created_at": "2025-09-01T18:08:59-03:00"
+    },
+    {
+      "id": 21,
+      "email": "u1ddddk22lkklj@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": "KLABUNCIO",
+      "role": "lawyer",
+      "created_at": "2025-09-01T18:10:31-03:00"
+    },
+    {
+      "id": 22,
+      "email": "u1dddaaadk22lkklj@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": "KLABUNCIO",
+      "role": "lawyer",
+      "created_at": "2025-09-01T18:14:13-03:00"
+    },
+    {
+      "id": 23,
+      "email": "u19klklk@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": "Updated1756830293489",
+      "role": "lawyer",
+      "created_at": "2025-09-01T19:19:08-03:00"
+    },
+    {
+      "id": 24,
+      "email": "setimikyd@mailinator.com",
+      "status": "active",
+      "oab": "Qui doloribus ea sit",
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T06:00:10-03:00"
+    },
+    {
+      "id": 25,
+      "email": "siza@mailinator.com",
+      "status": "active",
+      "oab": "PR54159",
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T06:01:09-03:00"
+    },
+    {
+      "id": 26,
+      "email": "u199@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": "KLABUNCIO",
+      "role": "lawyer",
+      "created_at": "2025-09-02T06:22:27-03:00"
+    },
+    {
+      "id": 27,
+      "email": "sorobydo@mailinator.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": "Irene Guerrero",
+      "role": "lawyer",
+      "created_at": "2025-09-02T06:27:26-03:00"
+    },
+    {
+      "id": 28,
+      "email": "felujoxive@mailinator.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": "Updated1756830873246",
+      "role": "super_admin",
+      "created_at": "2025-09-02T06:27:54-03:00"
+    },
+    {
+      "id": 29,
+      "email": "u22@gmail.com",
+      "status": "active",
+      "oab": "PR_54161",
+      "team_id": 6,
+      "team_name": "Escritório Dayeni Cristina De Oliveira",
+      "team_subdomain": "dayeni-cristina-de-oliveira",
+      "profile_name": "Dayeni",
+      "role": "lawyer",
+      "created_at": "2025-09-02T11:20:04-03:00"
+    },
+    {
+      "id": 30,
+      "email": "u2200@gmail.com",
+      "status": "active",
+      "oab": "PR_5llll4161",
+      "team_id": 8,
+      "team_name": "Escritório U2200",
+      "team_subdomain": "u2200",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T11:21:56-03:00"
+    },
+    {
+      "id": 31,
+      "email": "u1756823812416@gmail.com",
+      "status": "active",
+      "oab": "PR_54161",
+      "team_id": 9,
+      "team_name": "Escritório Dayeni Cristina De Oliveira",
+      "team_subdomain": "dayeni-cristina-de-oliveira1",
+      "profile_name": "Dayeni",
+      "role": "lawyer",
+      "created_at": "2025-09-02T11:36:53-03:00"
+    },
+    {
+      "id": 32,
+      "email": "u1756823813908@gmail.com",
+      "status": "active",
+      "oab": "PR_5llll4161",
+      "team_id": 10,
+      "team_name": "Escritório U1756823813908",
+      "team_subdomain": "u1756823813908",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T11:36:54-03:00"
+    },
+    {
+      "id": 33,
+      "email": "duplicate1756823815393@gmail.com",
+      "status": "active",
+      "oab": "PR_54159",
+      "team_id": 11,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti2",
+      "profile_name": "Bruno",
+      "role": "lawyer",
+      "created_at": "2025-09-02T11:36:56-03:00"
+    },
+    {
+      "id": 34,
+      "email": "u1756823817444@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 13,
+      "team_name": "Escritório U1756823817444",
+      "team_subdomain": "u1756823817444",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T11:36:57-03:00"
+    },
+    {
+      "id": 35,
+      "email": "u1756823817696@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": "Updated1756823863353",
+      "role": "lawyer",
+      "created_at": "2025-09-02T11:36:57-03:00"
+    },
+    {
+      "id": 36,
+      "email": "u1756823850582@gmail.com",
+      "status": "active",
+      "oab": "PR_54161",
+      "team_id": 14,
+      "team_name": "Escritório Dayeni Cristina De Oliveira",
+      "team_subdomain": "dayeni-cristina-de-oliveira2",
+      "profile_name": "Dayeni",
+      "role": "lawyer",
+      "created_at": "2025-09-02T11:37:31-03:00"
+    },
+    {
+      "id": 37,
+      "email": "u1756823851821@gmail.com",
+      "status": "active",
+      "oab": "PR_5llll4161",
+      "team_id": 15,
+      "team_name": "Escritório U1756823851821",
+      "team_subdomain": "u1756823851821",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T11:37:32-03:00"
+    },
+    {
+      "id": 38,
+      "email": "duplicate1756823853036@gmail.com",
+      "status": "active",
+      "oab": "PR_54159",
+      "team_id": 16,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti3",
+      "profile_name": "Bruno",
+      "role": "lawyer",
+      "created_at": "2025-09-02T11:37:33-03:00"
+    },
+    {
+      "id": 39,
+      "email": "u1756823855018@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 18,
+      "team_name": "Escritório U1756823855018",
+      "team_subdomain": "u1756823855018",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T11:37:35-03:00"
+    },
+    {
+      "id": 40,
+      "email": "u1756823855277@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": "Updated1756823855695",
+      "role": "lawyer",
+      "created_at": "2025-09-02T11:37:35-03:00"
+    },
+    {
+      "id": 41,
+      "email": "incomplete1756823861417@gmail.com",
+      "status": "active",
+      "oab": "INVALID_OAB_123",
+      "team_id": 19,
+      "team_name": "Escritório Incomplete1756823861417",
+      "team_subdomain": "incomplete1756823861417",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T11:37:42-03:00"
+    },
+    {
+      "id": 42,
+      "email": "incomplete1756823883218@gmail.com",
+      "status": "active",
+      "oab": "INVALID_OAB_123",
+      "team_id": 20,
+      "team_name": "Escritório Incomplete1756823883218",
+      "team_subdomain": "incomplete1756823883218",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T11:38:04-03:00"
+    },
+    {
+      "id": 43,
+      "email": "ana1756823884825@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": "Updated1756823885236",
+      "role": "paralegal",
+      "created_at": "2025-09-02T11:38:05-03:00"
+    },
+    {
+      "id": 44,
+      "email": "u1756823911517@gmail.com",
+      "status": "active",
+      "oab": "PR_54161",
+      "team_id": 21,
+      "team_name": "Escritório Dayeni Cristina De Oliveira",
+      "team_subdomain": "dayeni-cristina-de-oliveira3",
+      "profile_name": "Dayeni",
+      "role": "lawyer",
+      "created_at": "2025-09-02T11:38:32-03:00"
+    },
+    {
+      "id": 45,
+      "email": "u1756823912780@gmail.com",
+      "status": "active",
+      "oab": "PR_5llll4161",
+      "team_id": 22,
+      "team_name": "Escritório U1756823912780",
+      "team_subdomain": "u1756823912780",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T11:38:33-03:00"
+    },
+    {
+      "id": 46,
+      "email": "duplicate1756823914046@gmail.com",
+      "status": "active",
+      "oab": "PR_54159",
+      "team_id": 23,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti4",
+      "profile_name": "Bruno",
+      "role": "lawyer",
+      "created_at": "2025-09-02T11:38:34-03:00"
+    },
+    {
+      "id": 47,
+      "email": "u1756823916090@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 25,
+      "team_name": "Escritório U1756823916090",
+      "team_subdomain": "u1756823916090",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T11:38:36-03:00"
+    },
+    {
+      "id": 48,
+      "email": "u1756823916373@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": "Updated1756823916819",
+      "role": "lawyer",
+      "created_at": "2025-09-02T11:38:36-03:00"
+    },
+    {
+      "id": 49,
+      "email": "incomplete1756823917664@gmail.com",
+      "status": "active",
+      "oab": "INVALID_OAB_123",
+      "team_id": 26,
+      "team_name": "Escritório Incomplete1756823917664",
+      "team_subdomain": "incomplete1756823917664",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T11:38:38-03:00"
+    },
+    {
+      "id": 50,
+      "email": "ana1756823919151@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": "Updated1756823919569",
+      "role": "paralegal",
+      "created_at": "2025-09-02T11:38:39-03:00"
+    },
+    {
+      "id": 52,
+      "email": "duplicate1756824191390@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T11:43:11-03:00"
+    },
+    {
+      "id": 54,
+      "email": "duplicate1756824214201@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T11:43:34-03:00"
+    },
+    {
+      "id": 55,
+      "email": "u1756824223173@gmail.com",
+      "status": "active",
+      "oab": "PR_54161",
+      "team_id": 27,
+      "team_name": "Escritório Dayeni Cristina De Oliveira",
+      "team_subdomain": "dayeni-cristina-de-oliveira4",
+      "profile_name": "Dayeni",
+      "role": "lawyer",
+      "created_at": "2025-09-02T11:43:43-03:00"
+    },
+    {
+      "id": 56,
+      "email": "u1756824224419@gmail.com",
+      "status": "active",
+      "oab": "PR_5llll4161",
+      "team_id": 28,
+      "team_name": "Escritório U1756824224419",
+      "team_subdomain": "u1756824224419",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T11:43:45-03:00"
+    },
+    {
+      "id": 57,
+      "email": "duplicate1756824225610@gmail.com",
+      "status": "active",
+      "oab": "PR_54159",
+      "team_id": 29,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti5",
+      "profile_name": "Bruno",
+      "role": "lawyer",
+      "created_at": "2025-09-02T11:43:46-03:00"
+    },
+    {
+      "id": 58,
+      "email": "u1756824227548@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 31,
+      "team_name": "Escritório U1756824227548",
+      "team_subdomain": "u1756824227548",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T11:43:47-03:00"
+    },
+    {
+      "id": 59,
+      "email": "u1756824227806@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": "Updated1756824228278",
+      "role": "lawyer",
+      "created_at": "2025-09-02T11:43:48-03:00"
+    },
+    {
+      "id": 61,
+      "email": "duplicate1756824230332@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T11:43:50-03:00"
+    },
+    {
+      "id": 62,
+      "email": "incomplete1756824232250@gmail.com",
+      "status": "active",
+      "oab": "INVALID_OAB_123",
+      "team_id": 32,
+      "team_name": "Escritório Incomplete1756824232250",
+      "team_subdomain": "incomplete1756824232250",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T11:43:52-03:00"
+    },
+    {
+      "id": 63,
+      "email": "ana1756824233743@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": "Updated1756824234190",
+      "role": "paralegal",
+      "created_at": "2025-09-02T11:43:54-03:00"
+    },
+    {
+      "id": 64,
+      "email": "u1756824994149@gmail.com",
+      "status": "active",
+      "oab": "PR_54161",
+      "team_id": 33,
+      "team_name": "Escritório Dayeni Cristina De Oliveira",
+      "team_subdomain": "dayeni-cristina-de-oliveira5",
+      "profile_name": "Dayeni",
+      "role": "lawyer",
+      "created_at": "2025-09-02T11:56:34-03:00"
+    },
+    {
+      "id": 65,
+      "email": "u1756824995393@gmail.com",
+      "status": "active",
+      "oab": "PR_5llll4161",
+      "team_id": 34,
+      "team_name": "Escritório U1756824995393",
+      "team_subdomain": "u1756824995393",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T11:56:36-03:00"
+    },
+    {
+      "id": 66,
+      "email": "duplicate1756824996599@gmail.com",
+      "status": "active",
+      "oab": "PR_54159",
+      "team_id": 35,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti6",
+      "profile_name": "Bruno",
+      "role": "lawyer",
+      "created_at": "2025-09-02T11:56:37-03:00"
+    },
+    {
+      "id": 67,
+      "email": "u1756824998583@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 37,
+      "team_name": "Escritório U1756824998583",
+      "team_subdomain": "u1756824998583",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T11:56:38-03:00"
+    },
+    {
+      "id": 68,
+      "email": "u1756824998831@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": "Updated1756824999245",
+      "role": "lawyer",
+      "created_at": "2025-09-02T11:56:39-03:00"
+    },
+    {
+      "id": 70,
+      "email": "duplicate1756825001251@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T11:56:41-03:00"
+    },
+    {
+      "id": 71,
+      "email": "incomplete1756825004652@gmail.com",
+      "status": "active",
+      "oab": "INVALID_OAB_123",
+      "team_id": 38,
+      "team_name": "Escritório Incomplete1756825004652",
+      "team_subdomain": "incomplete1756825004652",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T11:56:45-03:00"
+    },
+    {
+      "id": 72,
+      "email": "u1756830001957@gmail.com",
+      "status": "active",
+      "oab": "PR_54161",
+      "team_id": 39,
+      "team_name": "Escritório Dayeni Cristina De Oliveira",
+      "team_subdomain": "dayeni-cristina-de-oliveira6",
+      "profile_name": "Dayeni",
+      "role": "lawyer",
+      "created_at": "2025-09-02T13:20:04-03:00"
+    },
+    {
+      "id": 73,
+      "email": "u1756830004796@gmail.com",
+      "status": "active",
+      "oab": "PR_5llll4161",
+      "team_id": 40,
+      "team_name": "Escritório U1756830004796",
+      "team_subdomain": "u1756830004796",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T13:20:05-03:00"
+    },
+    {
+      "id": 74,
+      "email": "duplicate1756830006516@gmail.com",
+      "status": "active",
+      "oab": "PR_54159",
+      "team_id": 41,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti7",
+      "profile_name": "Bruno",
+      "role": "lawyer",
+      "created_at": "2025-09-02T13:20:07-03:00"
+    },
+    {
+      "id": 75,
+      "email": "u1756830008672@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 43,
+      "team_name": "Escritório U1756830008672",
+      "team_subdomain": "u1756830008672",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T13:20:08-03:00"
+    },
+    {
+      "id": 76,
+      "email": "u1756830008921@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": "Updated1756830009349",
+      "role": "lawyer",
+      "created_at": "2025-09-02T13:20:09-03:00"
+    },
+    {
+      "id": 78,
+      "email": "duplicate1756830011291@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T13:20:11-03:00"
+    },
+    {
+      "id": 79,
+      "email": "incomplete1756830014755@gmail.com",
+      "status": "active",
+      "oab": "INVALID_OAB_123",
+      "team_id": 44,
+      "team_name": "Escritório Incomplete1756830014755",
+      "team_subdomain": "incomplete1756830014755",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T13:20:15-03:00"
+    },
+    {
+      "id": 80,
+      "email": "incomplete1756830291595@gmail.com",
+      "status": "active",
+      "oab": "INVALID_OAB_123",
+      "team_id": 45,
+      "team_name": "Escritório Incomplete1756830291595",
+      "team_subdomain": "incomplete1756830291595",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T13:24:52-03:00"
+    },
+    {
+      "id": 81,
+      "email": "u3@gmail.com",
+      "status": "active",
+      "oab": "PR_54161",
+      "team_id": 46,
+      "team_name": "Escritório Dayeni Cristina De Oliveira",
+      "team_subdomain": "dayeni-cristina-de-oliveira7",
+      "profile_name": "Dayeni",
+      "role": "lawyer",
+      "created_at": "2025-09-02T13:29:48-03:00"
+    },
+    {
+      "id": 82,
+      "email": "u1756830658648@gmail.com",
+      "status": "active",
+      "oab": "PR_54161",
+      "team_id": 47,
+      "team_name": "Escritório Dayeni Cristina De Oliveira",
+      "team_subdomain": "dayeni-cristina-de-oliveira8",
+      "profile_name": "Dayeni",
+      "role": "lawyer",
+      "created_at": "2025-09-02T13:30:59-03:00"
+    },
+    {
+      "id": 83,
+      "email": "u1756830659891@gmail.com",
+      "status": "active",
+      "oab": "PR_5llll4161",
+      "team_id": 48,
+      "team_name": "Escritório U1756830659891",
+      "team_subdomain": "u1756830659891",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T13:31:00-03:00"
+    },
+    {
+      "id": 84,
+      "email": "duplicate1756830661184@gmail.com",
+      "status": "active",
+      "oab": "PR_54159",
+      "team_id": 49,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti8",
+      "profile_name": "Bruno",
+      "role": "lawyer",
+      "created_at": "2025-09-02T13:31:03-03:00"
+    },
+    {
+      "id": 85,
+      "email": "u1756830664464@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 51,
+      "team_name": "Escritório U1756830664464",
+      "team_subdomain": "u1756830664464",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T13:31:04-03:00"
+    },
+    {
+      "id": 86,
+      "email": "u1756830664711@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": "Updated1756830665131",
+      "role": "lawyer",
+      "created_at": "2025-09-02T13:31:04-03:00"
+    },
+    {
+      "id": 88,
+      "email": "duplicate1756830667085@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T13:31:07-03:00"
+    },
+    {
+      "id": 89,
+      "email": "incomplete1756830670511@gmail.com",
+      "status": "active",
+      "oab": "INVALID_OAB_123",
+      "team_id": 52,
+      "team_name": "Escritório Incomplete1756830670511",
+      "team_subdomain": "incomplete1756830670511",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T13:31:11-03:00"
+    },
+    {
+      "id": 91,
+      "email": "u1756830704944@gmail.com",
+      "status": "active",
+      "oab": "PR_54161",
+      "team_id": 53,
+      "team_name": "Escritório Dayeni Cristina De Oliveira",
+      "team_subdomain": "dayeni-cristina-de-oliveira9",
+      "profile_name": "Dayeni",
+      "role": "lawyer",
+      "created_at": "2025-09-02T13:31:45-03:00"
+    },
+    {
+      "id": 92,
+      "email": "u1756830706188@gmail.com",
+      "status": "active",
+      "oab": "PR_5llll4161",
+      "team_id": 54,
+      "team_name": "Escritório U1756830706188",
+      "team_subdomain": "u1756830706188",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T13:31:46-03:00"
+    },
+    {
+      "id": 93,
+      "email": "duplicate1756830707448@gmail.com",
+      "status": "active",
+      "oab": "PR_54159",
+      "team_id": 55,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti9",
+      "profile_name": "Bruno",
+      "role": "lawyer",
+      "created_at": "2025-09-02T13:31:48-03:00"
+    },
+    {
+      "id": 94,
+      "email": "u1756830709475@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 57,
+      "team_name": "Escritório U1756830709475",
+      "team_subdomain": "u1756830709475",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T13:31:49-03:00"
+    },
+    {
+      "id": 95,
+      "email": "u1756830709723@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": "Updated1756830710142",
+      "role": "lawyer",
+      "created_at": "2025-09-02T13:31:49-03:00"
+    },
+    {
+      "id": 97,
+      "email": "duplicate1756830712085@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T13:31:52-03:00"
+    },
+    {
+      "id": 98,
+      "email": "incomplete1756830715005@gmail.com",
+      "status": "active",
+      "oab": "INVALID_OAB_123",
+      "team_id": 58,
+      "team_name": "Escritório Incomplete1756830715005",
+      "team_subdomain": "incomplete1756830715005",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T13:31:55-03:00"
+    },
+    {
+      "id": 99,
+      "email": "incomplete1756830798595@gmail.com",
+      "status": "active",
+      "oab": "INVALID_OAB_123",
+      "team_id": 59,
+      "team_name": "Escritório Incomplete1756830798595",
+      "team_subdomain": "incomplete1756830798595",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T13:33:19-03:00"
+    },
+    {
+      "id": 100,
+      "email": "incomplete1756830871306@gmail.com",
+      "status": "active",
+      "oab": "INVALID_OAB_123",
+      "team_id": 60,
+      "team_name": "Escritório Incomplete1756830871306",
+      "team_subdomain": "incomplete1756830871306",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T13:34:32-03:00"
+    },
+    {
+      "id": 101,
+      "email": "u19kkk9@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 46,
+      "team_name": "Escritório Dayeni Cristina De Oliveira",
+      "team_subdomain": "dayeni-cristina-de-oliveira7",
+      "profile_name": "KLABUNCIO",
+      "role": "lawyer",
+      "created_at": "2025-09-02T13:35:04-03:00"
+    },
+    {
+      "id": 103,
+      "email": "incomplete1756830914057@gmail.com",
+      "status": "active",
+      "oab": "INVALID_OAB_123",
+      "team_id": 61,
+      "team_name": "Escritório Incomplete1756830914057",
+      "team_subdomain": "incomplete1756830914057",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T13:35:14-03:00"
+    },
+    {
+      "id": 105,
+      "email": "incomplete1756831336021@gmail.com",
+      "status": "active",
+      "oab": "INVALID_OAB_123",
+      "team_id": 62,
+      "team_name": "Escritório Incomplete1756831336021",
+      "team_subdomain": "incomplete1756831336021",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T13:42:16-03:00"
+    },
+    {
+      "id": 106,
+      "email": "u220k0@gmail.com",
+      "status": "active",
+      "oab": "PR_5llll4161",
+      "team_id": 64,
+      "team_name": "Escritório U220k0",
+      "team_subdomain": "u220k0",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T13:45:32-03:00"
+    },
+    {
+      "id": 107,
+      "email": "incomplete1756831575901@gmail.com",
+      "status": "active",
+      "oab": "INVALID_OAB_123",
+      "team_id": 65,
+      "team_name": "Escritório Incomplete1756831575901",
+      "team_subdomain": "incomplete1756831575901",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T13:46:16-03:00"
+    },
+    {
+      "id": 108,
+      "email": "incomplete1756831832517@gmail.com",
+      "status": "active",
+      "oab": "INVALID_OAB_123",
+      "team_id": 66,
+      "team_name": "Escritório Incomplete1756831832517",
+      "team_subdomain": "incomplete1756831832517",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T13:50:33-03:00"
+    },
+    {
+      "id": 109,
+      "email": "incomplete1756831949811@gmail.com",
+      "status": "active",
+      "oab": "INVALID_OAB_123",
+      "team_id": 67,
+      "team_name": "Escritório Incomplete1756831949811",
+      "team_subdomain": "incomplete1756831949811",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T13:52:30-03:00"
+    },
+    {
+      "id": 110,
+      "email": "incomplete1756832004085@gmail.com",
+      "status": "active",
+      "oab": "INVALID_OAB_123",
+      "team_id": 68,
+      "team_name": "Escritório Incomplete1756832004085",
+      "team_subdomain": "incomplete1756832004085",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T13:53:24-03:00"
+    },
+    {
+      "id": 111,
+      "email": "ana1756832005570@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": "Ana",
+      "role": "lawyer",
+      "created_at": "2025-09-02T13:53:25-03:00"
+    },
+    {
+      "id": 112,
+      "email": "incomplete1756832079775@gmail.com",
+      "status": "active",
+      "oab": "INVALID_OAB_123",
+      "team_id": 69,
+      "team_name": "Escritório Incomplete1756832079775",
+      "team_subdomain": "incomplete1756832079775",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T13:54:40-03:00"
+    },
+    {
+      "id": 113,
+      "email": "ana1756832081217@gmail.com",
+      "status": "active",
+      "oab": null,
+      "team_id": 3,
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "profile_name": "Updated1756832081648",
+      "role": "lawyer",
+      "created_at": "2025-09-02T13:54:41-03:00"
+    },
+    {
+      "id": 114,
+      "email": "incomplete1756832672071@gmail.com",
+      "status": "active",
+      "oab": "INVALID_OAB_123",
+      "team_id": 70,
+      "team_name": "Escritório Incomplete1756832672071",
+      "team_subdomain": "incomplete1756832672071",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T14:04:32-03:00"
+    },
+    {
+      "id": 115,
+      "email": "incomplete1756832775133@gmail.com",
+      "status": "active",
+      "oab": "INVALID_OAB_123",
+      "team_id": 71,
+      "team_name": "Escritório Incomplete1756832775133",
+      "team_subdomain": "incomplete1756832775133",
+      "profile_name": null,
+      "role": null,
+      "created_at": "2025-09-02T14:06:15-03:00"
+    }
+  ],
+  "teams_summary": {
+    "1": {
+      "team_name": "Escritório Principal",
+      "team_subdomain": "principal",
+      "users": [
+        {
+          "email": "joao.prado@advocacia.com.br",
+          "id": 1
+        },
+        {
+          "email": "maria.silva@advocacia.com.br",
+          "id": 2
+        },
+        {
+          "email": "ana.secretaria@advocacia.com.br",
+          "id": 3
+        },
+        {
+          "email": "lawyer2@test.com",
+          "id": 6
+        },
+        {
+          "email": "test_nested@example.com",
+          "id": 12
+        },
+        {
+          "email": "test_user_profile@example.com",
+          "id": 13
+        }
+      ]
+    },
+    "3": {
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti",
+      "users": [
+        {
+          "email": "a@gmail.com",
+          "id": 4
+        },
+        {
+          "email": "u1@gmail.com",
+          "id": 5
+        },
+        {
+          "email": "test_team_member@example.com",
+          "id": 7
+        },
+        {
+          "email": "u2@gmail.com",
+          "id": 11
+        },
+        {
+          "email": "c19@gmail.com",
+          "id": 14
+        },
+        {
+          "email": "u19@gmail.com",
+          "id": 15
+        },
+        {
+          "email": "u12@gmail.com",
+          "id": 16
+        },
+        {
+          "email": "u1dddd2@gmail.com",
+          "id": 17
+        },
+        {
+          "email": "u1ddddk2@gmail.com",
+          "id": 18
+        },
+        {
+          "email": "u1ddddk22@gmail.com",
+          "id": 19
+        },
+        {
+          "email": "u1ddddk22lj@gmail.com",
+          "id": 20
+        },
+        {
+          "email": "u1ddddk22lkklj@gmail.com",
+          "id": 21
+        },
+        {
+          "email": "u1dddaaadk22lkklj@gmail.com",
+          "id": 22
+        },
+        {
+          "email": "u19klklk@gmail.com",
+          "id": 23
+        },
+        {
+          "email": "setimikyd@mailinator.com",
+          "id": 24
+        },
+        {
+          "email": "siza@mailinator.com",
+          "id": 25
+        },
+        {
+          "email": "u199@gmail.com",
+          "id": 26
+        },
+        {
+          "email": "sorobydo@mailinator.com",
+          "id": 27
+        },
+        {
+          "email": "felujoxive@mailinator.com",
+          "id": 28
+        },
+        {
+          "email": "u1756823817696@gmail.com",
+          "id": 35
+        },
+        {
+          "email": "u1756823855277@gmail.com",
+          "id": 40
+        },
+        {
+          "email": "ana1756823884825@gmail.com",
+          "id": 43
+        },
+        {
+          "email": "u1756823916373@gmail.com",
+          "id": 48
+        },
+        {
+          "email": "ana1756823919151@gmail.com",
+          "id": 50
+        },
+        {
+          "email": "duplicate1756824191390@gmail.com",
+          "id": 52
+        },
+        {
+          "email": "duplicate1756824214201@gmail.com",
+          "id": 54
+        },
+        {
+          "email": "u1756824227806@gmail.com",
+          "id": 59
+        },
+        {
+          "email": "duplicate1756824230332@gmail.com",
+          "id": 61
+        },
+        {
+          "email": "ana1756824233743@gmail.com",
+          "id": 63
+        },
+        {
+          "email": "u1756824998831@gmail.com",
+          "id": 68
+        },
+        {
+          "email": "duplicate1756825001251@gmail.com",
+          "id": 70
+        },
+        {
+          "email": "u1756830008921@gmail.com",
+          "id": 76
+        },
+        {
+          "email": "duplicate1756830011291@gmail.com",
+          "id": 78
+        },
+        {
+          "email": "u1756830664711@gmail.com",
+          "id": 86
+        },
+        {
+          "email": "duplicate1756830667085@gmail.com",
+          "id": 88
+        },
+        {
+          "email": "u1756830709723@gmail.com",
+          "id": 95
+        },
+        {
+          "email": "duplicate1756830712085@gmail.com",
+          "id": 97
+        },
+        {
+          "email": "ana1756832005570@gmail.com",
+          "id": 111
+        },
+        {
+          "email": "ana1756832081217@gmail.com",
+          "id": 113
+        }
+      ]
+    },
+    "6": {
+      "team_name": "Escritório Dayeni Cristina De Oliveira",
+      "team_subdomain": "dayeni-cristina-de-oliveira",
+      "users": [
+        {
+          "email": "u22@gmail.com",
+          "id": 29
+        }
+      ]
+    },
+    "8": {
+      "team_name": "Escritório U2200",
+      "team_subdomain": "u2200",
+      "users": [
+        {
+          "email": "u2200@gmail.com",
+          "id": 30
+        }
+      ]
+    },
+    "9": {
+      "team_name": "Escritório Dayeni Cristina De Oliveira",
+      "team_subdomain": "dayeni-cristina-de-oliveira1",
+      "users": [
+        {
+          "email": "u1756823812416@gmail.com",
+          "id": 31
+        }
+      ]
+    },
+    "10": {
+      "team_name": "Escritório U1756823813908",
+      "team_subdomain": "u1756823813908",
+      "users": [
+        {
+          "email": "u1756823813908@gmail.com",
+          "id": 32
+        }
+      ]
+    },
+    "11": {
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti2",
+      "users": [
+        {
+          "email": "duplicate1756823815393@gmail.com",
+          "id": 33
+        }
+      ]
+    },
+    "13": {
+      "team_name": "Escritório U1756823817444",
+      "team_subdomain": "u1756823817444",
+      "users": [
+        {
+          "email": "u1756823817444@gmail.com",
+          "id": 34
+        }
+      ]
+    },
+    "14": {
+      "team_name": "Escritório Dayeni Cristina De Oliveira",
+      "team_subdomain": "dayeni-cristina-de-oliveira2",
+      "users": [
+        {
+          "email": "u1756823850582@gmail.com",
+          "id": 36
+        }
+      ]
+    },
+    "15": {
+      "team_name": "Escritório U1756823851821",
+      "team_subdomain": "u1756823851821",
+      "users": [
+        {
+          "email": "u1756823851821@gmail.com",
+          "id": 37
+        }
+      ]
+    },
+    "16": {
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti3",
+      "users": [
+        {
+          "email": "duplicate1756823853036@gmail.com",
+          "id": 38
+        }
+      ]
+    },
+    "18": {
+      "team_name": "Escritório U1756823855018",
+      "team_subdomain": "u1756823855018",
+      "users": [
+        {
+          "email": "u1756823855018@gmail.com",
+          "id": 39
+        }
+      ]
+    },
+    "19": {
+      "team_name": "Escritório Incomplete1756823861417",
+      "team_subdomain": "incomplete1756823861417",
+      "users": [
+        {
+          "email": "incomplete1756823861417@gmail.com",
+          "id": 41
+        }
+      ]
+    },
+    "20": {
+      "team_name": "Escritório Incomplete1756823883218",
+      "team_subdomain": "incomplete1756823883218",
+      "users": [
+        {
+          "email": "incomplete1756823883218@gmail.com",
+          "id": 42
+        }
+      ]
+    },
+    "21": {
+      "team_name": "Escritório Dayeni Cristina De Oliveira",
+      "team_subdomain": "dayeni-cristina-de-oliveira3",
+      "users": [
+        {
+          "email": "u1756823911517@gmail.com",
+          "id": 44
+        }
+      ]
+    },
+    "22": {
+      "team_name": "Escritório U1756823912780",
+      "team_subdomain": "u1756823912780",
+      "users": [
+        {
+          "email": "u1756823912780@gmail.com",
+          "id": 45
+        }
+      ]
+    },
+    "23": {
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti4",
+      "users": [
+        {
+          "email": "duplicate1756823914046@gmail.com",
+          "id": 46
+        }
+      ]
+    },
+    "25": {
+      "team_name": "Escritório U1756823916090",
+      "team_subdomain": "u1756823916090",
+      "users": [
+        {
+          "email": "u1756823916090@gmail.com",
+          "id": 47
+        }
+      ]
+    },
+    "26": {
+      "team_name": "Escritório Incomplete1756823917664",
+      "team_subdomain": "incomplete1756823917664",
+      "users": [
+        {
+          "email": "incomplete1756823917664@gmail.com",
+          "id": 49
+        }
+      ]
+    },
+    "27": {
+      "team_name": "Escritório Dayeni Cristina De Oliveira",
+      "team_subdomain": "dayeni-cristina-de-oliveira4",
+      "users": [
+        {
+          "email": "u1756824223173@gmail.com",
+          "id": 55
+        }
+      ]
+    },
+    "28": {
+      "team_name": "Escritório U1756824224419",
+      "team_subdomain": "u1756824224419",
+      "users": [
+        {
+          "email": "u1756824224419@gmail.com",
+          "id": 56
+        }
+      ]
+    },
+    "29": {
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti5",
+      "users": [
+        {
+          "email": "duplicate1756824225610@gmail.com",
+          "id": 57
+        }
+      ]
+    },
+    "31": {
+      "team_name": "Escritório U1756824227548",
+      "team_subdomain": "u1756824227548",
+      "users": [
+        {
+          "email": "u1756824227548@gmail.com",
+          "id": 58
+        }
+      ]
+    },
+    "32": {
+      "team_name": "Escritório Incomplete1756824232250",
+      "team_subdomain": "incomplete1756824232250",
+      "users": [
+        {
+          "email": "incomplete1756824232250@gmail.com",
+          "id": 62
+        }
+      ]
+    },
+    "33": {
+      "team_name": "Escritório Dayeni Cristina De Oliveira",
+      "team_subdomain": "dayeni-cristina-de-oliveira5",
+      "users": [
+        {
+          "email": "u1756824994149@gmail.com",
+          "id": 64
+        }
+      ]
+    },
+    "34": {
+      "team_name": "Escritório U1756824995393",
+      "team_subdomain": "u1756824995393",
+      "users": [
+        {
+          "email": "u1756824995393@gmail.com",
+          "id": 65
+        }
+      ]
+    },
+    "35": {
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti6",
+      "users": [
+        {
+          "email": "duplicate1756824996599@gmail.com",
+          "id": 66
+        }
+      ]
+    },
+    "37": {
+      "team_name": "Escritório U1756824998583",
+      "team_subdomain": "u1756824998583",
+      "users": [
+        {
+          "email": "u1756824998583@gmail.com",
+          "id": 67
+        }
+      ]
+    },
+    "38": {
+      "team_name": "Escritório Incomplete1756825004652",
+      "team_subdomain": "incomplete1756825004652",
+      "users": [
+        {
+          "email": "incomplete1756825004652@gmail.com",
+          "id": 71
+        }
+      ]
+    },
+    "39": {
+      "team_name": "Escritório Dayeni Cristina De Oliveira",
+      "team_subdomain": "dayeni-cristina-de-oliveira6",
+      "users": [
+        {
+          "email": "u1756830001957@gmail.com",
+          "id": 72
+        }
+      ]
+    },
+    "40": {
+      "team_name": "Escritório U1756830004796",
+      "team_subdomain": "u1756830004796",
+      "users": [
+        {
+          "email": "u1756830004796@gmail.com",
+          "id": 73
+        }
+      ]
+    },
+    "41": {
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti7",
+      "users": [
+        {
+          "email": "duplicate1756830006516@gmail.com",
+          "id": 74
+        }
+      ]
+    },
+    "43": {
+      "team_name": "Escritório U1756830008672",
+      "team_subdomain": "u1756830008672",
+      "users": [
+        {
+          "email": "u1756830008672@gmail.com",
+          "id": 75
+        }
+      ]
+    },
+    "44": {
+      "team_name": "Escritório Incomplete1756830014755",
+      "team_subdomain": "incomplete1756830014755",
+      "users": [
+        {
+          "email": "incomplete1756830014755@gmail.com",
+          "id": 79
+        }
+      ]
+    },
+    "45": {
+      "team_name": "Escritório Incomplete1756830291595",
+      "team_subdomain": "incomplete1756830291595",
+      "users": [
+        {
+          "email": "incomplete1756830291595@gmail.com",
+          "id": 80
+        }
+      ]
+    },
+    "46": {
+      "team_name": "Escritório Dayeni Cristina De Oliveira",
+      "team_subdomain": "dayeni-cristina-de-oliveira7",
+      "users": [
+        {
+          "email": "u3@gmail.com",
+          "id": 81
+        },
+        {
+          "email": "u19kkk9@gmail.com",
+          "id": 101
+        }
+      ]
+    },
+    "47": {
+      "team_name": "Escritório Dayeni Cristina De Oliveira",
+      "team_subdomain": "dayeni-cristina-de-oliveira8",
+      "users": [
+        {
+          "email": "u1756830658648@gmail.com",
+          "id": 82
+        }
+      ]
+    },
+    "48": {
+      "team_name": "Escritório U1756830659891",
+      "team_subdomain": "u1756830659891",
+      "users": [
+        {
+          "email": "u1756830659891@gmail.com",
+          "id": 83
+        }
+      ]
+    },
+    "49": {
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti8",
+      "users": [
+        {
+          "email": "duplicate1756830661184@gmail.com",
+          "id": 84
+        }
+      ]
+    },
+    "51": {
+      "team_name": "Escritório U1756830664464",
+      "team_subdomain": "u1756830664464",
+      "users": [
+        {
+          "email": "u1756830664464@gmail.com",
+          "id": 85
+        }
+      ]
+    },
+    "52": {
+      "team_name": "Escritório Incomplete1756830670511",
+      "team_subdomain": "incomplete1756830670511",
+      "users": [
+        {
+          "email": "incomplete1756830670511@gmail.com",
+          "id": 89
+        }
+      ]
+    },
+    "53": {
+      "team_name": "Escritório Dayeni Cristina De Oliveira",
+      "team_subdomain": "dayeni-cristina-de-oliveira9",
+      "users": [
+        {
+          "email": "u1756830704944@gmail.com",
+          "id": 91
+        }
+      ]
+    },
+    "54": {
+      "team_name": "Escritório U1756830706188",
+      "team_subdomain": "u1756830706188",
+      "users": [
+        {
+          "email": "u1756830706188@gmail.com",
+          "id": 92
+        }
+      ]
+    },
+    "55": {
+      "team_name": "Escritório Bruno Pellizzetti",
+      "team_subdomain": "bruno-pellizzetti9",
+      "users": [
+        {
+          "email": "duplicate1756830707448@gmail.com",
+          "id": 93
+        }
+      ]
+    },
+    "57": {
+      "team_name": "Escritório U1756830709475",
+      "team_subdomain": "u1756830709475",
+      "users": [
+        {
+          "email": "u1756830709475@gmail.com",
+          "id": 94
+        }
+      ]
+    },
+    "58": {
+      "team_name": "Escritório Incomplete1756830715005",
+      "team_subdomain": "incomplete1756830715005",
+      "users": [
+        {
+          "email": "incomplete1756830715005@gmail.com",
+          "id": 98
+        }
+      ]
+    },
+    "59": {
+      "team_name": "Escritório Incomplete1756830798595",
+      "team_subdomain": "incomplete1756830798595",
+      "users": [
+        {
+          "email": "incomplete1756830798595@gmail.com",
+          "id": 99
+        }
+      ]
+    },
+    "60": {
+      "team_name": "Escritório Incomplete1756830871306",
+      "team_subdomain": "incomplete1756830871306",
+      "users": [
+        {
+          "email": "incomplete1756830871306@gmail.com",
+          "id": 100
+        }
+      ]
+    },
+    "61": {
+      "team_name": "Escritório Incomplete1756830914057",
+      "team_subdomain": "incomplete1756830914057",
+      "users": [
+        {
+          "email": "incomplete1756830914057@gmail.com",
+          "id": 103
+        }
+      ]
+    },
+    "62": {
+      "team_name": "Escritório Incomplete1756831336021",
+      "team_subdomain": "incomplete1756831336021",
+      "users": [
+        {
+          "email": "incomplete1756831336021@gmail.com",
+          "id": 105
+        }
+      ]
+    },
+    "64": {
+      "team_name": "Escritório U220k0",
+      "team_subdomain": "u220k0",
+      "users": [
+        {
+          "email": "u220k0@gmail.com",
+          "id": 106
+        }
+      ]
+    },
+    "65": {
+      "team_name": "Escritório Incomplete1756831575901",
+      "team_subdomain": "incomplete1756831575901",
+      "users": [
+        {
+          "email": "incomplete1756831575901@gmail.com",
+          "id": 107
+        }
+      ]
+    },
+    "66": {
+      "team_name": "Escritório Incomplete1756831832517",
+      "team_subdomain": "incomplete1756831832517",
+      "users": [
+        {
+          "email": "incomplete1756831832517@gmail.com",
+          "id": 108
+        }
+      ]
+    },
+    "67": {
+      "team_name": "Escritório Incomplete1756831949811",
+      "team_subdomain": "incomplete1756831949811",
+      "users": [
+        {
+          "email": "incomplete1756831949811@gmail.com",
+          "id": 109
+        }
+      ]
+    },
+    "68": {
+      "team_name": "Escritório Incomplete1756832004085",
+      "team_subdomain": "incomplete1756832004085",
+      "users": [
+        {
+          "email": "incomplete1756832004085@gmail.com",
+          "id": 110
+        }
+      ]
+    },
+    "69": {
+      "team_name": "Escritório Incomplete1756832079775",
+      "team_subdomain": "incomplete1756832079775",
+      "users": [
+        {
+          "email": "incomplete1756832079775@gmail.com",
+          "id": 112
+        }
+      ]
+    },
+    "70": {
+      "team_name": "Escritório Incomplete1756832672071",
+      "team_subdomain": "incomplete1756832672071",
+      "users": [
+        {
+          "email": "incomplete1756832672071@gmail.com",
+          "id": 114
+        }
+      ]
+    },
+    "71": {
+      "team_name": "Escritório Incomplete1756832775133",
+      "team_subdomain": "incomplete1756832775133",
+      "users": [
+        {
+          "email": "incomplete1756832775133@gmail.com",
+          "id": 115
+        }
+      ]
+    }
+  }
+}

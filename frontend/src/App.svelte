@@ -20,10 +20,6 @@
   import CustomersEditPage from './lib/pages/CustomersEditPage.svelte';
   import CustomerProfilePage from './pages/CustomerProfilePage.svelte';
   import ProfileCompletionEnhanced from './lib/pages/ProfileCompletionEnhanced.svelte';
-  import AdvogadoCreatePage from './lib/pages/AdvogadoCreatePage.svelte';
-  import AdvogadoViewPage from './lib/pages/AdvogadoViewPage.svelte';
-  import EscritorioCreatePage from './lib/pages/EscritorioCreatePage.svelte';
-  import EscritorioViewPage from './lib/pages/EscritorioViewPage.svelte';
 
   // Reactive stores
   $: ({ isAuthenticated, showProfileCompletion, profileData, missingFields } = $authStore);
@@ -89,22 +85,6 @@
 
     if (path.match(/\/customers\/profile\/\d+/)) {
       return CustomerProfilePage;
-    }
-
-    if (path.match(/\/teams\/advogados\/new/)) {
-      return AdvogadoCreatePage;
-    }
-
-    if (path.match(/\/teams\/advogados\/\d+/)) {
-      return AdvogadoViewPage;
-    }
-
-    if (path.match(/\/teams\/escritorios\/new/)) {
-      return EscritorioCreatePage;
-    }
-
-    if (path.match(/\/teams\/escritorios\/\d+/)) {
-      return EscritorioViewPage;
     }
 
     const routes = {
