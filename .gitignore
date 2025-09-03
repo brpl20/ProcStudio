@@ -48,7 +48,7 @@
 swarm.log
 
 # AiTools-Tokens
-/aitools/.auth-token.json
+/ai-tools/.auth-token.json
 
 # Node modules in tests directory
 tests/node_modules/

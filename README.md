@@ -13,7 +13,7 @@ API RESTful desenvolvida em Ruby on Rails para o sistema ProcStudio.
 - [Instalacão](./docs/Instalação.md)
 - [Padrão de Desesenvolvimento](./docs/Padrão-de-desenvolvimento.md)
 - [Deploy](./docs/Deploy.md)
-
+- [Policies](./docs/PoliciesReview.md)
 
 ## Visão e Evolução do Projeto
 
