@@ -1,6 +1,7 @@
 <!-- components/customers/CustomerPersonalInfoStep.svelte -->
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
+  import Cpf from '../forms/Cpf.svelte';
   import {
     validateCPFRequired,
     formatCPF,
@@ -68,12 +69,6 @@
   // Event handlers
   function handleBlur(fieldName: string, value: any) {
     dispatch('fieldBlur', { field: fieldName, value });
-  }
-
-  function handleCPFInput(event: Event) {
-    const input = event.target as HTMLInputElement;
-    formData.cpf = formatCPF(input.value);
-    dispatch('cpfInput', { value: formData.cpf });
   }
 
   function handleBirthDateChange(event: Event) {
@@ -205,29 +200,15 @@
   </div>
 
   <!-- CPF -->
-  <div class="form-control w-full">
-    <label for="cpf" class="label justify-start">
-      <span class="label-text font-medium">CPF *</span>
-    </label>
-    <input
-      id="cpf"
-      type="text"
-      class="input input-bordered w-full {errors.cpf && touched.cpf ? 'input-error' : ''}"
-      bind:value={formData.cpf}
-      on:input={handleCPFInput}
-      on:blur={() => handleBlur('cpf', formData.cpf)}
-      disabled={isLoading}
-      placeholder="000.000.000-00"
-      maxlength="14"
-      aria-required="true"
-      aria-invalid={errors.cpf && touched.cpf ? 'true' : 'false'}
-      aria-describedby={errors.cpf && touched.cpf ? 'cpf-error' : undefined}
-      data-testid="customer-cpf-input"
-    />
-    {#if errors.cpf && touched.cpf}
-      <div id="cpf-error" class="text-error text-sm mt-1">{errors.cpf}</div>
-    {/if}
-  </div>
+  <Cpf
+    bind:value={formData.cpf}
+    errors={errors.cpf}
+    touched={touched.cpf}
+    disabled={isLoading}
+    on:input={(e) => dispatch('cpfInput', e.detail)}
+    on:blur={(e) => handleBlur('cpf', e.detail.value)}
+    testId="customer-cpf-input"
+  />
 
   <!-- RG -->
   <div class="form-control w-full">

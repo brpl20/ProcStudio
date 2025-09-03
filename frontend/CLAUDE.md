@@ -115,20 +115,27 @@ Each domain has a dedicated service class in `src/lib/api/services/`:
 
 ### Code Quality
 
-- **Always run linting after code changes** - don't bypass ESLint rules without express authorization
+- After creation: check lint for specific code change not across all the repository
+- Before commit: check lint for the whole repository
 - Use Prettier for consistent formatting
 - Write self-documenting code with clear variable names
 
 ## Testing and Validation
 
+### User/UserProfile Integration
+
+After frontend updates affecting Users and UserProfile please run tests:
+- /Users/brpl/code/prc_api/docs/tests/User-UserProfile.md
+
 ### Customer/ProfileCustomer Integration
 
-After frontend updates affecting customer functionality, verify backend integration:
+After frontend updates affecting Customer and CustomerProfile functionality, please run tests:
 
 ```bash
 npx mocha ./tests/Customers/customers_test.js --reporter spec
 npx mocha ./tests/ProfileCustomers/profile_customers_test.js --reporter spec
 ```
+
 
 ## Documentation Resources
 
