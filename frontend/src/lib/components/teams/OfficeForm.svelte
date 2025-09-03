@@ -2,6 +2,7 @@
   import { createEventDispatcher } from 'svelte';
   import { onMount } from 'svelte';
   import api from '../../api';
+  import Cnpj from '../forms_commons/Cnpj.svelte';
 
   export let office = null;
 
@@ -22,25 +23,29 @@
     quote_value: '',
     number_of_quotes: '',
     phones_attributes: [{ phone_number: '' }],
-    addresses_attributes: [{
-      street: '',
-      number: '',
-      complement: '',
-      neighborhood: '',
-      city: '',
-      state: '',
-      zip_code: '',
-      address_type: 'main'
-    }],
+    addresses_attributes: [
+      {
+        street: '',
+        number: '',
+        complement: '',
+        neighborhood: '',
+        city: '',
+        state: '',
+        zip_code: '',
+        address_type: 'main'
+      }
+    ],
     emails_attributes: [{ email: '' }],
-    bank_accounts_attributes: [{
-      bank_name: '',
-      type_account: '',
-      agency: '',
-      account: '',
-      operation: '',
-      pix: ''
-    }]
+    bank_accounts_attributes: [
+      {
+        bank_name: '',
+        type_account: '',
+        agency: '',
+        account: '',
+        operation: '',
+        pix: ''
+      }
+    ]
   };
 
   let logoFile = null;
@@ -52,18 +57,20 @@
 
   // Partnership management
   let lawyers = [];
-  let partners = [{
-    lawyer_id: '',
-    lawyer_name: '',
-    partnership_type: '',
-    ownership_percentage: 100,
-    is_managing_partner: false,
-    pro_labore_amount: 0
-  }];
+  let partners = [
+    {
+      lawyer_id: '',
+      lawyer_name: '',
+      partnership_type: '',
+      ownership_percentage: 100,
+      is_managing_partner: false,
+      pro_labore_amount: 0
+    }
+  ];
   let profitDistribution = 'proportional';
   let createSocialContract = false;
   let partnersWithProLabore = true;
-  let minimumWage = 1320.00;
+  let minimumWage = 1320.0;
   let inssCeiling = 7507.49;
   let proLaboreErrors = {};
 
@@ -74,7 +81,7 @@
 
   const societyOptions = [
     { value: 'individual', label: 'Individual' },
-    { value: 'company', label: 'Empresa' }
+    { value: 'company', label: 'Sociedade' }
   ];
 
   const accountingOptions = [
@@ -114,11 +121,14 @@
   // Partnership management functions
   function handlePartnerChange(index, field, value) {
     console.log('handlePartnerChange called:', { index, field, value });
-    
+
     partners = partners.map((partner, i) => {
       if (i === index) {
         if (field === 'lawyer_id' && value && typeof value === 'object') {
-          console.log('Setting lawyer for partner:', { partnerId: value.id, lawyerName: value.attributes });
+          console.log('Setting lawyer for partner:', {
+            partnerId: value.id,
+            lawyerName: value.attributes
+          });
           return {
             ...partner,
             lawyer_id: value.id,
@@ -126,15 +136,15 @@
           };
         } else if (field === 'ownership_percentage') {
           const newPercentage = Math.max(0, Math.min(100, Number(value) || 0));
-          
+
           // Special logic for 2 partners - adjust other partner automatically
           if (partners.length === 2) {
             const otherIndex = index === 0 ? 1 : 0;
             const updatedPartners = [...partners];
             updatedPartners[index] = { ...partner, ownership_percentage: newPercentage };
-            updatedPartners[otherIndex] = { 
-              ...updatedPartners[otherIndex], 
-              ownership_percentage: 100 - newPercentage 
+            updatedPartners[otherIndex] = {
+              ...updatedPartners[otherIndex],
+              ownership_percentage: 100 - newPercentage
             };
             return i === index ? updatedPartners[index] : updatedPartners[i];
           } else {
@@ -143,7 +153,7 @@
         } else if (field === 'pro_labore_amount') {
           const amount = Number(value) || 0;
           const error = validateProLaboreAmount(amount);
-          
+
           // Update errors
           if (error) {
             proLaboreErrors[index] = error;
@@ -151,7 +161,7 @@
             delete proLaboreErrors[index];
           }
           proLaboreErrors = { ...proLaboreErrors };
-          
+
           return { ...partner, pro_labore_amount: amount };
         } else {
           return { ...partner, [field]: value };
@@ -163,30 +173,33 @@
 
   function addPartner() {
     if (lawyers.length <= partners.length) return;
-    
+
     // If adding second partner, split 50/50
     if (partners.length === 1) {
       partners[0] = { ...partners[0], ownership_percentage: 50 };
     }
-    
+
     // Add new partner
-    partners = [...partners, {
-      lawyer_id: '',
-      lawyer_name: '',
-      partnership_type: '',
-      ownership_percentage: partners.length === 1 ? 50 : 0,
-      is_managing_partner: false,
-      pro_labore_amount: 0
-    }];
-    
+    partners = [
+      ...partners,
+      {
+        lawyer_id: '',
+        lawyer_name: '',
+        partnership_type: '',
+        ownership_percentage: partners.length === 1 ? 50 : 0,
+        is_managing_partner: false,
+        pro_labore_amount: 0
+      }
+    ];
+
     console.log('Added new partner, total partners:', partners.length);
   }
 
   function removePartner(index) {
     if (partners.length === 1) return;
-    
+
     partners = partners.filter((_, i) => i !== index);
-    
+
     // Adjust percentages if now 2 partners
     if (partners.length === 2) {
       partners = partners.map((partner, i) => ({
@@ -198,23 +211,23 @@
 
   function getAvailableLawyers(currentIndex) {
     const selectedIds = partners
-      .map((partner, index) => index !== currentIndex ? partner.lawyer_id : null)
-      .filter(id => id && id !== '');
-    
-    const availableLawyers = lawyers.filter(lawyer => !selectedIds.includes(lawyer.id));
+      .map((partner, index) => (index !== currentIndex ? partner.lawyer_id : null))
+      .filter((id) => id && id !== '');
+
+    const availableLawyers = lawyers.filter((lawyer) => !selectedIds.includes(lawyer.id));
     console.log(`getAvailableLawyers(${currentIndex}):`, {
       totalLawyers: lawyers.length,
       selectedIds,
       availableLawyers: availableLawyers.length,
       availableLawyersData: availableLawyers,
-      lawyersStructure: availableLawyers.map(l => ({
+      lawyersStructure: availableLawyers.map((l) => ({
         id: l.id,
         name: l.attributes?.name,
         lastName: l.attributes?.last_name,
         fullStructure: l
       }))
     });
-    
+
     return availableLawyers;
   }
 
@@ -257,16 +270,19 @@
   }
 
   function addAddress() {
-    formData.addresses_attributes = [...formData.addresses_attributes, {
-      street: '',
-      number: '',
-      complement: '',
-      neighborhood: '',
-      city: '',
-      state: '',
-      zip_code: '',
-      address_type: 'secondary'
-    }];
+    formData.addresses_attributes = [
+      ...formData.addresses_attributes,
+      {
+        street: '',
+        number: '',
+        complement: '',
+        neighborhood: '',
+        city: '',
+        state: '',
+        zip_code: '',
+        address_type: 'secondary'
+      }
+    ];
   }
 
   function removeAddress(index) {
@@ -276,19 +292,24 @@
   }
 
   function addBankAccount() {
-    formData.bank_accounts_attributes = [...formData.bank_accounts_attributes, {
-      bank_name: '',
-      type_account: '',
-      agency: '',
-      account: '',
-      operation: '',
-      pix: ''
-    }];
+    formData.bank_accounts_attributes = [
+      ...formData.bank_accounts_attributes,
+      {
+        bank_name: '',
+        type_account: '',
+        agency: '',
+        account: '',
+        operation: '',
+        pix: ''
+      }
+    ];
   }
 
   function removeBankAccount(index) {
     if (formData.bank_accounts_attributes.length > 1) {
-      formData.bank_accounts_attributes = formData.bank_accounts_attributes.filter((_, i) => i !== index);
+      formData.bank_accounts_attributes = formData.bank_accounts_attributes.filter(
+        (_, i) => i !== index
+      );
     }
   }
 
@@ -302,12 +323,14 @@
       const payload = {
         ...formData,
         quote_value: formData.quote_value ? parseFloat(formData.quote_value) : undefined,
-        number_of_quotes: formData.number_of_quotes ? parseInt(formData.number_of_quotes) : undefined,
+        number_of_quotes: formData.number_of_quotes
+          ? parseInt(formData.number_of_quotes)
+          : undefined,
         logo: logoFile,
         // Partnership data
         user_offices_attributes: partners
-          .filter(p => p.lawyer_id && p.partnership_type)
-          .map(p => ({
+          .filter((p) => p.lawyer_id && p.partnership_type)
+          .map((p) => ({
             user_id: p.lawyer_id,
             partnership_type: p.partnership_type,
             partnership_percentage: p.ownership_percentage?.toString(),
@@ -325,7 +348,9 @@
       payload.phones_attributes = payload.phones_attributes.filter((p) => p.phone_number.trim());
       payload.emails_attributes = payload.emails_attributes.filter((e) => e.email.trim());
       payload.addresses_attributes = payload.addresses_attributes.filter((a) => a.street.trim());
-      payload.bank_accounts_attributes = payload.bank_accounts_attributes.filter((b) => b.bank_name.trim());
+      payload.bank_accounts_attributes = payload.bank_accounts_attributes.filter((b) =>
+        b.bank_name.trim()
+      );
 
       let response;
       if (isEdit) {
@@ -360,19 +385,6 @@
     }
   }
 
-  function formatCNPJ(value) {
-    // Remove non-digits
-    const digits = value.replace(/\D/g, '');
-
-    // Apply CNPJ mask: 00.000.000/0000-00
-    return digits
-      .replace(/(\d{2})(\d)/, '$1.$2')
-      .replace(/(\d{3})(\d)/, '$1.$2')
-      .replace(/(\d{3})(\d)/, '$1/$2')
-      .replace(/(\d{4})(\d)/, '$1-$2')
-      .substr(0, 18);
-  }
-
   function formatPhone(value) {
     // Remove non-digits
     const digits = value.replace(/\D/g, '');
@@ -380,9 +392,7 @@
     // Apply phone mask
     if (digits.length <= 10) {
       // (00) 0000-0000
-      return digits
-        .replace(/(\d{2})(\d)/, '($1) $2')
-        .replace(/(\d{4})(\d)/, '$1-$2');
+      return digits.replace(/(\d{2})(\d)/, '($1) $2').replace(/(\d{4})(\d)/, '$1-$2');
     } else {
       // (00) 00000-0000
       return digits
@@ -395,30 +405,28 @@
   function formatCEP(value) {
     // Remove non-digits and apply CEP mask: 00000-000
     const digits = value.replace(/\D/g, '');
-    return digits
-      .replace(/(\d{5})(\d)/, '$1-$2')
-      .substr(0, 9);
+    return digits.replace(/(\d{5})(\d)/, '$1-$2').substr(0, 9);
   }
 
   async function loadLawyers() {
     try {
       console.log('Loading lawyers from user profiles...');
-      
+
       // Get user profiles directly - the API returns { success: true, message: "...", data: [...] }
       const response = await api.users.getUserProfiles();
       console.log('User profiles response:', response);
-      
+
       // Now the response should have the correct structure: { success: true, data: UserProfileData[] }
       if (response.success && response.data && Array.isArray(response.data)) {
         console.log('Processing profiles data:', response.data);
-        
+
         // All profiles in the test data have role: "lawyer", so we map them directly
         lawyers = response.data
-          .filter(profile => {
+          .filter((profile) => {
             console.log('Checking profile:', profile);
             return profile.attributes?.role === 'lawyer';
           })
-          .map(profile => {
+          .map((profile) => {
             console.log('Mapping profile:', profile.attributes);
             return {
               id: profile.attributes.user_id || profile.id,
@@ -431,7 +439,7 @@
               }
             };
           });
-        
+
         console.log('Final lawyers array:', lawyers);
         console.log(`Loaded ${lawyers.length} lawyers successfully!`);
       } else {
@@ -461,52 +469,60 @@
         accounting_type: office.accounting_type || 'simple',
         quote_value: office.quote_value?.toString() || '',
         number_of_quotes: office.number_of_quotes?.toString() || '',
-        phones_attributes: office.phones?.length > 0
-          ? office.phones.map((p) => ({ phone_number: p.phone_number, id: p.id }))
-          : [{ phone_number: '' }],
-        addresses_attributes: office.addresses?.length > 0
-          ? office.addresses.map((a) => ({
-            street: a.street || '',
-            number: a.number || '',
-            complement: a.complement || '',
-            neighborhood: a.neighborhood || '',
-            city: a.city || '',
-            state: a.state || '',
-            zip_code: a.zip_code || '',
-            address_type: a.address_type || 'main',
-            id: a.id
-          }))
-          : [{
-            street: '',
-            number: '',
-            complement: '',
-            neighborhood: '',
-            city: '',
-            state: '',
-            zip_code: '',
-            address_type: 'main'
-          }],
-        emails_attributes: office.emails?.length > 0
-          ? office.emails.map((e) => ({ email: e.email, id: e.id }))
-          : [{ email: '' }],
-        bank_accounts_attributes: office.bank_accounts?.length > 0
-          ? office.bank_accounts.map((b) => ({
-            bank_name: b.bank_name || '',
-            type_account: b.type_account || '',
-            agency: b.agency || '',
-            account: b.account || '',
-            operation: b.operation || '',
-            pix: b.pix || '',
-            id: b.id
-          }))
-          : [{
-            bank_name: '',
-            type_account: '',
-            agency: '',
-            account: '',
-            operation: '',
-            pix: ''
-          }]
+        phones_attributes:
+          office.phones?.length > 0
+            ? office.phones.map((p) => ({ phone_number: p.phone_number, id: p.id }))
+            : [{ phone_number: '' }],
+        addresses_attributes:
+          office.addresses?.length > 0
+            ? office.addresses.map((a) => ({
+                street: a.street || '',
+                number: a.number || '',
+                complement: a.complement || '',
+                neighborhood: a.neighborhood || '',
+                city: a.city || '',
+                state: a.state || '',
+                zip_code: a.zip_code || '',
+                address_type: a.address_type || 'main',
+                id: a.id
+              }))
+            : [
+                {
+                  street: '',
+                  number: '',
+                  complement: '',
+                  neighborhood: '',
+                  city: '',
+                  state: '',
+                  zip_code: '',
+                  address_type: 'main'
+                }
+              ],
+        emails_attributes:
+          office.emails?.length > 0
+            ? office.emails.map((e) => ({ email: e.email, id: e.id }))
+            : [{ email: '' }],
+        bank_accounts_attributes:
+          office.bank_accounts?.length > 0
+            ? office.bank_accounts.map((b) => ({
+                bank_name: b.bank_name || '',
+                type_account: b.type_account || '',
+                agency: b.agency || '',
+                account: b.account || '',
+                operation: b.operation || '',
+                pix: b.pix || '',
+                id: b.id
+              }))
+            : [
+                {
+                  bank_name: '',
+                  type_account: '',
+                  agency: '',
+                  account: '',
+                  operation: '',
+                  pix: ''
+                }
+              ]
       };
 
       if (office.logo_url) {
@@ -519,7 +535,9 @@
 <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
   <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
     <!-- Header -->
-    <div class="sticky top-0 bg-white border-b border-gray-200 p-6 flex justify-between items-center">
+    <div
+      class="sticky top-0 bg-white border-b border-gray-200 p-6 flex justify-between items-center"
+    >
       <h2 class="text-2xl font-bold text-gray-900">
         {isEdit ? 'Editar Escritório' : 'Novo Escritório'}
       </h2>
@@ -530,8 +548,18 @@
     <div class="p-6 space-y-8">
       {#if success}
         <div class="alert alert-success">
-          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="stroke-current shrink-0 h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
           <span>{success}</span>
         </div>
@@ -539,8 +567,18 @@
 
       {#if error}
         <div class="alert alert-error">
-          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="stroke-current shrink-0 h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
           <span>{error}</span>
         </div>
@@ -552,77 +590,55 @@
           <h3 class="card-title text-lg font-semibold mb-4">Informações Básicas</h3>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="form-control">
-              <label class="label">
+            <div class="form-control flex flex-col">
+              <label class="label pb-1">
                 <span class="label-text">Nome do Escritório *</span>
               </label>
               <input
                 type="text"
-                class="input input-bordered"
+                class="input input-bordered w-full"
                 bind:value={formData.name}
                 placeholder="Nome do escritório"
                 required
               />
             </div>
 
-            <div class="form-control">
-              <label class="label">
-                <span class="label-text">CNPJ *</span>
-              </label>
-              <input
-                type="text"
-                class="input input-bordered"
-                bind:value={formData.cnpj}
-                on:input={(e) => formData.cnpj = formatCNPJ(e.target.value)}
-                placeholder="00.000.000/0000-00"
-                maxlength="18"
-                required
-              />
-            </div>
+            <Cnpj required bind:value={formData.cnpj} id="office-cnpj" labelText={'CNPJ'} />
 
-            <div class="form-control">
-              <label class="label">
+            <div class="form-control flex flex-col">
+              <label class="label pb-1">
                 <span class="label-text">Tipo de Sociedade</span>
               </label>
-              <select class="select select-bordered" bind:value={formData.society}>
+              <select class="select select-bordered w-full" bind:value={formData.society}>
                 {#each societyOptions as option}
                   <option value={option.value}>{option.label}</option>
                 {/each}
               </select>
             </div>
 
-            <div class="form-control">
-              <label class="label">
+            <div class="form-control flex flex-col">
+              <label class="label pb-1">
                 <span class="label-text">Enquadramento Contábil</span>
               </label>
-              <select class="select select-bordered" bind:value={formData.accounting_type}>
+              <select class="select select-bordered w-full" bind:value={formData.accounting_type}>
                 {#each accountingOptions as option}
                   <option value={option.value}>{option.label}</option>
                 {/each}
               </select>
             </div>
 
-            <div class="form-control">
-              <label class="label">
+            <div class="form-control flex flex-col">
+              <label class="label pb-1">
                 <span class="label-text">Data de Fundação</span>
               </label>
-              <input
-                type="date"
-                class="input input-bordered"
-                bind:value={formData.foundation}
-              />
+              <input type="date" class="input input-bordered w-full" bind:value={formData.foundation} />
             </div>
 
-            <div class="form-control">
-              <label class="label">
+            <div class="form-control flex flex-col">
+              <label class="label pb-1">
                 <span class="label-text">Site</span>
               </label>
-              <input
-                type="url"
-                class="input input-bordered"
-                bind:value={formData.site}
-                placeholder="https://exemplo.com"
-              />
+              <input type="url" class="input input-bordered w-full" bind:value={formData.site} />
             </div>
           </div>
         </div>
@@ -634,49 +650,49 @@
           <h3 class="card-title text-lg font-semibold mb-4">Informações OAB</h3>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="form-control">
-              <label class="label">
+            <div class="form-control flex flex-col">
+              <label class="label pb-1">
                 <span class="label-text">OAB ID</span>
               </label>
               <input
                 type="text"
-                class="input input-bordered"
+                class="input input-bordered w-full"
                 bind:value={formData.oab_id}
                 placeholder="Número OAB"
               />
             </div>
 
-            <div class="form-control">
-              <label class="label">
+            <div class="form-control flex flex-col">
+              <label class="label pb-1">
                 <span class="label-text">Status OAB</span>
               </label>
               <input
                 type="text"
-                class="input input-bordered"
+                class="input input-bordered w-full"
                 bind:value={formData.oab_status}
                 placeholder="Status na OAB"
               />
             </div>
 
-            <div class="form-control">
-              <label class="label">
+            <div class="form-control flex flex-col">
+              <label class="label pb-1">
                 <span class="label-text">Inscrição OAB</span>
               </label>
               <input
                 type="text"
-                class="input input-bordered"
+                class="input input-bordered w-full"
                 bind:value={formData.oab_inscricao}
                 placeholder="Número da inscrição"
               />
             </div>
 
-            <div class="form-control">
-              <label class="label">
+            <div class="form-control flex flex-col">
+              <label class="label pb-1">
                 <span class="label-text">Link OAB</span>
               </label>
               <input
                 type="url"
-                class="input input-bordered"
+                class="input input-bordered w-full"
                 bind:value={formData.oab_link}
                 placeholder="Link do perfil na OAB"
               />
@@ -691,13 +707,13 @@
           <h3 class="card-title text-lg font-semibold mb-4">Informações Financeiras</h3>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="form-control">
-              <label class="label">
+            <div class="form-control flex flex-col">
+              <label class="label pb-1">
                 <span class="label-text">Valor da Cota</span>
               </label>
               <input
                 type="number"
-                class="input input-bordered"
+                class="input input-bordered w-full"
                 bind:value={formData.quote_value}
                 placeholder="0.00"
                 step="0.01"
@@ -705,13 +721,13 @@
               />
             </div>
 
-            <div class="form-control">
-              <label class="label">
+            <div class="form-control flex flex-col">
+              <label class="label pb-1">
                 <span class="label-text">Número de Cotas</span>
               </label>
               <input
                 type="number"
-                class="input input-bordered"
+                class="input input-bordered w-full"
                 bind:value={formData.number_of_quotes}
                 placeholder="0"
                 min="0"
@@ -735,7 +751,7 @@
                 type="tel"
                 class="input input-bordered flex-1"
                 bind:value={phone.phone_number}
-                on:input={(e) => phone.phone_number = formatPhone(e.target.value)}
+                on:input={(e) => (phone.phone_number = formatPhone(e.target.value))}
                 placeholder="(00) 00000-0000"
                 maxlength="15"
               />
@@ -782,88 +798,88 @@
           {#each formData.addresses_attributes as address, index (index)}
             <div class="border rounded p-4 mb-4">
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div class="form-control">
-                  <label class="label">
+                <div class="form-control flex flex-col">
+                  <label class="label pb-1">
                     <span class="label-text">CEP</span>
                   </label>
                   <input
                     type="text"
-                    class="input input-bordered input-sm"
+                    class="input input-bordered input-sm w-full"
                     bind:value={address.zip_code}
-                    on:input={(e) => address.zip_code = formatCEP(e.target.value)}
+                    on:input={(e) => (address.zip_code = formatCEP(e.target.value))}
                     placeholder="00000-000"
                     maxlength="9"
                   />
                 </div>
 
-                <div class="form-control lg:col-span-2">
-                  <label class="label">
+                <div class="form-control flex flex-col lg:col-span-2">
+                  <label class="label pb-1">
                     <span class="label-text">Rua</span>
                   </label>
                   <input
                     type="text"
-                    class="input input-bordered input-sm"
+                    class="input input-bordered input-sm w-full"
                     bind:value={address.street}
                     placeholder="Nome da rua"
                   />
                 </div>
 
-                <div class="form-control">
-                  <label class="label">
+                <div class="form-control flex flex-col">
+                  <label class="label pb-1">
                     <span class="label-text">Número</span>
                   </label>
                   <input
                     type="text"
-                    class="input input-bordered input-sm"
+                    class="input input-bordered input-sm w-full"
                     bind:value={address.number}
                     placeholder="123"
                   />
                 </div>
 
-                <div class="form-control">
-                  <label class="label">
+                <div class="form-control flex flex-col">
+                  <label class="label pb-1">
                     <span class="label-text">Bairro</span>
                   </label>
                   <input
                     type="text"
-                    class="input input-bordered input-sm"
+                    class="input input-bordered input-sm w-full"
                     bind:value={address.neighborhood}
                     placeholder="Nome do bairro"
                   />
                 </div>
 
-                <div class="form-control">
-                  <label class="label">
+                <div class="form-control flex flex-col">
+                  <label class="label pb-1">
                     <span class="label-text">Cidade</span>
                   </label>
                   <input
                     type="text"
-                    class="input input-bordered input-sm"
+                    class="input input-bordered input-sm w-full"
                     bind:value={address.city}
                     placeholder="Nome da cidade"
                   />
                 </div>
 
-                <div class="form-control">
-                  <label class="label">
+                <div class="form-control flex flex-col">
+                  <label class="label pb-1">
                     <span class="label-text">Estado</span>
                   </label>
                   <input
                     type="text"
-                    class="input input-bordered input-sm"
+                    class="input input-bordered input-sm w-full"
                     bind:value={address.state}
                     placeholder="UF"
                     maxlength="2"
                   />
                 </div>
 
-                <div class="form-control lg:col-span-2">
-                  <label class="label">
+                <div class="form-control flex flex-col lg:col-span-2">
+                  <label class="label pb-1">
                     <span class="label-text">Complemento</span>
                   </label>
                   <input
                     type="text"
-                    class="input input-bordered input-sm"
+                    class="input input-bordered input-sm w-full"
                     bind:value={address.complement}
                     placeholder="Apartamento, sala, etc."
                   />
@@ -872,7 +888,9 @@
 
               {#if formData.addresses_attributes.length > 1}
                 <div class="flex justify-end mt-2">
-                  <button class="btn btn-error btn-sm" on:click={() => removeAddress(index)}>🗑️ Remover</button>
+                  <button class="btn btn-error btn-sm" on:click={() => removeAddress(index)}
+                    >🗑️ Remover</button
+                  >
                 </div>
               {/if}
             </div>
@@ -891,73 +909,73 @@
           {#each formData.bank_accounts_attributes as bank, index (index)}
             <div class="border rounded p-4 mb-4">
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div class="form-control">
-                  <label class="label">
+                <div class="form-control flex flex-col">
+                  <label class="label pb-1">
                     <span class="label-text">Nome do Banco</span>
                   </label>
                   <input
                     type="text"
-                    class="input input-bordered input-sm"
+                    class="input input-bordered input-sm w-full"
                     bind:value={bank.bank_name}
                     placeholder="Nome do banco"
                   />
                 </div>
 
-                <div class="form-control">
-                  <label class="label">
+                <div class="form-control flex flex-col">
+                  <label class="label pb-1">
                     <span class="label-text">Tipo de Conta</span>
                   </label>
                   <input
                     type="text"
-                    class="input input-bordered input-sm"
+                    class="input input-bordered input-sm w-full"
                     bind:value={bank.type_account}
                     placeholder="Corrente, Poupança"
                   />
                 </div>
 
-                <div class="form-control">
-                  <label class="label">
+                <div class="form-control flex flex-col">
+                  <label class="label pb-1">
                     <span class="label-text">Agência</span>
                   </label>
                   <input
                     type="text"
-                    class="input input-bordered input-sm"
+                    class="input input-bordered input-sm w-full"
                     bind:value={bank.agency}
                     placeholder="0000"
                   />
                 </div>
 
-                <div class="form-control">
-                  <label class="label">
+                <div class="form-control flex flex-col">
+                  <label class="label pb-1">
                     <span class="label-text">Conta</span>
                   </label>
                   <input
                     type="text"
-                    class="input input-bordered input-sm"
+                    class="input input-bordered input-sm w-full"
                     bind:value={bank.account}
                     placeholder="00000-0"
                   />
                 </div>
 
-                <div class="form-control">
-                  <label class="label">
+                <div class="form-control flex flex-col">
+                  <label class="label pb-1">
                     <span class="label-text">Operação</span>
                   </label>
                   <input
                     type="text"
-                    class="input input-bordered input-sm"
+                    class="input input-bordered input-sm w-full"
                     bind:value={bank.operation}
                     placeholder="000"
                   />
                 </div>
 
-                <div class="form-control">
-                  <label class="label">
+                <div class="form-control flex flex-col">
+                  <label class="label pb-1">
                     <span class="label-text">PIX</span>
                   </label>
                   <input
                     type="text"
-                    class="input input-bordered input-sm"
+                    class="input input-bordered input-sm w-full"
                     bind:value={bank.pix}
                     placeholder="Chave PIX"
                   />
@@ -966,7 +984,9 @@
 
               {#if formData.bank_accounts_attributes.length > 1}
                 <div class="flex justify-end mt-2">
-                  <button class="btn btn-error btn-sm" on:click={() => removeBankAccount(index)}>🗑️ Remover</button>
+                  <button class="btn btn-error btn-sm" on:click={() => removeBankAccount(index)}
+                    >🗑️ Remover</button
+                  >
                 </div>
               {/if}
             </div>
@@ -978,17 +998,19 @@
       <div class="card bg-base-100 shadow">
         <div class="card-body">
           <h3 class="card-title text-lg font-semibold mb-4">Sócios do Escritório</h3>
-          
+
           <!-- Debug info -->
           <div class="alert alert-info mb-4">
             <div>
               <div class="text-sm">
-                <strong>Debug:</strong> {lawyers.length} advogados carregados
+                <strong>Debug:</strong>
+                {lawyers.length} advogados carregados
                 {#if lawyers.length > 0}
                   <div class="mt-2">
                     {#each lawyers as lawyer, i}
                       <div class="text-xs">
-                        {i + 1}: ID={lawyer.id}, Nome={lawyer.attributes?.name} {lawyer.attributes?.last_name}
+                        {i + 1}: ID={lawyer.id}, Nome={lawyer.attributes?.name}
+                        {lawyer.attributes?.last_name}
                       </div>
                     {/each}
                   </div>
@@ -996,7 +1018,7 @@
               </div>
             </div>
           </div>
-          
+
           {#each partners as partner, index (index)}
             <div class="border rounded-lg p-4 mb-4 bg-base-50">
               <div class="flex justify-between items-center mb-4">
@@ -1007,19 +1029,19 @@
                   </button>
                 {/if}
               </div>
-              
+
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <!-- Lawyer Selection -->
-                <div class="form-control">
-                  <label class="label">
+                <div class="form-control flex flex-col">
+                  <label class="label pb-1">
                     <span class="label-text">Advogado</span>
                   </label>
-                  <select 
+                  <select
                     class="select select-bordered w-full"
                     value={partner.lawyer_id}
                     on:change={(e) => {
                       console.log('Lawyer selection changed:', e.target.value);
-                      const selectedLawyer = lawyers.find(l => l.id === e.target.value);
+                      const selectedLawyer = lawyers.find((l) => l.id === e.target.value);
                       console.log('Found lawyer:', selectedLawyer);
                       if (selectedLawyer) {
                         handlePartnerChange(index, 'lawyer_id', selectedLawyer);
@@ -1027,23 +1049,25 @@
                     }}
                   >
                     <option value="">Selecione o Advogado</option>
-                    {#each lawyers.filter(lawyer => !partners.some((p, i) => i !== index && p.lawyer_id === lawyer.id)) as lawyer}
+                    {#each lawyers.filter((lawyer) => !partners.some((p, i) => i !== index && p.lawyer_id === lawyer.id)) as lawyer}
                       <option value={lawyer.id}>
-                        {lawyer.attributes?.name || 'Nome não encontrado'} {lawyer.attributes?.last_name || 'Sobrenome não encontrado'}
+                        {lawyer.attributes?.name || 'Nome não encontrado'}
+                        {lawyer.attributes?.last_name || 'Sobrenome não encontrado'}
                       </option>
                     {/each}
                   </select>
                 </div>
 
                 <!-- Partnership Type -->
-                <div class="form-control">
-                  <label class="label">
+                <div class="form-control flex flex-col">
+                  <label class="label pb-1">
                     <span class="label-text">Função</span>
                   </label>
-                  <select 
-                    class="select select-bordered"
+                  <select
+                    class="select select-bordered w-full"
                     bind:value={partner.partnership_type}
-                    on:change={(e) => handlePartnerChange(index, 'partnership_type', e.target.value)}
+                    on:change={(e) =>
+                      handlePartnerChange(index, 'partnership_type', e.target.value)}
                   >
                     <option value="">Selecione a Função</option>
                     {#each partnershipTypes as type}
@@ -1053,8 +1077,8 @@
                 </div>
 
                 <!-- Ownership Percentage -->
-                <div class="form-control">
-                  <label class="label">
+                <div class="form-control flex flex-col">
+                  <label class="label pb-1">
                     <span class="label-text">Participação (%)</span>
                   </label>
                   <div class="flex items-center gap-2">
@@ -1065,11 +1089,12 @@
                       max="100"
                       step="0.01"
                       bind:value={partner.ownership_percentage}
-                      on:input={(e) => handlePartnerChange(index, 'ownership_percentage', e.target.value)}
+                      on:input={(e) =>
+                        handlePartnerChange(index, 'ownership_percentage', e.target.value)}
                     />
                     <span>%</span>
                   </div>
-                  
+
                   <!-- Range slider for 2 partners -->
                   {#if partners.length === 2}
                     <div class="mt-2">
@@ -1082,7 +1107,8 @@
                         min="0"
                         max="100"
                         bind:value={partner.ownership_percentage}
-                        on:input={(e) => handlePartnerChange(index, 'ownership_percentage', e.target.value)}
+                        on:input={(e) =>
+                          handlePartnerChange(index, 'ownership_percentage', e.target.value)}
                       />
                     </div>
                   {/if}
@@ -1097,7 +1123,8 @@
                       type="checkbox"
                       class="checkbox checkbox-primary"
                       bind:checked={partner.is_managing_partner}
-                      on:change={(e) => handlePartnerChange(index, 'is_managing_partner', e.target.checked)}
+                      on:change={(e) =>
+                        handlePartnerChange(index, 'is_managing_partner', e.target.checked)}
                     />
                     <span class="label-text">Sócio Administrador</span>
                   </label>
@@ -1109,10 +1136,23 @@
           <!-- Percentage warning -->
           {#if isOverPercentage()}
             <div class="alert alert-warning">
-              <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.732 15.5c-.77.833.192 2.5 1.732 2.5z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="stroke-current shrink-0 h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.732 15.5c-.77.833.192 2.5 1.732 2.5z"
+                />
               </svg>
-              <span>O total de participação ({getTotalPercentage()}%) excede 100%. Ajuste as porcentagens para que somem no máximo 100%.</span>
+              <span
+                >O total de participação ({getTotalPercentage()}%) excede 100%. Ajuste as
+                porcentagens para que somem no máximo 100%.</span
+              >
             </div>
           {/if}
 
@@ -1125,10 +1165,10 @@
             >
               ➕ Adicionar Sócio
             </button>
-            
+
             {#if lawyers.length <= partners.length}
               <p class="text-sm text-gray-500 mt-2">
-                Cadastre mais advogados para alterar seu quadro societário. 
+                Cadastre mais advogados para alterar seu quadro societário.
                 <a href="#" class="link link-primary">Cadastrar novo usuário</a>
               </p>
             {/if}
@@ -1140,12 +1180,12 @@
       <div class="card bg-base-100 shadow">
         <div class="card-body">
           <h3 class="card-title text-lg font-semibold mb-4">Distribuição de Lucros</h3>
-          
-          <div class="form-control mb-4">
-            <label class="label">
+
+          <div class="form-control flex flex-col mb-4">
+            <label class="label pb-1">
               <span class="label-text">Como será a distribuição de lucros?</span>
             </label>
-            
+
             <div class="flex gap-6">
               <label class="label cursor-pointer">
                 <input
@@ -1156,7 +1196,7 @@
                 />
                 <span class="label-text ml-2">Proporcional à participação</span>
               </label>
-              
+
               <label class="label cursor-pointer">
                 <input
                   type="radio"
@@ -1171,11 +1211,23 @@
 
           {#if profitDistribution === 'proportional'}
             <div class="alert alert-info">
-              <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="stroke-current shrink-0 h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
               <div>
-                <div class="font-bold">Os lucros serão distribuídos proporcionalmente à participação de cada sócio.</div>
+                <div class="font-bold">
+                  Os lucros serão distribuídos proporcionalmente à participação de cada sócio.
+                </div>
                 <div class="text-sm mt-2">
                   <strong>Distribuição atual:</strong>
                   {#each partners as partner}
@@ -1191,10 +1243,22 @@
             </div>
           {:else}
             <div class="alert alert-warning">
-              <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.732 15.5c-.77.833.192 2.5 1.732 2.5z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="stroke-current shrink-0 h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.732 15.5c-.77.833.192 2.5 1.732 2.5z"
+                />
               </svg>
-              <span>Distribuição desproporcional será definida de acordo com cada trabalho/processo.</span>
+              <span
+                >Distribuição desproporcional será definida de acordo com cada trabalho/processo.</span
+              >
             </div>
           {/if}
         </div>
@@ -1204,7 +1268,7 @@
       <div class="card bg-base-100 shadow">
         <div class="card-body">
           <h3 class="card-title text-lg font-semibold mb-4">Contrato Social</h3>
-          
+
           <div class="form-control">
             <label class="label cursor-pointer justify-start gap-2">
               <input
@@ -1218,10 +1282,21 @@
 
           {#if createSocialContract}
             <div class="alert alert-info mt-4">
-              <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="stroke-current shrink-0 h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
-              <span>A lógica para criação do contrato social será implementada posteriormente.</span>
+              <span>A lógica para criação do contrato social será implementada posteriormente.</span
+              >
             </div>
           {/if}
         </div>
@@ -1231,7 +1306,7 @@
       <div class="card bg-base-100 shadow">
         <div class="card-body">
           <h3 class="card-title text-lg font-semibold mb-4">Pro-Labore</h3>
-          
+
           <div class="form-control mb-4">
             <label class="label cursor-pointer justify-start gap-2">
               <input
@@ -1245,14 +1320,32 @@
 
           {#if partnersWithProLabore}
             <div class="alert alert-info mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="stroke-current shrink-0 h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
               <div>
                 <div class="font-bold">Faixas de Valor:</div>
                 <div class="text-sm mt-1">
-                  <div>• Salário Mínimo: R$ {minimumWage.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
-                  <div>• Teto INSS: R$ {inssCeiling.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
+                  <div>
+                    • Salário Mínimo: R$ {minimumWage.toLocaleString('pt-BR', {
+                      minimumFractionDigits: 2
+                    })}
+                  </div>
+                  <div>
+                    • Teto INSS: R$ {inssCeiling.toLocaleString('pt-BR', {
+                      minimumFractionDigits: 2
+                    })}
+                  </div>
                   <div class="mt-1">Valor R$ 0,00 = sócio não receberá pro-labore</div>
                 </div>
               </div>
@@ -1260,17 +1353,18 @@
 
             <div class="space-y-4">
               <h4 class="font-semibold">Valores de Pro-Labore por Sócio:</h4>
-              
+
               {#each partners as partner, index}
                 {#if partner.lawyer_name}
                   <div class="border rounded p-4">
                     <div class="flex justify-between items-center mb-2">
                       <span class="font-bold">{partner.lawyer_name}</span>
                       <span class="text-sm text-gray-500">
-                        {partnershipTypes.find(t => t.value === partner.partnership_type)?.label || partner.partnership_type}
+                        {partnershipTypes.find((t) => t.value === partner.partnership_type)
+                          ?.label || partner.partnership_type}
                       </span>
                     </div>
-                    
+
                     <div class="flex items-center gap-2">
                       <span class="w-20">Pro-Labore:</span>
                       <span class="text-lg">R$</span>
@@ -1280,11 +1374,12 @@
                         min="0"
                         step="0.01"
                         bind:value={partner.pro_labore_amount}
-                        on:input={(e) => handlePartnerChange(index, 'pro_labore_amount', e.target.value)}
+                        on:input={(e) =>
+                          handlePartnerChange(index, 'pro_labore_amount', e.target.value)}
                         class:input-error={proLaboreErrors[index]}
                       />
                     </div>
-                    
+
                     {#if proLaboreErrors[index]}
                       <div class="text-error text-sm mt-1">
                         ⚠️ {proLaboreErrors[index]}
@@ -1294,18 +1389,26 @@
                         ✓ Este sócio não receberá pro-labore
                       </div>
                     {:else if partner.pro_labore_amount > 0}
-                      <div class="text-success text-sm mt-1">
-                        ✓ Valor válido
-                      </div>
+                      <div class="text-success text-sm mt-1">✓ Valor válido</div>
                     {/if}
                   </div>
                 {/if}
               {/each}
-              
-              {#if partners.filter(p => p.lawyer_name).length === 0}
+
+              {#if partners.filter((p) => p.lawyer_name).length === 0}
                 <div class="alert alert-warning">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.732 15.5c-.77.833.192 2.5 1.732 2.5z" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="stroke-current shrink-0 h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.732 15.5c-.77.833.192 2.5 1.732 2.5z"
+                    />
                   </svg>
                   <span>Adicione e selecione sócios para definir os valores de pro-labore.</span>
                 </div>
@@ -1322,19 +1425,23 @@
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Logo -->
-            <div class="form-control">
-              <label class="label">
+            <div class="form-control flex flex-col">
+              <label class="label pb-1">
                 <span class="label-text">Logo do Escritório</span>
               </label>
               <input
                 type="file"
-                class="file-input file-input-bordered"
+                class="file-input file-input-bordered w-full"
                 accept="image/*"
                 on:change={handleLogoChange}
               />
               {#if logoPreview}
                 <div class="mt-2">
-                  <img src={logoPreview} alt="Preview do logo" class="w-24 h-24 object-cover rounded" />
+                  <img
+                    src={logoPreview}
+                    alt="Preview do logo"
+                    class="w-24 h-24 object-cover rounded"
+                  />
                 </div>
               {/if}
               <div class="label">
@@ -1343,13 +1450,13 @@
             </div>
 
             <!-- Social Contracts -->
-            <div class="form-control">
-              <label class="label">
+            <div class="form-control flex flex-col">
+              <label class="label pb-1">
                 <span class="label-text">Contratos Sociais</span>
               </label>
               <input
                 type="file"
-                class="file-input file-input-bordered"
+                class="file-input file-input-bordered w-full"
                 accept=".pdf,.docx"
                 multiple
                 on:change={handleContractsChange}
@@ -1372,9 +1479,7 @@
 
     <!-- Footer -->
     <div class="sticky bottom-0 bg-white border-t border-gray-200 p-6 flex justify-end gap-4">
-      <button class="btn btn-ghost" on:click={handleClose} disabled={loading}>
-        Cancelar
-      </button>
+      <button class="btn btn-ghost" on:click={handleClose} disabled={loading}> Cancelar </button>
       <button class="btn btn-primary" on:click={handleSubmit} disabled={loading}>
         {#if loading}
           <span class="loading loading-spinner loading-sm"></span>
