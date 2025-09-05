@@ -13,7 +13,7 @@
 
   // Handle input with formatting
   function handleInput(event) {
-    let newValue = event.target.value;
+    const newValue = event.target.value;
     cepValue = CEPFormatter.format(newValue);
     addressInfo = null;
     errors = null;
@@ -165,10 +165,10 @@
             </div>
             <div class="collapse-content text-xs">
               <pre class="bg-base-300 p-2 rounded text-xs overflow-auto">{JSON.stringify(
-                  test.result,
-                  null,
-                  2
-                )}</pre>
+                test.result,
+                null,
+                2
+              )}</pre>
             </div>
           </div>
         {/each}

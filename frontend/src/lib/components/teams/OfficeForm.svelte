@@ -3,6 +3,7 @@
   import { onMount } from 'svelte';
   import api from '../../api';
   import Cnpj from '../forms_commons/Cnpj.svelte';
+  import Address from '../forms_commons/Address.svelte';
 
   export let office = null;
 
@@ -406,12 +407,6 @@
     }
   }
 
-  function formatCEP(value) {
-    // Remove non-digits and apply CEP mask: 00000-000
-    const digits = value.replace(/\D/g, '');
-    return digits.replace(/(\d{5})(\d)/, '$1-$2').substr(0, 9);
-  }
-
   async function loadLawyers() {
     try {
       console.log('Loading lawyers from user profiles...');
@@ -796,108 +791,16 @@
         <div class="card-body">
           <div class="flex justify-between items-center mb-4">
             <h3 class="card-title text-lg font-semibold">Endereços</h3>
-            <button class="btn btn-outline btn-sm" on:click={addAddress}>➕ Adicionar</button>
+            <button class="btn btn-outline btn-sm" on:click={addAddress} type="button">➕ Adicionar</button>
           </div>
 
-          {#each formData.addresses_attributes as address, index (index)}
-            <div class="border rounded p-4 mb-4">
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div class="form-control flex flex-col">
-                  <label class="label pb-1">
-                    <span class="label-text">CEP</span>
-                  </label>
-                  <input
-                    type="text"
-                    class="input input-bordered input-sm w-full"
-                    bind:value={address.zip_code}
-                    on:input={(e) => (address.zip_code = formatCEP(e.target.value))}
-                    placeholder="00000-000"
-                    maxlength="9"
-                  />
-                </div>
-
-                <div class="form-control flex flex-col lg:col-span-2">
-                  <label class="label pb-1">
-                    <span class="label-text">Rua</span>
-                  </label>
-                  <input
-                    type="text"
-                    class="input input-bordered input-sm w-full"
-                    bind:value={address.street}
-                    placeholder="Nome da rua"
-                  />
-                </div>
-
-                <div class="form-control flex flex-col">
-                  <label class="label pb-1">
-                    <span class="label-text">Número</span>
-                  </label>
-                  <input
-                    type="text"
-                    class="input input-bordered input-sm w-full"
-                    bind:value={address.number}
-                    placeholder="123"
-                  />
-                </div>
-
-                <div class="form-control flex flex-col">
-                  <label class="label pb-1">
-                    <span class="label-text">Bairro</span>
-                  </label>
-                  <input
-                    type="text"
-                    class="input input-bordered input-sm w-full"
-                    bind:value={address.neighborhood}
-                    placeholder="Nome do bairro"
-                  />
-                </div>
-
-                <div class="form-control flex flex-col">
-                  <label class="label pb-1">
-                    <span class="label-text">Cidade</span>
-                  </label>
-                  <input
-                    type="text"
-                    class="input input-bordered input-sm w-full"
-                    bind:value={address.city}
-                    placeholder="Nome da cidade"
-                  />
-                </div>
-
-                <div class="form-control flex flex-col">
-                  <label class="label pb-1">
-                    <span class="label-text">Estado</span>
-                  </label>
-                  <input
-                    type="text"
-                    class="input input-bordered input-sm w-full"
-                    bind:value={address.state}
-                    placeholder="UF"
-                    maxlength="2"
-                  />
-                </div>
-
-                <div class="form-control flex flex-col lg:col-span-2">
-                  <label class="label pb-1">
-                    <span class="label-text">Complemento</span>
-                  </label>
-                  <input
-                    type="text"
-                    class="input input-bordered input-sm w-full"
-                    bind:value={address.complement}
-                    placeholder="Apartamento, sala, etc."
-                  />
-                </div>
-              </div>
-
-              {#if formData.addresses_attributes.length > 1}
-                <div class="flex justify-end mt-2">
-                  <button class="btn btn-error btn-sm" on:click={() => removeAddress(index)}
-                    >🗑️ Remover</button
-                  >
-                </div>
-              {/if}
-            </div>
+          {#each formData.addresses_attributes as address, idx (idx)}
+            <Address
+              bind:address={formData.addresses_attributes[idx]}
+              index={idx}
+              showRemoveButton={formData.addresses_attributes.length > 1}
+              on:remove={() => removeAddress(idx)}
+            />
           {/each}
         </div>
       </div>

@@ -32,7 +32,7 @@ class CEPService {
    */
   async validate(cep: string): Promise<CEPValidationResult> {
     const cleanedCEP = cep.replace(/[^\d]/g, '');
-    
+
     // Check cache first
     if (this.cache.has(cleanedCEP)) {
       return this.cache.get(cleanedCEP)!;
@@ -64,7 +64,7 @@ class CEPService {
       }
 
       const result: CEPValidationResult = await response.json();
-      
+
       // Cache successful results
       if (result.isValid) {
         this.cache.set(cleanedCEP, result);

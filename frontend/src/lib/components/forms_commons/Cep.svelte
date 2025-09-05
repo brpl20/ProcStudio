@@ -1,7 +1,8 @@
 <!-- CEP.svelte -->
 <script>
   import { createEventDispatcher } from 'svelte';
-  import { validateCEPRequired, formatCEP, validateCEPWithAPI } from '../../validation/cep';
+  import { formatCEP } from '../../validation/cep-formatter';
+  import { validateCEPRequired, validateCEPWithAPI } from '../../validation/cep-validator';
 
   // Props with defaults
   export let value = '';

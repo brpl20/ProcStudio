@@ -2,7 +2,7 @@
 import { writable, derived, type Writable, type Readable } from 'svelte/store';
 import { authStore } from './authStore.js';
 import api from '../api/index.ts';
-import type { UserProfileData } from '../api/types/index.ts';
+import type { UserProfileData } from '../api/types/user.types.js';
 
 // Re-export the API type for convenience
 export type UserProfile = UserProfileData;

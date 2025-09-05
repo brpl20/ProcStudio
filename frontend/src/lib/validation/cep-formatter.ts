@@ -11,7 +11,9 @@ export class CEPFormatter {
    * Remove all non-numeric characters from CEP
    */
   static clean(cep: string): string {
-    if (!cep) return '';
+    if (!cep) {
+      return '';
+    }
     return cep.replace(this.NON_DIGIT_REGEX, '');
   }
 

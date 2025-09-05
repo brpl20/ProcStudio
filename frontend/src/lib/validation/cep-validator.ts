@@ -17,10 +17,14 @@ export class CEPValidator {
    * Validate CEP format (optional field)
    */
   static validate: ValidationRule = (value) => {
-    if (!value) return null;
+    if (!value) {
+      return null;
+    }
 
     const cep = CEPFormatter.clean(value as string);
-    if (!cep) return null;
+    if (!cep) {
+      return null;
+    }
 
     if (cep.length !== 8) {
       return this.ERROR_MESSAGES.INVALID_LENGTH;
