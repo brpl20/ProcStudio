@@ -29,7 +29,7 @@
     if (formatFn) {
       newValue = formatFn(newValue);
     }
-    
+
     value = newValue; // Update the bound value
     dispatch('input', { value: newValue, id });
   }

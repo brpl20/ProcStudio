@@ -114,12 +114,12 @@ export const validateCNPJRequired: ValidationRule = (value) => {
 
   const originalValue = value as string;
   const cleanedValue = cleanCNPJ(originalValue);
-  
+
   // If original has content but cleaned is empty, user typed invalid characters
   if (originalValue.trim() && !cleanedValue) {
     return 'CNPJ deve conter apenas números';
   }
-  
+
   if (!cleanedValue) {
     return 'CNPJ é obrigatório';
   }

@@ -70,8 +70,8 @@
   let profitDistribution = 'proportional';
   let createSocialContract = false;
   let partnersWithProLabore = true;
-  let minimumWage = 1320.0;
-  let inssCeiling = 7507.49;
+  const minimumWage = 1320.0;
+  const inssCeiling = 7507.49;
   let proLaboreErrors = {};
 
   // Reactive statement to debug lawyers changes (commented out to prevent infinite loops)
@@ -172,7 +172,9 @@
   }
 
   function addPartner() {
-    if (lawyers.length <= partners.length) return;
+    if (lawyers.length <= partners.length) {
+      return;
+    }
 
     // If adding second partner, split 50/50
     if (partners.length === 1) {
@@ -196,7 +198,9 @@
   }
 
   function removePartner(index) {
-    if (partners.length === 1) return;
+    if (partners.length === 1) {
+      return;
+    }
 
     partners = partners.filter((_, i) => i !== index);
 
@@ -476,28 +480,28 @@
         addresses_attributes:
           office.addresses?.length > 0
             ? office.addresses.map((a) => ({
-                street: a.street || '',
-                number: a.number || '',
-                complement: a.complement || '',
-                neighborhood: a.neighborhood || '',
-                city: a.city || '',
-                state: a.state || '',
-                zip_code: a.zip_code || '',
-                address_type: a.address_type || 'main',
-                id: a.id
-              }))
+              street: a.street || '',
+              number: a.number || '',
+              complement: a.complement || '',
+              neighborhood: a.neighborhood || '',
+              city: a.city || '',
+              state: a.state || '',
+              zip_code: a.zip_code || '',
+              address_type: a.address_type || 'main',
+              id: a.id
+            }))
             : [
-                {
-                  street: '',
-                  number: '',
-                  complement: '',
-                  neighborhood: '',
-                  city: '',
-                  state: '',
-                  zip_code: '',
-                  address_type: 'main'
-                }
-              ],
+              {
+                street: '',
+                number: '',
+                complement: '',
+                neighborhood: '',
+                city: '',
+                state: '',
+                zip_code: '',
+                address_type: 'main'
+              }
+            ],
         emails_attributes:
           office.emails?.length > 0
             ? office.emails.map((e) => ({ email: e.email, id: e.id }))
@@ -505,24 +509,24 @@
         bank_accounts_attributes:
           office.bank_accounts?.length > 0
             ? office.bank_accounts.map((b) => ({
-                bank_name: b.bank_name || '',
-                type_account: b.type_account || '',
-                agency: b.agency || '',
-                account: b.account || '',
-                operation: b.operation || '',
-                pix: b.pix || '',
-                id: b.id
-              }))
+              bank_name: b.bank_name || '',
+              type_account: b.type_account || '',
+              agency: b.agency || '',
+              account: b.account || '',
+              operation: b.operation || '',
+              pix: b.pix || '',
+              id: b.id
+            }))
             : [
-                {
-                  bank_name: '',
-                  type_account: '',
-                  agency: '',
-                  account: '',
-                  operation: '',
-                  pix: ''
-                }
-              ]
+              {
+                bank_name: '',
+                type_account: '',
+                agency: '',
+                account: '',
+                operation: '',
+                pix: ''
+              }
+            ]
       };
 
       if (office.logo_url) {
