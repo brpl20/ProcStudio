@@ -7,6 +7,7 @@
   import Cep from '../forms_commons/Cep.svelte';
   import Phone from '../forms_commons/Phone.svelte';
   import Email from '../forms_commons/Email.svelte';
+  import Bank from '../forms_commons/Bank.svelte';
   import { createCepAddressHandler } from '../../utils/cep-address-mapper';
   import {
     officeFormLawyersStore,
@@ -801,96 +802,14 @@
             <button class="btn btn-outline btn-sm" on:click={addBankAccount}>➕ Adicionar</button>
           </div>
 
-          {#each formData.bank_accounts_attributes as bank, index (index)}
-            <div class="border rounded p-4 mb-4">
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div class="form-control flex flex-col">
-                  <label class="label pb-1" for="bank-name-{index}">
-                    <span class="label-text">Nome do Banco</span>
-                  </label>
-                  <input
-                    id="bank-name-{index}"
-                    type="text"
-                    class="input input-bordered input-sm w-full"
-                    bind:value={bank.bank_name}
-                    placeholder="Nome do banco"
-                  />
-                </div>
-
-                <div class="form-control flex flex-col">
-                  <label class="label pb-1" for="bank-type-{index}">
-                    <span class="label-text">Tipo de Conta</span>
-                  </label>
-                  <input
-                    id="bank-type-{index}"
-                    type="text"
-                    class="input input-bordered input-sm w-full"
-                    bind:value={bank.type_account}
-                    placeholder="Corrente, Poupança"
-                  />
-                </div>
-
-                <div class="form-control flex flex-col">
-                  <label class="label pb-1" for="bank-agency-{index}">
-                    <span class="label-text">Agência</span>
-                  </label>
-                  <input
-                    id="bank-agency-{index}"
-                    type="text"
-                    class="input input-bordered input-sm w-full"
-                    bind:value={bank.agency}
-                    placeholder="0000"
-                  />
-                </div>
-
-                <div class="form-control flex flex-col">
-                  <label class="label pb-1" for="bank-account-{index}">
-                    <span class="label-text">Conta</span>
-                  </label>
-                  <input
-                    id="bank-account-{index}"
-                    type="text"
-                    class="input input-bordered input-sm w-full"
-                    bind:value={bank.account}
-                    placeholder="00000-0"
-                  />
-                </div>
-
-                <div class="form-control flex flex-col">
-                  <label class="label pb-1" for="bank-operation-{index}">
-                    <span class="label-text">Operação</span>
-                  </label>
-                  <input
-                    id="bank-operation-{index}"
-                    type="text"
-                    class="input input-bordered input-sm w-full"
-                    bind:value={bank.operation}
-                    placeholder="000"
-                  />
-                </div>
-
-                <div class="form-control flex flex-col">
-                  <label class="label pb-1" for="bank-pix-{index}">
-                    <span class="label-text">PIX</span>
-                  </label>
-                  <input
-                    id="bank-pix-{index}"
-                    type="text"
-                    class="input input-bordered input-sm w-full"
-                    bind:value={bank.pix}
-                    placeholder="Chave PIX"
-                  />
-                </div>
-              </div>
-
-              {#if formData.bank_accounts_attributes.length > 1}
-                <div class="flex justify-end mt-2">
-                  <button class="btn btn-error btn-sm" on:click={() => removeBankAccount(index)}
-                    >🗑️ Remover</button
-                  >
-                </div>
-              {/if}
-            </div>
+          {#each formData.bank_accounts_attributes as bankAccount, index (index)}
+            <Bank
+              bind:bankAccount
+              {index}
+              showRemoveButton={formData.bank_accounts_attributes.length > 1}
+              labelPrefix="office-bank"
+              on:remove={() => removeBankAccount(index)}
+            />
           {/each}
         </div>
       </div>
