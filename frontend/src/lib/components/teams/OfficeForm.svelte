@@ -16,6 +16,14 @@
     getAvailableLawyersForPartnerIndex,
     officeFormLawyersUtils
   } from '../../stores/officeFormStore';
+  import {
+    SOCIETY_OPTIONS,
+    ACCOUNTING_OPTIONS,
+    PARTNERSHIP_TYPES,
+    getCurrentInssConstants
+  } from '../../constants/formOptions';
+  import { validateProLaboreAmount } from '../../validation';
+  import FormSection from '../ui/FormSection.svelte';
 
   const office = $state(null);
 
@@ -82,8 +90,7 @@
   let profitDistribution = $state('proportional');
   let createSocialContract = $state(false);
   let partnersWithProLabore = $state(true);
-  const minimumWage = 1320.0;
-  const inssCeiling = 7507.49;
+  const { minimumWage, inssCeiling } = getCurrentInssConstants();
   let proLaboreErrors = $state({});
 
   // Subscribe to stores
@@ -91,27 +98,28 @@
   const availableLawyers = $derived($availableLawyersStore);
   const selectedPartners = $derived($selectedPartnersStore);
 
-  // Function to get available lawyers for a specific partner (reactive)
-  function getAvailableLawyersReactive(partnerIndex) {
-    return getAvailableLawyersForPartnerIndex(partnerIndex);
-  }
+  // Create a reactive computation for available lawyers per partner
+  // This will re-compute whenever partners array or lawyersState changes
+  const availableLawyersPerPartner = $derived.by(() => {
+    if (!lawyersState.lawyers || !Array.isArray(lawyersState.lawyers)) {
+      return [];
+    }
 
-  const societyOptions = [
-    { value: 'individual', label: 'Individual' },
-    { value: 'company', label: 'Sociedade' }
-  ];
+    // Create an array of available lawyers for each partner index
+    return partners.map((_, partnerIndex) => {
+      // Get all selected lawyer IDs except for the current partner index
+      const selectedIds = partners
+        .filter((_, index) => index !== partnerIndex)
+        .map((p) => p.lawyer_id)
+        .filter((id) => id && id !== '');
 
-  const accountingOptions = [
-    { value: 'simple', label: 'Simples Nacional' },
-    { value: 'real_profit', label: 'Lucro Real' },
-    { value: 'presumed_profit', label: 'Lucro Presumido' }
-  ];
-
-  const partnershipTypes = [
-    { value: 'socio', label: 'Sócio' },
-    { value: 'associado', label: 'Associado' },
-    { value: 'socio_de_servico', label: 'Sócio de Serviço' }
-  ];
+      // Return lawyers that are not selected by other partners
+      // Convert both to strings for comparison
+      return lawyersState.lawyers.filter(
+        (lawyer) => !selectedIds.some((selectedId) => String(selectedId) === String(lawyer.id))
+      );
+    });
+  });
 
   function handleClose() {
     dispatch('close');
@@ -138,26 +146,31 @@
   // Partnership management functions
   function handlePartnerChange(index, field, value) {
     if (field === 'lawyer_id' && value && typeof value === 'object') {
-      // Update selected partners store immediately
-      selectedPartnersStore.updateAt(index, value.id);
-      partners[index] = {
-        ...partners[index],
+      // Create a new partners array to trigger reactivity
+      const newPartners = [...partners];
+      newPartners[index] = {
+        ...newPartners[index],
         lawyer_id: value.id,
         lawyer_name: `${value.attributes.name} ${value.attributes.last_name}`
       };
+      partners = newPartners;
     } else if (field === 'ownership_percentage') {
       const newPercentage = Math.max(0, Math.min(100, Number(value) || 0));
 
       // Special logic for 2 partners - adjust other partner automatically
       if (partners.length === 2) {
         const otherIndex = index === 0 ? 1 : 0;
-        partners[index] = { ...partners[index], ownership_percentage: newPercentage };
-        partners[otherIndex] = {
-          ...partners[otherIndex],
+        const newPartners = [...partners];
+        newPartners[index] = { ...newPartners[index], ownership_percentage: newPercentage };
+        newPartners[otherIndex] = {
+          ...newPartners[otherIndex],
           ownership_percentage: 100 - newPercentage
         };
+        partners = newPartners;
       } else {
-        partners[index] = { ...partners[index], ownership_percentage: newPercentage };
+        const newPartners = [...partners];
+        newPartners[index] = { ...newPartners[index], ownership_percentage: newPercentage };
+        partners = newPartners;
       }
     } else if (field === 'pro_labore_amount') {
       const amount = Number(value) || 0;
@@ -171,9 +184,13 @@
       }
       proLaboreErrors = { ...proLaboreErrors };
 
-      partners[index] = { ...partners[index], pro_labore_amount: amount };
+      const newPartners = [...partners];
+      newPartners[index] = { ...newPartners[index], pro_labore_amount: amount };
+      partners = newPartners;
     } else {
-      partners[index] = { ...partners[index], [field]: value };
+      const newPartners = [...partners];
+      newPartners[index] = { ...newPartners[index], [field]: value };
+      partners = newPartners;
     }
   }
 
@@ -199,10 +216,6 @@
         pro_labore_amount: 0
       }
     ];
-
-    // Update selected partners store
-    const newSelections = partners.map((p) => p.lawyer_id || null);
-    selectedPartnersStore.setAll(newSelections);
   }
 
   function removePartner(index) {
@@ -212,10 +225,6 @@
 
     // Remove the partner from the array
     partners = partners.filter((_, i) => i !== index);
-
-    // Update selected partners store with remaining selections
-    const newSelections = partners.map((p) => p.lawyer_id || null);
-    selectedPartnersStore.setAll(newSelections);
 
     // Adjust percentages if now 2 partners
     if (partners.length === 2) {
@@ -234,57 +243,39 @@
     return getTotalPercentage() > 100;
   }
 
-  function validateProLaboreAmount(amount) {
-    if (amount < 0) {
-      return 'Valor não pode ser negativo';
-    }
-    if (amount > 0 && amount < minimumWage) {
-      return `Valor deve ser maior ou igual ao salário mínimo (R$ ${minimumWage.toLocaleString('pt-BR', { minimumFractionDigits: 2 })})`;
-    }
-    return null;
+  // Generic add/remove functions
+  function createAddFunction(attributeName, defaultValue) {
+    return () => {
+      formData[attributeName] = [...formData[attributeName], defaultValue];
+    };
   }
 
-  function addPhone() {
-    formData.phones_attributes = [...formData.phones_attributes, { phone_number: '' }];
-  }
-
-  function removePhone(index) {
-    if (formData.phones_attributes.length > 1) {
-      formData.phones_attributes = formData.phones_attributes.filter((_, i) => i !== index);
-    }
-  }
-
-  function addEmail() {
-    formData.emails_attributes = [...formData.emails_attributes, { email: '' }];
-  }
-
-  function removeEmail(index) {
-    if (formData.emails_attributes.length > 1) {
-      formData.emails_attributes = formData.emails_attributes.filter((_, i) => i !== index);
-    }
-  }
-
-  function addAddress() {
-    formData.addresses_attributes = [
-      ...formData.addresses_attributes,
-      {
-        street: '',
-        number: '',
-        complement: '',
-        neighborhood: '',
-        city: '',
-        state: '',
-        zip_code: '',
-        address_type: 'secondary'
+  function createRemoveFunction(attributeName) {
+    return (index) => {
+      if (formData[attributeName].length > 1) {
+        formData[attributeName] = formData[attributeName].filter((_, i) => i !== index);
       }
-    ];
+    };
   }
 
-  function removeAddress(index) {
-    if (formData.addresses_attributes.length > 1) {
-      formData.addresses_attributes = formData.addresses_attributes.filter((_, i) => i !== index);
-    }
-  }
+  // Specific add/remove functions using the generic pattern
+  const addPhone = createAddFunction('phones_attributes', { phone_number: '' });
+  const removePhone = createRemoveFunction('phones_attributes');
+
+  const addEmail = createAddFunction('emails_attributes', { email: '' });
+  const removeEmail = createRemoveFunction('emails_attributes');
+
+  const addAddress = createAddFunction('addresses_attributes', {
+    street: '',
+    number: '',
+    complement: '',
+    neighborhood: '',
+    city: '',
+    state: '',
+    zip_code: '',
+    address_type: 'secondary'
+  });
+  const removeAddress = createRemoveFunction('addresses_attributes');
 
   // Create CEP address handler using utility
   const handleAddressFound = createCepAddressHandler((mappedAddress) => {
@@ -296,27 +287,15 @@
     }
   });
 
-  function addBankAccount() {
-    formData.bank_accounts_attributes = [
-      ...formData.bank_accounts_attributes,
-      {
-        bank_name: '',
-        type_account: '',
-        agency: '',
-        account: '',
-        operation: '',
-        pix: ''
-      }
-    ];
-  }
-
-  function removeBankAccount(index) {
-    if (formData.bank_accounts_attributes.length > 1) {
-      formData.bank_accounts_attributes = formData.bank_accounts_attributes.filter(
-        (_, i) => i !== index
-      );
-    }
-  }
+  const addBankAccount = createAddFunction('bank_accounts_attributes', {
+    bank_name: '',
+    type_account: '',
+    agency: '',
+    account: '',
+    operation: '',
+    pix: ''
+  });
+  const removeBankAccount = createRemoveFunction('bank_accounts_attributes');
 
   async function handleSubmit() {
     try {
@@ -542,10 +521,8 @@
       {/if}
 
       <!-- Basic Information -->
-      <div class="card bg-base-100 shadow">
-        <div class="card-body">
-          <h3 class="card-title text-lg font-semibold mb-4">Informações Básicas</h3>
-
+      <FormSection title="Informações Básicas">
+        {#snippet children()}
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="form-control flex flex-col">
               <label class="label pb-1" for="office-name">
@@ -572,7 +549,7 @@
                 class="select select-bordered w-full"
                 bind:value={formData.society}
               >
-                {#each societyOptions as option}
+                {#each SOCIETY_OPTIONS as option}
                   <option value={option.value}>{option.label}</option>
                 {/each}
               </select>
@@ -587,7 +564,7 @@
                 class="select select-bordered w-full"
                 bind:value={formData.accounting_type}
               >
-                {#each accountingOptions as option}
+                {#each ACCOUNTING_OPTIONS as option}
                   <option value={option.value}>{option.label}</option>
                 {/each}
               </select>
@@ -617,14 +594,12 @@
               />
             </div>
           </div>
-        </div>
-      </div>
+        {/snippet}
+      </FormSection>
 
       <!-- OAB Information -->
-      <div class="card bg-base-100 shadow">
-        <div class="card-body">
-          <h3 class="card-title text-lg font-semibold mb-4">Informações OAB</h3>
-
+      <FormSection title="Informações OAB">
+        {#snippet children()}
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="form-control flex flex-col">
               <label class="label pb-1" for="office-oab-id">
@@ -678,14 +653,12 @@
               />
             </div>
           </div>
-        </div>
-      </div>
+        {/snippet}
+      </FormSection>
 
       <!-- Financial Information -->
-      <div class="card bg-base-100 shadow">
-        <div class="card-body">
-          <h3 class="card-title text-lg font-semibold mb-4">Informações Financeiras</h3>
-
+      <FormSection title="Informações Financeiras">
+        {#snippet children()}
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="form-control flex flex-col">
               <label class="label pb-1" for="office-quote-value">
@@ -716,14 +689,13 @@
               />
             </div>
           </div>
-        </div>
-      </div>
+        {/snippet}
+      </FormSection>
 
       <!-- Phones -->
-      <div class="card bg-base-100 shadow">
-        <div class="card-body">
-          <div class="flex justify-between items-center mb-4">
-            <h3 class="card-title text-lg font-semibold">Telefones</h3>
+      <FormSection title="Telefones">
+        {#snippet children()}
+          <div class="flex justify-end mb-4">
             <button class="btn btn-outline btn-sm" onclick={addPhone}>➕ Adicionar</button>
           </div>
 
@@ -737,14 +709,13 @@
               {/if}
             </div>
           {/each}
-        </div>
-      </div>
+        {/snippet}
+      </FormSection>
 
       <!-- Emails -->
-      <div class="card bg-base-100 shadow">
-        <div class="card-body">
-          <div class="flex justify-between items-center mb-4">
-            <h3 class="card-title text-lg font-semibold">E-mails</h3>
+      <FormSection title="E-mails">
+        {#snippet children()}
+          <div class="flex justify-end mb-4">
             <button class="btn btn-outline btn-sm" onclick={addEmail}>➕ Adicionar</button>
           </div>
 
@@ -763,8 +734,8 @@
               {/if}
             </div>
           {/each}
-        </div>
-      </div>
+        {/snippet}
+      </FormSection>
 
       <!-- Cep -->
       <h3 class="card-title text-lg font-semibold">Cep</h3>
@@ -791,10 +762,9 @@
       {/each}
 
       <!-- Bank Accounts -->
-      <div class="card bg-base-100 shadow">
-        <div class="card-body">
-          <div class="flex justify-between items-center mb-4">
-            <h3 class="card-title text-lg font-semibold">Contas Bancárias</h3>
+      <FormSection title="Contas Bancárias">
+        {#snippet children()}
+          <div class="flex justify-end mb-4">
             <button class="btn btn-outline btn-sm" onclick={addBankAccount}>➕ Adicionar</button>
           </div>
           {#each formData.bank_accounts_attributes as bankAccount, index (index)}
@@ -814,14 +784,12 @@
               on:remove={() => removeBankAccount(index)}
             />
           {/each}
-        </div>
-      </div>
+        {/snippet}
+      </FormSection>
 
       <!-- Partners Section -->
-      <div class="card bg-base-100 shadow">
-        <div class="card-body">
-          <h3 class="card-title text-lg font-semibold mb-4">Sócios do Escritório</h3>
-
+      <FormSection title="Sócios do Escritório">
+        {#snippet children()}
           <!-- Loading/Error States -->
           {#if lawyersState.loading}
             <div class="alert alert-info mb-4">
@@ -870,119 +838,144 @@
             </div>
           {/if}
 
-          {#each partners as partner, index (index)}
-            <div class="border rounded-lg p-4 mb-4 bg-base-50">
-              <div class="flex justify-between items-center mb-4">
-                <h4 class="font-semibold text-base">Sócio {index + 1}</h4>
-                {#if partners.length > 1}
-                  <button class="btn btn-error btn-sm" onclick={() => removePartner(index)}>
-                    🗑️
-                  </button>
-                {/if}
-              </div>
-
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                <!-- Lawyer Selection -->
-                <div class="form-control flex flex-col">
-                  <label class="label pb-1" for="partner-lawyer-{index}">
-                    <span class="label-text">Advogado</span>
-                  </label>
-                  <select
-                    id="partner-lawyer-{index}"
-                    class="select select-bordered w-full"
-                    value={partner.lawyer_id}
-                    onchange={(e) => {
-                      const selectedLawyer = officeFormLawyersUtils.findById(e.target.value);
-                      if (selectedLawyer) {
-                        handlePartnerChange(index, 'lawyer_id', selectedLawyer);
-                      }
-                    }}
-                  >
-                    <option value="">Selecione o Advogado</option>
-                    {#each getAvailableLawyersReactive(index) as lawyer}
-                      <option value={lawyer.id}>
-                        {officeFormLawyersUtils.getFullName(lawyer)}
-                      </option>
-                    {/each}
-                  </select>
-                </div>
-
-                <!-- Partnership Type -->
-                <div class="form-control flex flex-col">
-                  <label class="label pb-1" for="partner-type-{index}">
-                    <span class="label-text">Função</span>
-                  </label>
-                  <select
-                    bind:value={partners[index].partnership_type}
-                    id="partner-type-{index}"
-                    class="select select-bordered w-full"
-                    onchange={(e) => handlePartnerChange(index, 'partnership_type', e.target.value)}
-                  >
-                    <option value="">Selecione a Função</option>
-                    {#each partnershipTypes as type}
-                      <option value={type.value}>{type.label}</option>
-                    {/each}
-                  </select>
-                </div>
-
-                <!-- Ownership Percentage -->
-                <div class="form-control flex flex-col">
-                  <label class="label pb-1" for="partner-percentage-{index}">
-                    <span class="label-text">Participação (%)</span>
-                  </label>
-                  <div class="flex items-center gap-2">
-                    <input
-                      id="partner-percentage-{index}"
-                      type="number"
-                      class="input input-bordered w-20"
-                      min="0"
-                      max="100"
-                      step="0.01"
-                      bind:value={partners[index].ownership_percentage}
-                      oninput={(e) =>
-                        handlePartnerChange(index, 'ownership_percentage', e.target.value)}
-                    />
-                    <span>%</span>
-                  </div>
-
-                  <!-- Range slider for 2 partners -->
-                  {#if partners.length === 2}
-                    <div class="mt-2">
-                      <label class="label" for="partner-range-{index}">
-                        <span class="label-text-alt">Ajuste proporcional</span>
-                      </label>
-                      <input
-                        id="partner-range-{index}"
-                        type="range"
-                        class="range range-sm"
-                        min="0"
-                        max="100"
-                        bind:value={partner.ownership_percentage}
-                        oninput={(e) =>
-                          handlePartnerChange(index, 'ownership_percentage', e.target.value)}
-                      />
-                    </div>
+          {#if !lawyersState.lawyers || lawyersState.lawyers.length === 0}
+            <div class="alert alert-info">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                class="stroke-info shrink-0 w-6 h-6"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                ></path>
+              </svg>
+              <span>Cadastre um advogado para alterar seu quadro societário.</span>
+            </div>
+          {:else}
+            {#each partners as partner, index (index)}
+              <div class="border rounded-lg p-4 mb-4 bg-base-50">
+                <div class="flex justify-between items-center mb-4">
+                  <h4 class="font-semibold text-base">Sócio {index + 1}</h4>
+                  {#if partners.length > 1}
+                    <button class="btn btn-error btn-sm" onclick={() => removePartner(index)}>
+                      🗑️
+                    </button>
                   {/if}
                 </div>
-              </div>
 
-              <!-- Managing Partner checkbox for "socio" -->
-              {#if partner.partnership_type === 'socio'}
-                <div class="form-control">
-                  <label class="label cursor-pointer justify-start gap-2">
-                    <input
-                      type="checkbox"
-                      class="checkbox checkbox-primary"
-                      bind:checked={partners[index].is_managing_partner}
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <!-- Lawyer Selection -->
+                  <div class="form-control flex flex-col">
+                    <label class="label pb-1" for="partner-lawyer-{index}">
+                      <span class="label-text">Advogado</span>
+                    </label>
+                    <select
+                      id="partner-lawyer-{index}"
+                      class="select select-bordered w-full"
+                      value={partner.lawyer_id}
+                      onchange={(e) => {
+                        const selectedLawyer = officeFormLawyersUtils.findById(e.target.value);
+                        if (selectedLawyer) {
+                          handlePartnerChange(index, 'lawyer_id', selectedLawyer);
+                        }
+                      }}
+                    >
+                      <option value="">Selecione o Advogado</option>
+                      {#each availableLawyersPerPartner[index] || [] as lawyer}
+                        <option value={lawyer.id}>
+                          {officeFormLawyersUtils.getFullName(lawyer)}
+                        </option>
+                      {/each}
+                    </select>
+                  </div>
+
+                  <!-- Partnership Type -->
+                  <div class="form-control flex flex-col">
+                    <label class="label pb-1" for="partner-type-{index}">
+                      <span class="label-text">Função</span>
+                    </label>
+                    <select
+                      bind:value={partners[index].partnership_type}
+                      id="partner-type-{index}"
+                      class="select select-bordered w-full"
                       onchange={(e) =>
-                        handlePartnerChange(index, 'is_managing_partner', e.target.checked)}
-                    />
-                    <span class="label-text">Sócio Administrador</span>
-                  </label>
+                        handlePartnerChange(index, 'partnership_type', e.target.value)}
+                    >
+                      <option value="">Selecione a Função</option>
+                      {#each PARTNERSHIP_TYPES as type}
+                        <option value={type.value}>{type.label}</option>
+                      {/each}
+                    </select>
+                  </div>
+
+                  <!-- Ownership Percentage - Only show when more than one partner -->
+                  {#if partners.length > 1}
+                    <div class="form-control flex flex-col">
+                      <label class="label pb-1" for="partner-percentage-{index}">
+                        <span class="label-text">Participação (%)</span>
+                      </label>
+                      <div class="flex items-center gap-2">
+                        <input
+                          id="partner-percentage-{index}"
+                          type="number"
+                          class="input input-bordered w-20"
+                          min="0"
+                          max="100"
+                          step="0.01"
+                          bind:value={partners[index].ownership_percentage}
+                          oninput={(e) =>
+                            handlePartnerChange(index, 'ownership_percentage', e.target.value)}
+                        />
+                        <span>%</span>
+                      </div>
+
+                      <!-- Range slider for 2 partners -->
+                      {#if partners.length === 2}
+                        <div class="mt-2">
+                          <label class="label" for="partner-range-{index}">
+                            <span class="label-text-alt">Ajuste proporcional</span>
+                          </label>
+                          <input
+                            id="partner-range-{index}"
+                            type="range"
+                            class="range range-sm"
+                            min="0"
+                            max="100"
+                            bind:value={partner.ownership_percentage}
+                            oninput={(e) =>
+                              handlePartnerChange(index, 'ownership_percentage', e.target.value)}
+                          />
+                        </div>
+                      {/if}
+                    </div>
+                  {:else}
+                    <!-- Hidden placeholder to maintain grid layout -->
+                    <div></div>
+                  {/if}
                 </div>
-              {/if}
-            </div>
-          {/each}
+
+                <!-- Managing Partner checkbox for "socio" -->
+                {#if partner.partnership_type === 'socio'}
+                  <div class="form-control">
+                    <label class="label cursor-pointer justify-start gap-2">
+                      <input
+                        type="checkbox"
+                        class="checkbox checkbox-primary"
+                        bind:checked={partners[index].is_managing_partner}
+                        onchange={(e) =>
+                          handlePartnerChange(index, 'is_managing_partner', e.target.checked)}
+                      />
+                      <span class="label-text">Sócio Administrador</span>
+                    </label>
+                  </div>
+                {/if}
+              </div>
+            {/each}
+          {/if}
 
           <!-- Percentage warning -->
           {#if isOverPercentage()}
@@ -1026,14 +1019,12 @@
               </p>
             {/if}
           </div>
-        </div>
-      </div>
+        {/snippet}
+      </FormSection>
 
       <!-- Profit Distribution Section -->
-      <div class="card bg-base-100 shadow">
-        <div class="card-body">
-          <h3 class="card-title text-lg font-semibold mb-4">Distribuição de Lucros</h3>
-
+      <FormSection title="Distribuição de Lucros">
+        {#snippet children()}
           <div class="form-control flex flex-col mb-4">
             <fieldset>
               <legend class="label pb-1">
@@ -1116,14 +1107,12 @@
               >
             </div>
           {/if}
-        </div>
-      </div>
+        {/snippet}
+      </FormSection>
 
       <!-- Social Contract Section -->
-      <div class="card bg-base-100 shadow">
-        <div class="card-body">
-          <h3 class="card-title text-lg font-semibold mb-4">Contrato Social</h3>
-
+      <FormSection title="Contrato Social">
+        {#snippet children()}
           <div class="form-control">
             <label class="label cursor-pointer justify-start gap-2">
               <input
@@ -1154,14 +1143,12 @@
               >
             </div>
           {/if}
-        </div>
-      </div>
+        {/snippet}
+      </FormSection>
 
       <!-- Pro-Labore Section -->
-      <div class="card bg-base-100 shadow">
-        <div class="card-body">
-          <h3 class="card-title text-lg font-semibold mb-4">Pro-Labore</h3>
-
+      <FormSection title="Pro-Labore">
+        {#snippet children()}
           <div class="form-control mb-4">
             <label class="label cursor-pointer justify-start gap-2">
               <input
@@ -1215,7 +1202,7 @@
                     <div class="flex justify-between items-center mb-2">
                       <span class="font-bold">{partner.lawyer_name}</span>
                       <span class="text-sm text-gray-500">
-                        {partnershipTypes.find((t) => t.value === partner.partnership_type)
+                        {PARTNERSHIP_TYPES.find((t) => t.value === partner.partnership_type)
                           ?.label || partner.partnership_type}
                       </span>
                     </div>
@@ -1271,14 +1258,12 @@
               {/if}
             </div>
           {/if}
-        </div>
-      </div>
+        {/snippet}
+      </FormSection>
 
       <!-- File Attachments -->
-      <div class="card bg-base-100 shadow">
-        <div class="card-body">
-          <h3 class="card-title text-lg font-semibold mb-4">Anexos</h3>
-
+      <FormSection title="Anexos">
+        {#snippet children()}
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Logo -->
             <div class="form-control flex flex-col">
@@ -1331,8 +1316,8 @@
               </div>
             </div>
           </div>
-        </div>
-      </div>
+        {/snippet}
+      </FormSection>
     </div>
 
     <!-- Footer -->

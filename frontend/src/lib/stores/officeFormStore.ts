@@ -198,7 +198,8 @@ export const officeFormLawyersUtils = {
   // Find a lawyer by ID
   findById(lawyerId) {
     const state = get(officeFormLawyersStore);
-    return state.lawyers.find((lawyer) => lawyer.id === lawyerId);
+    // Convert to string for comparison to handle both string and number IDs
+    return state.lawyers.find((lawyer) => String(lawyer.id) === String(lawyerId));
   },
 
   // Get full name of a lawyer

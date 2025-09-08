@@ -2,34 +2,6 @@
 
 Review: as QA and code specialist check the last commit and inspect code quality and check if there is any improvements to be done to the code be more consise, follow dry rules and software development best practices;
 
-Following dry rules and software development best practices, please go throught src/lib/components/teams/OfficeForm.svelte, /Users/brpl/code/prc_api/frontend/src/lib/components/customers/CustomerFormStep1.svelte and inspect: E-mail. Them create a /forms_commons e-mail component that will be able to be used across all the system. Use current validators at /validation
-
 gaa gcam gp { follow Conventional Commits rules }
 
-Following dry rules and software development best practices, please go throught src/lib/components/teams/OfficeForm.svelte, /Users/brpl/code/prc_api/frontend/src/lib/components/customers/CustomerFormStep1.svelte and inspect: E-mail. Them create a /forms_commons e-mail component that will be able to be used across all the system. Use current validators at /validation
-
-1. Type Safety Improvements
-
-// Replace 'any' with proper types
-interface ApiError {
-message: string;
-code: number;
-}
-
-// Instead of: catch (error: any)
-catch (error: unknown) {
-const apiError = error as ApiError;
-}
-
-    2. DRY Principle Violations
-
-- Error handling patterns repeated across services
-- Validation logic duplicated
-- Console logging scattered throughout
-
-3. Best Practice Violations
-
-- No centralized error handling
-- Inconsistent async/await patterns
-- Missing error boundaries
-- Hardcoded strings instead of constants
+Study Svelte 5 runes at ./ai-docs/svelte-medium.txt if you can't get information there please go to: svelte-full.txt. We need to inpect OfficeForm.svelte and officeFormStore.ts to get everything working as desired. One of the key components that is not working is at lines 886 and below of OfficeForm (Lawyer Selection). When we select an lawyer, the entry should be removed on the next dropdown of lawyers, but that does not happen. My guess is at this method => getAvailableLawyersReactive I guess we actually don't need it anymore since we implemented Svelte 5 Runes mode now... Please review, thing and give me the answers before coding
