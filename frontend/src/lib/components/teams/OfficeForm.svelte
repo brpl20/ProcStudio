@@ -17,12 +17,12 @@
     officeFormLawyersUtils
   } from '../../stores/officeFormStore';
 
-  export let office = null;
+  const office = $state(null);
 
   const dispatch = createEventDispatcher();
-  const isEdit = !!office;
+  const isEdit = $derived(!!office);
 
-  let formData = {
+  let formData = $state({
     name: '',
     cnpj: '',
     oab_id: '',
@@ -59,17 +59,17 @@
         pix: ''
       }
     ]
-  };
+  });
 
-  let logoFile = null;
-  let contractFiles = [];
-  let logoPreview = null;
-  let loading = false;
-  let error = null;
-  let success = null;
+  let logoFile = $state(null);
+  let contractFiles = $state([]);
+  let logoPreview = $state(null);
+  let loading = $state(false);
+  let error = $state(null);
+  let success = $state(null);
 
   // Partnership management - now managed by stores
-  let partners = [
+  let partners = $state([
     {
       lawyer_id: '',
       lawyer_name: '',
@@ -78,28 +78,22 @@
       is_managing_partner: false,
       pro_labore_amount: 0
     }
-  ];
-  let profitDistribution = 'proportional';
-  let createSocialContract = false;
-  let partnersWithProLabore = true;
+  ]);
+  let profitDistribution = $state('proportional');
+  let createSocialContract = $state(false);
+  let partnersWithProLabore = $state(true);
   const minimumWage = 1320.0;
   const inssCeiling = 7507.49;
-  let proLaboreErrors = {};
+  let proLaboreErrors = $state({});
 
   // Subscribe to stores
-  $: lawyersState = $officeFormLawyersStore;
-  $: availableLawyers = $availableLawyersStore;
-  $: selectedPartners = $selectedPartnersStore;
+  const lawyersState = $derived($officeFormLawyersStore);
+  const availableLawyers = $derived($availableLawyersStore);
+  const selectedPartners = $derived($selectedPartnersStore);
 
   // Function to get available lawyers for a specific partner (reactive)
   function getAvailableLawyersReactive(partnerIndex) {
     return getAvailableLawyersForPartnerIndex(partnerIndex);
-  }
-
-  // Force reactivity when stores change
-  $: if ($selectedPartnersStore || $officeFormLawyersStore) {
-    // This will cause the dropdown to re-render when stores change
-    partners = [...partners];
   }
 
   const societyOptions = [
@@ -143,51 +137,44 @@
 
   // Partnership management functions
   function handlePartnerChange(index, field, value) {
-    partners = partners.map((partner, i) => {
-      if (i === index) {
-        if (field === 'lawyer_id' && value && typeof value === 'object') {
-          // Update selected partners store immediately
-          selectedPartnersStore.updateAt(index, value.id);
-          return {
-            ...partner,
-            lawyer_id: value.id,
-            lawyer_name: `${value.attributes.name} ${value.attributes.last_name}`
-          };
-        } else if (field === 'ownership_percentage') {
-          const newPercentage = Math.max(0, Math.min(100, Number(value) || 0));
+    if (field === 'lawyer_id' && value && typeof value === 'object') {
+      // Update selected partners store immediately
+      selectedPartnersStore.updateAt(index, value.id);
+      partners[index] = {
+        ...partners[index],
+        lawyer_id: value.id,
+        lawyer_name: `${value.attributes.name} ${value.attributes.last_name}`
+      };
+    } else if (field === 'ownership_percentage') {
+      const newPercentage = Math.max(0, Math.min(100, Number(value) || 0));
 
-          // Special logic for 2 partners - adjust other partner automatically
-          if (partners.length === 2) {
-            const otherIndex = index === 0 ? 1 : 0;
-            const updatedPartners = [...partners];
-            updatedPartners[index] = { ...partner, ownership_percentage: newPercentage };
-            updatedPartners[otherIndex] = {
-              ...updatedPartners[otherIndex],
-              ownership_percentage: 100 - newPercentage
-            };
-            return i === index ? updatedPartners[index] : updatedPartners[i];
-          } else {
-            return { ...partner, ownership_percentage: newPercentage };
-          }
-        } else if (field === 'pro_labore_amount') {
-          const amount = Number(value) || 0;
-          const error = validateProLaboreAmount(amount);
-
-          // Update errors
-          if (error) {
-            proLaboreErrors[index] = error;
-          } else {
-            delete proLaboreErrors[index];
-          }
-          proLaboreErrors = { ...proLaboreErrors };
-
-          return { ...partner, pro_labore_amount: amount };
-        } else {
-          return { ...partner, [field]: value };
-        }
+      // Special logic for 2 partners - adjust other partner automatically
+      if (partners.length === 2) {
+        const otherIndex = index === 0 ? 1 : 0;
+        partners[index] = { ...partners[index], ownership_percentage: newPercentage };
+        partners[otherIndex] = {
+          ...partners[otherIndex],
+          ownership_percentage: 100 - newPercentage
+        };
+      } else {
+        partners[index] = { ...partners[index], ownership_percentage: newPercentage };
       }
-      return partner;
-    });
+    } else if (field === 'pro_labore_amount') {
+      const amount = Number(value) || 0;
+      const error = validateProLaboreAmount(amount);
+
+      // Update errors
+      if (error) {
+        proLaboreErrors[index] = error;
+      } else {
+        delete proLaboreErrors[index];
+      }
+      proLaboreErrors = { ...proLaboreErrors };
+
+      partners[index] = { ...partners[index], pro_labore_amount: amount };
+    } else {
+      partners[index] = { ...partners[index], [field]: value };
+    }
   }
 
   function addPartner() {
@@ -413,7 +400,7 @@
 
       // Stores are now reactive and will update automatically
     } catch (error) {
-      console.error('Error loading lawyers:', error);
+      // Error loading lawyers
     }
 
     if (office) {
@@ -511,7 +498,7 @@
       <h2 class="text-2xl font-bold text-gray-900">
         {isEdit ? 'Editar Escritório' : 'Novo Escritório'}
       </h2>
-      <button class="btn btn-ghost btn-circle" on:click={handleClose}>✕</button>
+      <button class="btn btn-ghost btn-circle" onclick={handleClose}>✕</button>
     </div>
 
     <!-- Form Content -->
@@ -737,16 +724,16 @@
         <div class="card-body">
           <div class="flex justify-between items-center mb-4">
             <h3 class="card-title text-lg font-semibold">Telefones</h3>
-            <button class="btn btn-outline btn-sm" on:click={addPhone}>➕ Adicionar</button>
+            <button class="btn btn-outline btn-sm" onclick={addPhone}>➕ Adicionar</button>
           </div>
 
           {#each formData.phones_attributes as phone, index (index)}
             <div class="flex gap-2 mb-2">
               <div class="flex-1">
-                <Phone bind:value={phone.phone_number} />
+                <Phone bind:value={formData.phones_attributes[index].phone_number} />
               </div>
               {#if formData.phones_attributes.length > 1}
-                <button class="btn btn-error btn-sm" on:click={() => removePhone(index)}>🗑️</button>
+                <button class="btn btn-error btn-sm" onclick={() => removePhone(index)}>🗑️</button>
               {/if}
             </div>
           {/each}
@@ -758,21 +745,21 @@
         <div class="card-body">
           <div class="flex justify-between items-center mb-4">
             <h3 class="card-title text-lg font-semibold">E-mails</h3>
-            <button class="btn btn-outline btn-sm" on:click={addEmail}>➕ Adicionar</button>
+            <button class="btn btn-outline btn-sm" onclick={addEmail}>➕ Adicionar</button>
           </div>
 
           {#each formData.emails_attributes as email, index (index)}
             <div class="flex gap-2 mb-2">
               <div class="flex-1">
                 <Email
-                  bind:value={email.email}
+                  bind:value={formData.emails_attributes[index].email}
                   id="office-email-{index}"
                   labelText=""
                   placeholder="email@exemplo.com"
                 />
               </div>
               {#if formData.emails_attributes.length > 1}
-                <button class="btn btn-error btn-sm" on:click={() => removeEmail(index)}>🗑️</button>
+                <button class="btn btn-error btn-sm" onclick={() => removeEmail(index)}>🗑️</button>
               {/if}
             </div>
           {/each}
@@ -792,8 +779,7 @@
 
       <!-- Addresses -->
       <h3 class="card-title text-lg font-semibold">Endereços</h3>
-      <button class="btn btn-outline btn-sm" on:click={addAddress} type="button"
-        >➕ Adicionar</button
+      <button class="btn btn-outline btn-sm" onclick={addAddress} type="button">➕ Adicionar</button
       >
       {#each formData.addresses_attributes as address, idx (idx)}
         <Address
@@ -809,12 +795,11 @@
         <div class="card-body">
           <div class="flex justify-between items-center mb-4">
             <h3 class="card-title text-lg font-semibold">Contas Bancárias</h3>
-            <button class="btn btn-outline btn-sm" on:click={addBankAccount}>➕ Adicionar</button>
+            <button class="btn btn-outline btn-sm" onclick={addBankAccount}>➕ Adicionar</button>
           </div>
-
           {#each formData.bank_accounts_attributes as bankAccount, index (index)}
             <Bank
-              bind:bankAccount
+              bind:bankAccount={formData.bank_accounts_attributes[index]}
               {index}
               showRemoveButton={formData.bank_accounts_attributes.length > 1}
               showPixHelpers={true}
@@ -859,7 +844,7 @@
                 />
               </svg>
               <span>Erro: {lawyersState.error}</span>
-              <button class="btn btn-sm" on:click={() => officeFormLawyersStore.loadLawyers()}
+              <button class="btn btn-sm" onclick={() => officeFormLawyersStore.loadLawyers()}
                 >Tentar novamente</button
               >
             </div>
@@ -890,7 +875,7 @@
               <div class="flex justify-between items-center mb-4">
                 <h4 class="font-semibold text-base">Sócio {index + 1}</h4>
                 {#if partners.length > 1}
-                  <button class="btn btn-error btn-sm" on:click={() => removePartner(index)}>
+                  <button class="btn btn-error btn-sm" onclick={() => removePartner(index)}>
                     🗑️
                   </button>
                 {/if}
@@ -906,7 +891,7 @@
                     id="partner-lawyer-{index}"
                     class="select select-bordered w-full"
                     value={partner.lawyer_id}
-                    on:change={(e) => {
+                    onchange={(e) => {
                       const selectedLawyer = officeFormLawyersUtils.findById(e.target.value);
                       if (selectedLawyer) {
                         handlePartnerChange(index, 'lawyer_id', selectedLawyer);
@@ -928,11 +913,10 @@
                     <span class="label-text">Função</span>
                   </label>
                   <select
+                    bind:value={partners[index].partnership_type}
                     id="partner-type-{index}"
                     class="select select-bordered w-full"
-                    bind:value={partner.partnership_type}
-                    on:change={(e) =>
-                      handlePartnerChange(index, 'partnership_type', e.target.value)}
+                    onchange={(e) => handlePartnerChange(index, 'partnership_type', e.target.value)}
                   >
                     <option value="">Selecione a Função</option>
                     {#each partnershipTypes as type}
@@ -954,8 +938,8 @@
                       min="0"
                       max="100"
                       step="0.01"
-                      bind:value={partner.ownership_percentage}
-                      on:input={(e) =>
+                      bind:value={partners[index].ownership_percentage}
+                      oninput={(e) =>
                         handlePartnerChange(index, 'ownership_percentage', e.target.value)}
                     />
                     <span>%</span>
@@ -974,7 +958,7 @@
                         min="0"
                         max="100"
                         bind:value={partner.ownership_percentage}
-                        on:input={(e) =>
+                        oninput={(e) =>
                           handlePartnerChange(index, 'ownership_percentage', e.target.value)}
                       />
                     </div>
@@ -989,8 +973,8 @@
                     <input
                       type="checkbox"
                       class="checkbox checkbox-primary"
-                      bind:checked={partner.is_managing_partner}
-                      on:change={(e) =>
+                      bind:checked={partners[index].is_managing_partner}
+                      onchange={(e) =>
                         handlePartnerChange(index, 'is_managing_partner', e.target.checked)}
                     />
                     <span class="label-text">Sócio Administrador</span>
@@ -1028,7 +1012,7 @@
             <button
               class="btn btn-outline"
               disabled={!officeFormLawyersUtils.canAddMorePartners(partners.length)}
-              on:click={addPartner}
+              onclick={addPartner}
             >
               ➕ Adicionar Sócio
             </button>
@@ -1245,8 +1229,8 @@
                         class="input input-bordered input-sm w-32"
                         min="0"
                         step="0.01"
-                        bind:value={partner.pro_labore_amount}
-                        on:input={(e) =>
+                        bind:value={partners[index].pro_labore_amount}
+                        oninput={(e) =>
                           handlePartnerChange(index, 'pro_labore_amount', e.target.value)}
                         class:input-error={proLaboreErrors[index]}
                       />
@@ -1306,7 +1290,7 @@
                 type="file"
                 class="file-input file-input-bordered w-full"
                 accept="image/*"
-                on:change={handleLogoChange}
+                onchange={handleLogoChange}
               />
               {#if logoPreview}
                 <div class="mt-2">
@@ -1333,7 +1317,7 @@
                 class="file-input file-input-bordered w-full"
                 accept=".pdf,.docx"
                 multiple
-                on:change={handleContractsChange}
+                onchange={handleContractsChange}
               />
               {#if contractFiles.length > 0}
                 <div class="mt-2 space-y-1">
@@ -1353,8 +1337,8 @@
 
     <!-- Footer -->
     <div class="sticky bottom-0 bg-white border-t border-gray-200 p-6 flex justify-end gap-4">
-      <button class="btn btn-ghost" on:click={handleClose} disabled={loading}> Cancelar </button>
-      <button class="btn btn-primary" on:click={handleSubmit} disabled={loading}>
+      <button class="btn btn-ghost" onclick={handleClose} disabled={loading}> Cancelar </button>
+      <button class="btn btn-primary" onclick={handleSubmit} disabled={loading}>
         {#if loading}
           <span class="loading loading-spinner loading-sm"></span>
         {/if}
