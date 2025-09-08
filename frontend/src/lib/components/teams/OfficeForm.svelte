@@ -5,6 +5,7 @@
   import Cnpj from '../forms_commons/Cnpj.svelte';
   import Address from '../forms_commons/Address.svelte';
   import Cep from '../forms_commons/Cep.svelte';
+  import Phone from '../forms_commons/Phone.svelte';
   import { createCepAddressHandler } from '../../utils/cep-address-mapper';
 
   export let office = null;
@@ -402,22 +403,6 @@
     }
   }
 
-  function formatPhone(value) {
-    // Remove non-digits
-    const digits = value.replace(/\D/g, '');
-
-    // Apply phone mask
-    if (digits.length <= 10) {
-      // (00) 0000-0000
-      return digits.replace(/(\d{2})(\d)/, '($1) $2').replace(/(\d{4})(\d)/, '$1-$2');
-    } else {
-      // (00) 00000-0000
-      return digits
-        .replace(/(\d{2})(\d)/, '($1) $2')
-        .replace(/(\d{5})(\d)/, '$1-$2')
-        .substr(0, 15);
-    }
-  }
 
   async function loadLawyers() {
     try {
@@ -762,14 +747,9 @@
 
           {#each formData.phones_attributes as phone, index (index)}
             <div class="flex gap-2 mb-2">
-              <input
-                type="tel"
-                class="input input-bordered flex-1"
-                bind:value={phone.phone_number}
-                on:input={(e) => (phone.phone_number = formatPhone(e.target.value))}
-                placeholder="(00) 00000-0000"
-                maxlength="15"
-              />
+              <div class="flex-1">
+                <Phone bind:value={phone.phone_number} />
+              </div>
               {#if formData.phones_attributes.length > 1}
                 <button class="btn btn-error btn-sm" on:click={() => removePhone(index)}>🗑️</button>
               {/if}
@@ -804,10 +784,9 @@
 
       <!-- Cep -->
       <h3 class="card-title text-lg font-semibold">Cep</h3>
-      <Cep 
-        required 
-        bind:value={formData.zip_code} 
-        id="office-zip_code" 
+      <Cep
+        bind:value={formData.zip_code}
+        id="office-zip_code"
         labelText={'CEP'}
         useAPIValidation={true}
         showAddressInfo={false}
