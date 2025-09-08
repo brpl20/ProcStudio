@@ -8,6 +8,13 @@
   import Phone from '../forms_commons/Phone.svelte';
   import Email from '../forms_commons/Email.svelte';
   import { createCepAddressHandler } from '../../utils/cep-address-mapper';
+  import {
+    officeFormLawyersStore,
+    selectedPartnersStore,
+    availableLawyersStore,
+    getAvailableLawyersForPartnerIndex,
+    officeFormLawyersUtils
+  } from '../../stores/officeFormStore';
 
   export let office = null;
 
@@ -60,8 +67,7 @@
   let error = null;
   let success = null;
 
-  // Partnership management
-  let lawyers = [];
+  // Partnership management - now managed by stores
   let partners = [
     {
       lawyer_id: '',
@@ -79,10 +85,10 @@
   const inssCeiling = 7507.49;
   let proLaboreErrors = {};
 
-  // Reactive statement to debug lawyers changes (commented out to prevent infinite loops)
-  // $: {
-  //   console.log('Lawyers array updated:', lawyers.length, lawyers);
-  // }
+  // Subscribe to stores
+  $: lawyersState = $officeFormLawyersStore;
+  $: availableLawyers = $availableLawyersStore;
+  $: selectedPartners = $selectedPartnersStore;
 
   const societyOptions = [
     { value: 'individual', label: 'Individual' },
@@ -125,15 +131,17 @@
 
   // Partnership management functions
   function handlePartnerChange(index, field, value) {
-    console.log('handlePartnerChange called:', { index, field, value });
+    // console.log('handlePartnerChange called:', { index, field, value });
 
     partners = partners.map((partner, i) => {
       if (i === index) {
         if (field === 'lawyer_id' && value && typeof value === 'object') {
-          console.log('Setting lawyer for partner:', {
-            partnerId: value.id,
-            lawyerName: value.attributes
-          });
+          // console.log('Setting lawyer for partner:', {
+          //   partnerId: value.id,
+          //   lawyerName: value.attributes
+          // });
+          // Update selected partners store
+          selectedPartnersStore.updateAt(index, value.id);
           return {
             ...partner,
             lawyer_id: value.id,
@@ -177,7 +185,7 @@
   }
 
   function addPartner() {
-    if (lawyers.length <= partners.length) {
+    if (!officeFormLawyersUtils.canAddMorePartners(partners.length)) {
       return;
     }
 
@@ -199,7 +207,9 @@
       }
     ];
 
-    console.log('Added new partner, total partners:', partners.length);
+    // Update selected partners store
+    selectedPartnersStore.add(null, partners.length - 1);
+    // console.log('Added new partner, total partners:', partners.length);
   }
 
   function removePartner(index) {
@@ -207,7 +217,12 @@
       return;
     }
 
+    const lawyerId = partners[index]?.lawyer_id;
     partners = partners.filter((_, i) => i !== index);
+
+    // Update selected partners store
+    const newSelections = partners.map((p) => p.lawyer_id || null);
+    selectedPartnersStore.setAll(newSelections);
 
     // Adjust percentages if now 2 partners
     if (partners.length === 2) {
@@ -219,25 +234,7 @@
   }
 
   function getAvailableLawyers(currentIndex) {
-    const selectedIds = partners
-      .map((partner, index) => (index !== currentIndex ? partner.lawyer_id : null))
-      .filter((id) => id && id !== '');
-
-    const availableLawyers = lawyers.filter((lawyer) => !selectedIds.includes(lawyer.id));
-    console.log(`getAvailableLawyers(${currentIndex}):`, {
-      totalLawyers: lawyers.length,
-      selectedIds,
-      availableLawyers: availableLawyers.length,
-      availableLawyersData: availableLawyers,
-      lawyersStructure: availableLawyers.map((l) => ({
-        id: l.id,
-        name: l.attributes?.name,
-        lastName: l.attributes?.last_name,
-        fullStructure: l
-      }))
-    });
-
-    return availableLawyers;
+    return getAvailableLawyersForPartnerIndex(currentIndex);
   }
 
   function getTotalPercentage() {
@@ -384,7 +381,7 @@
           try {
             await api.offices.uploadSocialContracts(response.data.id, contractFiles);
           } catch (contractError) {
-            console.warn('Error uploading contracts:', contractError);
+            // console.warn('Error uploading contracts:', contractError);
             // Don't fail the whole operation, just warn
           }
         }
@@ -397,60 +394,19 @@
         error = response.message || 'Erro ao salvar escritório';
       }
     } catch (err) {
-      console.error('Form submit error:', err);
+      // console.error('Form submit error:', err);
       error = err.message || 'Erro ao salvar escritório';
     } finally {
       loading = false;
     }
   }
 
-
-  async function loadLawyers() {
-    try {
-      console.log('Loading lawyers from user profiles...');
-
-      // Get user profiles directly - the API returns { success: true, message: "...", data: [...] }
-      const response = await api.users.getUserProfiles();
-      console.log('User profiles response:', response);
-
-      // Now the response should have the correct structure: { success: true, data: UserProfileData[] }
-      if (response.success && response.data && Array.isArray(response.data)) {
-        console.log('Processing profiles data:', response.data);
-
-        // All profiles in the test data have role: "lawyer", so we map them directly
-        lawyers = response.data
-          .filter((profile) => {
-            console.log('Checking profile:', profile);
-            return profile.attributes?.role === 'lawyer';
-          })
-          .map((profile) => {
-            console.log('Mapping profile:', profile.attributes);
-            return {
-              id: profile.attributes.user_id || profile.id,
-              attributes: {
-                name: profile.attributes.name,
-                last_name: profile.attributes.last_name,
-                role: profile.attributes.role,
-                email: profile.attributes.access_email,
-                user_id: profile.attributes.user_id
-              }
-            };
-          });
-
-        console.log('Final lawyers array:', lawyers);
-        console.log(`Loaded ${lawyers.length} lawyers successfully!`);
-      } else {
-        console.warn('No data in user profiles response or data is not an array:', response);
-        lawyers = [];
-      }
-    } catch (err) {
-      console.error('Error loading lawyers:', err);
-      lawyers = [];
-    }
-  }
-
   onMount(async () => {
-    await loadLawyers();
+    // Load lawyers using the store
+    if (!lawyersState.initialized) {
+      await officeFormLawyersStore.loadLawyers();
+    }
+
     if (office) {
       // Populate form with existing data
       formData = {
@@ -525,6 +481,12 @@
       if (office.logo_url) {
         logoPreview = office.logo_url;
       }
+
+      // Initialize partners store with existing selections if any
+      if (office.user_offices?.length > 0) {
+        const lawyerIds = office.user_offices.map((uo) => uo.user_id).filter((id) => id);
+        selectedPartnersStore.setAll(lawyerIds);
+      }
     }
   });
 </script>
@@ -588,10 +550,11 @@
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="form-control flex flex-col">
-              <label class="label pb-1">
+              <label class="label pb-1" for="office-name">
                 <span class="label-text">Nome do Escritório *</span>
               </label>
               <input
+                id="office-name"
                 type="text"
                 class="input input-bordered w-full"
                 bind:value={formData.name}
@@ -603,10 +566,14 @@
             <Cnpj required bind:value={formData.cnpj} id="office-cnpj" labelText={'CNPJ'} />
 
             <div class="form-control flex flex-col">
-              <label class="label pb-1">
+              <label class="label pb-1" for="office-society">
                 <span class="label-text">Tipo de Sociedade</span>
               </label>
-              <select class="select select-bordered w-full" bind:value={formData.society}>
+              <select
+                id="office-society"
+                class="select select-bordered w-full"
+                bind:value={formData.society}
+              >
                 {#each societyOptions as option}
                   <option value={option.value}>{option.label}</option>
                 {/each}
@@ -614,10 +581,14 @@
             </div>
 
             <div class="form-control flex flex-col">
-              <label class="label pb-1">
+              <label class="label pb-1" for="office-accounting-type">
                 <span class="label-text">Enquadramento Contábil</span>
               </label>
-              <select class="select select-bordered w-full" bind:value={formData.accounting_type}>
+              <select
+                id="office-accounting-type"
+                class="select select-bordered w-full"
+                bind:value={formData.accounting_type}
+              >
                 {#each accountingOptions as option}
                   <option value={option.value}>{option.label}</option>
                 {/each}
@@ -625,10 +596,11 @@
             </div>
 
             <div class="form-control flex flex-col">
-              <label class="label pb-1">
+              <label class="label pb-1" for="office-foundation">
                 <span class="label-text">Data de Fundação</span>
               </label>
               <input
+                id="office-foundation"
                 type="date"
                 class="input input-bordered w-full"
                 bind:value={formData.foundation}
@@ -636,10 +608,15 @@
             </div>
 
             <div class="form-control flex flex-col">
-              <label class="label pb-1">
+              <label class="label pb-1" for="office-site">
                 <span class="label-text">Site</span>
               </label>
-              <input type="url" class="input input-bordered w-full" bind:value={formData.site} />
+              <input
+                id="office-site"
+                type="url"
+                class="input input-bordered w-full"
+                bind:value={formData.site}
+              />
             </div>
           </div>
         </div>
@@ -652,10 +629,11 @@
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="form-control flex flex-col">
-              <label class="label pb-1">
+              <label class="label pb-1" for="office-oab-id">
                 <span class="label-text">OAB ID</span>
               </label>
               <input
+                id="office-oab-id"
                 type="text"
                 class="input input-bordered w-full"
                 bind:value={formData.oab_id}
@@ -664,10 +642,11 @@
             </div>
 
             <div class="form-control flex flex-col">
-              <label class="label pb-1">
+              <label class="label pb-1" for="office-oab-status">
                 <span class="label-text">Status OAB</span>
               </label>
               <input
+                id="office-oab-status"
                 type="text"
                 class="input input-bordered w-full"
                 bind:value={formData.oab_status}
@@ -676,10 +655,11 @@
             </div>
 
             <div class="form-control flex flex-col">
-              <label class="label pb-1">
+              <label class="label pb-1" for="office-oab-inscricao">
                 <span class="label-text">Inscrição OAB</span>
               </label>
               <input
+                id="office-oab-inscricao"
                 type="text"
                 class="input input-bordered w-full"
                 bind:value={formData.oab_inscricao}
@@ -688,10 +668,11 @@
             </div>
 
             <div class="form-control flex flex-col">
-              <label class="label pb-1">
+              <label class="label pb-1" for="office-oab-link">
                 <span class="label-text">Link OAB</span>
               </label>
               <input
+                id="office-oab-link"
                 type="url"
                 class="input input-bordered w-full"
                 bind:value={formData.oab_link}
@@ -709,10 +690,11 @@
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="form-control flex flex-col">
-              <label class="label pb-1">
+              <label class="label pb-1" for="office-quote-value">
                 <span class="label-text">Valor da Cota</span>
               </label>
               <input
+                id="office-quote-value"
                 type="number"
                 class="input input-bordered w-full"
                 bind:value={formData.quote_value}
@@ -723,10 +705,11 @@
             </div>
 
             <div class="form-control flex flex-col">
-              <label class="label pb-1">
+              <label class="label pb-1" for="office-number-quotes">
                 <span class="label-text">Número de Cotas</span>
               </label>
               <input
+                id="office-number-quotes"
                 type="number"
                 class="input input-bordered w-full"
                 bind:value={formData.number_of_quotes}
@@ -822,10 +805,11 @@
             <div class="border rounded p-4 mb-4">
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div class="form-control flex flex-col">
-                  <label class="label pb-1">
+                  <label class="label pb-1" for="bank-name-{index}">
                     <span class="label-text">Nome do Banco</span>
                   </label>
                   <input
+                    id="bank-name-{index}"
                     type="text"
                     class="input input-bordered input-sm w-full"
                     bind:value={bank.bank_name}
@@ -834,10 +818,11 @@
                 </div>
 
                 <div class="form-control flex flex-col">
-                  <label class="label pb-1">
+                  <label class="label pb-1" for="bank-type-{index}">
                     <span class="label-text">Tipo de Conta</span>
                   </label>
                   <input
+                    id="bank-type-{index}"
                     type="text"
                     class="input input-bordered input-sm w-full"
                     bind:value={bank.type_account}
@@ -846,10 +831,11 @@
                 </div>
 
                 <div class="form-control flex flex-col">
-                  <label class="label pb-1">
+                  <label class="label pb-1" for="bank-agency-{index}">
                     <span class="label-text">Agência</span>
                   </label>
                   <input
+                    id="bank-agency-{index}"
                     type="text"
                     class="input input-bordered input-sm w-full"
                     bind:value={bank.agency}
@@ -858,10 +844,11 @@
                 </div>
 
                 <div class="form-control flex flex-col">
-                  <label class="label pb-1">
+                  <label class="label pb-1" for="bank-account-{index}">
                     <span class="label-text">Conta</span>
                   </label>
                   <input
+                    id="bank-account-{index}"
                     type="text"
                     class="input input-bordered input-sm w-full"
                     bind:value={bank.account}
@@ -870,10 +857,11 @@
                 </div>
 
                 <div class="form-control flex flex-col">
-                  <label class="label pb-1">
+                  <label class="label pb-1" for="bank-operation-{index}">
                     <span class="label-text">Operação</span>
                   </label>
                   <input
+                    id="bank-operation-{index}"
                     type="text"
                     class="input input-bordered input-sm w-full"
                     bind:value={bank.operation}
@@ -882,10 +870,11 @@
                 </div>
 
                 <div class="form-control flex flex-col">
-                  <label class="label pb-1">
+                  <label class="label pb-1" for="bank-pix-{index}">
                     <span class="label-text">PIX</span>
                   </label>
                   <input
+                    id="bank-pix-{index}"
                     type="text"
                     class="input input-bordered input-sm w-full"
                     bind:value={bank.pix}
@@ -911,25 +900,53 @@
         <div class="card-body">
           <h3 class="card-title text-lg font-semibold mb-4">Sócios do Escritório</h3>
 
-          <!-- Debug info -->
-          <div class="alert alert-info mb-4">
-            <div>
-              <div class="text-sm">
-                <strong>Debug:</strong>
-                {lawyers.length} advogados carregados
-                {#if lawyers.length > 0}
-                  <div class="mt-2">
-                    {#each lawyers as lawyer, i}
-                      <div class="text-xs">
-                        {i + 1}: ID={lawyer.id}, Nome={lawyer.attributes?.name}
-                        {lawyer.attributes?.last_name}
-                      </div>
-                    {/each}
-                  </div>
-                {/if}
+          <!-- Loading/Error States -->
+          {#if lawyersState.loading}
+            <div class="alert alert-info mb-4">
+              <span class="loading loading-spinner loading-sm"></span>
+              <span>Carregando advogados...</span>
+            </div>
+          {:else if lawyersState.error}
+            <div class="alert alert-error mb-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="stroke-current shrink-0 h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>Erro: {lawyersState.error}</span>
+              <button class="btn btn-sm" on:click={() => officeFormLawyersStore.loadLawyers()}
+                >Tentar novamente</button
+              >
+            </div>
+          {:else}
+            <!-- Debug info -->
+            <div class="alert alert-info mb-4">
+              <div>
+                <div class="text-sm">
+                  <strong>Debug:</strong>
+                  {lawyersState.lawyers.length} advogados carregados
+                  {#if lawyersState.lawyers.length > 0}
+                    <div class="mt-2">
+                      {#each lawyersState.lawyers as lawyer, i}
+                        <div class="text-xs">
+                          {i + 1}: ID={lawyer.id}, Nome={lawyer.attributes?.name}
+                          {lawyer.attributes?.last_name}
+                        </div>
+                      {/each}
+                    </div>
+                  {/if}
+                </div>
               </div>
             </div>
-          </div>
+          {/if}
 
           {#each partners as partner, index (index)}
             <div class="border rounded-lg p-4 mb-4 bg-base-50">
@@ -945,26 +962,26 @@
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <!-- Lawyer Selection -->
                 <div class="form-control flex flex-col">
-                  <label class="label pb-1">
+                  <label class="label pb-1" for="partner-lawyer-{index}">
                     <span class="label-text">Advogado</span>
                   </label>
                   <select
+                    id="partner-lawyer-{index}"
                     class="select select-bordered w-full"
                     value={partner.lawyer_id}
                     on:change={(e) => {
-                      console.log('Lawyer selection changed:', e.target.value);
-                      const selectedLawyer = lawyers.find((l) => l.id === e.target.value);
-                      console.log('Found lawyer:', selectedLawyer);
+                      // console.log('Lawyer selection changed:', e.target.value);
+                      const selectedLawyer = officeFormLawyersUtils.findById(e.target.value);
+                      // console.log('Found lawyer:', selectedLawyer);
                       if (selectedLawyer) {
                         handlePartnerChange(index, 'lawyer_id', selectedLawyer);
                       }
                     }}
                   >
                     <option value="">Selecione o Advogado</option>
-                    {#each lawyers.filter((lawyer) => !partners.some((p, i) => i !== index && p.lawyer_id === lawyer.id)) as lawyer}
+                    {#each getAvailableLawyers(index) as lawyer}
                       <option value={lawyer.id}>
-                        {lawyer.attributes?.name || 'Nome não encontrado'}
-                        {lawyer.attributes?.last_name || 'Sobrenome não encontrado'}
+                        {officeFormLawyersUtils.getFullName(lawyer)}
                       </option>
                     {/each}
                   </select>
@@ -972,10 +989,11 @@
 
                 <!-- Partnership Type -->
                 <div class="form-control flex flex-col">
-                  <label class="label pb-1">
+                  <label class="label pb-1" for="partner-type-{index}">
                     <span class="label-text">Função</span>
                   </label>
                   <select
+                    id="partner-type-{index}"
                     class="select select-bordered w-full"
                     bind:value={partner.partnership_type}
                     on:change={(e) =>
@@ -990,11 +1008,12 @@
 
                 <!-- Ownership Percentage -->
                 <div class="form-control flex flex-col">
-                  <label class="label pb-1">
+                  <label class="label pb-1" for="partner-percentage-{index}">
                     <span class="label-text">Participação (%)</span>
                   </label>
                   <div class="flex items-center gap-2">
                     <input
+                      id="partner-percentage-{index}"
                       type="number"
                       class="input input-bordered w-20"
                       min="0"
@@ -1010,10 +1029,11 @@
                   <!-- Range slider for 2 partners -->
                   {#if partners.length === 2}
                     <div class="mt-2">
-                      <label class="label">
+                      <label class="label" for="partner-range-{index}">
                         <span class="label-text-alt">Ajuste proporcional</span>
                       </label>
                       <input
+                        id="partner-range-{index}"
                         type="range"
                         class="range range-sm"
                         min="0"
@@ -1072,16 +1092,18 @@
           <div class="flex flex-col items-start">
             <button
               class="btn btn-outline"
-              disabled={lawyers.length <= partners.length}
+              disabled={!officeFormLawyersUtils.canAddMorePartners(partners.length)}
               on:click={addPartner}
             >
               ➕ Adicionar Sócio
             </button>
 
-            {#if lawyers.length <= partners.length}
+            {#if !officeFormLawyersUtils.canAddMorePartners(partners.length)}
               <p class="text-sm text-gray-500 mt-2">
                 Cadastre mais advogados para alterar seu quadro societário.
-                <a href="#" class="link link-primary">Cadastrar novo usuário</a>
+                <button type="button" class="link link-primary bg-transparent border-none p-0"
+                  >Cadastrar novo usuário</button
+                >
               </p>
             {/if}
           </div>
@@ -1094,31 +1116,33 @@
           <h3 class="card-title text-lg font-semibold mb-4">Distribuição de Lucros</h3>
 
           <div class="form-control flex flex-col mb-4">
-            <label class="label pb-1">
-              <span class="label-text">Como será a distribuição de lucros?</span>
-            </label>
+            <fieldset>
+              <legend class="label pb-1">
+                <span class="label-text">Como será a distribuição de lucros?</span>
+              </legend>
 
-            <div class="flex gap-6">
-              <label class="label cursor-pointer">
-                <input
-                  type="radio"
-                  class="radio radio-primary"
-                  bind:group={profitDistribution}
-                  value="proportional"
-                />
-                <span class="label-text ml-2">Proporcional à participação</span>
-              </label>
+              <div class="flex gap-6">
+                <label class="label cursor-pointer">
+                  <input
+                    type="radio"
+                    class="radio radio-primary"
+                    bind:group={profitDistribution}
+                    value="proportional"
+                  />
+                  <span class="label-text ml-2">Proporcional à participação</span>
+                </label>
 
-              <label class="label cursor-pointer">
-                <input
-                  type="radio"
-                  class="radio radio-primary"
-                  bind:group={profitDistribution}
-                  value="disproportional"
-                />
-                <span class="label-text ml-2">Desproporcional</span>
-              </label>
-            </div>
+                <label class="label cursor-pointer">
+                  <input
+                    type="radio"
+                    class="radio radio-primary"
+                    bind:group={profitDistribution}
+                    value="disproportional"
+                  />
+                  <span class="label-text ml-2">Desproporcional</span>
+                </label>
+              </div>
+            </fieldset>
           </div>
 
           {#if profitDistribution === 'proportional'}
@@ -1281,6 +1305,7 @@
                       <span class="w-20">Pro-Labore:</span>
                       <span class="text-lg">R$</span>
                       <input
+                        id="pro-labore-{index}"
                         type="number"
                         class="input input-bordered input-sm w-32"
                         min="0"
@@ -1338,10 +1363,11 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Logo -->
             <div class="form-control flex flex-col">
-              <label class="label pb-1">
+              <label class="label pb-1" for="office-logo">
                 <span class="label-text">Logo do Escritório</span>
               </label>
               <input
+                id="office-logo"
                 type="file"
                 class="file-input file-input-bordered w-full"
                 accept="image/*"
@@ -1363,10 +1389,11 @@
 
             <!-- Social Contracts -->
             <div class="form-control flex flex-col">
-              <label class="label pb-1">
+              <label class="label pb-1" for="office-contracts">
                 <span class="label-text">Contratos Sociais</span>
               </label>
               <input
+                id="office-contracts"
                 type="file"
                 class="file-input file-input-bordered w-full"
                 accept=".pdf,.docx"
