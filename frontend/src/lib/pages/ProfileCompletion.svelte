@@ -1,5 +1,6 @@
 <script lang="ts">
   import api from '../api/index';
+  import Phone from '../components/forms_commons/Phone.svelte';
 
   export let isOpen = false;
   export let userData: any = {};
@@ -42,32 +43,6 @@
 
   function isFieldRequired(fieldName: string): boolean {
     return missingFields.includes(fieldName);
-  }
-
-  function formatPhoneInput(event: Event) {
-    const input = event.target as HTMLInputElement;
-    let value = input.value.replace(/\D/g, ''); // Remove tudo que não é dígito
-
-    if (value.length <= 11) {
-      // Formato: (XX) XXXXX-XXXX para celular ou (XX) XXXX-XXXX para fixo
-      if (value.length >= 11) {
-        value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
-      } else if (value.length >= 10) {
-        value = value.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
-      } else if (value.length >= 6) {
-        value = value.replace(/(\d{2})(\d{4})(\d*)/, '($1) $2-$3');
-      } else if (value.length >= 2) {
-        value = value.replace(/(\d{2})(\d*)/, '($1) $2');
-      }
-    }
-
-    formData.phone = value;
-  }
-
-  function validateBrazilianPhone(phone: string): boolean {
-    // Aceita formato (XX) XXXXX-XXXX ou (XX) XXXX-XXXX
-    const phonePattern = /^\(\d{2}\)\s\d{4,5}-\d{4}$/;
-    return phonePattern.test(phone);
   }
 
   function getCivilStatusLabel(option: any): string {
@@ -130,14 +105,7 @@
       }
     }
 
-    // Validação do telefone brasileiro
-    if (isFieldRequired('phone') && formData.phone) {
-      if (!validateBrazilianPhone(formData.phone)) {
-        message = 'Telefone deve estar no formato: (XX) XXXXX-XXXX ou (XX) XXXX-XXXX';
-        isSuccess = false;
-        return;
-      }
-    }
+    // Phone validation - handled by Phone component formatting
 
     loading = true;
     message = '';
@@ -328,17 +296,9 @@
                 <label class="label" for="phone">
                   <span class="label-text font-semibold">Telefone *</span>
                 </label>
-                <input
-                  type="tel"
-                  id="phone"
-                  class="input input-bordered"
-                  class:input-disabled={loading}
+                <Phone
                   bind:value={formData.phone}
                   placeholder="(45) 98405-5504"
-                  required
-                  disabled={loading}
-                  on:input={formatPhoneInput}
-                  maxlength="15"
                 />
               </div>
             {/if}

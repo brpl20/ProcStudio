@@ -2,10 +2,10 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import Cpf from '../forms_commons/Cpf.svelte';
+  import Email from '../forms_commons/Email.svelte';
   import {
     validateCPFRequired,
     formatCPF,
-    validateEmailRequired,
     validatePasswordRequired,
     createPasswordConfirmationValidator,
     validateBirthDateRequired,
@@ -406,33 +406,22 @@
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
   <!-- Email -->
   <div class="form-control w-full">
-    <label for="email" class="label justify-start">
-      <span class="label-text font-medium">Email {isEmailRequired ? '*' : '(Opcional)'}</span>
-    </label>
-    <input
-      id="email"
-      type="email"
-      class="input input-bordered w-full {errors.email && touched.email && isEmailRequired
-        ? 'input-error'
-        : ''}"
+    <Email
       bind:value={formData.customer_attributes.email}
-      on:blur={() => handleBlur('email', formData.customer_attributes.email)}
+      id="email"
+      labelText="Email {isEmailRequired ? '*' : '(Opcional)'}"
+      required={isEmailRequired}
       disabled={isLoading || isEmailDisabled}
       placeholder="cliente@exemplo.com"
-      aria-required={isEmailRequired ? 'true' : 'false'}
-      aria-invalid={errors.email && touched.email && isEmailRequired ? 'true' : 'false'}
-      aria-describedby={errors.email && touched.email && isEmailRequired
-        ? 'email-error'
-        : undefined}
-      data-testid="customer-email-input"
+      errors={errors.email && touched.email && isEmailRequired ? errors.email : ''}
+      touched={touched.email}
+      testId="customer-email-input"
+      on:blur={() => handleBlur('email', formData.customer_attributes.email)}
     />
     {#if !isEmailRequired}
       <div class="text-sm text-gray-500 mt-1">
         Este email pode ser compartilhado com a conta do responsável
       </div>
-    {/if}
-    {#if errors.email && touched.email && isEmailRequired}
-      <div id="email-error" class="text-error text-sm mt-1">{errors.email}</div>
     {/if}
   </div>
 

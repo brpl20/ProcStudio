@@ -6,6 +6,7 @@
   import Address from '../forms_commons/Address.svelte';
   import Cep from '../forms_commons/Cep.svelte';
   import Phone from '../forms_commons/Phone.svelte';
+  import Email from '../forms_commons/Email.svelte';
   import { createCepAddressHandler } from '../../utils/cep-address-mapper';
 
   export let office = null;
@@ -768,12 +769,14 @@
 
           {#each formData.emails_attributes as email, index (index)}
             <div class="flex gap-2 mb-2">
-              <input
-                type="email"
-                class="input input-bordered flex-1"
-                bind:value={email.email}
-                placeholder="email@exemplo.com"
-              />
+              <div class="flex-1">
+                <Email
+                  bind:value={email.email}
+                  id="office-email-{index}"
+                  labelText=""
+                  placeholder="email@exemplo.com"
+                />
+              </div>
               {#if formData.emails_attributes.length > 1}
                 <button class="btn btn-error btn-sm" on:click={() => removeEmail(index)}>🗑️</button>
               {/if}
