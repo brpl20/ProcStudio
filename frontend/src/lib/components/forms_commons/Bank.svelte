@@ -44,9 +44,7 @@
 
   // Initialize bank search when bank name changes
   $: if (bankAccount.bank_name) {
-    const matchingBank = BRAZILIAN_BANKS.find(
-      (bank) => bank.label === bankAccount.bank_name
-    );
+    const matchingBank = BRAZILIAN_BANKS.find((bank) => bank.label === bankAccount.bank_name);
     if (matchingBank) {
       selectedBankCode = matchingBank.value;
       bankAccount.bank_number = matchingBank.value;
@@ -130,17 +128,23 @@
 
   // PIX helper functions
   function formatCpfForPix(cpf: string): string {
-    if (!cpf) return '';
+    if (!cpf) {
+      return '';
+    }
     return cpf.replace(/[^\d]/g, '');
   }
 
   function formatCnpjForPix(cnpj: string): string {
-    if (!cnpj) return '';
+    if (!cnpj) {
+      return '';
+    }
     return cnpj.replace(/[^\d]/g, '');
   }
 
   function formatPhoneForPix(phone: string): string {
-    if (!phone) return '';
+    if (!phone) {
+      return '';
+    }
     return phone.replace(/[^\d]/g, '');
   }
 
@@ -199,7 +203,8 @@
             {#each filteredBanks as bank, dropdownIndex}
               <button
                 type="button"
-                class="w-full text-left px-4 py-2 hover:bg-base-200 focus:bg-base-200 focus:outline-none {selectedDropdownIndex === dropdownIndex
+                class="w-full text-left px-4 py-2 hover:bg-base-200 focus:bg-base-200 focus:outline-none {selectedDropdownIndex ===
+                dropdownIndex
                   ? 'bg-primary/20'
                   : ''}"
                 on:click={() => selectBank(bank)}
@@ -232,7 +237,7 @@
         data-testid="{labelPrefix}-type-input-{index}"
       >
         <option value="">Selecione...</option>
-        {#each BANK_ACCOUNT_TYPES.filter(type => type.value === 'Corrente' || type.value === 'Poupança') as accountType}
+        {#each BANK_ACCOUNT_TYPES.filter((type) => type.value === 'Corrente' || type.value === 'Poupança') as accountType}
           <option value={accountType.value}>{accountType.label}</option>
         {/each}
       </select>
@@ -290,10 +295,49 @@
     {/if}
 
     <!-- PIX -->
-    <div class="form-control w-full">
+    <div class="form-control w-full {showPixHelpers ? 'col-span-full' : ''}">
       <label for="{labelPrefix}-pix-{index}" class="label pb-1">
         <span class="label-text">PIX</span>
       </label>
+
+      {#if showPixHelpers}
+        <!-- PIX Key Type Options -->
+        <div class="flex gap-2 mb-2">
+          <button
+            type="button"
+            class="btn btn-sm btn-outline"
+            disabled={!pixHelperData.email || disabled}
+            on:click={setPixEmail}
+            aria-label="Usar e-mail como chave PIX"
+            data-testid="pix-email-button-{index}"
+          >
+            E-mail
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-sm btn-outline"
+            disabled={!hasDocumentData || disabled}
+            on:click={setPixDocument}
+            aria-label="Usar {documentLabel} como chave PIX"
+            data-testid="pix-document-button-{index}"
+          >
+            {documentLabel}
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-sm btn-outline"
+            disabled={!pixHelperData.phone || disabled}
+            on:click={setPixPhone}
+            aria-label="Usar telefone como chave PIX"
+            data-testid="pix-phone-button-{index}"
+          >
+            Telefone
+          </button>
+        </div>
+      {/if}
+
       <input
         id="{labelPrefix}-pix-{index}"
         type="text"
@@ -303,17 +347,18 @@
         placeholder="Chave PIX"
         data-testid="{labelPrefix}-pix-input-{index}"
       />
+
+      {#if showPixHelpers}
+        <div class="text-sm text-gray-500 mt-2">
+          Escolha um dos botões acima para preencher automaticamente.
+        </div>
+      {/if}
     </div>
   </div>
 
   {#if showRemoveButton}
     <div class="flex justify-end mt-2">
-      <button 
-        type="button"
-        class="btn btn-error btn-sm" 
-        on:click={handleRemove}
-        {disabled}
-      >
+      <button type="button" class="btn btn-error btn-sm" on:click={handleRemove} {disabled}>
         🗑️ Remover
       </button>
     </div>

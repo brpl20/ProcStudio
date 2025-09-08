@@ -49,7 +49,7 @@
       {required ? '*' : ''}
     </span>
   </label>
-  
+
   <input
     {id}
     type="email"
@@ -64,7 +64,7 @@
     aria-describedby={hasError ? `${id}-error` : undefined}
     data-testid={testId}
   />
-  
+
   {#if hasError}
     <div id="{id}-error" class="text-error text-sm mt-1">
       {displayError}

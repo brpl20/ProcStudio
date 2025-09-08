@@ -14,8 +14,7 @@
 
   import { BRAZILIAN_STATES } from '../../constants/brazilian-states';
   import type { BrazilianState } from '../../constants/brazilian-states';
-  import { BRAZILIAN_BANKS, searchBanks } from '../../constants/brazilian-banks';
-  import type { BrazilianBank } from '../../constants/brazilian-banks';
+  import Bank from '../forms_commons/Bank.svelte';
   import type { CustomerFormData } from '../../schemas/customer-form';
   import {
     getCivilStatusLabel,
@@ -46,26 +45,6 @@
   // Brazilian states
   const states: BrazilianState[] = BRAZILIAN_STATES;
 
-  // Bank search state
-  let bankSearchTerm = '';
-  let showBankDropdown = false;
-  let selectedBankCode = '';
-  let filteredBanks: BrazilianBank[] = [];
-  let selectedDropdownIndex = -1;
-
-  // Check if Operação field should be shown (only for Caixa Econômica - code 104)
-  $: showOperationField = selectedBankCode === '104';
-
-  // Initialize bank search when bank name changes
-  $: if (formData.bank_accounts_attributes[0].bank_name) {
-    const matchingBank = BRAZILIAN_BANKS.find(
-      (bank) => bank.label === formData.bank_accounts_attributes[0].bank_name
-    );
-    if (matchingBank) {
-      selectedBankCode = matchingBank.value;
-    }
-  }
-
   // Event handlers
   function handleBlur(fieldName: string, value: any) {
     dispatch('fieldBlur', { field: fieldName, value });
@@ -75,77 +54,6 @@
     const input = event.target as HTMLInputElement;
     formData.birth = input.value;
     dispatch('birthDateChange', { value: formData.birth });
-  }
-
-  // Bank search handlers
-  function handleBankSearch(event: Event) {
-    const input = event.target as HTMLInputElement;
-    bankSearchTerm = input.value;
-    selectedDropdownIndex = -1; // Reset selection when searching
-
-    if (bankSearchTerm.length > 0) {
-      filteredBanks = searchBanks(bankSearchTerm).slice(0, 10); // Limit to 10 results
-      showBankDropdown = filteredBanks.length > 0;
-    } else {
-      showBankDropdown = false;
-      filteredBanks = [];
-    }
-  }
-
-  function selectBank(bank: BrazilianBank) {
-    formData.bank_accounts_attributes[0].bank_name = bank.label;
-    formData.bank_accounts_attributes[0].bank_number = bank.value;
-    selectedBankCode = bank.value;
-    bankSearchTerm = bank.label;
-    showBankDropdown = false;
-    selectedDropdownIndex = -1;
-
-    // Clear operation field if not Caixa Econômica
-    if (bank.value !== '104') {
-      formData.bank_accounts_attributes[0].operation = '';
-    }
-  }
-
-  function handleBankInputFocus() {
-    if (!bankSearchTerm && formData.bank_accounts_attributes[0].bank_name) {
-      bankSearchTerm = formData.bank_accounts_attributes[0].bank_name;
-    }
-  }
-
-  function handleBankInputBlur() {
-    // Delay hiding dropdown to allow click on dropdown items
-    setTimeout(() => {
-      showBankDropdown = false;
-      selectedDropdownIndex = -1;
-    }, 200);
-  }
-
-  function handleBankKeydown(event: KeyboardEvent) {
-    if (!showBankDropdown) {
-      return;
-    }
-
-    switch (event.key) {
-    case 'ArrowDown':
-      event.preventDefault();
-      selectedDropdownIndex = Math.min(selectedDropdownIndex + 1, filteredBanks.length - 1);
-      break;
-    case 'ArrowUp':
-      event.preventDefault();
-      selectedDropdownIndex = Math.max(selectedDropdownIndex - 1, -1);
-      break;
-    case 'Enter':
-      event.preventDefault();
-      if (selectedDropdownIndex >= 0 && selectedDropdownIndex < filteredBanks.length) {
-        selectBank(filteredBanks[selectedDropdownIndex]);
-      }
-      break;
-    case 'Escape':
-      event.preventDefault();
-      showBankDropdown = false;
-      selectedDropdownIndex = -1;
-      break;
-    }
   }
 </script>
 
@@ -605,183 +513,20 @@
 <!-- Bank Account Section -->
 <div class="divider" aria-label="Seção de dados bancários">Dados Bancários</div>
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-  <!-- Bank Name with Search -->
-  <div class="form-control w-full relative">
-    <label for="bank_name" class="label justify-start">
-      <span class="label-text font-medium">Banco</span>
-    </label>
-    <div class="relative">
-      <input
-        id="bank_name"
-        type="text"
-        class="input input-bordered w-full"
-        value={bankSearchTerm || formData.bank_accounts_attributes[0].bank_name}
-        on:input={handleBankSearch}
-        on:focus={handleBankInputFocus}
-        on:blur={handleBankInputBlur}
-        on:keydown={handleBankKeydown}
-        disabled={isLoading}
-        placeholder="Digite para buscar o banco..."
-        autocomplete="off"
-        data-testid="customer-bank-name-input"
-      />
-
-      {#if showBankDropdown}
-        <div
-          class="absolute z-10 w-full mt-1 bg-base-100 border border-base-300 rounded-lg shadow-lg max-h-60 overflow-y-auto"
-        >
-          {#each filteredBanks as bank, index}
-            <button
-              type="button"
-              class="w-full text-left px-4 py-2 hover:bg-base-200 focus:bg-base-200 focus:outline-none {selectedDropdownIndex ===
-              index
-                ? 'bg-primary/20'
-                : ''}"
-              on:click={() => selectBank(bank)}
-              on:mouseenter={() => (selectedDropdownIndex = index)}
-            >
-              <div class="font-medium">{bank.label}</div>
-              <div class="text-sm text-base-content/60">Código: {bank.value}</div>
-            </button>
-          {/each}
-        </div>
-      {/if}
-    </div>
-    {#if selectedBankCode}
-      <div class="text-sm text-base-content/60 mt-1">
-        Código do banco: {selectedBankCode}
-      </div>
-    {/if}
-  </div>
-
-  <!-- Account Type -->
-  <div class="form-control w-full">
-    <label for="type_account" class="label justify-start">
-      <span class="label-text font-medium">Tipo de Conta</span>
-    </label>
-    <select
-      id="type_account"
-      class="select select-bordered w-full"
-      bind:value={formData.bank_accounts_attributes[0].type_account}
-      disabled={isLoading}
-      data-testid="customer-account-type-input"
-    >
-      <option value="Corrente">Corrente</option>
-      <option value="Poupança">Poupança</option>
-    </select>
-  </div>
-
-  <!-- Agency -->
-  <div class="form-control w-full">
-    <label for="agency" class="label justify-start">
-      <span class="label-text font-medium">Agência</span>
-    </label>
-    <input
-      id="agency"
-      type="text"
-      class="input input-bordered w-full"
-      bind:value={formData.bank_accounts_attributes[0].agency}
-      disabled={isLoading}
-      placeholder="0000-0"
-      data-testid="customer-agency-input"
-    />
-  </div>
-
-  <!-- Account -->
-  <div class="form-control w-full">
-    <label for="account" class="label justify-start">
-      <span class="label-text font-medium">Conta</span>
-    </label>
-    <input
-      id="account"
-      type="text"
-      class="input input-bordered w-full"
-      bind:value={formData.bank_accounts_attributes[0].account}
-      disabled={isLoading}
-      placeholder="00000-0"
-      data-testid="customer-account-input"
-    />
-  </div>
-
-  <!-- Operation (Only for Caixa Econômica - code 104) -->
-  {#if showOperationField}
-    <div class="form-control w-full">
-      <label for="operation" class="label justify-start">
-        <span class="label-text font-medium">Operação</span>
-        <span class="label-text-alt text-info">(Caixa Econômica)</span>
-      </label>
-      <input
-        id="operation"
-        type="text"
-        class="input input-bordered w-full"
-        bind:value={formData.bank_accounts_attributes[0].operation}
-        disabled={isLoading}
-        placeholder="Ex: 001, 013"
-        data-testid="customer-operation-input"
-      />
-    </div>
-  {/if}
-
-  <!-- PIX with reactive options -->
-  <div class="form-control w-full">
-    <label for="pix" class="label justify-start">
-      <span class="label-text font-medium">Chave PIX</span>
-    </label>
-
-    <!-- PIX Key Type Options -->
-    <div class="flex gap-2 mb-2">
-      <button
-        type="button"
-        class="btn btn-sm btn-outline"
-        disabled={!formData.customer_attributes.email || isLoading}
-        on:click={() =>
-          (formData.bank_accounts_attributes[0].pix = formData.customer_attributes.email)}
-        aria-label="Usar e-mail como chave PIX"
-        data-testid="pix-email-button"
-      >
-        E-mail
-      </button>
-
-      <button
-        type="button"
-        class="btn btn-sm btn-outline"
-        disabled={!formData.cpf || isLoading}
-        on:click={() => (formData.bank_accounts_attributes[0].pix = formatCpfForPix(formData.cpf))}
-        aria-label="Usar CPF como chave PIX"
-        data-testid="pix-cpf-button"
-      >
-        CPF
-      </button>
-
-      <button
-        type="button"
-        class="btn btn-sm btn-outline"
-        disabled={!formData.phones_attributes[0].number || isLoading}
-        on:click={() =>
-          (formData.bank_accounts_attributes[0].pix = formatPhoneForPix(
-            formData.phones_attributes[0].number
-          ))}
-        aria-label="Usar telefone como chave PIX"
-        data-testid="pix-phone-button"
-      >
-        Telefone
-      </button>
-    </div>
-
-    <input
-      id="pix"
-      type="text"
-      class="input input-bordered w-full"
-      bind:value={formData.bank_accounts_attributes[0].pix}
-      disabled={isLoading}
-      data-testid="customer-pix-input"
-    />
-    <div class="text-sm text-gray-500 mt-2">
-      Escolha um dos botões acima para preencher automaticamente.
-    </div>
-  </div>
-</div>
+<Bank
+  bind:bankAccount={formData.bank_accounts_attributes[0]}
+  disabled={isLoading}
+  showPixHelpers={true}
+  pixDocumentType="cpf"
+  pixHelperData={{
+    email: formData.customer_attributes.email,
+    cpf: formData.cpf,
+    cnpj: '',
+    phone: formData.phones_attributes[0].number
+  }}
+  labelPrefix="customer-bank"
+  className="bg-transparent border-0 p-0 mb-0"
+/>
 
 <!-- Social Security Information Section -->
 <div class="divider" aria-label="Seção de informações previdenciárias">

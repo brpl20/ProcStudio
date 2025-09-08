@@ -91,6 +91,17 @@
   $: availableLawyers = $availableLawyersStore;
   $: selectedPartners = $selectedPartnersStore;
 
+  // Function to get available lawyers for a specific partner (reactive)
+  function getAvailableLawyersReactive(partnerIndex) {
+    return getAvailableLawyersForPartnerIndex(partnerIndex);
+  }
+
+  // Force reactivity when stores change
+  $: if ($selectedPartnersStore || $officeFormLawyersStore) {
+    // This will cause the dropdown to re-render when stores change
+    partners = [...partners];
+  }
+
   const societyOptions = [
     { value: 'individual', label: 'Individual' },
     { value: 'company', label: 'Sociedade' }
@@ -132,16 +143,10 @@
 
   // Partnership management functions
   function handlePartnerChange(index, field, value) {
-    // console.log('handlePartnerChange called:', { index, field, value });
-
     partners = partners.map((partner, i) => {
       if (i === index) {
         if (field === 'lawyer_id' && value && typeof value === 'object') {
-          // console.log('Setting lawyer for partner:', {
-          //   partnerId: value.id,
-          //   lawyerName: value.attributes
-          // });
-          // Update selected partners store
+          // Update selected partners store immediately
           selectedPartnersStore.updateAt(index, value.id);
           return {
             ...partner,
@@ -209,8 +214,8 @@
     ];
 
     // Update selected partners store
-    selectedPartnersStore.add(null, partners.length - 1);
-    // console.log('Added new partner, total partners:', partners.length);
+    const newSelections = partners.map((p) => p.lawyer_id || null);
+    selectedPartnersStore.setAll(newSelections);
   }
 
   function removePartner(index) {
@@ -218,10 +223,10 @@
       return;
     }
 
-    const lawyerId = partners[index]?.lawyer_id;
+    // Remove the partner from the array
     partners = partners.filter((_, i) => i !== index);
 
-    // Update selected partners store
+    // Update selected partners store with remaining selections
     const newSelections = partners.map((p) => p.lawyer_id || null);
     selectedPartnersStore.setAll(newSelections);
 
@@ -232,10 +237,6 @@
         ownership_percentage: 50
       }));
     }
-  }
-
-  function getAvailableLawyers(currentIndex) {
-    return getAvailableLawyersForPartnerIndex(currentIndex);
   }
 
   function getTotalPercentage() {
@@ -403,9 +404,16 @@
   }
 
   onMount(async () => {
-    // Load lawyers using the store
-    if (!lawyersState.initialized) {
+    try {
+      // Load lawyers using the store - always try to load to ensure fresh data
       await officeFormLawyersStore.loadLawyers();
+
+      // Wait a tick to ensure stores are updated
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      // Stores are now reactive and will update automatically
+    } catch (error) {
+      console.error('Error loading lawyers:', error);
     }
 
     if (office) {
@@ -489,6 +497,8 @@
         selectedPartnersStore.setAll(lawyerIds);
       }
     }
+
+    // Stores are reactive and will update automatically
   });
 </script>
 
@@ -807,6 +817,14 @@
               bind:bankAccount
               {index}
               showRemoveButton={formData.bank_accounts_attributes.length > 1}
+              showPixHelpers={true}
+              pixDocumentType="cnpj"
+              pixHelperData={{
+                email: formData.emails_attributes[0]?.email || '',
+                cpf: '',
+                cnpj: formData.cnpj,
+                phone: formData.phones_attributes[0]?.phone_number || ''
+              }}
               labelPrefix="office-bank"
               on:remove={() => removeBankAccount(index)}
             />
@@ -889,16 +907,14 @@
                     class="select select-bordered w-full"
                     value={partner.lawyer_id}
                     on:change={(e) => {
-                      // console.log('Lawyer selection changed:', e.target.value);
                       const selectedLawyer = officeFormLawyersUtils.findById(e.target.value);
-                      // console.log('Found lawyer:', selectedLawyer);
                       if (selectedLawyer) {
                         handlePartnerChange(index, 'lawyer_id', selectedLawyer);
                       }
                     }}
                   >
                     <option value="">Selecione o Advogado</option>
-                    {#each getAvailableLawyers(index) as lawyer}
+                    {#each getAvailableLawyersReactive(index) as lawyer}
                       <option value={lawyer.id}>
                         {officeFormLawyersUtils.getFullName(lawyer)}
                       </option>

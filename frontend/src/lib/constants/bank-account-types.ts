@@ -1,6 +1,6 @@
 /**
  * Bank Account Types Constants
- * 
+ *
  * Standard bank account types used across the system
  */
 
@@ -23,7 +23,7 @@ export const BANK_ACCOUNT_TYPES: BankAccountType[] = [
  * Get account type label by value
  */
 export function getAccountTypeLabel(value: string): string {
-  const accountType = BANK_ACCOUNT_TYPES.find(type => type.value === value);
+  const accountType = BANK_ACCOUNT_TYPES.find((type) => type.value === value);
   return accountType ? accountType.label : value;
 }
 
@@ -32,14 +32,14 @@ export function getAccountTypeLabel(value: string): string {
  */
 export function normalizeAccountType(value: string): string {
   const lowerValue = value.toLowerCase();
-  
+
   if (lowerValue === 'current' || lowerValue === 'corrente') {
     return 'Corrente';
   }
-  
+
   if (lowerValue === 'savings' || lowerValue === 'poupança' || lowerValue === 'poupanca') {
     return 'Poupança';
   }
-  
+
   return value;
 }

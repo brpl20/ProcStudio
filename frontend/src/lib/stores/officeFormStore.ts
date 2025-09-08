@@ -160,7 +160,7 @@ export function getAvailableLawyersForPartnerIndex(currentIndex) {
   const state = get(officeFormLawyersStore);
   const selected = get(selectedPartnersStore);
 
-  if (!state.lawyers) {
+  if (!state.lawyers || !Array.isArray(state.lawyers)) {
     return [];
   }
 
@@ -172,6 +172,25 @@ export function getAvailableLawyersForPartnerIndex(currentIndex) {
   const availableLawyers = state.lawyers.filter((lawyer) => !selectedIds.includes(lawyer.id));
 
   return availableLawyers;
+}
+
+// Reactive derived store for available lawyers for a specific partner index
+export function createAvailableLawyersForPartnerStore(partnerIndex) {
+  return derived(
+    [officeFormLawyersStore, selectedPartnersStore],
+    ([$lawyersStore, $selectedPartners]) => {
+      if (!$lawyersStore.lawyers || !Array.isArray($lawyersStore.lawyers)) {
+        return [];
+      }
+
+      // Get all selected IDs except for the current index
+      const selectedIds = $selectedPartners
+        .filter((_, index) => index !== partnerIndex)
+        .filter((id) => id && id !== '');
+
+      return $lawyersStore.lawyers.filter((lawyer) => !selectedIds.includes(lawyer.id));
+    }
+  );
 }
 
 // Utility functions for common operations
