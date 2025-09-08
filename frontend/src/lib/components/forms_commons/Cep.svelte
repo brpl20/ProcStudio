@@ -1,16 +1,17 @@
 <!-- CEP.svelte -->
 <script>
   import { createEventDispatcher } from 'svelte';
-  import { formatCEP } from '../../validation/cep-formatter';
-  import { validateCEPRequired, validateCEPWithAPI } from '../../validation/cep-validator';
+  import { CEPFormatter } from '../../validation/cep-formatter';
+  import { CEPValidator } from '../../validation/cep-validator';
+  import { cepService } from '../../api-external/services/cep-service';
 
   // Props with defaults
   export let value = '';
   export let errors = null;
   export let touched = false;
   export let disabled = false;
-  export let validateFn = validateCEPRequired; // Default to built-in validation
-  export let formatFn = formatCEP; // Default to built-in formatting
+  export let validateFn = CEPValidator.validateRequired; // Default to built-in validation
+  export let formatFn = CEPFormatter.format; // Default to built-in formatting
   export let id = 'cep'; // Allow customizing the ID
   export let required = true;
   export let labelText = 'CEP';
@@ -56,12 +57,14 @@
       if (!error && useAPIValidation && value) {
         isValidating = true;
         try {
-          const apiResult = await validateCEPWithAPI(value);
+          const apiResult = await cepService.validate(value);
 
           if (!apiResult.isValid) {
             errors = apiResult.message;
-          } else if (showAddressInfo && apiResult.data) {
-            addressInfo = apiResult.data;
+          } else if (apiResult.data) {
+            if (showAddressInfo) {
+              addressInfo = apiResult.data;
+            }
             dispatch('address-found', {
               id,
               value,

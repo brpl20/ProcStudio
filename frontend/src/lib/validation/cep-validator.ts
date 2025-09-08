@@ -4,6 +4,7 @@
  */
 import type { ValidationRule } from './types';
 import { CEPFormatter } from './cep-formatter';
+import { cepService } from '../api-external/services/cep-service';
 
 export class CEPValidator {
   private static readonly ERROR_MESSAGES = {

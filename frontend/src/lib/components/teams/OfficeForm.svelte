@@ -4,6 +4,8 @@
   import api from '../../api';
   import Cnpj from '../forms_commons/Cnpj.svelte';
   import Address from '../forms_commons/Address.svelte';
+  import Cep from '../forms_commons/Cep.svelte';
+  import { createCepAddressHandler } from '../../utils/cep-address-mapper';
 
   export let office = null;
 
@@ -296,6 +298,16 @@
     }
   }
 
+  // Create CEP address handler using utility
+  const handleAddressFound = createCepAddressHandler((mappedAddress) => {
+    if (formData.addresses_attributes.length > 0) {
+      formData.addresses_attributes[0] = {
+        ...formData.addresses_attributes[0],
+        ...mappedAddress
+      };
+    }
+  });
+
   function addBankAccount() {
     formData.bank_accounts_attributes = [
       ...formData.bank_accounts_attributes,
@@ -475,28 +487,28 @@
         addresses_attributes:
           office.addresses?.length > 0
             ? office.addresses.map((a) => ({
-              street: a.street || '',
-              number: a.number || '',
-              complement: a.complement || '',
-              neighborhood: a.neighborhood || '',
-              city: a.city || '',
-              state: a.state || '',
-              zip_code: a.zip_code || '',
-              address_type: a.address_type || 'main',
-              id: a.id
-            }))
+                street: a.street || '',
+                number: a.number || '',
+                complement: a.complement || '',
+                neighborhood: a.neighborhood || '',
+                city: a.city || '',
+                state: a.state || '',
+                zip_code: a.zip_code || '',
+                address_type: a.address_type || 'main',
+                id: a.id
+              }))
             : [
-              {
-                street: '',
-                number: '',
-                complement: '',
-                neighborhood: '',
-                city: '',
-                state: '',
-                zip_code: '',
-                address_type: 'main'
-              }
-            ],
+                {
+                  street: '',
+                  number: '',
+                  complement: '',
+                  neighborhood: '',
+                  city: '',
+                  state: '',
+                  zip_code: '',
+                  address_type: 'main'
+                }
+              ],
         emails_attributes:
           office.emails?.length > 0
             ? office.emails.map((e) => ({ email: e.email, id: e.id }))
@@ -504,24 +516,24 @@
         bank_accounts_attributes:
           office.bank_accounts?.length > 0
             ? office.bank_accounts.map((b) => ({
-              bank_name: b.bank_name || '',
-              type_account: b.type_account || '',
-              agency: b.agency || '',
-              account: b.account || '',
-              operation: b.operation || '',
-              pix: b.pix || '',
-              id: b.id
-            }))
+                bank_name: b.bank_name || '',
+                type_account: b.type_account || '',
+                agency: b.agency || '',
+                account: b.account || '',
+                operation: b.operation || '',
+                pix: b.pix || '',
+                id: b.id
+              }))
             : [
-              {
-                bank_name: '',
-                type_account: '',
-                agency: '',
-                account: '',
-                operation: '',
-                pix: ''
-              }
-            ]
+                {
+                  bank_name: '',
+                  type_account: '',
+                  agency: '',
+                  account: '',
+                  operation: '',
+                  pix: ''
+                }
+              ]
       };
 
       if (office.logo_url) {
@@ -630,7 +642,11 @@
               <label class="label pb-1">
                 <span class="label-text">Data de Fundação</span>
               </label>
-              <input type="date" class="input input-bordered w-full" bind:value={formData.foundation} />
+              <input
+                type="date"
+                class="input input-bordered w-full"
+                bind:value={formData.foundation}
+              />
             </div>
 
             <div class="form-control flex flex-col">
@@ -786,24 +802,31 @@
         </div>
       </div>
 
-      <!-- Addresses -->
-      <div class="card bg-base-100 shadow">
-        <div class="card-body">
-          <div class="flex justify-between items-center mb-4">
-            <h3 class="card-title text-lg font-semibold">Endereços</h3>
-            <button class="btn btn-outline btn-sm" on:click={addAddress} type="button">➕ Adicionar</button>
-          </div>
+      <!-- Cep -->
+      <h3 class="card-title text-lg font-semibold">Cep</h3>
+      <Cep 
+        required 
+        bind:value={formData.zip_code} 
+        id="office-zip_code" 
+        labelText={'CEP'}
+        useAPIValidation={true}
+        showAddressInfo={false}
+        on:address-found={handleAddressFound}
+      />
 
-          {#each formData.addresses_attributes as address, idx (idx)}
-            <Address
-              bind:address={formData.addresses_attributes[idx]}
-              index={idx}
-              showRemoveButton={formData.addresses_attributes.length > 1}
-              on:remove={() => removeAddress(idx)}
-            />
-          {/each}
-        </div>
-      </div>
+      <!-- Addresses -->
+      <h3 class="card-title text-lg font-semibold">Endereços</h3>
+      <button class="btn btn-outline btn-sm" on:click={addAddress} type="button"
+        >➕ Adicionar</button
+      >
+      {#each formData.addresses_attributes as address, idx (idx)}
+        <Address
+          bind:address={formData.addresses_attributes[idx]}
+          index={idx}
+          showRemoveButton={formData.addresses_attributes.length > 1}
+          on:remove={() => removeAddress(idx)}
+        />
+      {/each}
 
       <!-- Bank Accounts -->
       <div class="card bg-base-100 shadow">
