@@ -69,7 +69,7 @@ export class LawAreaService {
     const response = await this.getLawArea(parentAreaId);
     if (response.included) {
       return response.included.filter(
-        (item: any) => item.type === 'law_area' && item.attributes.is_sub_area
+        (item: LawAreaData) => item.type === 'law_area' && item.attributes.is_sub_area
       ) as LawAreaData[];
     }
     return [];

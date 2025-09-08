@@ -79,7 +79,9 @@ export class UserService {
   /**
    * Create a new user profile
    */
-  async createUserProfile(profileData: any): Promise<{ data: UserProfileData }> {
+  async createUserProfile(
+    profileData: Partial<UserProfileData>
+  ): Promise<{ data: UserProfileData }> {
     return this.http.post<{ data: UserProfileData }>(API_ENDPOINTS.USER_PROFILES, profileData);
   }
 

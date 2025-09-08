@@ -29,7 +29,7 @@ export interface TeamData {
 
 export interface TeamResponse {
   data: TeamData;
-  included?: any[];
+  included?: TeamData[];
 }
 
 export interface TeamsListResponse {
@@ -41,7 +41,7 @@ export interface TeamsListResponse {
 
 export interface MyTeamResponse {
   data: TeamData;
-  included?: any[];
+  included?: TeamData[];
 }
 
 export interface UpdateTeamRequest {
@@ -58,8 +58,8 @@ export interface UpdateTeamResponse {
 }
 
 export interface TeamMembersResponse {
-  data: any[];
-  included?: any[];
+  data: TeamData[];
+  included?: TeamData[];
   meta?: {
     total_count: number;
   };

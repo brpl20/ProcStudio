@@ -1,20 +1,24 @@
 <script lang="ts">
   import { authStore } from '../stores/authStore.js';
-  import { userProfileStore, currentUserProfile } from '../stores/userProfileStore.ts';
+  import { userProfileStore, currentUserProfile } from '../stores/userProfileStore.js';
   import { router } from '../stores/routerStore.js';
   import Icon from '../icons.svelte';
   import { WebsiteName } from '../config.js';
 
-  export let showMenuButton = true;
+  interface Props {
+    showMenuButton?: boolean;
+  }
 
-  $: isAuthenticated = $authStore.isAuthenticated;
-  $: currentUser = $authStore.user;
-  $: userProfile = $currentUserProfile;
-  $: isLoadingProfile = $userProfileStore.isLoading;
+  const { showMenuButton = true }: Props = $props();
+
+  const isAuthenticated = $derived($authStore.isAuthenticated);
+  const currentUser = $derived($authStore.user);
+  const userProfile = $derived($currentUserProfile);
+  const isLoadingProfile = $derived($userProfileStore.isLoading);
 
   // Computed user display properties
-  $: userDisplayName = getUserDisplayName(userProfile, currentUser, isLoadingProfile);
-  $: userInitials = getUserInitials(userDisplayName);
+  const userDisplayName = $derived(getUserDisplayName(userProfile, currentUser, isLoadingProfile));
+  const userInitials = $derived(getUserInitials(userDisplayName));
 
   function getUserDisplayName(profile: any, user: any, loading: boolean): string {
     if (loading) {
@@ -63,7 +67,10 @@
     <a
       href="/dashboard"
       class="btn btn-ghost normal-case text-xl"
-      on:click|preventDefault={() => router.navigate('/dashboard')}
+      onclick={(e) => {
+        e.preventDefault();
+        router.navigate('/dashboard');
+      }}
     >
       {WebsiteName}
     </a>
@@ -76,28 +83,33 @@
   <div class="navbar-end">
     {#if isAuthenticated}
       <div class="dropdown dropdown-end">
-        <label tabindex="0" class="btn btn-ghost btn-circle avatar">
+        <div role="button" class="btn btn-ghost btn-circle avatar">
           <div class="avatar placeholder">
             <div class="bg-primary text-primary-content rounded-full w-10">
               <span class="text-xl">{userInitials}</span>
             </div>
           </div>
-        </label>
+        </div>
         <ul
-          tabindex="0"
           class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
         >
           <li class="menu-title">
             <span>{userDisplayName}</span>
           </li>
           <li>
-            <a href="/settings" on:click|preventDefault={() => router.navigate('/settings')}>
+            <a
+              href="/settings"
+              onclick={(e) => {
+                e.preventDefault();
+                router.navigate('/settings');
+              }}
+            >
               <Icon name="settings" />
               Configurações
             </a>
           </li>
           <li>
-            <button on:click={handleLogout}>
+            <button onclick={handleLogout}>
               <Icon name="logout" />
               Sair
             </button>

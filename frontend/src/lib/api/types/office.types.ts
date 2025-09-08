@@ -3,6 +3,8 @@
  * Types for office related API operations
  */
 
+import type { Work } from './work.types';
+
 // Enums for Office
 export type Society = 'individual' | 'company';
 export type AccountingType = 'simple' | 'real_profit' | 'presumed_profit';
@@ -60,7 +62,7 @@ export interface AttachmentMetadata {
   document_date?: string;
   document_type: 'logo' | 'social_contract';
   description?: string;
-  custom_metadata?: Record<string, any>;
+  custom_metadata?: Record<string, unknown>;
   uploaded_by_id?: number;
   created_at?: string;
   updated_at?: string;
@@ -79,7 +81,7 @@ export interface SocialContract {
   document_date?: string;
   description?: string;
   uploaded_by_id?: number;
-  custom_metadata?: Record<string, any>;
+  custom_metadata?: Record<string, unknown>;
 }
 
 export interface Lawyer {
@@ -121,7 +123,7 @@ export interface Office {
   emails?: Email[];
   bank_accounts?: BankAccount[];
   user_offices?: UserOffice[];
-  works?: any[];
+  works?: Work[];
 
   // Attachments
   logo_url?: string;
@@ -261,7 +263,7 @@ export interface JsonApiOfficeData {
     phones?: Phone[];
     emails?: Email[];
     bank_accounts?: BankAccount[];
-    works?: any[];
+    works?: Work[];
     accounting_type?: AccountingType;
     oab_id?: string;
     oab_inscricao?: string;
@@ -312,20 +314,20 @@ export interface UploadLogoRequest {
   logo: File;
   document_date?: string;
   description?: string;
-  custom_metadata?: Record<string, any>;
+  custom_metadata?: Record<string, unknown>;
 }
 
 export interface UploadContractsRequest {
   contracts: File[];
   document_date?: string;
   description?: string;
-  custom_metadata?: Record<string, any>;
+  custom_metadata?: Record<string, unknown>;
   // Support for per-file metadata
   contract_metadata?: {
     [filename: string]: {
       document_date?: string;
       description?: string;
-      custom_metadata?: Record<string, any>;
+      custom_metadata?: Record<string, unknown>;
     };
   };
 }
@@ -334,13 +336,13 @@ export interface UpdateAttachmentMetadataRequest {
   blob_id: number;
   document_date?: string;
   description?: string;
-  custom_metadata?: Record<string, any>;
+  custom_metadata?: Record<string, unknown>;
 }
 
 // Attachment-specific response types
 export interface AttachmentOperationResponse {
   success: boolean;
   message: string;
-  data?: any;
+  data?: Record<string, unknown>;
   errors?: string[];
 }

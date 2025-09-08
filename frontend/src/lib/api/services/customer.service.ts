@@ -44,7 +44,7 @@ export class CustomerService {
    */
   private transformJsonApiCustomer(
     jsonApiData: JsonApiCustomerData,
-    includedData?: any[]
+    includedData?: JsonApiCustomerData[]
   ): Customer {
     // Find the associated profile_customer in included data
     let profileCustomer = undefined;
@@ -79,7 +79,7 @@ export class CustomerService {
   /**
    * Transform included profile_customer data
    */
-  private transformProfileCustomer(includedProfileCustomer: any): ProfileCustomer {
+  private transformProfileCustomer(includedProfileCustomer: JsonApiCustomerData): ProfileCustomer {
     return {
       id: includedProfileCustomer.id,
       type: includedProfileCustomer.type,
@@ -123,8 +123,8 @@ export class CustomerService {
       // Transform JSON:API data to our Customer type
       const customers = Array.isArray(response.data)
         ? response.data.map((jsonApiData) =>
-          this.transformJsonApiCustomer(jsonApiData, response.included)
-        )
+            this.transformJsonApiCustomer(jsonApiData, response.included)
+          )
         : [];
 
       return {
@@ -135,11 +135,11 @@ export class CustomerService {
         },
         message: response.message || 'Clientes carregados com sucesso'
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
         data: [],
-        message: error?.message || 'Erro ao carregar clientes'
+        message: error instanceof Error ? error.message : 'Erro ao carregar clientes'
       };
     }
   }
@@ -174,12 +174,11 @@ export class CustomerService {
         data: customer,
         message: response.message || 'Cliente carregado com sucesso'
       };
-    } catch (error: any) {
-      console.error('getCustomer error:', error);
+    } catch (error: unknown) {
       return {
         success: false,
         data: {} as Customer,
-        message: error?.message || 'Erro ao carregar cliente'
+        message: error instanceof Error ? error.message : 'Erro ao carregar cliente'
       };
     }
   }
@@ -201,9 +200,7 @@ export class CustomerService {
         data: customer,
         message: response.message || 'Cliente criado com sucesso'
       };
-    } catch (error: any) {
-      console.error('Customer creation error:', error);
-
+    } catch (error: unknown) {
       // Handle API validation errors (422)
       if (error?.status === 422 && error?.data?.errors) {
         const apiErrors = error.data.errors;
@@ -211,7 +208,7 @@ export class CustomerService {
 
         // Parse field-specific errors if they exist
         if (Array.isArray(apiErrors)) {
-          apiErrors.forEach((err: any) => {
+          apiErrors.forEach((err: { detail: string }) => {
             if (err.field) {
               fieldErrors[err.field] = err.message;
             }
@@ -221,7 +218,8 @@ export class CustomerService {
         return {
           success: false,
           data: {} as Customer,
-          message: error?.message || error?.data?.message || 'Erro de validação',
+          message:
+            error instanceof Error ? error.message : error?.data?.message || 'Erro de validação',
           errors: fieldErrors
         };
       }
@@ -230,7 +228,8 @@ export class CustomerService {
       return {
         success: false,
         data: {} as Customer,
-        message: error?.message || error?.data?.message || 'Erro ao criar cliente'
+        message:
+          error instanceof Error ? error.message : error?.data?.message || 'Erro ao criar cliente'
       };
     }
   }
@@ -255,9 +254,7 @@ export class CustomerService {
         data: customer,
         message: response.message || 'Cliente atualizado com sucesso'
       };
-    } catch (error: any) {
-      console.error('Customer update error:', error);
-
+    } catch (error: unknown) {
       // Handle API validation errors (422)
       if (error?.status === 422 && error?.data?.errors) {
         const apiErrors = error.data.errors;
@@ -265,7 +262,7 @@ export class CustomerService {
 
         // Parse field-specific errors if they exist
         if (Array.isArray(apiErrors)) {
-          apiErrors.forEach((err: any) => {
+          apiErrors.forEach((err: { detail: string }) => {
             if (err.field) {
               fieldErrors[err.field] = err.message;
             }
@@ -275,7 +272,8 @@ export class CustomerService {
         return {
           success: false,
           data: {} as Customer,
-          message: error?.message || error?.data?.message || 'Erro de validação',
+          message:
+            error instanceof Error ? error.message : error?.data?.message || 'Erro de validação',
           errors: fieldErrors
         };
       }
@@ -284,7 +282,10 @@ export class CustomerService {
       return {
         success: false,
         data: {} as Customer,
-        message: error?.message || error?.data?.message || 'Erro ao atualizar cliente'
+        message:
+          error instanceof Error
+            ? error.message
+            : error?.data?.message || 'Erro ao atualizar cliente'
       };
     }
   }
@@ -299,10 +300,10 @@ export class CustomerService {
         success: true,
         message: 'Customer deleted successfully'
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        message: error?.message || 'Failed to delete customer'
+        message: error instanceof Error ? error.message : 'Failed to delete customer'
       };
     }
   }
@@ -317,10 +318,10 @@ export class CustomerService {
         success: true,
         message: 'Confirmation email sent successfully'
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        message: error?.message || 'Failed to send confirmation email'
+        message: error instanceof Error ? error.message : 'Failed to send confirmation email'
       };
     }
   }
@@ -357,12 +358,11 @@ export class CustomerService {
         meta: response.meta,
         message: response.message || 'Profile customers retrieved successfully'
       };
-    } catch (error: any) {
-      console.error('getAllProfileCustomer error:', error);
+    } catch (error: unknown) {
       return {
         success: false,
         data: [],
-        message: error?.message || 'Failed to retrieve profile customers'
+        message: error instanceof Error ? error.message : 'Failed to retrieve profile customers'
       };
     }
   }
@@ -389,11 +389,11 @@ export class CustomerService {
         meta: response.meta,
         message: 'Profile customers retrieved successfully'
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
         data: [],
-        message: error?.message || 'Failed to retrieve profile customers'
+        message: error instanceof Error ? error.message : 'Failed to retrieve profile customers'
       };
     }
   }
@@ -418,8 +418,8 @@ export class CustomerService {
       // Transform JSON:API data to our Customer type
       const customers = Array.isArray(response.data)
         ? response.data.map((jsonApiData) =>
-          this.transformJsonApiCustomer(jsonApiData, response.included)
-        )
+            this.transformJsonApiCustomer(jsonApiData, response.included)
+          )
         : [];
 
       return {
@@ -428,12 +428,11 @@ export class CustomerService {
         meta: response.meta,
         message: response.message || 'Customers retrieved successfully'
       };
-    } catch (error: any) {
-      console.error('getAllCustomers error:', error);
+    } catch (error: unknown) {
       return {
         success: false,
         data: [],
-        message: error?.message || 'Failed to retrieve customers'
+        message: error instanceof Error ? error.message : 'Failed to retrieve customers'
       };
     }
   }
@@ -452,11 +451,11 @@ export class CustomerService {
         data: response.data || response,
         message: 'Profile customer retrieved successfully'
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
         data: {} as ProfileCustomer,
-        message: error?.message || 'Failed to retrieve profile customer'
+        message: error instanceof Error ? error.message : 'Failed to retrieve profile customer'
       };
     }
   }
@@ -480,11 +479,11 @@ export class CustomerService {
         data: response.data || response,
         message: 'Profile customer created successfully'
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
         data: {} as ProfileCustomer,
-        message: error?.message || 'Failed to create profile customer'
+        message: error instanceof Error ? error.message : 'Failed to create profile customer'
       };
     }
   }
@@ -508,11 +507,11 @@ export class CustomerService {
         data: response.data || response,
         message: 'Profile customer updated successfully'
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
         data: {} as ProfileCustomer,
-        message: error?.message || 'Failed to update profile customer'
+        message: error instanceof Error ? error.message : 'Failed to update profile customer'
       };
     }
   }
@@ -527,10 +526,10 @@ export class CustomerService {
         success: true,
         message: 'Profile customer inactivated successfully'
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        message: error?.message || 'Failed to inactivate profile customer'
+        message: error instanceof Error ? error.message : 'Failed to inactivate profile customer'
       };
     }
   }
@@ -551,10 +550,10 @@ export class CustomerService {
         success: true,
         message: 'Profile customer deleted successfully'
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        message: error?.message || 'Failed to delete profile customer'
+        message: error instanceof Error ? error.message : 'Failed to delete profile customer'
       };
     }
   }
@@ -570,11 +569,11 @@ export class CustomerService {
         data: response.data || response,
         message: 'Profile customer restored successfully'
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
         data: {} as ProfileCustomer,
-        message: error?.message || 'Failed to restore profile customer'
+        message: error instanceof Error ? error.message : 'Failed to restore profile customer'
       };
     }
   }
@@ -598,8 +597,7 @@ export class CustomerService {
       }
 
       return null;
-    } catch (error: any) {
-      console.error('Customer login failed:', error);
+    } catch {
       return null;
     }
   }
@@ -617,8 +615,7 @@ export class CustomerService {
       localStorage.removeItem('customerToken');
       localStorage.removeItem('customerName');
       return true;
-    } catch (error: any) {
-      console.error('Customer logout failed:', error);
+    } catch {
       localStorage.removeItem('customerToken');
       localStorage.removeItem('customerName');
       return false;
@@ -633,7 +630,7 @@ export class CustomerService {
     representor_id: number; // The person who represents
     relationship_type: string;
     active?: boolean;
-  }): Promise<{ success: boolean; data?: any; message: string }> {
+  }): Promise<{ success: boolean; data?: Record<string, unknown>; message: string }> {
     try {
       const response = await this.httpClient.post('/represents', {
         represent: {
@@ -646,11 +643,10 @@ export class CustomerService {
         data: response.data || response,
         message: 'Relacionamento criado com sucesso'
       };
-    } catch (error: any) {
-      console.error('Failed to create represent relationship:', error);
+    } catch (error: unknown) {
       return {
         success: false,
-        message: error?.message || 'Erro ao criar relacionamento'
+        message: error instanceof Error ? error.message : 'Erro ao criar relacionamento'
       };
     }
   }

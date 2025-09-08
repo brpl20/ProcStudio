@@ -53,11 +53,11 @@ export class WorkService {
         meta: response.meta,
         message: 'Works retrieved successfully'
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
         data: [],
-        message: error?.message || 'Failed to retrieve works'
+        message: error instanceof Error ? error.message : 'Failed to retrieve works'
       };
     }
   }
@@ -73,11 +73,11 @@ export class WorkService {
         data: response.data || response,
         message: 'Work retrieved successfully'
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
         data: {} as Work,
-        message: error?.message || 'Failed to retrieve work'
+        message: error instanceof Error ? error.message : 'Failed to retrieve work'
       };
     }
   }
@@ -93,11 +93,11 @@ export class WorkService {
         data: response.data || response,
         message: 'Work created successfully'
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
         data: {} as Work,
-        message: error?.message || 'Failed to create work'
+        message: error instanceof Error ? error.message : 'Failed to create work'
       };
     }
   }
@@ -121,11 +121,11 @@ export class WorkService {
         data: response.data || response,
         message: 'Work updated successfully'
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
         data: {} as Work,
-        message: error?.message || 'Failed to update work'
+        message: error instanceof Error ? error.message : 'Failed to update work'
       };
     }
   }
@@ -141,10 +141,10 @@ export class WorkService {
         success: true,
         message: 'Work deleted successfully'
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        message: error?.message || 'Failed to delete work'
+        message: error instanceof Error ? error.message : 'Failed to delete work'
       };
     }
   }
@@ -160,11 +160,11 @@ export class WorkService {
         data: response.data || response,
         message: 'Work restored successfully'
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
         data: {} as Work,
-        message: error?.message || 'Failed to restore work'
+        message: error instanceof Error ? error.message : 'Failed to restore work'
       };
     }
   }
@@ -184,10 +184,10 @@ export class WorkService {
         success: true,
         message: response?.message || 'Documents converted successfully'
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        message: error?.message || 'Failed to convert documents'
+        message: error instanceof Error ? error.message : 'Failed to convert documents'
       };
     }
   }

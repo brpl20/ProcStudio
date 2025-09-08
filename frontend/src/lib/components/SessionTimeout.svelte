@@ -51,7 +51,10 @@
   function handleTimeout() {
     showWarning = false;
     authStore.logout();
-    sessionStorage.setItem('authError', 'Sua sessão expirou. Por favor, faça login novamente.');
+    window.sessionStorage.setItem(
+      'authError',
+      'Sua sessão expirou. Por favor, faça login novamente.'
+    );
     router.navigate('/login');
   }
 

@@ -39,7 +39,7 @@ export interface ProfileCustomer {
   status?: CustomerStatus;
 
   attributes: {
-    id?: any;
+    id?: string | number;
     name?: string;
     customer_type: string;
     status?: number;
@@ -51,7 +51,7 @@ export interface ProfileCustomer {
     gender?: string;
     cnpj?: string;
     civil_status?: string;
-    nationality?: any;
+    nationality?: Nationality;
     capacity?: string;
     profession?: string;
     company?: string;
@@ -60,28 +60,28 @@ export interface ProfileCustomer {
     mother_name?: string;
     default_phone?: string;
     default_email?: string;
-    data?: any;
-    representor?: any;
+    data?: Record<string, unknown>;
+    representor?: Record<string, unknown>;
     issue_documents?: boolean;
     access_email?: string;
-    cep?: any;
-    street?: any;
-    state?: any;
-    city?: any;
-    number?: any;
-    description?: any;
-    neighborhood?: any;
-    represent_attributes?: any;
+    cep?: string;
+    street?: string;
+    state?: string;
+    city?: string;
+    number?: string;
+    description?: string;
+    neighborhood?: string;
+    represent_attributes?: Record<string, unknown>;
     profile_customer_id?: number;
-    represent?: any;
+    represent?: Record<string, unknown>;
     deleted?: boolean;
   };
 
   relationships?: {
-    addresses?: any[];
-    bank_accounts?: any[];
-    emails?: any[];
-    phones?: any[];
+    addresses?: Address[];
+    bank_accounts?: BankAccount[];
+    emails?: EmailContact[];
+    phones?: PhoneContact[];
   };
 
   // Timestamps
@@ -266,14 +266,14 @@ export interface JsonApiCustomerResponse {
   success?: boolean;
   message?: string;
   data: JsonApiCustomerData;
-  included?: any[];
+  included?: JsonApiCustomerData[];
 }
 
 export interface JsonApiCustomersListResponse {
   success?: boolean;
   message?: string;
   data: JsonApiCustomerData[];
-  included?: any[];
+  included?: JsonApiCustomerData[];
   meta?: {
     total_count: number;
   };
@@ -288,4 +288,39 @@ export interface CustomerLoginRequest {
 export interface CustomerLoginResponse {
   token: string;
   full_name: string;
+}
+
+// Support types for relationships
+export interface Address {
+  id?: number;
+  cep?: string;
+  street?: string;
+  number?: string;
+  complement?: string;
+  neighborhood?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+}
+
+export interface BankAccount {
+  id?: number;
+  bank_code?: string;
+  bank_name?: string;
+  agency?: string;
+  account?: string;
+  account_type?: string;
+}
+
+export interface EmailContact {
+  id?: number;
+  email: string;
+  is_primary?: boolean;
+}
+
+export interface PhoneContact {
+  id?: number;
+  phone: string;
+  type?: string;
+  is_primary?: boolean;
 }

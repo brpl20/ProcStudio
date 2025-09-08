@@ -111,10 +111,10 @@ export class OfficeService {
         data: offices,
         meta: response.meta
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        message: error?.message || 'Erro ao carregar escritórios',
+        message: error instanceof Error ? error.message : 'Erro ao carregar escritórios',
         data: []
       };
     }
@@ -149,11 +149,11 @@ export class OfficeService {
         message: response.message,
         data: office
       };
-    } catch (error: any) {
-      console.error('getOffice error:', error);
+    } catch (error: unknown) {
+      // console.error('getOffice error:', error);
       return {
         success: false,
-        message: error?.message || 'Erro ao carregar escritório',
+        message: error instanceof Error ? error.message : 'Erro ao carregar escritório',
         data: {} as Office
       };
     }
@@ -165,7 +165,7 @@ export class OfficeService {
   async createOffice(officeData: CreateOfficeRequest): Promise<CreateOfficeResponse> {
     try {
       // Handle file upload for logo if needed
-      const payload: any = {
+      const payload: { office: CreateOfficeRequest } = {
         office: officeData
       };
 
@@ -177,7 +177,7 @@ export class OfficeService {
         // Add other fields to FormData
         Object.keys(officeData).forEach((key) => {
           if (key !== 'logo') {
-            const value = (officeData as any)[key];
+            const value = officeData[key as keyof CreateOfficeRequest];
             if (value !== undefined && value !== null) {
               if (typeof value === 'object') {
                 formData.append(`office[${key}]`, JSON.stringify(value));
@@ -212,8 +212,8 @@ export class OfficeService {
         message: response.message,
         data: office
       };
-    } catch (error: any) {
-      console.error('Office creation error:', error);
+    } catch (error: unknown) {
+      // console.error('Office creation error:', error);
 
       // Handle API validation errors
       if (error?.status === 422 && error?.data?.errors) {
@@ -227,7 +227,10 @@ export class OfficeService {
 
       return {
         success: false,
-        message: error?.message || error?.data?.message || 'Erro ao criar escritório',
+        message:
+          error instanceof Error
+            ? error.message
+            : error?.data?.message || 'Erro ao criar escritório',
         data: {} as Office
       };
     }
@@ -246,7 +249,7 @@ export class OfficeService {
         // Add other fields to FormData
         Object.keys(officeData).forEach((key) => {
           if (key !== 'logo') {
-            const value = (officeData as any)[key];
+            const value = officeData[key as keyof UpdateOfficeRequest];
             if (value !== undefined && value !== null) {
               if (typeof value === 'object') {
                 formData.append(`office[${key}]`, JSON.stringify(value));
@@ -281,8 +284,8 @@ export class OfficeService {
         message: response.message,
         data: office
       };
-    } catch (error: any) {
-      console.error('Office update error:', error);
+    } catch (error: unknown) {
+      // console.error('Office update error:', error);
 
       // Handle API validation errors
       if (error?.status === 422 && error?.data?.errors) {
@@ -296,7 +299,10 @@ export class OfficeService {
 
       return {
         success: false,
-        message: error?.message || error?.data?.message || 'Erro ao atualizar escritório',
+        message:
+          error instanceof Error
+            ? error.message
+            : error?.data?.message || 'Erro ao atualizar escritório',
         data: {} as Office
       };
     }
@@ -315,10 +321,10 @@ export class OfficeService {
         message: response.message,
         data: response.data
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        message: error?.message || 'Erro ao remover escritório'
+        message: error instanceof Error ? error.message : 'Erro ao remover escritório'
       };
     }
   }
@@ -340,10 +346,10 @@ export class OfficeService {
         message: response.message,
         data: office
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        message: error?.message || 'Erro ao restaurar escritório',
+        message: error instanceof Error ? error.message : 'Erro ao restaurar escritório',
         data: {} as Office,
         errors: error?.data?.errors
       };
@@ -355,9 +361,8 @@ export class OfficeService {
    */
   async getOfficesWithLawyers(): Promise<OfficesWithLawyersResponse> {
     try {
-      const response: JsonApiOfficesWithLawyersResponse = await this.httpClient.get(
-        '/offices/with_lawyers'
-      );
+      const response: JsonApiOfficesWithLawyersResponse =
+        await this.httpClient.get('/offices/with_lawyers');
 
       // Transform JSON:API data
       const offices = Array.isArray(response.data)
@@ -369,11 +374,12 @@ export class OfficeService {
         message: response.message,
         data: offices
       };
-    } catch (error: any) {
-      console.error('getOfficesWithLawyers error:', error);
+    } catch (error: unknown) {
+      // console.error('getOfficesWithLawyers error:', error);
       return {
         success: false,
-        message: error?.message || 'Erro ao carregar escritórios com advogados',
+        message:
+          error instanceof Error ? error.message : 'Erro ao carregar escritórios com advogados',
         data: []
       };
     }
@@ -396,11 +402,11 @@ export class OfficeService {
         message: response.message || 'Logo atualizado com sucesso',
         data: this.transformJsonApiOffice(response.data)
       };
-    } catch (error: any) {
-      console.error('Logo upload error:', error);
+    } catch (error: unknown) {
+      // console.error('Logo upload error:', error);
       return {
         success: false,
-        message: error?.message || 'Erro ao fazer upload do logo',
+        message: error instanceof Error ? error.message : 'Erro ao fazer upload do logo',
         data: {} as Office
       };
     }
@@ -428,11 +434,12 @@ export class OfficeService {
         message: response.message || 'Contratos sociais atualizados com sucesso',
         data: this.transformJsonApiOffice(response.data)
       };
-    } catch (error: any) {
-      console.error('Social contracts upload error:', error);
+    } catch (error: unknown) {
+      // console.error('Social contracts upload error:', error);
       return {
         success: false,
-        message: error?.message || 'Erro ao fazer upload dos contratos sociais',
+        message:
+          error instanceof Error ? error.message : 'Erro ao fazer upload dos contratos sociais',
         data: {} as Office
       };
     }
@@ -464,11 +471,11 @@ export class OfficeService {
       });
 
       return response as AttachmentOperationResponse;
-    } catch (error: any) {
-      console.error('Logo upload with metadata error:', error);
+    } catch (error: unknown) {
+      // console.error('Logo upload with metadata error:', error);
       return {
         success: false,
-        message: error?.message || 'Erro ao fazer upload do logo',
+        message: error instanceof Error ? error.message : 'Erro ao fazer upload do logo',
         errors: error?.data?.errors
       };
     }
@@ -510,21 +517,28 @@ export class OfficeService {
             formData.append(`description_${filename}`, metadata.description);
           }
           if (metadata.custom_metadata) {
-            formData.append(`custom_metadata_${filename}`, JSON.stringify(metadata.custom_metadata));
+            formData.append(
+              `custom_metadata_${filename}`,
+              JSON.stringify(metadata.custom_metadata)
+            );
           }
         });
       }
 
-      const response = await this.httpClient.post(`/offices/${officeId}/upload_contracts`, formData, {
-        headers: {} // Let browser set Content-Type with boundary
-      });
+      const response = await this.httpClient.post(
+        `/offices/${officeId}/upload_contracts`,
+        formData,
+        {
+          headers: {} // Let browser set Content-Type with boundary
+        }
+      );
 
       return response as AttachmentOperationResponse;
-    } catch (error: any) {
-      console.error('Contracts upload with metadata error:', error);
+    } catch (error: unknown) {
+      // console.error('Contracts upload with metadata error:', error);
       return {
         success: false,
-        message: error?.message || 'Erro ao fazer upload dos contratos',
+        message: error instanceof Error ? error.message : 'Erro ao fazer upload dos contratos',
         errors: error?.data?.errors
       };
     }
@@ -543,11 +557,11 @@ export class OfficeService {
       );
 
       return response as AttachmentOperationResponse;
-    } catch (error: any) {
-      console.error('Remove attachment error:', error);
+    } catch (error: unknown) {
+      // console.error('Remove attachment error:', error);
       return {
         success: false,
-        message: error?.message || 'Erro ao remover anexo',
+        message: error instanceof Error ? error.message : 'Erro ao remover anexo',
         errors: error?.data?.errors
       };
     }
@@ -567,11 +581,11 @@ export class OfficeService {
       );
 
       return response as AttachmentOperationResponse;
-    } catch (error: any) {
-      console.error('Update attachment metadata error:', error);
+    } catch (error: unknown) {
+      // console.error('Update attachment metadata error:', error);
       return {
         success: false,
-        message: error?.message || 'Erro ao atualizar metadados do anexo',
+        message: error instanceof Error ? error.message : 'Erro ao atualizar metadados do anexo',
         errors: error?.data?.errors
       };
     }

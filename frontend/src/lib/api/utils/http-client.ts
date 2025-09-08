@@ -8,8 +8,13 @@ import { ApiLogger } from './logger';
 
 export interface RequestOptions {
   headers?: Record<string, string>;
-  body?: any;
+  body?: unknown;
   timeout?: number;
+}
+
+export interface ApiErrorResponse {
+  message?: string;
+  error?: string;
 }
 
 export class HttpClient {
@@ -49,19 +54,21 @@ export class HttpClient {
     const url = `${this.baseUrl}${endpoint}`;
     const { headers = {}, body } = options;
 
+    const requestHeaders = {
+      ...this.defaultHeaders,
+      ...headers
+    };
+
     const requestOptions: RequestInit = {
       method,
-      headers: {
-        ...this.defaultHeaders,
-        ...headers
-      }
+      headers: requestHeaders
     };
 
     if (body && method !== 'GET') {
       // Check if body is FormData
       if (body instanceof FormData) {
         // Don't set Content-Type for FormData, let browser set it with boundary
-        delete requestOptions.headers!['Content-Type'];
+        delete requestHeaders['Content-Type'];
         requestOptions.body = body;
       } else {
         requestOptions.body = JSON.stringify(body);
@@ -84,7 +91,7 @@ export class HttpClient {
    * Handle API response
    */
   private async handleResponse<T>(response: Response, method: string): Promise<T> {
-    let data: any;
+    let data: unknown;
 
     // Handle 304 Not Modified - return empty data as success
     if (response.status === 304) {
@@ -108,11 +115,13 @@ export class HttpClient {
         statusText: response.statusText,
         data,
         message:
-          data.message || data.error || `HTTP Error ${response.status}: ${response.statusText}`
+          (data as ApiErrorResponse)?.message ||
+          (data as ApiErrorResponse)?.error ||
+          `HTTP Error ${response.status}: ${response.statusText}`
       };
     }
 
-    return data;
+    return data as T;
   }
 
   // Convenience methods
@@ -120,15 +129,15 @@ export class HttpClient {
     return this.request<T>('GET', endpoint, options);
   }
 
-  async post<T>(endpoint: string, body?: any, options?: RequestOptions): Promise<T> {
+  async post<T>(endpoint: string, body?: unknown, options?: RequestOptions): Promise<T> {
     return this.request<T>('POST', endpoint, { ...options, body });
   }
 
-  async put<T>(endpoint: string, body?: any, options?: RequestOptions): Promise<T> {
+  async put<T>(endpoint: string, body?: unknown, options?: RequestOptions): Promise<T> {
     return this.request<T>('PUT', endpoint, { ...options, body });
   }
 
-  async patch<T>(endpoint: string, body?: any, options?: RequestOptions): Promise<T> {
+  async patch<T>(endpoint: string, body?: unknown, options?: RequestOptions): Promise<T> {
     return this.request<T>('PATCH', endpoint, { ...options, body });
   }
 

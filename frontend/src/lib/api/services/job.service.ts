@@ -33,11 +33,11 @@ export class JobService {
         data: response.data || response,
         message: 'Jobs retrieved successfully'
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
         data: [],
-        message: error?.message || 'Failed to retrieve jobs'
+        message: error instanceof Error ? error.message : 'Failed to retrieve jobs'
       };
     }
   }
@@ -53,11 +53,11 @@ export class JobService {
         data: response.data || response,
         message: 'Job retrieved successfully'
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
         data: {} as Job,
-        message: error?.message || 'Failed to retrieve job'
+        message: error instanceof Error ? error.message : 'Failed to retrieve job'
       };
     }
   }
@@ -73,11 +73,11 @@ export class JobService {
         data: response.data || response,
         message: 'Job created successfully'
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
         data: {} as Job,
-        message: error?.message || 'Failed to create job'
+        message: error instanceof Error ? error.message : 'Failed to create job'
       };
     }
   }
@@ -93,11 +93,11 @@ export class JobService {
         data: response.data || response,
         message: 'Job updated successfully'
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
         data: {} as Job,
-        message: error?.message || 'Failed to update job'
+        message: error instanceof Error ? error.message : 'Failed to update job'
       };
     }
   }
@@ -112,10 +112,10 @@ export class JobService {
         success: true,
         message: 'Job deleted successfully'
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        message: error?.message || 'Failed to delete job'
+        message: error instanceof Error ? error.message : 'Failed to delete job'
       };
     }
   }

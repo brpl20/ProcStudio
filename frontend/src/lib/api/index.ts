@@ -86,7 +86,7 @@ export class API {
   /**
    * Test API connection
    */
-  async testConnection(): Promise<any> {
+  async testConnection(): Promise<{ status: string; message?: string }> {
     return this.httpClient.get('/test');
   }
 

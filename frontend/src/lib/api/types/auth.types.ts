@@ -14,7 +14,7 @@ export interface RegisterRequest {
 export interface RegisterResponse {
   success: boolean;
   message?: string;
-  data?: any;
+  data?: { id: number; email: string; created_at: string; updated_at: string };
 }
 
 export interface LoginRequest {
@@ -53,7 +53,7 @@ export interface ProfileCompletionData {
 export interface ProfileCompletionResponse {
   success: boolean;
   message?: string;
-  data?: any;
+  data?: { id: number; email: string; created_at: string; updated_at: string };
 }
 
 // NOVOS TYPES PARA CRIAÇÃO DE USUÁRIO POR OUTRO USUÁRIO
