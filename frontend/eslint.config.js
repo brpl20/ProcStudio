@@ -91,6 +91,6 @@ export default [
     }
   },
   {
-    ignores: ['node_modules/', 'dist/', '.svelte-kit/', 'build/', '*.min.js']
+    ignores: ['node_modules/', 'dist/', '.svelte-kit/', 'build/', '*.min.js', 'vite.config.js']
   }
 ];

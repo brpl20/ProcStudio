@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import { onMount } from 'svelte';
   import api from '../../api';
@@ -24,50 +24,30 @@
   } from '../../constants/formOptions';
   import { validateProLaboreAmount } from '../../validation';
   import FormSection from '../ui/FormSection.svelte';
+  import {
+    createDefaultOfficeFormData,
+    createDefaultPartner,
+    transformFromOffice,
+    validateOfficeForm,
+    calculateTotalPercentage,
+    isOverPercentage,
+    type OfficeFormData,
+    type PartnerFormData
+  } from '../../schemas/office-form';
+  import {
+    processOfficeFormData,
+    submitOfficeForm,
+    validatePartners,
+    adjustPartnerPercentages
+  } from '../../utils/office-form-processor';
 
   const office = $state(null);
 
   const dispatch = createEventDispatcher();
   const isEdit = $derived(!!office);
 
-  let formData = $state({
-    name: '',
-    cnpj: '',
-    oab_id: '',
-    oab_status: '',
-    oab_inscricao: '',
-    oab_link: '',
-    society: 'individual',
-    foundation: '',
-    site: '',
-    accounting_type: 'simple',
-    quote_value: '',
-    number_of_quotes: '',
-    phones_attributes: [{ phone_number: '' }],
-    addresses_attributes: [
-      {
-        street: '',
-        number: '',
-        complement: '',
-        neighborhood: '',
-        city: '',
-        state: '',
-        zip_code: '',
-        address_type: 'main'
-      }
-    ],
-    emails_attributes: [{ email: '' }],
-    bank_accounts_attributes: [
-      {
-        bank_name: '',
-        type_account: '',
-        agency: '',
-        account: '',
-        operation: '',
-        pix: ''
-      }
-    ]
-  });
+  // Use typed form data from schema
+  let formData = $state<OfficeFormData>(createDefaultOfficeFormData());
 
   let logoFile = $state(null);
   let contractFiles = $state([]);
@@ -76,22 +56,13 @@
   let error = $state(null);
   let success = $state(null);
 
-  // Partnership management - now managed by stores
-  let partners = $state([
-    {
-      lawyer_id: '',
-      lawyer_name: '',
-      partnership_type: '',
-      ownership_percentage: 100,
-      is_managing_partner: false,
-      pro_labore_amount: 0
-    }
-  ]);
-  let profitDistribution = $state('proportional');
+  // Partnership management - using typed data
+  let partners = $state<PartnerFormData[]>([createDefaultPartner(true)]);
+  let profitDistribution = $state<'proportional' | 'disproportional'>('proportional');
   let createSocialContract = $state(false);
   let partnersWithProLabore = $state(true);
   const { minimumWage, inssCeiling } = getCurrentInssConstants();
-  let proLaboreErrors = $state({});
+  let proLaboreErrors = $state<Record<number, string>>({});
 
   // Subscribe to stores
   const lawyersState = $derived($officeFormLawyersStore);
@@ -144,7 +115,7 @@
   }
 
   // Partnership management functions
-  function handlePartnerChange(index, field, value) {
+  function handlePartnerChange(index: number, field: keyof PartnerFormData, value: any) {
     if (field === 'lawyer_id' && value && typeof value === 'object') {
       // Create a new partners array to trigger reactivity
       const newPartners = [...partners];
@@ -156,22 +127,7 @@
       partners = newPartners;
     } else if (field === 'ownership_percentage') {
       const newPercentage = Math.max(0, Math.min(100, Number(value) || 0));
-
-      // Special logic for 2 partners - adjust other partner automatically
-      if (partners.length === 2) {
-        const otherIndex = index === 0 ? 1 : 0;
-        const newPartners = [...partners];
-        newPartners[index] = { ...newPartners[index], ownership_percentage: newPercentage };
-        newPartners[otherIndex] = {
-          ...newPartners[otherIndex],
-          ownership_percentage: 100 - newPercentage
-        };
-        partners = newPartners;
-      } else {
-        const newPartners = [...partners];
-        newPartners[index] = { ...newPartners[index], ownership_percentage: newPercentage };
-        partners = newPartners;
-      }
+      partners = adjustPartnerPercentages(partners, index, newPercentage);
     } else if (field === 'pro_labore_amount') {
       const amount = Number(value) || 0;
       const error = validateProLaboreAmount(amount);
@@ -205,17 +161,9 @@
     }
 
     // Add new partner
-    partners = [
-      ...partners,
-      {
-        lawyer_id: '',
-        lawyer_name: '',
-        partnership_type: '',
-        ownership_percentage: partners.length === 1 ? 50 : 0,
-        is_managing_partner: false,
-        pro_labore_amount: 0
-      }
-    ];
+    const newPartner = createDefaultPartner();
+    newPartner.ownership_percentage = partners.length === 1 ? 50 : 0;
+    partners = [...partners, newPartner];
   }
 
   function removePartner(index) {
@@ -236,11 +184,11 @@
   }
 
   function getTotalPercentage() {
-    return partners.reduce((total, partner) => total + (partner.ownership_percentage || 0), 0);
+    return calculateTotalPercentage(partners);
   }
 
-  function isOverPercentage() {
-    return getTotalPercentage() > 100;
+  function checkIsOverPercentage() {
+    return isOverPercentage(partners);
   }
 
   // Generic add/remove functions
@@ -303,57 +251,33 @@
       error = null;
       success = null;
 
-      // Prepare the data
-      const payload = {
-        ...formData,
-        quote_value: formData.quote_value ? parseFloat(formData.quote_value) : undefined,
-        number_of_quotes: formData.number_of_quotes
-          ? parseInt(formData.number_of_quotes)
-          : undefined,
-        logo: logoFile,
-        // Partnership data
-        user_offices_attributes: partners
-          .filter((p) => p.lawyer_id && p.partnership_type)
-          .map((p) => ({
-            user_id: p.lawyer_id,
-            partnership_type: p.partnership_type,
-            partnership_percentage: p.ownership_percentage?.toString(),
-            pro_labore_amount: p.pro_labore_amount,
-            is_managing_partner: p.is_managing_partner || false,
-            _destroy: false
-          })),
-        // Additional partnership metadata
-        profit_distribution: profitDistribution,
-        create_social_contract: createSocialContract,
-        partners_with_pro_labore: partnersWithProLabore
-      };
-
-      // Filter out empty values
-      payload.phones_attributes = payload.phones_attributes.filter((p) => p.phone_number.trim());
-      payload.emails_attributes = payload.emails_attributes.filter((e) => e.email.trim());
-      payload.addresses_attributes = payload.addresses_attributes.filter((a) => a.street.trim());
-      payload.bank_accounts_attributes = payload.bank_accounts_attributes.filter((b) =>
-        b.bank_name.trim()
-      );
-
-      let response;
-      if (isEdit) {
-        response = await api.offices.updateOffice(office.id, payload);
-      } else {
-        response = await api.offices.createOffice(payload);
+      // Validate form
+      const validationErrors = validateOfficeForm(formData, partners);
+      if (validationErrors.length > 0) {
+        error = validationErrors.join(', ');
+        return;
       }
 
-      if (response.success) {
-        // Upload contracts if any
-        if (contractFiles.length > 0 && response.data?.id) {
-          try {
-            await api.offices.uploadSocialContracts(response.data.id, contractFiles);
-          } catch (contractError) {
-            // console.warn('Error uploading contracts:', contractError);
-            // Don't fail the whole operation, just warn
-          }
-        }
+      // Validate partners
+      const partnerValidation = validatePartners(partners);
+      if (!partnerValidation.isValid) {
+        error = partnerValidation.errors.join(', ');
+        return;
+      }
 
+      // Submit form using the processor
+      const response = await submitOfficeForm(
+        formData,
+        partners,
+        profitDistribution,
+        createSocialContract,
+        partnersWithProLabore,
+        logoFile,
+        contractFiles,
+        isEdit ? office.id : undefined
+      );
+
+      if (response.success) {
         success = response.message || `Escritório ${isEdit ? 'atualizado' : 'criado'} com sucesso!`;
         setTimeout(() => {
           dispatch('success');
@@ -361,8 +285,8 @@
       } else {
         error = response.message || 'Erro ao salvar escritório';
       }
-    } catch (err) {
-      // console.error('Form submit error:', err);
+    } catch (err: any) {
+      console.error('Form submit error:', err);
       error = err.message || 'Erro ao salvar escritório';
     } finally {
       loading = false;
@@ -383,75 +307,8 @@
     }
 
     if (office) {
-      // Populate form with existing data
-      formData = {
-        name: office.name || '',
-        cnpj: office.cnpj || '',
-        oab_id: office.oab_id || '',
-        oab_status: office.oab_status || '',
-        oab_inscricao: office.oab_inscricao || '',
-        oab_link: office.oab_link || '',
-        society: office.society || 'individual',
-        foundation: office.foundation || '',
-        site: office.site || '',
-        accounting_type: office.accounting_type || 'simple',
-        quote_value: office.quote_value?.toString() || '',
-        number_of_quotes: office.number_of_quotes?.toString() || '',
-        phones_attributes:
-          office.phones?.length > 0
-            ? office.phones.map((p) => ({ phone_number: p.phone_number, id: p.id }))
-            : [{ phone_number: '' }],
-        addresses_attributes:
-          office.addresses?.length > 0
-            ? office.addresses.map((a) => ({
-                street: a.street || '',
-                number: a.number || '',
-                complement: a.complement || '',
-                neighborhood: a.neighborhood || '',
-                city: a.city || '',
-                state: a.state || '',
-                zip_code: a.zip_code || '',
-                address_type: a.address_type || 'main',
-                id: a.id
-              }))
-            : [
-                {
-                  street: '',
-                  number: '',
-                  complement: '',
-                  neighborhood: '',
-                  city: '',
-                  state: '',
-                  zip_code: '',
-                  address_type: 'main'
-                }
-              ],
-        emails_attributes:
-          office.emails?.length > 0
-            ? office.emails.map((e) => ({ email: e.email, id: e.id }))
-            : [{ email: '' }],
-        bank_accounts_attributes:
-          office.bank_accounts?.length > 0
-            ? office.bank_accounts.map((b) => ({
-                bank_name: b.bank_name || '',
-                type_account: b.type_account || '',
-                agency: b.agency || '',
-                account: b.account || '',
-                operation: b.operation || '',
-                pix: b.pix || '',
-                id: b.id
-              }))
-            : [
-                {
-                  bank_name: '',
-                  type_account: '',
-                  agency: '',
-                  account: '',
-                  operation: '',
-                  pix: ''
-                }
-              ]
-      };
+      // Populate form with existing data using transformer
+      formData = transformFromOffice(office);
 
       if (office.logo_url) {
         logoPreview = office.logo_url;
@@ -978,7 +835,7 @@
           {/if}
 
           <!-- Percentage warning -->
-          {#if isOverPercentage()}
+          {#if checkIsOverPercentage()}
             <div class="alert alert-warning">
               <svg
                 xmlns="http://www.w3.org/2000/svg"

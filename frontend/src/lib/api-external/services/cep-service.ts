@@ -11,10 +11,7 @@ class CEPService {
   /**
    * Validate CEP with debouncing
    */
-  validateWithDebounce(
-    cep: string,
-    callback: (result: CEPValidationResult) => void
-  ): void {
+  validateWithDebounce(cep: string, callback: (result: CEPValidationResult) => void): void {
     // Clear existing timer
     if (this.debounceTimer) {
       clearTimeout(this.debounceTimer);
@@ -35,7 +32,7 @@ class CEPService {
 
     // Check cache first
     if (this.cache.has(cleanedCEP)) {
-      return this.cache.get(cleanedCEP)!;
+      return this.cache.get(cleanedCEP) as CEPValidationResult;
     }
 
     if (cleanedCEP.length !== 8) {
@@ -71,7 +68,6 @@ class CEPService {
       }
 
       return result;
-
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
         return {
@@ -80,7 +76,6 @@ class CEPService {
         };
       }
 
-      console.error('CEP API error:', error);
       return {
         isValid: false,
         message: 'Erro de conexão'

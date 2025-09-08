@@ -65,7 +65,6 @@
         isSuccess = false;
       }
     } catch (error: any) {
-      console.error('Registration error:', error);
       const errorMessage =
         error?.message || error?.data?.message || 'Erro no registro. Tente novamente.';
       message = errorMessage;

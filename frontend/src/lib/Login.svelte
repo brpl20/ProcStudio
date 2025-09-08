@@ -36,7 +36,6 @@
         isSuccess = false;
       }
     } catch (error: any) {
-      console.error('Login error:', error);
       message = error?.data?.message || error?.message || 'Erro no login. Tente novamente.';
       isSuccess = false;
     } finally {
