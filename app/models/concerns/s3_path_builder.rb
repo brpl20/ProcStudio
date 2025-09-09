@@ -3,7 +3,12 @@
 module S3PathBuilder
   extend ActiveSupport::Concern
 
-  included do
+  # S3 path constants
+  S3_OFFICES_PATH = 'offices'
+  S3_LOGOS_PATH = 'logos'
+  S3_CONTRACTS_PATH = 'social-contracts'
+
+  included do # rubocop:disable Metrics/BlockLength
     # Get the S3 prefix for the current environment and team
     def s3_prefix
       "#{Rails.env}/team-#{team_id}"
@@ -28,14 +33,14 @@ module S3PathBuilder
     # Build S3 key for office logo
     def build_logo_s3_key(extension)
       timestamp = generate_timestamp
-      "#{s3_prefix}/offices/#{id}/logos/logo-#{timestamp}.#{extension}"
+      "#{s3_prefix}/#{S3_OFFICES_PATH}/#{id}/#{S3_LOGOS_PATH}/logo-#{timestamp}.#{extension}"
     end
 
     # Build S3 key for social contract
     def build_social_contract_s3_key(extension)
       timestamp = generate_timestamp
       hash = generate_hash
-      "#{s3_prefix}/offices/#{id}/social-contracts/contract-#{timestamp}-#{hash}.#{extension}"
+      "#{s3_prefix}/#{S3_OFFICES_PATH}/#{id}/#{S3_CONTRACTS_PATH}/contract-#{timestamp}-#{hash}.#{extension}"
     end
 
     # Extract relative path from full S3 key

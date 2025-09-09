@@ -114,7 +114,7 @@ class JobSerializer
       capacity: object.profile_customer.capacity,
       profession: object.profile_customer.profession,
       company: object.profile_customer.company,
-      birth: object.profile_customer.birth.to_json,
+      birth: object.profile_customer.birth&.to_json,
       mother_name: object.profile_customer.mother_name,
       number_benefit: object.profile_customer.number_benefit,
       status: object.profile_customer.status,

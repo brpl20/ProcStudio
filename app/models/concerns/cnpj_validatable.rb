@@ -58,31 +58,29 @@ module CnpjValidatable
 
     digits = cnpj.chars.map(&:to_i)
 
-    # First check digit calculation
-    sum = 0
-    weights = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
-
-    12.times do |i|
-      sum += digits[i] * weights[i]
-    end
-
-    remainder = sum % 11
-    first_check = remainder < 2 ? 0 : 11 - remainder
+    # Validate first check digit
+    first_check = calculate_check_digit(digits[0..11], first_check_weights)
     return false if digits[12] != first_check
 
-    # Second check digit calculation
-    sum = 0
-    weights = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
-
-    13.times do |i|
-      sum += digits[i] * weights[i]
-    end
-
-    remainder = sum % 11
-    second_check = remainder < 2 ? 0 : 11 - remainder
+    # Validate second check digit
+    second_check = calculate_check_digit(digits[0..12], second_check_weights)
     return false if digits[13] != second_check
 
     true
+  end
+
+  def calculate_check_digit(digits, weights)
+    sum = digits.each_with_index.sum { |digit, index| digit * weights[index] }
+    remainder = sum % 11
+    remainder < 2 ? 0 : 11 - remainder
+  end
+
+  def first_check_weights
+    [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
+  end
+
+  def second_check_weights
+    [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
   end
 
   # Class methods

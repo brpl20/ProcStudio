@@ -2,7 +2,7 @@
 
 module Api
   module V1
-    class OfficesController < BackofficeController
+    class OfficesController < BackofficeController # rubocop:disable Metrics/ClassLength
       before_action :retrieve_office, only: [:show, :update]
       before_action :retrieve_deleted_office, only: [:restore]
       before_action :perform_authorization, except: [:with_lawyers]
@@ -62,12 +62,7 @@ module Api
             data: serialized[:data]
           }, status: :created
         else
-          error_messages = @office.errors.full_messages
-          render json: {
-            success: false,
-            message: error_messages.first,
-            errors: error_messages
-          }, status: :unprocessable_entity
+          render_error_response(@office)
         end
       rescue StandardError => e
         Rails.logger.error "Office creation failed: #{e.message}"
@@ -93,12 +88,7 @@ module Api
             data: serialized[:data]
           }, status: :ok
         else
-          error_messages = @office.errors.full_messages
-          render json: {
-            success: false,
-            message: error_messages.first,
-            errors: error_messages
-          }, status: :unprocessable_entity
+          render_error_response(@office)
         end
       end
 
@@ -153,12 +143,7 @@ module Api
             data: serialized[:data]
           }, status: :ok
         else
-          error_messages = @office.errors.full_messages
-          render json: {
-            success: false,
-            message: error_messages.first,
-            errors: error_messages
-          }, status: :unprocessable_entity
+          render_error_response(@office)
         end
       end
 
@@ -213,42 +198,29 @@ module Api
       def upload_contracts
         retrieve_office
 
-        contracts = params[:contracts] || []
-        uploaded_contracts = []
+        service = OfficeContractUploadService.new(@office, current_user)
 
-        contracts.each do |contract|
-          # Validate file type (PDF and DOCX)
-          unless contract.content_type.in?(['application/pdf',
-                                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'])
-            return render json: {
-              success: false,
-              message: "Formato de arquivo inválido para #{contract.original_filename}. Use PDF ou DOCX"
-            }, status: :unprocessable_entity
-          end
+        if service.upload_contracts(params[:contracts], params)
+          serialized = OfficeSerializer.new(
+            @office,
+            { params: { action: 'show' } }
+          ).serializable_hash
 
-          metadata_params = {
-            document_date: params["document_date_#{contract.original_filename}"] || params[:document_date],
-            description: params["description_#{contract.original_filename}"] || params[:description],
-            custom_metadata: params["custom_metadata_#{contract.original_filename}"] || params[:custom_metadata],
-            uploaded_by_id: current_user.id
-          }
-
-          @office.upload_social_contract(contract, metadata_params)
-          uploaded_contracts << contract.original_filename
+          render json: {
+            success: true,
+            message: "#{service.uploaded_count} contrato(s) adicionado(s) com sucesso",
+            data: serialized[:data]
+          }, status: :ok
+        else
+          render json: {
+            success: false,
+            message: service.errors.first || 'Erro ao fazer upload dos contratos',
+            errors: service.errors
+          }, status: :unprocessable_entity
         end
-
-        serialized = OfficeSerializer.new(
-          @office,
-          { params: { action: 'show' } }
-        ).serializable_hash
-
-        render json: {
-          success: true,
-          message: "#{uploaded_contracts.count} contrato(s) adicionado(s) com sucesso",
-          data: serialized[:data]
-        }, status: :ok
       rescue StandardError => e
         Rails.logger.error "Contract upload failed: #{e.message}"
+        Rails.logger.error e.backtrace.first(10).join("\n") if e.backtrace
         render json: {
           success: false,
           message: 'Erro ao fazer upload dos contratos',
@@ -272,13 +244,15 @@ module Api
           message: 'Anexo removido com sucesso',
           data: { id: params[:attachment_id] }
         }, status: :ok
-      rescue ActiveRecord::RecordNotFound
+      rescue ActiveRecord::RecordNotFound => e
+        Rails.logger.error "Attachment not found: #{e.message}"
         render json: {
           success: false,
           message: 'Anexo não encontrado'
         }, status: :not_found
       rescue StandardError => e
         Rails.logger.error "Attachment removal failed: #{e.message}"
+        Rails.logger.error e.backtrace.first(10).join("\n") if e.backtrace
         render json: {
           success: false,
           message: 'Erro ao remover anexo',
@@ -312,15 +286,29 @@ module Api
             }
           }, status: :ok
         else
-          render json: {
-            success: false,
-            message: 'Erro ao atualizar metadados',
-            errors: metadata.errors.full_messages
-          }, status: :unprocessable_entity
+          render_error_response(metadata)
         end
       end
 
       private
+
+      def render_error_response(object, status = :unprocessable_entity)
+        error_messages = object.errors.full_messages
+        render json: {
+          success: false,
+          message: error_messages.first || 'An error occurred',
+          errors: error_messages
+        }, status: status
+      end
+
+      def render_success_response(message, data = nil, status = :ok)
+        response = {
+          success: true,
+          message: message
+        }
+        response[:data] = data if data
+        render json: response, status: status
+      end
 
       def retrieve_office
         @office = OfficeFilter.retrieve_office(params[:id], current_team)
