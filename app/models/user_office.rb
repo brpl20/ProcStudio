@@ -55,7 +55,11 @@ class UserOffice < ApplicationRecord
   validate :entry_date_after_foundation, if: -> { office&.foundation.present? && entry_date.present? }
   validate :user_in_same_team_as_office
 
-  accepts_nested_attributes_for :compensations, allow_destroy: true, reject_if: proc { |attrs| attrs.all? { |_, v| v.blank? } }
+  accepts_nested_attributes_for :compensations, allow_destroy: true, reject_if: proc { |attrs|
+    attrs.all? do |_, v|
+      v.blank?
+    end
+  }
 
   private
 

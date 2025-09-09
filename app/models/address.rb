@@ -31,38 +31,39 @@
 class Address < ApplicationRecord
   # Soft delete support
   acts_as_paranoid if defined?(Paranoia)
-  
+
   # Polymorphic association
   belongs_to :addressable, polymorphic: true
-  
+
   # Enums for address types
   enum :address_type, {
     main: 'main',
-    secondary: 'secondary', 
+    secondary: 'secondary',
     billing: 'billing',
     correspondence: 'correspondence'
   }, default: 'main'
-  
+
   # Validations
   validates :zip_code, :street, :city, :state, presence: true
-  validates :zip_code, format: { 
-    with: /\A\d{5}-?\d{3}\z/, 
-    message: "Invalid CEP format (use: 12345-678)" 
+  validates :zip_code, format: {
+    with: /\A\d{5}-?\d{3}\z/,
+    message: 'Invalid CEP format (use: 12345-678)'
   }
-  validates :state, inclusion: { 
-    in: %w[AC AL AP AM BA CE DF ES GO MA MT MS MG PA PB PR PE PI RJ RN RS RO RR SC SP SE TO],
-    message: "Invalid Brazilian state" 
+  validates :state, inclusion: {
+    in: ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI',
+         'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'],
+    message: 'Invalid Brazilian state'
   }
-  
+
   # Normalize CEP before saving
   before_save :normalize_zip_code
-  
+
   # Scopes
   scope :by_state, ->(state) { where(state: state.upcase) }
   scope :by_city, ->(city) { where('LOWER(city) = ?', city.downcase) }
   scope :main_addresses, -> { where(address_type: 'main') }
   scope :billing_addresses, -> { where(address_type: 'billing') }
-  
+
   # Instance methods
   def full_address
     parts = [
@@ -71,31 +72,32 @@ class Address < ApplicationRecord
       neighborhood,
       "#{city}/#{state}",
       formatted_zip_code
-    ].compact.reject(&:blank?)
-    
+    ].compact.compact_blank
+
     parts.join(' - ')
   end
-  
+
   def formatted_zip_code
-    return zip_code unless zip_code.present?
+    return zip_code if zip_code.blank?
+
     clean = zip_code.gsub(/\D/, '')
     "#{clean[0..4]}-#{clean[5..7]}"
   end
-  
+
   def google_maps_url
     encoded_address = URI.encode_www_form_component(full_address)
     "https://www.google.com/maps/search/?api=1&query=#{encoded_address}"
   end
-  
+
   def same_city_as?(other_address)
     return false unless other_address.is_a?(Address)
-    
-    city.downcase == other_address.city.downcase && 
-    state.upcase == other_address.state.upcase
+
+    city.downcase == other_address.city.downcase &&
+      state.upcase == other_address.state.upcase
   end
-  
+
   private
-  
+
   def normalize_zip_code
     self.zip_code = zip_code.gsub(/\D/, '') if zip_code.present?
   end

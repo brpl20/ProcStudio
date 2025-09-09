@@ -102,15 +102,15 @@ class ProfileCustomer < ApplicationRecord
   # Polymorphic associations for addresses and phones
   has_many :addresses, as: :addressable, dependent: :destroy
   has_many :phones, as: :phoneable, dependent: :destroy
-  
+
   # Nested attributes for API
-  accepts_nested_attributes_for :phones, 
-    allow_destroy: true,
-    reject_if: proc { |attrs| attrs['phone_number'].blank? }
-    
-  accepts_nested_attributes_for :addresses, 
-    allow_destroy: true,
-    reject_if: proc { |attrs| attrs['street'].blank? || attrs['city'].blank? }
+  accepts_nested_attributes_for :phones,
+                                allow_destroy: true,
+                                reject_if: proc { |attrs| attrs['phone_number'].blank? }
+
+  accepts_nested_attributes_for :addresses,
+                                allow_destroy: true,
+                                reject_if: proc { |attrs| attrs['street'].blank? || attrs['city'].blank? }
 
   has_many :customer_emails, dependent: :destroy
   has_many :emails, through: :customer_emails

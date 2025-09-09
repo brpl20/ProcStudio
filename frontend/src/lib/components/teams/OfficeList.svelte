@@ -1,5 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
+  import { buildLogoUrl, getLogoThumbnailStyle, getPlaceholderEmoji } from '$lib/utils/logo.utils';
 
   interface Office {
     id: number;
@@ -61,13 +62,17 @@
             <td>
               <div class="avatar">
                 <div class="w-12 h-12 rounded">
-                  {#if office.logo_url}
-                    <img src={office.logo_url} alt="Logo do {office.name}" />
+                  {#if buildLogoUrl(office.logo_url)}
+                    <img
+                      src={buildLogoUrl(office.logo_url)}
+                      alt="Logo do {office.name}"
+                      class={getLogoThumbnailStyle()}
+                    />
                   {:else}
                     <div
                       class="bg-gray-200 flex items-center justify-center w-full h-full text-gray-500"
                     >
-                      🏢
+                      {getPlaceholderEmoji('office')}
                     </div>
                   {/if}
                 </div>

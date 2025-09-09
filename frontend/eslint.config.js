@@ -37,7 +37,7 @@ export default [
       eqeqeq: ['error', 'always'],
       curly: ['error', 'all'],
       'brace-style': ['error', '1tbs'],
-      indent: ['error', 2],
+      indent: 'off',
       quotes: ['error', 'single', { avoidEscape: true }],
       semi: ['error', 'always'],
       'comma-dangle': ['error', 'never'],

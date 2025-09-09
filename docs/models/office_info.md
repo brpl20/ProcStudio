@@ -37,6 +37,7 @@ has_many :compensations, through: :user_offices, class_name: "UserSocietyCompens
 has_many :user_profiles, dependent: :nullify
 has_many :social_contracts_attachments, as: :record, class_name: "ActiveStorage::Attachment", inverse_of: :record, dependent: :destroy, strict_loading: false
 has_many :social_contracts_blobs, through: :social_contracts_attachments, class_name: "ActiveStorage::Blob", source: :blob, strict_loading: false
+has_many :attachment_metadata, class_name: "OfficeAttachmentMetadata", dependent: :destroy
 has_many :phones, as: :phoneable, dependent: :destroy, autosave: true
 has_many :addresses, as: :addressable, dependent: :destroy, autosave: true
 has_many :office_emails, dependent: :destroy

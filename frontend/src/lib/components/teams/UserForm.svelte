@@ -142,16 +142,16 @@
             addresses_attributes:
               formData.street && formData.city
                 ? [
-                    {
-                      street: formData.street,
-                      number: formData.number,
-                      complement: formData.complement,
-                      neighborhood: formData.neighborhood,
-                      city: formData.city,
-                      state: formData.state,
-                      zip_code: formData.zip_code
-                    }
-                  ]
+                  {
+                    street: formData.street,
+                    number: formData.number,
+                    complement: formData.complement,
+                    neighborhood: formData.neighborhood,
+                    city: formData.city,
+                    state: formData.state,
+                    zip_code: formData.zip_code
+                  }
+                ]
                 : []
           }
         };

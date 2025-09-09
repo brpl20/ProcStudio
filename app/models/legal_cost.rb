@@ -25,7 +25,8 @@ class LegalCost < ApplicationRecord
   has_many :entries, class_name: 'LegalCostEntry', dependent: :destroy
 
   # Validations
-  validates :admin_fee_percentage, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 100 }, allow_nil: true
+  validates :admin_fee_percentage, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 100 },
+                                   allow_nil: true
 
   # Scopes
   scope :client_responsible, -> { where(client_responsible: true) }

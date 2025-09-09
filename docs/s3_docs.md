@@ -1,0 +1,289 @@
+# S3 Multi-Tenancy Architecture
+
+## Overview
+ProcStudio uses a team-based multi-tenancy approach for organizing files in AWS S3. All files are stored in a single bucket with environment and team-based prefixes for logical isolation.
+
+## Bucket Structure
+
+```
+s3://procstudio-bucket/
+├── development/
+│   └── team-{team_id}/
+│       ├── offices/
+│       ├── templates/
+│       ├── customers/
+│       ├── works/
+│       └── users/
+├── staging/
+│   └── team-{team_id}/
+│       └── [same structure]
+└── production/
+    └── team-{team_id}/
+        └── [same structure]
+```
+
+## Detailed Folder Structure
+
+```
+{environment}/team-{team_id}/
+├── offices/
+│   └── {office_id}/
+│       ├── logos/
+│       │   └── logo-{timestamp}.{ext}
+│       └── social-contracts/
+│           └── contract-{timestamp}-{hash}.pdf
+│
+├── templates/
+│   ├── global/
+│   │   └── {template_name}-v{version}.docx
+│   └── office-{office_id}/
+│       └── {template_name}-v{version}.docx
+│
+├── customers/
+│   └── {customer_id}/
+│       ├── documents/
+│       │   └── {doc_type}-{timestamp}-{hash}.{ext}
+│       └── profile/
+│           └── avatar-{timestamp}.{ext}
+│
+├── works/
+│   └── {work_id}/
+│       ├── generated/
+│       │   ├── {doc_name}-{timestamp}-draft.docx
+│       │   ├── {doc_name}-{timestamp}-final.docx
+│       │   └── {doc_name}-{timestamp}-signed.pdf
+│       └── attachments/
+│           └── {original_filename}-{timestamp}-{hash}.{ext}
+│
+└── users/
+    └── {user_id}/
+        └── avatars/
+            └── avatar-{timestamp}.{ext}
+```
+
+## File Naming Conventions
+
+### Timestamp Format
+- Format: `YYYYMMDDHHmmss`
+- Example: `20240115143022`
+- Purpose: Chronological ordering and versioning
+
+### Hash Format
+- Format: First 6 characters of SHA256
+- Example: `a3f2d1`
+- Purpose: Uniqueness without long UUIDs
+
+### Specific File Types
+
+#### Office Files
+- **Logo**: `logo-{timestamp}.{png|jpg|svg}`
+  - Example: `logo-20240115143022.png`
+- **Social Contract**: `contract-{timestamp}-{hash}.pdf`
+  - Example: `contract-20240115143022-a3f2d1.pdf`
+
+#### User Files
+- **Avatar**: `avatar-{timestamp}.{png|jpg|webp}`
+  - Example: `avatar-20240115143022.jpg`
+
+#### Templates
+- **Format**: `{template_name}-v{version}.docx`
+  - Example: `procuracao-judicial-v2.docx`
+  - Example: `contrato-honorarios-v1.docx`
+
+#### Customer Documents
+- **Format**: `{doc_type}-{timestamp}-{hash}.{ext}`
+  - Example: `rg-20240115143022-b4e5f2.pdf`
+  - Example: `cpf-20240115143022-c1d3e4.pdf`
+
+#### Work Documents
+- **Generated Files**: `{doc_name}-{timestamp}-{status}.{ext}`
+  - Draft: `peticao-inicial-20240115143022-draft.docx`
+  - Final: `peticao-inicial-20240115150000-final.docx`
+  - Signed: `peticao-inicial-20240115160000-signed.pdf`
+
+## Database Storage Strategy
+
+### What to Store
+Store only the relative path after the environment and team prefix:
+- **Database**: `offices/123/logos/logo-20240115143022.png`
+- **Full S3 Path**: `development/team-456/offices/123/logos/logo-20240115143022.png`
+
+### Path Construction in Rails
+```ruby
+def s3_full_path(relative_path)
+  "#{Rails.env}/team-#{current_team.id}/#{relative_path}"
+end
+```
+
+## Implementation Guidelines
+
+### 1. File Upload Process
+1. Validate file type and size
+2. Generate timestamp and hash
+3. Construct S3 key with team prefix
+4. Upload to S3
+5. Store relative path in database
+
+### 2. File Retrieval Process
+1. Get relative path from database
+2. Construct full S3 key with current team
+3. Generate pre-signed URL if needed
+4. Return URL to client
+
+### 3. Security Considerations
+- Always validate team ownership before file operations
+- Use pre-signed URLs with expiration
+- Set appropriate bucket policies per prefix
+- Enable versioning for critical documents
+- Use server-side encryption
+
+### 4. Migration Strategy
+- New files follow new structure immediately
+- Old files remain accessible at original paths
+- Gradual migration as files are updated
+- No immediate bulk migration required
+
+## Benefits of This Approach
+
+1. **Isolation**: Complete file isolation per team
+2. **Scalability**: Can handle millions of files efficiently
+3. **Clarity**: Human-readable structure for debugging
+4. **Flexibility**: Easy to add new file types
+5. **Performance**: Efficient prefix-based queries
+6. **Cost Control**: Easy to calculate storage per team
+7. **Compliance**: Simple to delete all team data if needed
+8. **Environment Separation**: Clear distinction between dev/staging/prod
+
+## AWS Configuration
+
+### Bucket Policy Example
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {"AWS": "arn:aws:iam::ACCOUNT:role/app-role"},
+      "Action": ["s3:GetObject", "s3:PutObject"],
+      "Resource": "arn:aws:s3:::procstudio-bucket/${aws:userid}/team-*"
+    }
+  ]
+}
+```
+
+### Lifecycle Rules
+- Move to Infrequent Access after 90 days
+- Archive to Glacier after 365 days
+- Delete drafts after 30 days
+- Keep signed documents indefinitely
+
+## Monitoring and Maintenance
+
+### CloudWatch Metrics
+- Monitor storage usage per team prefix
+- Track request patterns
+- Alert on unusual activity
+
+### Regular Tasks
+- Clean up orphaned files
+- Archive old documents
+- Review access patterns
+- Update lifecycle policies
+
+## Rails Integration
+
+### ActiveStorage Configuration
+Configure ActiveStorage to use dynamic paths based on current team:
+```ruby
+# config/storage.yml
+amazon:
+  service: S3
+  access_key_id: <%= ENV['AWS_ACCESS_KEY_ID'] %>
+  secret_access_key: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
+  region: <%= ENV['AWS_REGION'] %>
+  bucket: <%= ENV['S3_BUCKET'] %>
+```
+
+### Model Integration
+Models should construct S3 paths dynamically using team context:
+```ruby
+def s3_key
+  "#{Rails.env}/team-#{team_id}/#{resource_path}"
+end
+```
+
+## Cleanup Utilities
+
+### Development Environment
+- Use `rails s3:cleanup` to remove development files
+- Automatically triggered on `rails db:drop`
+- Manual cleanup script available at `scripts/s3_cleanup.rb`
+
+### Production Safeguards
+- No automatic cleanup in production
+- Require explicit confirmation for bulk operations
+- Maintain audit log of all deletions
+
+
+<!----- Implementation --- -->
+
+  I've successfully implemented the S3 multi-tenancy architecture with the following changes:
+
+  1. S3 Documentation (docs/s3_docs.md)
+
+  - Comprehensive guide with improved folder structure
+  - Added user files support (avatars)
+  - English folder names for Rails integration
+  - Environment-based separation (development/staging/production)
+
+  2. README Update
+
+  - Added reference to S3 documentation in the index
+
+  3. S3 Path Builder Concern (app/models/concerns/s3_path_builder.rb)
+
+  - Reusable module for building S3 paths
+  - Team-based path generation
+  - Helper methods for timestamps and hashes
+
+  4. Office Model Updates
+
+  - Replaced ActiveStorage with direct S3 integration
+  - New methods: upload_logo() and upload_social_contract()
+  - S3 path generation following new architecture
+  - Pre-signed URL generation for secure access
+
+  5. Migration
+
+  - Added logo_s3_key to offices table
+  - Updated attachment metadata table with S3 fields
+  - Removed ActiveStorage blob_id dependency
+
+  6. Database Cleanup Hooks (lib/tasks/db_s3_cleanup.rake)
+
+  - Rails task that warns about S3 files on db:drop
+  - rails s3:cleanup:development - Clean all dev files
+  - rails s3:cleanup:team[id] - Clean specific team files
+  - rails s3:cleanup:list - List all development files
+
+  7. Standalone Cleanup Script (scripts/s3_cleanup.rb)
+
+  - Ruby script for S3 management without Rails
+  - List and delete files by environment/team
+  - Safety checks for production environments
+
+  8. Controller Updates
+
+  - Updated upload_logo and upload_contracts methods
+  - Uses new S3 upload methods instead of ActiveStorage
+
+  Key Features:
+
+  - Team-based isolation: Each team has its own S3 prefix
+  - Environment separation: Clear distinction between dev/staging/prod
+  - Human-readable structure: Easy to navigate and debug
+  - No file migration needed: Old files remain accessible
+  - Safety measures: Cleanup tools with confirmation prompts
+  - Development-focused: All new files go to development environment
+
+  The architecture is ready for use with proper team isolation and clear file organization.

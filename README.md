@@ -10,10 +10,12 @@ API RESTful desenvolvida em Ruby on Rails para o sistema ProcStudio.
 - [Works](./docs/Works.md)
 - [Works Procedures](./docs/Works-Procedures.md)
 - [Works - Honoraries & Legal Costs](./docs/Works-Honoraries-LegalCosts.md)
+- [S3 Multi-Tenancy Architecture](./docs/s3_docs.md)
 - [Instalacão](./docs/Instalação.md)
 - [Padrão de Desesenvolvimento](./docs/Padrão-de-desenvolvimento.md)
 - [Deploy](./docs/Deploy.md)
 - [Policies](./docs/PoliciesReview.md)
+- [Linting Rules](./docs/linting.md)
 
 ## Visão e Evolução do Projeto
 

@@ -41,6 +41,7 @@
 class Office < ApplicationRecord
   include DeletedFilterConcern
   include CnpjValidatable
+  include S3PathBuilder
 
   acts_as_paranoid
 
@@ -54,8 +55,9 @@ class Office < ApplicationRecord
   has_many :compensations, through: :user_offices, class_name: 'UserSocietyCompensation'
   has_many :user_profiles, dependent: :nullify
 
-  has_one_attached :logo, dependent: :purge_later
-  has_many_attached :social_contracts, dependent: :purge_later # For Contrato Social documents with versioning
+  # Remove ActiveStorage attachments - using direct S3 integration
+  # has_one_attached :logo, dependent: :purge_later
+  # has_many_attached :social_contracts, dependent: :purge_later
 
   # Attachment metadata
   has_many :attachment_metadata, class_name: 'OfficeAttachmentMetadata', dependent: :destroy
@@ -115,78 +117,171 @@ class Office < ApplicationRecord
     "R$ #{format('%.2f', total_quotes_value).tr('.', ',')}"
   end
 
-  # Get logo URL
+  # Get logo URL from S3
   def logo_url
-    return nil unless logo.attached?
+    return nil if logo_s3_key.blank?
 
-    Rails.application.routes.url_helpers.rails_blob_url(logo, only_path: true)
+    s3_client.generate_presigned_url(
+      :get_object,
+      bucket: ENV.fetch('S3_BUCKET', nil),
+      key: logo_s3_key,
+      expires_in: 3600 # 1 hour
+    )
+  rescue StandardError => e
+    Rails.logger.error "Error generating logo URL: #{e.message}"
+    nil
   end
 
-  # Get social contracts with metadata
+  # Upload logo to S3 with new architecture
+  def upload_logo(file, metadata_params = {})
+    return false if file.blank?
+
+    extension = File.extname(file.original_filename).delete('.')
+    s3_key = build_logo_s3_key(extension)
+
+    # Upload to S3
+    s3_client.put_object(
+      bucket: ENV.fetch('S3_BUCKET', nil),
+      key: s3_key,
+      body: file.read,
+      content_type: file.content_type,
+      metadata: {
+        'team-id' => team_id.to_s,
+        'office-id' => id.to_s,
+        'uploaded-by' => metadata_params[:uploaded_by_id].to_s
+      }
+    )
+
+    # Store the S3 key in database
+    update!(logo_s3_key: s3_key)
+
+    # Create metadata record
+    if metadata_params.present?
+      attachment_metadata.create!(
+        document_type: 'logo',
+        s3_key: s3_key,
+        filename: file.original_filename,
+        content_type: file.content_type,
+        byte_size: file.size,
+        document_date: metadata_params[:document_date],
+        description: metadata_params[:description],
+        custom_metadata: metadata_params[:custom_metadata],
+        uploaded_by_id: metadata_params[:uploaded_by_id]
+      )
+    end
+
+    true
+  rescue StandardError => e
+    Rails.logger.error "Error uploading logo: #{e.message}"
+    errors.add(:logo, "Failed to upload: #{e.message}")
+    false
+  end
+
+  # Get social contracts with metadata from S3
   def social_contracts_with_metadata
-    return [] unless social_contracts.attached?
+    contracts = attachment_metadata.where(document_type: 'social_contract')
 
-    social_contracts.map do |contract|
-      metadata = attachment_metadata.find_by(blob_id: contract.blob.id)
-
+    contracts.map do |metadata|
       {
-        id: contract.id,
-        blob_id: contract.blob.id,
-        filename: contract.filename.to_s,
-        content_type: contract.content_type,
-        byte_size: contract.byte_size,
-        created_at: contract.created_at,
-        url: Rails.application.routes.url_helpers.rails_blob_url(contract, only_path: true),
-        download_url: Rails.application.routes.url_helpers.rails_blob_url(contract, disposition: 'attachment', only_path: true),
+        id: metadata.id,
+        s3_key: metadata.s3_key,
+        filename: metadata.filename,
+        content_type: metadata.content_type,
+        byte_size: metadata.byte_size,
+        created_at: metadata.created_at,
+        url: generate_s3_url(metadata.s3_key),
+        download_url: generate_s3_download_url(metadata.s3_key, metadata.filename),
         # Metadata fields
-        document_date: metadata&.document_date,
-        description: metadata&.description,
-        uploaded_by_id: metadata&.uploaded_by_id,
-        custom_metadata: metadata&.custom_metadata
+        document_date: metadata.document_date,
+        description: metadata.description,
+        uploaded_by_id: metadata.uploaded_by_id,
+        custom_metadata: metadata.custom_metadata
       }
     end
   end
 
-  # Attach social contract with metadata
-  def attach_social_contract_with_metadata(file, metadata_params = {})
-    contract = social_contracts.attach(file)
+  # Upload social contract to S3 with new architecture
+  def upload_social_contract(file, metadata_params = {})
+    return false if file.blank?
 
-    if contract && metadata_params.present?
-      attachment_metadata.create!(
-        blob_id: contract.last.blob.id,
-        document_type: 'social_contract',
-        document_date: metadata_params[:document_date],
-        description: metadata_params[:description],
-        custom_metadata: metadata_params[:custom_metadata],
-        uploaded_by_id: metadata_params[:uploaded_by_id]
-      )
-    end
+    extension = File.extname(file.original_filename).delete('.')
+    s3_key = build_social_contract_s3_key(extension)
 
-    contract
+    # Upload to S3
+    s3_client.put_object(
+      bucket: ENV.fetch('S3_BUCKET', nil),
+      key: s3_key,
+      body: file.read,
+      content_type: file.content_type,
+      metadata: {
+        'team-id' => team_id.to_s,
+        'office-id' => id.to_s,
+        'uploaded-by' => metadata_params[:uploaded_by_id].to_s,
+        'document-type' => 'social-contract'
+      }
+    )
+
+    # Create metadata record
+    attachment_metadata.create!(
+      document_type: 'social_contract',
+      s3_key: s3_key,
+      filename: file.original_filename,
+      content_type: file.content_type,
+      byte_size: file.size,
+      document_date: metadata_params[:document_date],
+      description: metadata_params[:description],
+      custom_metadata: metadata_params[:custom_metadata],
+      uploaded_by_id: metadata_params[:uploaded_by_id]
+    )
+
+    true
+  rescue StandardError => e
+    Rails.logger.error "Error uploading social contract: #{e.message}"
+    errors.add(:social_contract, "Failed to upload: #{e.message}")
+    false
   end
 
-  # Attach logo with metadata
-  def attach_logo_with_metadata(file, metadata_params = {})
-    # Remove existing logo metadata if any
-    attachment_metadata.logos.destroy_all if logo.attached?
+  # Generate S3 URL for any file
+  def generate_s3_url(s3_key, expires_in: 3600)
+    return nil if s3_key.blank?
 
-    logo.attach(file)
+    s3_client.generate_presigned_url(
+      :get_object,
+      bucket: ENV.fetch('S3_BUCKET', nil),
+      key: s3_key,
+      expires_in: expires_in
+    )
+  rescue StandardError => e
+    Rails.logger.error "Error generating S3 URL: #{e.message}"
+    nil
+  end
 
-    if logo.attached? && metadata_params.present?
-      attachment_metadata.create!(
-        blob_id: logo.blob.id,
-        document_type: 'logo',
-        document_date: metadata_params[:document_date],
-        description: metadata_params[:description],
-        custom_metadata: metadata_params[:custom_metadata],
-        uploaded_by_id: metadata_params[:uploaded_by_id]
-      )
-    end
+  # Generate S3 download URL
+  def generate_s3_download_url(s3_key, filename, expires_in: 3600)
+    return nil if s3_key.blank?
 
-    logo
+    s3_client.generate_presigned_url(
+      :get_object,
+      bucket: ENV.fetch('S3_BUCKET', nil),
+      key: s3_key,
+      expires_in: expires_in,
+      response_content_disposition: "attachment; filename=\"#{filename}\""
+    )
+  rescue StandardError => e
+    Rails.logger.error "Error generating S3 download URL: #{e.message}"
+    nil
   end
 
   private
+
+  # S3 client instance
+  def s3_client
+    @s3_client ||= Aws::S3::Client.new(
+      region: ENV['AWS_REGION'] || 'us-east-1',
+      access_key_id: ENV.fetch('AWS_ACCESS_KEY_ID', nil),
+      secret_access_key: ENV.fetch('AWS_SECRET_ACCESS_KEY', nil)
+    )
+  end
 
   def unipessoal_must_have_only_one_partner
     return unless user_offices.where(partnership_type: 'socio').many?

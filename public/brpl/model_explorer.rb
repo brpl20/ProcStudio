@@ -17,6 +17,25 @@ class ModelExplorer
     File.open(file_path, 'w') do |file|
       file.puts "# #{model_name} Model Information\n\n"
 
+      # Related Files Section
+      file.puts "## Related Files\n\n"
+      related_files = find_related_files(model_name)
+
+      if related_files.any?
+        related_files.each do |category, files|
+          next if files.empty?
+
+          file.puts "### #{category}\n"
+          files.each do |file_path|
+            file.puts "- `#{file_path}`"
+          end
+          file.puts ''
+        end
+      else
+        file.puts "_No related files found_\n"
+      end
+      file.puts ''
+
       # Attributes and their types
       file.puts "## Attributes\n\n"
       file.puts '```ruby'
@@ -123,9 +142,260 @@ class ModelExplorer
       rescue StandardError => e
         file.puts "# Error getting callbacks: #{e.message}\n\n"
       end
+
+      # Add instance methods with usage examples
+      file.puts "## Key Methods & Usage Examples\n\n"
+      generate_method_examples(model_class, file)
+
+      # Add serializer information
+      file.puts "## Serializer\n\n"
+      generate_serializer_info(model_class, file)
     end
 
     puts "Generated model information at #{file_path}"
+  end
+
+  def self.find_related_files(model_name)
+    related_files = {
+      'Model' => [],
+      'Controllers' => [],
+      'Serializers' => [],
+      'Services' => [],
+      'Jobs' => [],
+      'Filters' => []
+    }
+
+    # Model file
+    model_path = "app/models/#{model_name.underscore}.rb"
+    related_files['Model'] << model_path if Rails.root.join(model_path).exist?
+
+    # Controllers
+    controller_patterns = [
+      "app/controllers/**/*#{model_name.underscore.pluralize}_controller.rb",
+      "app/controllers/**/*#{model_name.underscore}_controller.rb"
+    ]
+
+    controller_patterns.each do |pattern|
+      Rails.root.glob(pattern).each do |path|
+        relative_path = path.to_s.gsub(Rails.root.join.to_s, '')
+        related_files['Controllers'] << relative_path
+      end
+    end
+
+    # Serializers
+    serializer_patterns = [
+      "app/serializers/#{model_name.underscore}_serializer.rb",
+      "app/serializers/**/#{model_name.underscore}_serializer.rb"
+    ]
+
+    serializer_patterns.each do |pattern|
+      Rails.root.glob(pattern).each do |path|
+        relative_path = path.to_s.gsub(Rails.root.join.to_s, '')
+        related_files['Serializers'] << relative_path
+      end
+    end
+
+    # Services
+    service_patterns = [
+      "app/models/services/#{model_name.underscore.pluralize}.rb",
+      "app/services/*#{model_name.underscore}*.rb"
+    ]
+
+    service_patterns.each do |pattern|
+      Rails.root.glob(pattern).each do |path|
+        relative_path = path.to_s.gsub(Rails.root.join.to_s, '')
+        related_files['Services'] << relative_path
+      end
+    end
+
+    # Jobs
+    job_patterns = [
+      "app/jobs/*#{model_name.underscore}*.rb"
+    ]
+
+    job_patterns.each do |pattern|
+      Rails.root.glob(pattern).each do |path|
+        relative_path = path.to_s.gsub(Rails.root.join.to_s, '')
+        related_files['Jobs'] << relative_path
+      end
+    end
+
+    # Filters
+    filter_patterns = [
+      "app/models/filters/#{model_name.underscore}_filter.rb"
+    ]
+
+    filter_patterns.each do |pattern|
+      Rails.root.glob(pattern).each do |path|
+        relative_path = path.to_s.gsub(Rails.root.join.to_s, '')
+        related_files['Filters'] << relative_path
+      end
+    end
+
+    related_files
+  end
+
+  def self.generate_method_examples(model_class, file)
+    # Get an instance for demonstration
+    instance_example = "#{model_class.name.underscore} = #{model_class.name}.new"
+
+    file.puts "### Instance Creation\n"
+    file.puts '```ruby'
+    file.puts instance_example
+    file.puts "# Returns: #<#{model_class.name} ...>"
+    file.puts "```\n\n"
+
+    # Common finder methods
+    file.puts "### Finder Methods\n"
+    file.puts '```ruby'
+    file.puts '# Find by ID'
+    file.puts "#{model_class.name}.find(1)"
+    file.puts "# Returns: #<#{model_class.name} id: 1, ...> or raises ActiveRecord::RecordNotFound"
+    file.puts ''
+    file.puts '# Find by attributes'
+    if model_class.column_names.include?('name')
+      file.puts "#{model_class.name}.find_by(name: 'Example')"
+      file.puts "# Returns: #<#{model_class.name} ...> or nil"
+    elsif model_class.column_names.include?('email')
+      file.puts "#{model_class.name}.find_by(email: 'user@example.com')"
+      file.puts "# Returns: #<#{model_class.name} ...> or nil"
+    else
+      first_col = model_class.column_names.reject { |c| ['id', 'created_at', 'updated_at'].include?(c) }.first
+      if first_col
+        file.puts "#{model_class.name}.find_by(#{first_col}: 'value')"
+        file.puts "# Returns: #<#{model_class.name} ...> or nil"
+      end
+    end
+    file.puts ''
+    file.puts '# Where clause'
+    file.puts "#{model_class.name}.where(active: true)"
+    file.puts '# Returns: ActiveRecord::Relation'
+    file.puts "```\n\n"
+
+    # Custom instance methods
+    custom_methods = model_class.instance_methods(false).reject { |m| m.to_s.end_with?('=') || m.to_s.start_with?('_') }
+
+    if custom_methods.any?
+      file.puts "### Custom Instance Methods\n"
+      file.puts '```ruby'
+      custom_methods.first(5).each do |method_name|
+        arity = model_class.instance_method(method_name).arity
+        params = if arity.zero?
+                   ''
+                 elsif arity.positive?
+                   "(#{Array.new(arity) { |i| "arg#{i + 1}" }.join(', ')})"
+                 else
+                   '(...)'
+                 end
+        file.puts "#{model_class.name.underscore}.#{method_name}#{params}"
+        file.puts '# Implement: Check method definition for return value'
+      end
+      file.puts "```\n\n"
+    end
+
+    # Class methods
+    class_methods = model_class.methods(false).reject { |m| m.to_s.end_with?('=') || m.to_s.start_with?('_') }
+
+    if class_methods.any?
+      file.puts "### Custom Class Methods\n"
+      file.puts '```ruby'
+      class_methods.first(5).each do |method_name|
+        file.puts "#{model_class.name}.#{method_name}"
+        file.puts '# Implement: Check method definition for return value'
+      end
+      file.puts "```\n\n"
+    end
+  rescue StandardError => e
+    file.puts "_Error generating method examples: #{e.message}_\n\n"
+  end
+
+  def self.generate_serializer_info(model_class, file)
+    begin
+      serializer_name = "#{model_class.name}Serializer"
+      serializer_path = "app/serializers/#{model_class.name.underscore}_serializer.rb"
+
+      # Check if serializer exists
+      if Rails.root.join(serializer_path).exist?
+        file.puts "### Serializer Class\n"
+        file.puts "- **Class**: `#{serializer_name}`"
+        file.puts "- **File**: `#{serializer_path}`\n\n"
+
+        # Try to load and analyze the serializer
+        begin
+          require Rails.root.join(serializer_path)
+          serializer_class = serializer_name.constantize
+
+          # Generate example response
+          file.puts "### Example Serialized Response\n"
+          file.puts '```json'
+
+          # Create a sample instance for demonstration
+          sample_data = {}
+          model_class.columns_hash.each do |name, column|
+            sample_data[name.to_sym] = case column.type
+                                       when :string, :text
+                                         "example_#{name}"
+                                       when :integer
+                                         name == 'id' ? 1 : 100
+                                       when :boolean
+                                         true
+                                       when :datetime
+                                         '2024-01-01T12:00:00Z'
+                                       when :decimal, :float
+                                         99.99
+                                       when :json, :jsonb
+                                         {}
+                                       else
+                                         'value'
+                                       end
+          end
+
+          # Show sample JSON structure
+          file.puts '{'
+
+          # Get serializer attributes if possible
+          if serializer_class.respond_to?(:_attributes)
+            serializer_class._attributes.each do |attr|
+              value = sample_data[attr] || "example_#{attr}"
+              file.puts "  \"#{attr}\": #{value.to_json},"
+            end
+          else
+            # Fallback to model attributes
+            sample_data.each do |key, value|
+              file.puts "  \"#{key}\": #{value.to_json},"
+            end
+          end
+
+          # Add associations if any
+          [:has_many, :has_one, :belongs_to].each do |assoc_type|
+            associations = model_class.reflect_on_all_associations(assoc_type)
+            associations.each do |association|
+              case assoc_type
+              when :has_many
+                file.puts "  \"#{association.name}\": [],"
+              when :has_one, :belongs_to
+                file.puts "  \"#{association.name}\": null,"
+              end
+            end
+          end
+
+          file.puts '}'
+          file.puts '```'
+        rescue StandardError => e
+          file.puts "_Could not load serializer: #{e.message}_"
+        end
+      else
+        file.puts '_No serializer found for this model_'
+        file.puts "\nTo create one:"
+        file.puts '```bash'
+        file.puts "rails generate serializer #{model_class.name}"
+        file.puts '```'
+      end
+    rescue StandardError => e
+      file.puts "_Error generating serializer info: #{e.message}_"
+    end
+
+    file.puts "\n"
   end
 end
 

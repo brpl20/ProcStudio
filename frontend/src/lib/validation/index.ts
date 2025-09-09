@@ -82,60 +82,60 @@ import type { ValidationRule, FieldValidation, FormValidationState } from './typ
 export const validationRules = {
   required:
     (message = 'Este campo é obrigatório'): ValidationRule =>
-    (value) => {
-      if (!value || (typeof value === 'string' && !value.trim())) {
-        return message;
-      }
-      return null;
-    },
+      (value) => {
+        if (!value || (typeof value === 'string' && !value.trim())) {
+          return message;
+        }
+        return null;
+      },
 
   minLength:
     (min: number, message?: string): ValidationRule =>
-    (value) => {
-      if (!value) {
+      (value) => {
+        if (!value) {
+          return null;
+        }
+        if ((value as string).length < min) {
+          return message || `Deve ter pelo menos ${min} caracteres`;
+        }
         return null;
-      }
-      if ((value as string).length < min) {
-        return message || `Deve ter pelo menos ${min} caracteres`;
-      }
-      return null;
-    },
+      },
 
   maxLength:
     (max: number, message?: string): ValidationRule =>
-    (value) => {
-      if (!value) {
+      (value) => {
+        if (!value) {
+          return null;
+        }
+        if ((value as string).length > max) {
+          return message || `Deve ter no máximo ${max} caracteres`;
+        }
         return null;
-      }
-      if ((value as string).length > max) {
-        return message || `Deve ter no máximo ${max} caracteres`;
-      }
-      return null;
-    },
+      },
 
   pattern:
     (regex: RegExp, message: string): ValidationRule =>
-    (value) => {
-      if (!value) {
+      (value) => {
+        if (!value) {
+          return null;
+        }
+        if (!regex.test(value as string)) {
+          return message;
+        }
         return null;
-      }
-      if (!regex.test(value as string)) {
-        return message;
-      }
-      return null;
-    },
+      },
 
   numeric:
     (message = 'Deve conter apenas números'): ValidationRule =>
-    (value) => {
-      if (!value) {
+      (value) => {
+        if (!value) {
+          return null;
+        }
+        if (!/^\d+$/.test((value as string).replace(/\D/g, ''))) {
+          return message;
+        }
         return null;
       }
-      if (!/^\d+$/.test((value as string).replace(/\D/g, ''))) {
-        return message;
-      }
-      return null;
-    }
 };
 
 /**

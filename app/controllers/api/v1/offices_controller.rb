@@ -182,18 +182,25 @@ module Api
           uploaded_by_id: current_user.id
         }
 
-        @office.attach_logo_with_metadata(params[:logo], metadata_params)
+        if @office.upload_logo(params[:logo], metadata_params)
 
-        serialized = OfficeSerializer.new(
-          @office,
-          { params: { action: 'show' } }
-        ).serializable_hash
+          serialized = OfficeSerializer.new(
+            @office,
+            { params: { action: 'show' } }
+          ).serializable_hash
 
-        render json: {
-          success: true,
-          message: 'Logo atualizado com sucesso',
-          data: serialized[:data]
-        }, status: :ok
+          render json: {
+            success: true,
+            message: 'Logo atualizado com sucesso',
+            data: serialized[:data]
+          }, status: :ok
+        else
+          render json: {
+            success: false,
+            message: 'Erro ao fazer upload do logo',
+            errors: @office.errors.full_messages
+          }, status: :unprocessable_entity
+        end
       rescue StandardError => e
         Rails.logger.error "Logo upload failed: #{e.message}"
         render json: {
@@ -211,7 +218,8 @@ module Api
 
         contracts.each do |contract|
           # Validate file type (PDF and DOCX)
-          unless contract.content_type.in?(['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'])
+          unless contract.content_type.in?(['application/pdf',
+                                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'])
             return render json: {
               success: false,
               message: "Formato de arquivo inválido para #{contract.original_filename}. Use PDF ou DOCX"
@@ -225,7 +233,7 @@ module Api
             uploaded_by_id: current_user.id
           }
 
-          @office.attach_social_contract_with_metadata(contract, metadata_params)
+          @office.upload_social_contract(contract, metadata_params)
           uploaded_contracts << contract.original_filename
         end
 

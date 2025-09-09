@@ -36,36 +36,63 @@ class JobSerializer
 
   attributes :description, :deadline, :status, :priority, :comment, :created_by_id
 
-  attribute :customer do |object|
-    "#{object&.profile_customer&.name} #{object&.profile_customer&.last_name}"
-  end
+  attribute :customer_id, &:profile_customer_id
 
-  attribute :responsible do |object|
-    object&.assignees&.first&.name
+  attribute :responsible_id do |object|
+    object.assignees.first&.id
   end
 
   attribute :work_number do |object|
     object.work.number if object.work.present?
   end
 
+  # Return all assignee IDs
+  attribute :assignee_ids do |object|
+    object.assignees.pluck(:id)
+  end
+
+  # Return all supervisor IDs
+  attribute :supervisor_ids do |object|
+    object.supervisors.pluck(:id)
+  end
+
+  # Return all collaborator IDs
+  attribute :collaborator_ids do |object|
+    object.job_user_profiles.where(role: 'collaborator').pluck(:user_profile_id)
+  end
+
+  # Detailed information for show action
   attribute :assignees, if: proc { |_, options| options[:action] == 'show' } do |object|
     object.assignees.map do |assignee|
       {
         id: assignee.id,
         name: assignee.name,
         last_name: assignee.last_name,
-        role: object.job_user_profiles.find_by(user_profile: assignee)&.role
+        role: 'assignee'
       }
     end
   end
 
-  attribute :all_members, if: proc { |_, options| options[:action] == 'show' } do |object|
-    object.user_profiles.map do |user_profile|
+  attribute :supervisors, if: proc { |_, options| options[:action] == 'show' } do |object|
+    object.supervisors.map do |supervisor|
       {
-        id: user_profile.id,
-        name: user_profile.name,
-        last_name: user_profile.last_name,
-        role: object.job_user_profiles.find_by(user_profile: user_profile)&.role
+        id: supervisor.id,
+        name: supervisor.name,
+        last_name: supervisor.last_name,
+        role: 'supervisor'
+      }
+    end
+  end
+
+  attribute :collaborators, if: proc { |_, options| options[:action] == 'show' } do |object|
+    collaborator_profiles = UserProfile.joins(:job_user_profiles)
+                              .where(job_user_profiles: { job_id: object.id, role: 'collaborator' })
+    collaborator_profiles.map do |collaborator|
+      {
+        id: collaborator.id,
+        name: collaborator.name,
+        last_name: collaborator.last_name,
+        role: 'collaborator'
       }
     end
   end
