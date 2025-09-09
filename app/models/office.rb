@@ -9,6 +9,7 @@
 #  cnpj                                     :string
 #  deleted_at                               :datetime
 #  foundation                               :date
+#  logo_s3_key                              :string
 #  name                                     :string
 #  number_of_quotes(Total number of quotes) :integer          default(0)
 #  oab_inscricao                            :string
@@ -30,6 +31,7 @@
 #  index_offices_on_created_by_id    (created_by_id)
 #  index_offices_on_deleted_at       (deleted_at)
 #  index_offices_on_deleted_by_id    (deleted_by_id)
+#  index_offices_on_logo_s3_key      (logo_s3_key)
 #  index_offices_on_team_id          (team_id)
 #
 # Foreign Keys
@@ -104,7 +106,7 @@ class Office < ApplicationRecord
   end
 
   validate :unipessoal_must_have_only_one_partner, if: -> { society == 'individual' }
-  validate :partnership_percentage_sum_to_100
+  validate :partnership_percentage_sum_to_one_hundred
   validate :team_must_exist
 
   def total_quotes_value
@@ -289,7 +291,7 @@ class Office < ApplicationRecord
     errors.add(:society, 'unipessoal deve ter apenas um sócio')
   end
 
-  def partnership_percentage_sum_to_100
+  def partnership_percentage_sum_to_one_hundred
     # Skip validation if no partners yet or if it's a new record
     return if new_record? || user_offices.empty?
 

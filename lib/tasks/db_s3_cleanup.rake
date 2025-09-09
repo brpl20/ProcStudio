@@ -1,35 +1,5 @@
 # frozen_string_literal: true
 
-namespace :db do
-  # Override the db:drop task to add S3 cleanup reminder
-  task drop_with_s3_reminder: :environment do
-    if Rails.env.development?
-      puts "\n#{'=' * 60}"
-      puts '⚠️  WARNING: Database will be dropped!'
-      puts '=' * 60
-      puts "\n🗑️  S3 CLEANUP REMINDER:"
-      puts '   Development files exist in S3 bucket at:'
-      puts "   s3://#{ENV.fetch('S3_BUCKET', nil)}/development/"
-      puts "\n   To clean S3 development files, run:"
-      puts '   $ rails s3:cleanup:development'
-      puts "\n   To clean specific team files:"
-      puts '   $ rails s3:cleanup:team[team_id]'
-      puts '=' * 60
-      puts "\nPress ENTER to continue with database drop or CTRL+C to cancel..."
-      $stdin.gets
-    end
-
-    # Run the original db:drop task
-    Rake::Task['db:drop:original'].invoke
-  end
-
-  # Rename original task and set up our hook
-  task setup_drop_hook: :environment do
-    Rake::Task['db:drop'].rename('db:drop:original')
-    Rake::Task['db:drop_with_s3_reminder'].rename('db:drop')
-  end
-end
-
 # S3 cleanup tasks
 namespace :s3 do
   namespace :cleanup do
@@ -238,5 +208,4 @@ namespace :s3 do
   end
 end
 
-# Set up the hook when rake tasks are loaded
-Rake::Task['db:setup_drop_hook'].invoke if Rake::Task.task_defined?('db:drop')
+# Hook setup removed - was causing task loading issues
