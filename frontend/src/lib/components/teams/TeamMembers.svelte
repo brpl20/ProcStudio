@@ -19,10 +19,10 @@
 
       const response = await api.teams.getMyTeamMembers();
       members = response.data.members || [];
-      console.log('Loaded team members:', members);
+      // console.log('Loaded team members:', members);
     } catch (err) {
       error = err.message || 'Erro ao carregar membros da equipe';
-      console.error('Error loading team members:', err);
+      // console.error('Error loading team members:', err);
     } finally {
       loading = false;
     }
@@ -30,16 +30,16 @@
 
   function getRoleBadgeClass(role) {
     switch (role) {
-    case 'lawyer':
-      return 'badge-primary';
-    case 'paralegal':
-      return 'badge-secondary';
-    case 'trainee':
-      return 'badge-accent';
-    case 'secretary':
-      return 'badge-info';
-    default:
-      return 'badge-ghost';
+      case 'lawyer':
+        return 'badge-primary';
+      case 'paralegal':
+        return 'badge-secondary';
+      case 'trainee':
+        return 'badge-accent';
+      case 'secretary':
+        return 'badge-info';
+      default:
+        return 'badge-ghost';
     }
   }
 

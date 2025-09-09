@@ -1,13 +1,27 @@
 <!-- CEP.svelte -->
-<script>
+<script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import { CEPFormatter } from '../../validation/cep-formatter';
   import { CEPValidator } from '../../validation/cep-validator';
   import { cepService } from '../../api-external/services/cep-service';
 
+  interface AddressInfo {
+    logradouro: string;
+    complemento?: string;
+    bairro: string;
+    localidade: string;
+    uf: string;
+    estado: string;
+    cep?: string;
+    ibge?: string;
+    gia?: string;
+    ddd?: string;
+    siafi?: string;
+  }
+
   // Props with defaults
   export let value = '';
-  export let errors = null;
+  export let errors: string | null = null;
   export let touched = false;
   export let disabled = false;
   export let validateFn = CEPValidator.validateRequired; // Default to built-in validation
@@ -16,7 +30,7 @@
   export let required = true;
   export let labelText = 'CEP';
   export let placeholder = '00000-000';
-  export let testId = undefined; // Can be overridden, otherwise uses id
+  export let testId: string | undefined = undefined; // Can be overridden, otherwise uses id
   export let inputClass = ''; // Additional classes for the input
   export let wrapperClass = ''; // Additional classes for the wrapper
   export let useAPIValidation = false; // Enable API validation
@@ -26,12 +40,13 @@
   const dispatch = createEventDispatcher();
 
   // Address information from API
-  let addressInfo = null;
+  let addressInfo: AddressInfo | null = null;
   let isValidating = false;
 
   // Handle input with optional formatting
-  function handleInput(event) {
-    let newValue = event.target.value;
+  function handleInput(event: Event) {
+    const target = event.target as HTMLInputElement;
+    let newValue = target.value;
 
     // Apply formatting if provided
     if (formatFn) {
@@ -60,19 +75,18 @@
           const apiResult = await cepService.validate(value);
 
           if (!apiResult.isValid) {
-            errors = apiResult.message;
+            errors = apiResult.message || 'Erro na validação do CEP';
           } else if (apiResult.data) {
             if (showAddressInfo) {
-              addressInfo = apiResult.data;
+              addressInfo = apiResult.data as AddressInfo;
             }
             dispatch('address-found', {
               id,
               value,
-              address: apiResult.data
+              address: apiResult.data as AddressInfo
             });
           }
         } catch (error) {
-          console.error('API validation error:', error);
           errors = 'Erro ao validar CEP';
         } finally {
           isValidating = false;

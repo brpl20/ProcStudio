@@ -1,19 +1,33 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import api from '../../api';
   import UserForm from './UserForm.svelte';
   import ConfirmDialog from '../ui/ConfirmDialog.svelte';
 
-  let users = [];
-  let loading = true;
-  let error = null;
-  let success = null;
+  interface User {
+    id: number;
+    type: string;
+    attributes: {
+      name?: string;
+      last_name?: string;
+      email?: string;
+      access_email?: string;
+      role?: string;
+      oab?: string;
+      status?: string;
+    };
+  }
+
+  let users: User[] = [];
+  let loading = false;
+  let error: string | null = null;
+  let success: string | null = null;
 
   // Modal states
   let showUserForm = false;
   let showDeleteDialog = false;
-  let editingUser = null;
-  let deletingUser = null;
+  let editingUser: User | null = null;
+  let deletingUser: User | null = null;
 
   // Form mode
   let formMode = 'create'; // 'create' or 'edit'
@@ -25,9 +39,9 @@
 
       const response = await api.users.getUserProfiles();
       users = response.data || [];
-    } catch (err) {
+    } catch (err: any) {
       error = err.message || 'Erro ao carregar usuários';
-      console.error('Error loading users:', err);
+      // Error logged to user via error state
     } finally {
       loading = false;
     }
@@ -39,7 +53,7 @@
     showUserForm = true;
   }
 
-  function openEditForm(user) {
+  function openEditForm(user: User): void {
     editingUser = user;
     formMode = 'edit';
     showUserForm = true;
@@ -50,7 +64,7 @@
     editingUser = null;
   }
 
-  async function handleUserSaved(event) {
+  async function handleUserSaved(event: any): Promise<void> {
     const { success: isSuccess, message } = event.detail;
 
     if (isSuccess) {
@@ -65,7 +79,7 @@
     }
   }
 
-  function openDeleteDialog(user) {
+  function openDeleteDialog(user: User): void {
     deletingUser = user;
     showDeleteDialog = true;
   }
@@ -81,7 +95,7 @@
     }
 
     try {
-      const response = await api.users.deleteUserProfile(deletingUser.id);
+      const response = await api.users.deleteUser(String(deletingUser.id));
 
       if (response.success) {
         success = 'Usuário removido com sucesso!';
@@ -94,39 +108,40 @@
       } else {
         error = response.message || 'Erro ao remover usuário';
       }
-    } catch (err) {
+    } catch (err: any) {
       error = err.message || 'Erro ao remover usuário';
-      console.error('Error deleting user:', err);
+      // Error logged to user via error state
     } finally {
       closeDeleteDialog();
     }
   }
 
-  function getRoleBadgeClass(role) {
+  function getRoleBadgeClass(role: string): string {
     switch (role) {
-    case 'lawyer':
-      return 'badge-primary';
-    case 'paralegal':
-      return 'badge-secondary';
-    case 'trainee':
-      return 'badge-accent';
-    case 'secretary':
-      return 'badge-info';
-    default:
-      return 'badge-ghost';
+      case 'lawyer':
+        return 'badge-primary';
+      case 'paralegal':
+        return 'badge-secondary';
+      case 'trainee':
+        return 'badge-accent';
+      case 'secretary':
+        return 'badge-info';
+      default:
+        return 'badge-ghost';
     }
   }
 
-  function getRoleLabel(role) {
-    const roleMap = {
+  function getRoleLabel(role: string): string {
+    const roleMap: Record<string, string> = {
       lawyer: 'Advogado',
       paralegal: 'Paralegal',
       trainee: 'Estagiário',
       secretary: 'Secretário',
       counter: 'Contador',
-      excounter: 'Ex-Contador',
+      excounter: 'Ex-contador',
       representant: 'Representante'
     };
+
     return roleMap[role] || role;
   }
 
@@ -272,9 +287,9 @@
                     </span>
                   </td>
                   <td>
-                    <div class="badge {getRoleBadgeClass(user.attributes?.role)} badge-sm">
-                      {getRoleLabel(user.attributes?.role)}
-                    </div>
+                    <span class="badge {getRoleBadgeClass(user.attributes?.role || '')}">
+                      {getRoleLabel(user.attributes?.role || '')}
+                    </span>
                   </td>
                   <td>
                     <div
@@ -295,6 +310,7 @@
                       <button
                         class="btn btn-ghost btn-xs"
                         on:click={() => openEditForm(user)}
+                        aria-label="Editar usuário"
                         title="Editar usuário"
                       >
                         <svg
@@ -315,6 +331,7 @@
                       <button
                         class="btn btn-ghost btn-xs text-error hover:bg-error hover:text-error-content"
                         on:click={() => openDeleteDialog(user)}
+                        aria-label="Remover usuário"
                         title="Remover usuário"
                       >
                         <svg
@@ -369,7 +386,7 @@
 {#if showUserForm}
   <UserForm
     isOpen={showUserForm}
-    user={editingUser}
+    user={editingUser || null}
     mode={formMode}
     on:saved={handleUserSaved}
     on:close={closeUserForm}
@@ -379,13 +396,13 @@
 <!-- Delete Confirmation Dialog -->
 {#if showDeleteDialog && deletingUser}
   <ConfirmDialog
-    isOpen={showDeleteDialog}
+    show={showDeleteDialog}
     title="Confirmar Remoção"
     message="Tem certeza que deseja remover o usuário {deletingUser.attributes?.name ||
       'Usuário'}? Esta ação pode ser desfeita posteriormente."
     confirmText="Remover"
     cancelText="Cancelar"
-    confirmClass="btn-error"
+    type="danger"
     on:confirm={handleDeleteConfirm}
     on:cancel={closeDeleteDialog}
   />

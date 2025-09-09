@@ -58,7 +58,7 @@
         errorMessage = result.message || 'Erro no registro';
       }
     } catch (error) {
-      console.error('Registration error:', error);
+      // console.error('Registration error:', error);
       const errorMsg =
         error?.message || error?.data?.message || 'Erro no registro. Tente novamente.';
       errorMessage = errorMsg;

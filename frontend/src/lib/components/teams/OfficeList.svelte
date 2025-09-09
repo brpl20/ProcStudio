@@ -1,20 +1,28 @@
-<script>
+<script lang="ts">
   import { createEventDispatcher } from 'svelte';
 
-  export let offices = [];
+  interface Office {
+    id: number;
+    name: string;
+    logo_url?: string;
+    deleted: boolean;
+    [key: string]: any;
+  }
+
+  export let offices: Office[] = [];
   export let showDeleted = false;
 
   const dispatch = createEventDispatcher();
 
-  function handleEdit(office) {
+  function handleEdit(office: Office): void {
     dispatch('edit', office);
   }
 
-  function handleDelete(office) {
+  function handleDelete(office: Office): void {
     dispatch('delete', office);
   }
 
-  function handleRestore(office) {
+  function handleRestore(office: Office): void {
     dispatch('restore', office);
   }
 </script>
@@ -56,7 +64,9 @@
                   {#if office.logo_url}
                     <img src={office.logo_url} alt="Logo do {office.name}" />
                   {:else}
-                    <div class="bg-gray-200 flex items-center justify-center w-full h-full text-gray-500">
+                    <div
+                      class="bg-gray-200 flex items-center justify-center w-full h-full text-gray-500"
+                    >
                       🏢
                     </div>
                   {/if}
@@ -91,8 +101,8 @@
             </td>
             <td>
               <div class="dropdown dropdown-end">
-                <button tabindex="0" role="button" class="btn btn-ghost btn-xs">⋮</button>
-                <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                <button class="btn btn-ghost btn-xs" aria-label="Opções do escritório">⋮</button>
+                <ul class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
                   {#if !office.deleted}
                     <li>
                       <button on:click={() => handleEdit(office)} class="text-blue-600">

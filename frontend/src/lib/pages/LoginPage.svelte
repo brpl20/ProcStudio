@@ -57,7 +57,7 @@
         errorMessage = result.message || 'Erro no login';
       }
     } catch (error) {
-      console.error('Login error:', error);
+      // console.error('Login error:', error);
       errorMessage = error?.data?.message || error?.message || 'Erro no login. Tente novamente.';
     } finally {
       isLoading = false;

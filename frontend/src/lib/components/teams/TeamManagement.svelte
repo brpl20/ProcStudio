@@ -61,7 +61,7 @@
       }
     } catch (err) {
       error = err.message || 'Erro ao atualizar equipe';
-      console.error('Error updating team:', err);
+      // console.error('Error updating team:', err);
     } finally {
       loading = false;
     }
@@ -144,10 +144,11 @@
 
           <form on:submit|preventDefault={handleSave}>
             <div class="form-control mb-4">
-              <label class="label">
+              <label class="label" for="team-name">
                 <span class="label-text font-medium">Nome da Equipe</span>
               </label>
               <input
+                id="team-name"
                 type="text"
                 bind:value={formData.name}
                 class="input input-bordered w-full"
@@ -157,10 +158,11 @@
             </div>
 
             <div class="form-control mb-4">
-              <label class="label">
+              <label class="label" for="team-description">
                 <span class="label-text font-medium">Descrição</span>
               </label>
               <textarea
+                id="team-description"
                 bind:value={formData.description}
                 class="textarea textarea-bordered w-full"
                 rows="3"
@@ -170,10 +172,11 @@
             </div>
 
             <div class="form-control mb-6">
-              <label class="label">
+              <label class="label" for="team-subdomain">
                 <span class="label-text font-medium">Subdomínio</span>
               </label>
               <input
+                id="team-subdomain"
                 type="text"
                 bind:value={formData.subdomain}
                 class="input input-bordered w-full"
@@ -181,11 +184,11 @@
                 placeholder="meuescritorio"
               />
               {#if formData.subdomain}
-                <label class="label">
+                <div class="label">
                   <span class="label-text-alt text-info">
                     URL: {formData.subdomain}.procstudio.com
                   </span>
-                </label>
+                </div>
               {/if}
             </div>
 

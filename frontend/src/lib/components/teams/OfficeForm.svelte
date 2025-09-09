@@ -286,7 +286,7 @@
         error = response.message || 'Erro ao salvar escritório';
       }
     } catch (err: any) {
-      console.error('Form submit error:', err);
+      // Error logged to user via error state
       error = err.message || 'Erro ao salvar escritório';
     } finally {
       loading = false;

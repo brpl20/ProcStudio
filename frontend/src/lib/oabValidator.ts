@@ -128,5 +128,5 @@ export function isValidOab(oab: string): boolean {
  */
 export function normalizeOab(oab: string): string | null {
   const result = validateAndNormalizeOab(oab);
-  return result.isValid ? result.normalizedOab! : null;
+  return result.isValid ? (result.normalizedOab ?? null) : null;
 }

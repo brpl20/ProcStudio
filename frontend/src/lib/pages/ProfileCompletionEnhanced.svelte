@@ -375,11 +375,11 @@
                   required={formData.role === 'lawyer'}
                   disabled={loading}
                 />
-                <label class="label">
+                <div class="label">
                   <span class="label-text-alt"
                     >Digite apenas os números ou o formato completo (ex: PR123456)</span
                   >
-                </label>
+                </div>
               </div>
             {/if}
 
@@ -511,10 +511,7 @@
                 <label class="label" for="phone">
                   <span class="label-text font-semibold">Telefone *</span>
                 </label>
-                <Phone
-                  bind:value={formData.phone}
-                  placeholder="(45) 98405-5504"
-                />
+                <Phone bind:value={formData.phone} placeholder="(45) 98405-5504" />
               </div>
             {/if}
           </div>

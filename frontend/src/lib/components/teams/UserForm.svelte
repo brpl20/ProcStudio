@@ -142,16 +142,16 @@
             addresses_attributes:
               formData.street && formData.city
                 ? [
-                  {
-                    street: formData.street,
-                    number: formData.number,
-                    complement: formData.complement,
-                    neighborhood: formData.neighborhood,
-                    city: formData.city,
-                    state: formData.state,
-                    zip_code: formData.zip_code
-                  }
-                ]
+                    {
+                      street: formData.street,
+                      number: formData.number,
+                      complement: formData.complement,
+                      neighborhood: formData.neighborhood,
+                      city: formData.city,
+                      state: formData.state,
+                      zip_code: formData.zip_code
+                    }
+                  ]
                 : []
           }
         };
@@ -194,7 +194,7 @@
       }
     } catch (err) {
       error = err.message || 'Erro ao salvar usuário';
-      console.error('Error saving user:', err);
+      // console.error('Error saving user:', err);
     } finally {
       loading = false;
     }
@@ -281,10 +281,11 @@
 
           {#if mode === 'create'}
             <div class="form-control">
-              <label class="label">
+              <label class="label" for="email-input">
                 <span class="label-text font-medium">Email *</span>
               </label>
               <input
+                id="email-input"
                 type="email"
                 bind:value={formData.email}
                 class="input input-bordered w-full"
@@ -294,10 +295,11 @@
             </div>
 
             <div class="form-control">
-              <label class="label">
+              <label class="label" for="password-input">
                 <span class="label-text font-medium">Senha *</span>
               </label>
               <input
+                id="password-input"
                 type="password"
                 bind:value={formData.password}
                 class="input input-bordered w-full"
@@ -308,10 +310,11 @@
             </div>
 
             <div class="form-control">
-              <label class="label">
+              <label class="label" for="password-confirmation-input">
                 <span class="label-text font-medium">Confirmar Senha *</span>
               </label>
               <input
+                id="password-confirmation-input"
                 type="password"
                 bind:value={formData.password_confirmation}
                 class="input input-bordered w-full"
@@ -323,10 +326,11 @@
           {/if}
 
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="name-input">
               <span class="label-text font-medium">Nome *</span>
             </label>
             <input
+              id="name-input"
               type="text"
               bind:value={formData.name}
               class="input input-bordered w-full"
@@ -336,10 +340,11 @@
           </div>
 
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="last-name-input">
               <span class="label-text font-medium">Sobrenome</span>
             </label>
             <input
+              id="last-name-input"
               type="text"
               bind:value={formData.last_name}
               class="input input-bordered w-full"
@@ -348,10 +353,11 @@
           </div>
 
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="role-select">
               <span class="label-text font-medium">Função *</span>
             </label>
             <select
+              id="role-select"
               bind:value={formData.role}
               class="select select-bordered w-full"
               required
@@ -364,10 +370,11 @@
           </div>
 
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="status-select">
               <span class="label-text font-medium">Status</span>
             </label>
             <select
+              id="status-select"
               bind:value={formData.status}
               class="select select-bordered w-full"
               disabled={loading}
@@ -384,10 +391,11 @@
           </div>
 
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="gender-select">
               <span class="label-text font-medium">Gênero</span>
             </label>
             <select
+              id="gender-select"
               bind:value={formData.gender}
               class="select select-bordered w-full"
               disabled={loading}
@@ -400,10 +408,11 @@
           </div>
 
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="oab-input">
               <span class="label-text font-medium">OAB</span>
             </label>
             <input
+              id="oab-input"
               type="text"
               bind:value={formData.oab}
               class="input input-bordered w-full"
@@ -413,10 +422,11 @@
           </div>
 
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="rg-input">
               <span class="label-text font-medium">RG</span>
             </label>
             <input
+              id="rg-input"
               type="text"
               bind:value={formData.rg}
               class="input input-bordered w-full"
@@ -425,10 +435,11 @@
           </div>
 
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="cpf-input">
               <span class="label-text font-medium">CPF</span>
             </label>
             <input
+              id="cpf-input"
               type="text"
               bind:value={formData.cpf}
               class="input input-bordered w-full"
@@ -438,10 +449,11 @@
           </div>
 
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="nationality-select">
               <span class="label-text font-medium">Nacionalidade</span>
             </label>
             <select
+              id="nationality-select"
               bind:value={formData.nationality}
               class="select select-bordered w-full"
               disabled={loading}
@@ -453,10 +465,11 @@
           </div>
 
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="civil-status-select">
               <span class="label-text font-medium">Estado Civil</span>
             </label>
             <select
+              id="civil-status-select"
               bind:value={formData.civil_status}
               class="select select-bordered w-full"
               disabled={loading}
@@ -468,10 +481,11 @@
           </div>
 
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="birth-input">
               <span class="label-text font-medium">Data de Nascimento</span>
             </label>
             <input
+              id="birth-input"
               type="date"
               bind:value={formData.birth}
               class="input input-bordered w-full"
@@ -480,10 +494,11 @@
           </div>
 
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="mother-name-input">
               <span class="label-text font-medium">Nome da Mãe</span>
             </label>
             <input
+              id="mother-name-input"
               type="text"
               bind:value={formData.mother_name}
               class="input input-bordered w-full"
@@ -497,10 +512,11 @@
           </div>
 
           <div class="form-control col-span-full">
-            <label class="label">
+            <label class="label" for="phone-input">
               <span class="label-text font-medium">Telefone</span>
             </label>
             <input
+              id="phone-input"
               type="tel"
               bind:value={formData.phone_number}
               class="input input-bordered w-full"
@@ -515,10 +531,11 @@
           </div>
 
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="zip-code-input">
               <span class="label-text font-medium">CEP</span>
             </label>
             <input
+              id="zip-code-input"
               type="text"
               bind:value={formData.zip_code}
               class="input input-bordered w-full"
@@ -528,10 +545,11 @@
           </div>
 
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="street-input">
               <span class="label-text font-medium">Logradouro</span>
             </label>
             <input
+              id="street-input"
               type="text"
               bind:value={formData.street}
               class="input input-bordered w-full"
@@ -540,10 +558,11 @@
           </div>
 
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="number-input">
               <span class="label-text font-medium">Número</span>
             </label>
             <input
+              id="number-input"
               type="text"
               bind:value={formData.number}
               class="input input-bordered w-full"
@@ -552,10 +571,11 @@
           </div>
 
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="complement-input">
               <span class="label-text font-medium">Complemento</span>
             </label>
             <input
+              id="complement-input"
               type="text"
               bind:value={formData.complement}
               class="input input-bordered w-full"
@@ -564,10 +584,11 @@
           </div>
 
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="neighborhood-input">
               <span class="label-text font-medium">Bairro</span>
             </label>
             <input
+              id="neighborhood-input"
               type="text"
               bind:value={formData.neighborhood}
               class="input input-bordered w-full"
@@ -576,10 +597,11 @@
           </div>
 
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="city-input">
               <span class="label-text font-medium">Cidade</span>
             </label>
             <input
+              id="city-input"
               type="text"
               bind:value={formData.city}
               class="input input-bordered w-full"
@@ -588,10 +610,11 @@
           </div>
 
           <div class="form-control">
-            <label class="label">
+            <label class="label" for="state-input">
               <span class="label-text font-medium">Estado</span>
             </label>
             <input
+              id="state-input"
               type="text"
               bind:value={formData.state}
               class="input input-bordered w-full"
@@ -616,6 +639,12 @@
         </div>
       </form>
     </div>
-    <div class="modal-backdrop" on:click={handleClose}></div>
+    <div
+      class="modal-backdrop"
+      on:click={handleClose}
+      role="button"
+      tabindex="-1"
+      on:keydown={(e) => e.key === 'Escape' && handleClose()}
+    ></div>
   </div>
 {/if}
