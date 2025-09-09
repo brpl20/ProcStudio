@@ -29,7 +29,7 @@ function createAuthStore() {
               user: userData
             }));
           } catch (error) {
-            console.error('Error parsing stored user data:', error);
+            // Error parsing stored user data
             update((state) => ({ ...state, isAuthenticated: isAuth }));
           }
         } else {
@@ -74,7 +74,7 @@ function createAuthStore() {
       try {
         await api.auth.logout();
       } catch (error) {
-        console.error('Logout error:', error);
+        // Logout error
       } finally {
         // Limpar dados do localStorage
         localStorage.removeItem('userData');

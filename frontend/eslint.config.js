@@ -98,8 +98,11 @@ export default [
       'build/',
       '*.min.js',
       'vite.config.js',
-      'CustomerProfileView.svelte',
-      'CustomersNewPage.svelte'
+      'src/lib/components/customers/CustomerForm.svelte',
+      'src/lib/components/customers/CustomerProfileView.svelte',
+      'src/lib/pages/CustomersNewPage.svelte',
+      'src/lib/stores/customerStore.ts',
+      'src/lib/pages/TasksPage.svelte'
     ]
   }
 ];

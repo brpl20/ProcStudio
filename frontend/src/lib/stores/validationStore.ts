@@ -146,7 +146,7 @@ export function createValidationHelpers(validationStore: ReturnType<typeof creat
     errors: derived(validationStore, ($state) =>
       Object.values($state)
         .filter((field) => field.error && field.touched)
-        .map((field) => field.error!)
+        .map((field) => field.error as string)
     ),
 
     // Check if any field has been touched

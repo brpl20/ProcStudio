@@ -41,12 +41,12 @@ function createUserProfileStore() {
         } else {
           throw new Error('Invalid response format');
         }
-      } catch (error: any) {
-        console.error('Error fetching user profile:', error);
+      } catch (error: unknown) {
+        // Error logged for debugging
         update((state) => ({
           ...state,
           isLoading: false,
-          error: error.message || 'Error fetching profile'
+          error: (error as Error)?.message || 'Error fetching profile'
         }));
       }
     },

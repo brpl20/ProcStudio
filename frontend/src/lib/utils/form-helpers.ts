@@ -62,8 +62,8 @@ export function saveFormDraft(formData: CustomerFormData, excludePasswords: bool
     }
 
     localStorage.setItem(FORM_STORAGE_KEY, JSON.stringify(draftData));
-  } catch (error) {
-    console.warn('Failed to save form draft:', error);
+  } catch {
+    // Failed to save form draft
   }
 }
 
@@ -81,8 +81,8 @@ export function loadFormDraft(): Partial<CustomerFormData> | null {
     if (savedData) {
       return JSON.parse(savedData);
     }
-  } catch (error) {
-    console.warn('Failed to load form draft:', error);
+  } catch {
+    // Failed to load form draft
   }
 
   return null;
@@ -98,8 +98,8 @@ export function clearFormDraft(): void {
 
   try {
     localStorage.removeItem(FORM_STORAGE_KEY);
-  } catch (error) {
-    console.warn('Failed to clear form draft:', error);
+  } catch {
+    // Failed to clear form draft
   }
 }
 
@@ -182,7 +182,7 @@ export function validateGuardianAge(
  * @param sourceAddress - Source address data
  * @returns Copied address data
  */
-export function copyAddressData(sourceAddress: any): any {
+export function copyAddressData(sourceAddress: Record<string, unknown>): Record<string, unknown> {
   return { ...sourceAddress };
 }
 
@@ -191,7 +191,9 @@ export function copyAddressData(sourceAddress: any): any {
  * @param sourceBankAccount - Source bank account data
  * @returns Copied bank account data
  */
-export function copyBankAccountData(sourceBankAccount: any): any {
+export function copyBankAccountData(
+  sourceBankAccount: Record<string, unknown>
+): Record<string, unknown> {
   return { ...sourceBankAccount };
 }
 
@@ -219,7 +221,10 @@ export function formatCpfForPix(cpf: string): string {
  * @param initial - Initial form data
  * @returns True if form is dirty
  */
-export function isFormDirty(current: any, initial: any): boolean {
+export function isFormDirty(
+  current: Record<string, unknown>,
+  initial: Record<string, unknown>
+): boolean {
   return JSON.stringify(current) !== JSON.stringify(initial);
 }
 

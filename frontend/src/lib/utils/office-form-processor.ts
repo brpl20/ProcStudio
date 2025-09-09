@@ -189,43 +189,38 @@ export async function submitOfficeForm(
   contractFiles?: File[],
   officeId?: number
 ) {
-  try {
-    // Process form data
-    const processed = processOfficeFormData(
-      formData,
-      partners,
-      profitDistribution,
-      createSocialContract,
-      partnersWithProLabore,
-      logoFile,
-      contractFiles
-    );
+  // Process form data
+  const processed = processOfficeFormData(
+    formData,
+    partners,
+    profitDistribution,
+    createSocialContract,
+    partnersWithProLabore,
+    logoFile,
+    contractFiles
+  );
 
-    let response;
+  let response;
 
-    if (officeId) {
-      // Update existing office
-      response = await api.offices.updateOffice(officeId, processed.formData);
-    } else {
-      // Create new office
-      response = await api.offices.createOffice(processed.formData);
-    }
-
-    // Upload contracts separately if provided and office was created/updated successfully
-    if (response.success && contractFiles && contractFiles.length > 0 && response.data?.id) {
-      try {
-        await api.offices.uploadSocialContracts(response.data.id, contractFiles);
-      } catch (contractError) {
-        console.warn('Contract upload failed but office was saved:', contractError);
-        // Don't fail the whole operation
-      }
-    }
-
-    return response;
-  } catch (error) {
-    console.error('Office form submission error:', error);
-    throw error;
+  if (officeId) {
+    // Update existing office
+    response = await api.offices.updateOffice(officeId, processed.formData);
+  } else {
+    // Create new office
+    response = await api.offices.createOffice(processed.formData);
   }
+
+  // Upload contracts separately if provided and office was created/updated successfully
+  if (response.success && contractFiles && contractFiles.length > 0 && response.data?.id) {
+    try {
+      await api.offices.uploadSocialContracts(response.data.id, contractFiles);
+    } catch {
+      // Contract upload failed but office was saved
+      // Don't fail the whole operation
+    }
+  }
+
+  return response;
 }
 
 /**

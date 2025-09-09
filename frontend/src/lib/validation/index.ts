@@ -199,7 +199,7 @@ export const isFormValid = (validationState: FormValidationState): boolean => {
 export const getFormErrors = (validationState: FormValidationState): string[] => {
   return Object.values(validationState)
     .filter((field) => field.error)
-    .map((field) => field.error!);
+    .map((field) => field.error as string);
 };
 
 /**

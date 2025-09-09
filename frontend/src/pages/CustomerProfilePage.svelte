@@ -35,7 +35,7 @@
         error = response.message || 'Erro ao carregar cliente';
       }
     } catch (err: any) {
-      console.error('Error loading customer:', err);
+      // Error loading customer
       error = err.message || 'Erro inesperado ao carregar cliente';
     } finally {
       isLoading = false;
