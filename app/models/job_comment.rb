@@ -45,10 +45,6 @@ class JobComment < ApplicationRecord
   end
 
   def author_avatar_url
-    return nil unless user_profile.avatar.attached?
-
-    Rails.application.routes.url_helpers.rails_blob_url(user_profile.avatar)
-  rescue StandardError
-    nil
+    user_profile.avatar_url(only_path: false)
   end
 end

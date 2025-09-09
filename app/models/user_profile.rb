@@ -38,6 +38,7 @@
 
 class UserProfile < ApplicationRecord
   include DeletedFilterConcern
+  include AvatarUrlConcern
 
   acts_as_paranoid
 

@@ -55,6 +55,19 @@ class Job < ApplicationRecord
   validate :customer_same_team, if: -> { profile_customer.present? }
   validate :at_least_one_assignee
 
+  scope :with_full_associations, lambda {
+    includes(
+      :work,
+      :profile_customer,
+      :team,
+      created_by: { user_profile: { avatar_attachment: :blob } },
+      assignees: { avatar_attachment: :blob },
+      supervisors: { avatar_attachment: :blob },
+      job_user_profiles: { user_profile: { avatar_attachment: :blob } },
+      comments: { user_profile: { avatar_attachment: :blob } }
+    )
+  }
+
   after_create :ensure_creator_as_assignee
 
   enum :status, {

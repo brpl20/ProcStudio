@@ -3,22 +3,27 @@
 module Api
   module V1
     class JobCommentsController < BackofficeController
+      include JsonResponseConcern
+
       before_action :retrieve_job
       before_action :retrieve_comment, only: [:update, :destroy]
       before_action :perform_authorization
 
       after_action :verify_authorized
 
+      rescue_from ActiveRecord::RecordNotFound do |_exception|
+        render_not_found(action_name.in?(['update', 'destroy']) ? 'Comentário' : 'Job')
+      end
+
       def index
         comments = @job.comments
                      .includes(user_profile: { avatar_attachment: :blob })
                      .recent_first
 
-        render json: {
-          success: true,
+        render_success(
           message: 'Comentários listados com sucesso',
           data: JobCommentSerializer.new(comments).serializable_hash[:data]
-        }, status: :ok
+        )
       end
 
       def create
@@ -26,48 +31,41 @@ module Api
         comment.user_profile = current_user.user_profile
 
         if comment.save
-          render json: {
-            success: true,
+          render_success(
             message: 'Comentário criado com sucesso',
-            data: JobCommentSerializer.new(comment).serializable_hash[:data]
-          }, status: :created
+            data: JobCommentSerializer.new(comment).serializable_hash[:data],
+            status: :created
+          )
         else
-          render json: {
-            success: false,
+          render_error(
             message: comment.errors.full_messages.first || 'Erro ao criar comentário',
             errors: comment.errors.full_messages
-          }, status: :bad_request
+          )
         end
       end
 
       def update
         if @comment.update(comment_params)
-          render json: {
-            success: true,
+          render_success(
             message: 'Comentário atualizado com sucesso',
             data: JobCommentSerializer.new(@comment).serializable_hash[:data]
-          }, status: :ok
+          )
         else
-          render json: {
-            success: false,
+          render_error(
             message: @comment.errors.full_messages.first || 'Erro ao atualizar comentário',
             errors: @comment.errors.full_messages
-          }, status: :bad_request
+          )
         end
       end
 
       def destroy
         if @comment.destroy
-          render json: {
-            success: true,
-            message: 'Comentário excluído com sucesso'
-          }, status: :ok
+          render_success(message: 'Comentário excluído com sucesso')
         else
-          render json: {
-            success: false,
+          render_error(
             message: 'Erro ao excluir comentário',
             errors: @comment.errors.full_messages
-          }, status: :bad_request
+          )
         end
       end
 
@@ -75,22 +73,10 @@ module Api
 
       def retrieve_job
         @job = team_scoped(Job).find(params[:job_id])
-      rescue ActiveRecord::RecordNotFound
-        render json: {
-          success: false,
-          message: 'Job não encontrado',
-          errors: ['Job não encontrado']
-        }, status: :not_found
       end
 
       def retrieve_comment
         @comment = @job.comments.find(params[:id])
-      rescue ActiveRecord::RecordNotFound
-        render json: {
-          success: false,
-          message: 'Comentário não encontrado',
-          errors: ['Comentário não encontrado']
-        }, status: :not_found
       end
 
       def comment_params
