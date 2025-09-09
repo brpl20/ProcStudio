@@ -187,18 +187,18 @@
           </a>
         </li>
 
-        <!-- Tarefas -->
+        <!-- Jobs -->
         <li>
           <a
-            href="/tasks"
-            class={currentPath === '/tasks' ? 'active' : ''}
+            href="/jobs"
+            class={currentPath === '/jobs' ? 'active' : ''}
             on:click|preventDefault={() => {
-              router.navigate('/tasks');
+              router.navigate('/jobs');
               closeDrawer();
             }}
           >
             <Icon name="tasks" />
-            Tarefas
+            Jobs
           </a>
         </li>
 

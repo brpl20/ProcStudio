@@ -5,18 +5,22 @@
 
 export interface Job {
   id: number;
-  title: string;
   description?: string;
+  deadline?: string;
   status: JobStatus;
   priority: JobPriority;
-  assigned_to?: number;
-  created_by: number;
-  deadline?: string;
-  created_at: string;
-  updated_at: string;
+  comment?: string;
+  created_by_id: number;
+  customer_id?: number;
+  responsible_id?: number;
+  work_number?: string;
+  assignee_ids: number[];
+  supervisor_ids: number[];
+  collaborator_ids: number[];
+  deleted: boolean;
 }
 
-export type JobStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled';
+export type JobStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled' | 'delayed';
 export type JobPriority = 'low' | 'medium' | 'high' | 'urgent';
 
 export interface CreateJobRequest {
@@ -64,4 +68,37 @@ export interface UpdateJobResponse {
 export interface DeleteJobResponse {
   success: boolean;
   message?: string;
+}
+
+// JSON:API Types for Jobs
+export interface JsonApiJobData {
+  id: string;
+  type: 'job';
+  attributes: {
+    description?: string;
+    deadline?: string;
+    status: JobStatus;
+    priority: JobPriority;
+    comment?: string;
+    created_by_id: number;
+    customer_id?: number;
+    responsible_id?: number;
+    work_number?: string;
+    assignee_ids: number[];
+    supervisor_ids: number[];
+    collaborator_ids: number[];
+    deleted: boolean;
+  };
+}
+
+export interface JsonApiJobResponse {
+  success: boolean;
+  message: string;
+  data: JsonApiJobData[];
+}
+
+export interface JsonApiSingleJobResponse {
+  success: boolean;
+  message: string;
+  data: JsonApiJobData;
 }

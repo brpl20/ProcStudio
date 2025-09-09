@@ -26,7 +26,7 @@
       '/admin': [{ label: 'Admin', path: '/admin', icon: 'admin' }],
       '/settings': [{ label: 'Configurações', path: '/settings', icon: 'settings' }],
       '/reports': [{ label: 'Relatórios', path: '/reports', icon: 'reports' }],
-      '/tasks': [{ label: 'Tarefas', path: '/tasks', icon: 'tasks' }],
+      '/jobs': [{ label: 'Jobs', path: '/jobs', icon: 'tasks' }],
       '/works': [{ label: 'Trabalhos', path: '/works', icon: 'work' }],
       '/customers': [{ label: 'Clientes', path: '/customers', icon: 'customer' }],
       '/customers/new': [

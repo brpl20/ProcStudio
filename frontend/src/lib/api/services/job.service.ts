@@ -12,7 +12,10 @@ import type {
   JobResponse,
   CreateJobResponse,
   UpdateJobResponse,
-  DeleteJobResponse
+  DeleteJobResponse,
+  JsonApiJobData,
+  JsonApiJobResponse,
+  JsonApiSingleJobResponse
 } from '../types/job.types';
 
 export class JobService {
@@ -23,15 +26,41 @@ export class JobService {
   }
 
   /**
+   * Transform JSON:API job data to our Job type
+   */
+  private transformJsonApiJob(jsonApiData: JsonApiJobData): Job {
+    return {
+      id: parseInt(jsonApiData.id),
+      description: jsonApiData.attributes.description,
+      deadline: jsonApiData.attributes.deadline,
+      status: jsonApiData.attributes.status,
+      priority: jsonApiData.attributes.priority,
+      comment: jsonApiData.attributes.comment,
+      created_by_id: jsonApiData.attributes.created_by_id,
+      customer_id: jsonApiData.attributes.customer_id,
+      responsible_id: jsonApiData.attributes.responsible_id,
+      work_number: jsonApiData.attributes.work_number,
+      assignee_ids: jsonApiData.attributes.assignee_ids,
+      supervisor_ids: jsonApiData.attributes.supervisor_ids,
+      collaborator_ids: jsonApiData.attributes.collaborator_ids,
+      deleted: jsonApiData.attributes.deleted
+    };
+  }
+
+  /**
    * Get all jobs/tasks
    */
   async getJobs(): Promise<JobsListResponse> {
     try {
-      const response = await this.httpClient.get('/jobs');
+      const response: JsonApiJobResponse = await this.httpClient.get('/jobs');
+
+      // Transform JSON:API data to our Job type
+      const jobs = response.data.map((jobData) => this.transformJsonApiJob(jobData));
+
       return {
-        success: true,
-        data: response.data || response,
-        message: 'Jobs retrieved successfully'
+        success: response.success,
+        data: jobs,
+        message: response.message || 'Jobs retrieved successfully'
       };
     } catch (error: unknown) {
       return {
@@ -47,11 +76,15 @@ export class JobService {
    */
   async getJob(id: number): Promise<JobResponse> {
     try {
-      const response = await this.httpClient.get(`/jobs/${id}`);
+      const response: JsonApiSingleJobResponse = await this.httpClient.get(`/jobs/${id}`);
+
+      // Transform JSON:API data to our Job type
+      const job = this.transformJsonApiJob(response.data);
+
       return {
-        success: true,
-        data: response.data || response,
-        message: 'Job retrieved successfully'
+        success: response.success,
+        data: job,
+        message: response.message || 'Job retrieved successfully'
       };
     } catch (error: unknown) {
       return {
