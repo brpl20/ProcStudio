@@ -5,26 +5,29 @@
 # Table name: office_attachment_metadata
 #
 #  id              :bigint           not null, primary key
+#  byte_size       :bigint
+#  content_type    :string
 #  custom_metadata :json
 #  description     :string
 #  document_date   :date
 #  document_type   :string
+#  filename        :string
+#  s3_key          :string
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
-#  blob_id         :bigint           not null
 #  office_id       :bigint           not null
 #  uploaded_by_id  :bigint
 #
 # Indexes
 #
 #  idx_on_office_id_document_type_167734bb2a           (office_id,document_type)
-#  index_office_attachment_metadata_on_blob_id         (blob_id)
+#  index_office_attachment_metadata_on_document_type   (document_type)
 #  index_office_attachment_metadata_on_office_id       (office_id)
+#  index_office_attachment_metadata_on_s3_key          (s3_key)
 #  index_office_attachment_metadata_on_uploaded_by_id  (uploaded_by_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (blob_id => active_storage_blobs.id)
 #  fk_rails_...  (office_id => offices.id)
 #  fk_rails_...  (uploaded_by_id => users.id)
 #

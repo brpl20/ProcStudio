@@ -44,6 +44,8 @@ class UserProfile < ApplicationRecord
   belongs_to :user, inverse_of: :user_profile
   belongs_to :office, optional: true
 
+  has_one_attached :avatar
+
   delegate :team, to: :user
 
   validate :office_same_team, if: -> { office.present? }

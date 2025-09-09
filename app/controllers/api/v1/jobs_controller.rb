@@ -25,7 +25,18 @@ module Api
       end
 
       def index
-        jobs = team_scoped(Job).all
+        jobs = team_scoped(Job)
+                 .includes(
+                   :work,
+                   :profile_customer,
+                   :team,
+                   created_by: { user_profile: { avatar_attachment: :blob } },
+                   assignees: { avatar_attachment: :blob },
+                   supervisors: { avatar_attachment: :blob },
+                   job_user_profiles: { user_profile: { avatar_attachment: :blob } },
+                   comments: { user_profile: { avatar_attachment: :blob } }
+                 )
+                 .all
 
         filter_by_deleted_params.each do |key, value|
           next if value.blank?
@@ -37,7 +48,8 @@ module Api
           jobs,
           meta: {
             total_count: jobs.offset(nil).limit(nil).count
-          }
+          },
+          params: { action: 'index' }
         ).serializable_hash
 
         render json: {
@@ -49,6 +61,17 @@ module Api
       end
 
       def show
+        @job = @job.includes(
+          :work,
+          :profile_customer,
+          :team,
+          created_by: { user_profile: { avatar_attachment: :blob } },
+          assignees: { avatar_attachment: :blob },
+          supervisors: { avatar_attachment: :blob },
+          job_user_profiles: { user_profile: { avatar_attachment: :blob } },
+          comments: { user_profile: { avatar_attachment: :blob } }
+        )
+
         render json: {
           success: true,
           message: 'Job encontrado com sucesso',

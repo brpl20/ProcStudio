@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 20_250_902_204_620) do
+ActiveRecord::Schema[8.0].define(version: 20_250_909_190_821) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_catalog.plpgsql'
 
@@ -252,6 +252,19 @@ ActiveRecord::Schema[8.0].define(version: 20_250_902_204_620) do
     t.index ['position'], name: 'index_honorary_components_on_position'
   end
 
+  create_table 'job_comments', force: :cascade do |t|
+    t.text 'content', null: false
+    t.bigint 'user_profile_id', null: false
+    t.bigint 'job_id', null: false
+    t.datetime 'deleted_at'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['deleted_at'], name: 'index_job_comments_on_deleted_at'
+    t.index ['job_id', 'created_at'], name: 'index_job_comments_on_job_id_and_created_at'
+    t.index ['job_id'], name: 'index_job_comments_on_job_id'
+    t.index ['user_profile_id'], name: 'index_job_comments_on_user_profile_id'
+  end
+
   create_table 'job_user_profiles', force: :cascade do |t|
     t.bigint 'job_id', null: false
     t.bigint 'user_profile_id', null: false
@@ -386,7 +399,6 @@ ActiveRecord::Schema[8.0].define(version: 20_250_902_204_620) do
 
   create_table 'office_attachment_metadata', force: :cascade do |t|
     t.bigint 'office_id', null: false
-    t.bigint 'blob_id', null: false
     t.date 'document_date'
     t.string 'document_type'
     t.string 'description'
@@ -394,9 +406,14 @@ ActiveRecord::Schema[8.0].define(version: 20_250_902_204_620) do
     t.bigint 'uploaded_by_id'
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
-    t.index ['blob_id'], name: 'index_office_attachment_metadata_on_blob_id'
+    t.string 's3_key'
+    t.string 'filename'
+    t.string 'content_type'
+    t.bigint 'byte_size'
+    t.index ['document_type'], name: 'index_office_attachment_metadata_on_document_type'
     t.index ['office_id', 'document_type'], name: 'idx_on_office_id_document_type_167734bb2a'
     t.index ['office_id'], name: 'index_office_attachment_metadata_on_office_id'
+    t.index ['s3_key'], name: 'index_office_attachment_metadata_on_s3_key'
     t.index ['uploaded_by_id'], name: 'index_office_attachment_metadata_on_uploaded_by_id'
   end
 
@@ -458,10 +475,12 @@ ActiveRecord::Schema[8.0].define(version: 20_250_902_204_620) do
     t.bigint 'deleted_by_id'
     t.decimal 'quote_value', precision: 10, scale: 2, comment: 'Value per quote in BRL'
     t.integer 'number_of_quotes', default: 0, comment: 'Total number of quotes'
+    t.string 'logo_s3_key'
     t.index ['accounting_type'], name: 'index_offices_on_accounting_type'
     t.index ['created_by_id'], name: 'index_offices_on_created_by_id'
     t.index ['deleted_at'], name: 'index_offices_on_deleted_at'
     t.index ['deleted_by_id'], name: 'index_offices_on_deleted_by_id'
+    t.index ['logo_s3_key'], name: 'index_offices_on_logo_s3_key'
     t.index ['team_id'], name: 'index_offices_on_team_id'
   end
 
@@ -845,6 +864,8 @@ ActiveRecord::Schema[8.0].define(version: 20_250_902_204_620) do
   add_foreign_key 'honoraries', 'procedures'
   add_foreign_key 'honoraries', 'works'
   add_foreign_key 'honorary_components', 'honoraries'
+  add_foreign_key 'job_comments', 'jobs'
+  add_foreign_key 'job_comments', 'user_profiles'
   add_foreign_key 'job_user_profiles', 'jobs'
   add_foreign_key 'job_user_profiles', 'user_profiles'
   add_foreign_key 'job_works', 'jobs'
@@ -859,7 +880,6 @@ ActiveRecord::Schema[8.0].define(version: 20_250_902_204_620) do
   add_foreign_key 'legal_cost_entries', 'legal_costs'
   add_foreign_key 'legal_cost_types', 'teams'
   add_foreign_key 'legal_costs', 'honoraries'
-  add_foreign_key 'office_attachment_metadata', 'active_storage_blobs', column: 'blob_id'
   add_foreign_key 'office_attachment_metadata', 'offices'
   add_foreign_key 'office_attachment_metadata', 'users', column: 'uploaded_by_id'
   add_foreign_key 'office_bank_accounts', 'bank_accounts'

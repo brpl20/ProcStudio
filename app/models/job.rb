@@ -48,6 +48,8 @@ class Job < ApplicationRecord
            through: :job_user_profiles, source: :user_profile
   has_many :supervisors, -> { where(job_user_profiles: { role: 'supervisor' }) },
            through: :job_user_profiles, source: :user_profile
+  has_many :job_comments, dependent: :destroy
+  has_many :comments, class_name: 'JobComment', dependent: :destroy
 
   validate :work_same_team, if: -> { work.present? }
   validate :customer_same_team, if: -> { profile_customer.present? }

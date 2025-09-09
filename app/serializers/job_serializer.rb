@@ -34,7 +34,7 @@
 class JobSerializer
   include JSONAPI::Serializer
 
-  attributes :description, :deadline, :status, :priority, :comment, :created_by_id
+  attributes :description, :deadline, :status, :priority, :created_by_id
 
   attribute :customer_id, &:profile_customer_id
 
@@ -49,6 +49,20 @@ class JobSerializer
   # Return all assignee IDs
   attribute :assignee_ids do |object|
     object.assignees.pluck(:id)
+  end
+
+  # For index action - include avatar URLs
+  attribute :assignees_summary, if: proc { |_, options| options[:action] == 'index' } do |object|
+    object.assignees.limit(3).map do |assignee|
+      {
+        id: assignee.id,
+        name: assignee.name,
+        last_name: assignee.last_name,
+        avatar_url: if assignee.avatar.attached?
+                      Rails.application.routes.url_helpers.rails_blob_url(assignee.avatar, only_path: true)
+                    end
+      }
+    end
   end
 
   # Return all supervisor IDs
@@ -68,7 +82,10 @@ class JobSerializer
         id: assignee.id,
         name: assignee.name,
         last_name: assignee.last_name,
-        role: 'assignee'
+        role: 'assignee',
+        avatar_url: if assignee.avatar.attached?
+                      Rails.application.routes.url_helpers.rails_blob_url(assignee.avatar, only_path: true)
+                    end
       }
     end
   end
@@ -79,7 +96,10 @@ class JobSerializer
         id: supervisor.id,
         name: supervisor.name,
         last_name: supervisor.last_name,
-        role: 'supervisor'
+        role: 'supervisor',
+        avatar_url: if supervisor.avatar.attached?
+                      Rails.application.routes.url_helpers.rails_blob_url(supervisor.avatar, only_path: true)
+                    end
       }
     end
   end
@@ -92,7 +112,10 @@ class JobSerializer
         id: collaborator.id,
         name: collaborator.name,
         last_name: collaborator.last_name,
-        role: 'collaborator'
+        role: 'collaborator',
+        avatar_url: if collaborator.avatar.attached?
+                      Rails.application.routes.url_helpers.rails_blob_url(collaborator.avatar, only_path: true)
+                    end
       }
     end
   end
@@ -153,5 +176,48 @@ class JobSerializer
 
   attributes :deleted do |object|
     object.deleted_at.present?
+  end
+
+  # Comments count for index
+  attribute :comments_count do |object|
+    object.comments.size
+  end
+
+  # Latest comment for index
+  attribute :latest_comment, if: proc { |_, options| options[:action] == 'index' } do |object|
+    latest = object.comments.recent_first.first
+    next unless latest
+
+    {
+      id: latest.id,
+      content: latest.content.truncate(100),
+      created_at: latest.created_at.iso8601,
+      author: {
+        id: latest.user_profile.id,
+        name: latest.user_profile.full_name,
+        avatar_url: if latest.user_profile.avatar.attached?
+                      Rails.application.routes.url_helpers.rails_blob_url(latest.user_profile.avatar, only_path: true)
+                    end
+      }
+    }
+  end
+
+  # Full comments for show action
+  attribute :comments, if: proc { |_, options| options[:action] == 'show' } do |object|
+    object.comments.recent_first.map do |comment|
+      {
+        id: comment.id,
+        content: comment.content,
+        created_at: comment.created_at.iso8601,
+        updated_at: comment.updated_at.iso8601,
+        author: {
+          id: comment.user_profile.id,
+          name: comment.user_profile.full_name,
+          avatar_url: if comment.user_profile.avatar.attached?
+                        Rails.application.routes.url_helpers.rails_blob_url(comment.user_profile.avatar, only_path: true)
+                      end
+        }
+      }
+    end
   end
 end

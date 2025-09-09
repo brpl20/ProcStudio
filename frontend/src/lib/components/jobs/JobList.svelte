@@ -3,10 +3,29 @@
   import { onMount } from 'svelte';
   import api, { type Job } from '../../api';
   import { getJobStatusInfo, getJobPriorityInfo } from '../../constants/formOptions';
+  import { truncateDescription } from '../../utils/text';
+  import Icon from '../../icons.svelte';
 
   let jobs: Job[] = $state([]);
   let loading = $state(true);
   let error = $state<string | null>(null);
+
+  // Helper function to render team avatars based on team size
+  function getTeamAvatars(job: Job) {
+    const members = [];
+
+    // Add responsible person if exists
+    if (job.responsible_id) {
+      members.push({ id: job.responsible_id, isPrimary: true });
+    }
+
+    // TODO: Add assignee_ids when available from API
+    // if (job.assignee_ids) {
+    //   job.assignee_ids.forEach(id => members.push({ id, isPrimary: false }));
+    // }
+
+    return members;
+  }
 
   async function fetchJobs() {
     try {
@@ -70,10 +89,12 @@
         <tr>
           <th>#</th>
           <th>Descrição</th>
-          <th>Status</th>
+          <th>Comentários</th>
+          <th>Status / Prazo</th>
           <th>Prioridade</th>
-          <th>Responsável</th>
-          <th>Prazo</th>
+          <th>Equipe</th>
+          <th>Trabalho</th>
+          <th>Cliente</th>
         </tr>
       </thead>
       <tbody>
@@ -84,18 +105,40 @@
             </td>
             <td>
               {#if job.description}
-                <div class="font-medium">{job.description}</div>
+                <div class="font-medium tooltip" data-tip={job.description}>
+                  {truncateDescription(job.description)}
+                </div>
               {:else}
                 <div class="font-medium text-base-content/60">Sem descrição</div>
               {/if}
+            </td>
+            <td class="w-12 text-center">
               {#if job.comment}
-                <div class="text-sm text-base-content/60 mt-1">{job.comment}</div>
+                <div class="tooltip" data-tip={job.comment}>
+                  <Icon
+                    name="comment"
+                    className="h-4 w-4 text-primary hover:text-primary-focus cursor-help"
+                  />
+                </div>
+              {:else}
+                <span class="text-base-content/30">-</span>
               {/if}
             </td>
             <td>
-              <span class="{getJobStatusInfo(job.status).badgeClass} badge-sm">
-                {getJobStatusInfo(job.status).label}
-              </span>
+              <div class="flex flex-col gap-1">
+                <div>
+                  <span class="{getJobStatusInfo(job.status).badgeClass} badge-sm">
+                    {getJobStatusInfo(job.status).label}
+                  </span>
+                </div>
+                <div class="text-xs text-base-content/60">
+                  {#if job.deadline}
+                    {new Date(job.deadline).toLocaleDateString('pt-BR')}
+                  {:else}
+                    Sem prazo
+                  {/if}
+                </div>
+              </div>
             </td>
             <td>
               <span class="{getJobPriorityInfo(job.priority).badgeClass} badge-sm">
@@ -103,17 +146,77 @@
               </span>
             </td>
             <td>
-              {#if job.responsible_id}
-                ID: {job.responsible_id}
+              {#if getTeamAvatars(job).length > 0}
+                {@const teamMembers = getTeamAvatars(job)}
+                {#if teamMembers.length === 1}
+                  <!-- Single member -->
+                  <div class="avatar placeholder">
+                    <div class="bg-primary text-primary-content rounded-full w-8 h-8">
+                      <span class="text-xs font-medium">
+                        {teamMembers[0].id.toString().slice(-2)}
+                      </span>
+                    </div>
+                  </div>
+                {:else if teamMembers.length === 2}
+                  <!-- Two members -->
+                  <div class="avatar-group -space-x-4">
+                    <div class="avatar placeholder">
+                      <div class="bg-primary text-primary-content rounded-full w-8 h-8">
+                        <span class="text-xs font-medium">
+                          {teamMembers[0].id.toString().slice(-2)}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="avatar placeholder">
+                      <div class="bg-secondary text-secondary-content rounded-full w-8 h-8">
+                        <span class="text-xs font-medium">
+                          {teamMembers[1].id.toString().slice(-2)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                {:else}
+                  <!-- Three or more members -->
+                  <div class="avatar-group -space-x-4">
+                    <div class="avatar placeholder">
+                      <div class="bg-primary text-primary-content rounded-full w-8 h-8">
+                        <span class="text-xs font-medium">
+                          {teamMembers[0].id.toString().slice(-2)}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="avatar placeholder">
+                      <div class="bg-secondary text-secondary-content rounded-full w-8 h-8">
+                        <span class="text-xs font-medium">
+                          {teamMembers[1].id.toString().slice(-2)}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="avatar placeholder">
+                      <div class="bg-accent text-accent-content rounded-full w-8 h-8">
+                        <span class="text-xs font-bold">
+                          +{teamMembers.length - 2}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                {/if}
               {:else}
-                -
+                <span class="text-base-content/30">-</span>
               {/if}
             </td>
             <td>
-              {#if job.deadline}
-                {new Date(job.deadline).toLocaleDateString('pt-BR')}
+              {#if job.work_number}
+                <div class="font-medium">{job.work_number}</div>
               {:else}
-                -
+                <div class="font-medium text-base-content/60">Sem trabalho</div>
+              {/if}
+            </td>
+            <td>
+              {#if job.customer_id}
+                <div class="font-medium">ID: {job.customer_id}</div>
+              {:else}
+                <div class="font-medium text-base-content/60">Sem cliente</div>
               {/if}
             </td>
           </tr>

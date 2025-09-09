@@ -9,6 +9,7 @@
 #  cnpj                                     :string
 #  deleted_at                               :datetime
 #  foundation                               :date
+#  logo_s3_key                              :string
 #  name                                     :string
 #  number_of_quotes(Total number of quotes) :integer          default(0)
 #  oab_inscricao                            :string
@@ -30,6 +31,7 @@
 #  index_offices_on_created_by_id    (created_by_id)
 #  index_offices_on_deleted_at       (deleted_at)
 #  index_offices_on_deleted_by_id    (deleted_by_id)
+#  index_offices_on_logo_s3_key      (logo_s3_key)
 #  index_offices_on_team_id          (team_id)
 #
 # Foreign Keys

@@ -36,6 +36,8 @@ Rails.application.routes.draw do
         member do
           post :restore
         end
+
+        resources :comments, controller: 'job_comments', only: [:index, :create, :update, :destroy]
       end
 
       resources :offices do
