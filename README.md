@@ -1,6 +1,9 @@
-# Backend - PRC API
-
+# ProcStudio
+## Backend
 API RESTful desenvolvida em Ruby on Rails para o sistema ProcStudio.
+
+## Frontend
+Svelte 5.0
 
 ## Índice
 
