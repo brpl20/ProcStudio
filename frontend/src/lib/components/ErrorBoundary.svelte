@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import { router } from '../stores/routerStore.js';
-  import Icon from '../icons.svelte';
+  import Icon from '../icons/icons.svelte';
 
   export let error = null;
   export let message = 'Algo deu errado. Por favor, tente novamente.';

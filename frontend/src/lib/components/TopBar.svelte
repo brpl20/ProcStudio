@@ -2,7 +2,7 @@
   import { authStore } from '../stores/authStore.js';
   import { userProfileStore, currentUserProfile } from '../stores/userProfileStore.js';
   import { router } from '../stores/routerStore.js';
-  import Icon from '../icons.svelte';
+  import Icon from '../icons/icons.svelte';
   import { WebsiteName } from '../config.js';
 
   interface Props {

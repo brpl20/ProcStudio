@@ -3,21 +3,43 @@
  * Types for job/task related API operations
  */
 
-export interface Job {
+export interface JobUser {
   id: number;
-  description?: string;
+  name: string;
+  last_name?: string;
+  avatar_url?: string | null;
+}
+
+export interface JobCommentAuthor {
+  id: number;
+  name: string; // Full name as returned by backend
+  avatar_url?: string | null;
+}
+
+export interface JobComment {
+  id: number;
+  content: string;
+  created_at: string;
+  author: JobCommentAuthor;
+}
+
+export interface Job {
+  id: number; // Backend returns number directly, not string
+  description?: string | null;
   deadline?: string;
   status: JobStatus;
   priority: JobPriority;
-  comment?: string;
   created_by_id: number;
-  customer_id?: number;
+  customer_id?: number | null;
   responsible_id?: number;
-  work_number?: string;
+  work_number?: string | null;
   assignee_ids: number[];
+  assignees_summary?: JobUser[];
   supervisor_ids: number[];
   collaborator_ids: number[];
   deleted: boolean;
+  comments_count?: number;
+  latest_comment?: JobComment | null;
 }
 
 export type JobStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled' | 'delayed';
@@ -75,19 +97,21 @@ export interface JsonApiJobData {
   id: string;
   type: 'job';
   attributes: {
-    description?: string;
+    description?: string | null;
     deadline?: string;
     status: JobStatus;
     priority: JobPriority;
-    comment?: string;
     created_by_id: number;
-    customer_id?: number;
+    customer_id?: number | null;
     responsible_id?: number;
-    work_number?: string;
+    work_number?: string | null;
     assignee_ids: number[];
+    assignees_summary?: JobUser[];
     supervisor_ids: number[];
     collaborator_ids: number[];
     deleted: boolean;
+    comments_count?: number;
+    latest_comment?: JobComment | null;
   };
 }
 
@@ -95,6 +119,9 @@ export interface JsonApiJobResponse {
   success: boolean;
   message: string;
   data: JsonApiJobData[];
+  meta?: {
+    total_count: number;
+  };
 }
 
 export interface JsonApiSingleJobResponse {

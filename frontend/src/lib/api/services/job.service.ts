@@ -14,7 +14,6 @@ import type {
   UpdateJobResponse,
   DeleteJobResponse,
   JsonApiJobData,
-  JsonApiJobResponse,
   JsonApiSingleJobResponse
 } from '../types/job.types';
 
@@ -35,15 +34,17 @@ export class JobService {
       deadline: jsonApiData.attributes.deadline,
       status: jsonApiData.attributes.status,
       priority: jsonApiData.attributes.priority,
-      comment: jsonApiData.attributes.comment,
       created_by_id: jsonApiData.attributes.created_by_id,
       customer_id: jsonApiData.attributes.customer_id,
       responsible_id: jsonApiData.attributes.responsible_id,
       work_number: jsonApiData.attributes.work_number,
       assignee_ids: jsonApiData.attributes.assignee_ids,
+      assignees_summary: jsonApiData.attributes.assignees_summary,
       supervisor_ids: jsonApiData.attributes.supervisor_ids,
       collaborator_ids: jsonApiData.attributes.collaborator_ids,
-      deleted: jsonApiData.attributes.deleted
+      deleted: jsonApiData.attributes.deleted,
+      comments_count: jsonApiData.attributes.comments_count,
+      latest_comment: jsonApiData.attributes.latest_comment
     };
   }
 
@@ -52,16 +53,28 @@ export class JobService {
    */
   async getJobs(): Promise<JobsListResponse> {
     try {
-      const response: JsonApiJobResponse = await this.httpClient.get('/jobs');
+      const response = await this.httpClient.get('/jobs');
 
-      // Transform JSON:API data to our Job type
-      const jobs = response.data.map((jobData) => this.transformJsonApiJob(jobData));
+      // Check if the response is JSON:API format (has attributes)
+      if (response.success && Array.isArray(response.data) && response.data[0]?.attributes) {
+        const jobs = response.data.map((jobData) => this.transformJsonApiJob(jobData));
+        return {
+          success: response.success,
+          data: jobs,
+          message: response.message || 'Jobs retrieved successfully'
+        };
+      }
 
-      return {
-        success: response.success,
-        data: jobs,
-        message: response.message || 'Jobs retrieved successfully'
-      };
+      // Fallback for direct format
+      if (response.success && Array.isArray(response.data)) {
+        return {
+          success: response.success,
+          data: response.data as Job[],
+          message: response.message || 'Jobs retrieved successfully'
+        };
+      }
+
+      throw new Error('Invalid response format from jobs API');
     } catch (error: unknown) {
       return {
         success: false,

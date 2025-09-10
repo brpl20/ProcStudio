@@ -4,7 +4,7 @@
   import { authStore } from '../stores/authStore.js';
   import { router } from '../stores/routerStore.js';
   import api from '../api/index';
-  import Icon from '../icons.svelte';
+  import Icon from '../icons/icons.svelte';
 
   let email = '';
   let password = '';

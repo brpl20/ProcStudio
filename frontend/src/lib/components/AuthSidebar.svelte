@@ -8,7 +8,7 @@
     type UserProfile
   } from '../stores/userProfileStore.ts';
   import { router } from '../stores/routerStore.js';
-  import Icon from '../icons.svelte';
+  import Icon from '../icons/icons.svelte';
   import TopBar from './TopBar.svelte';
   import Footer from './Footer.svelte';
   import Breadcrumbs from './Breadcrumbs.svelte';

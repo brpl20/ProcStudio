@@ -1,5 +1,5 @@
 <script>
-  import { getIcon } from './icons/index.js';
+  import { getIcon } from './index.js';
 
   export let name;
   export let className = 'h-5 w-5';

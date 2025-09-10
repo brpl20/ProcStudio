@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Auto-generated wrapper for project-local aud
+PROJ_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+VENV="$PROJ_ROOT/.auditor_venv/bin/aud"
+if [ -x "$VENV" ]; then
+    exec "$VENV" "$@"
+fi
+# Fallback to module execution
+exec "$PROJ_ROOT/.auditor_venv/bin/python" -m theauditor.cli "$@"

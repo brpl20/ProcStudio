@@ -4,27 +4,53 @@
   import api, { type Job } from '../../api';
   import { getJobStatusInfo, getJobPriorityInfo } from '../../constants/formOptions';
   import { truncateDescription } from '../../utils/text';
-  import Icon from '../../icons.svelte';
+  import Icon from '../../icons/icons.svelte';
+  import SearchInput from '../ui/SearchInput.svelte';
 
   let jobs: Job[] = $state([]);
   let loading = $state(true);
   let error = $state<string | null>(null);
+  let searchTerm = $state('');
 
-  // Helper function to render team avatars based on team size
-  function getTeamAvatars(job: Job) {
-    const members = [];
+  let filteredJobs = $state([]);
 
-    // Add responsible person if exists
-    if (job.responsible_id) {
-      members.push({ id: job.responsible_id, isPrimary: true });
+  // Update filteredJobs whenever jobs or searchTerm changes
+  $effect(() => {
+    if (!searchTerm || !searchTerm.trim()) {
+      filteredJobs = jobs;
+      return;
     }
 
-    // TODO: Add assignee_ids when available from API
-    // if (job.assignee_ids) {
-    //   job.assignee_ids.forEach(id => members.push({ id, isPrimary: false }));
-    // }
+    const term = searchTerm.toLowerCase();
+    filteredJobs = jobs.filter((job) => {
+      return (
+        job.description?.toLowerCase().includes(term) ||
+        job.latest_comment?.content?.toLowerCase().includes(term) ||
+        job.latest_comment?.author?.name?.toLowerCase().includes(term) ||
+        job.work_number?.toLowerCase().includes(term) ||
+        job.status?.toLowerCase().includes(term) ||
+        job.priority?.toLowerCase().includes(term) ||
+        job.id?.toString().includes(term) ||
+        job.assignees_summary?.some(
+          (u) => u.name?.toLowerCase().includes(term) || u.last_name?.toLowerCase().includes(term)
+        )
+      );
+    });
+  });
 
-    return members;
+  // Helper function to get initials from user name
+  function getInitials(user: { name: string; last_name?: string }): string {
+    const firstName = user.name?.charAt(0) || '';
+    const lastName = user.last_name?.charAt(0) || '';
+    return (firstName + lastName).toUpperCase();
+  }
+
+  // Helper function to get initials from full name (for comment authors)
+  function getInitialsFromFullName(fullName: string): string {
+    const names = fullName.trim().split(' ');
+    const firstName = names[0]?.charAt(0) || '';
+    const lastName = names.length > 1 ? names[names.length - 1]?.charAt(0) || '' : '';
+    return (firstName + lastName).toUpperCase();
   }
 
   async function fetchJobs() {
@@ -32,7 +58,6 @@
       loading = true;
       error = null;
 
-      // Use the proper API service method
       const response = await api.jobs.getJobs();
 
       if (response.success && response.data) {
@@ -48,6 +73,13 @@
   }
 
   onMount(() => {
+    // For development: use a test token if no auth token exists
+    // TODO: Remove this when proper login flow is implemented in frontend
+    if (!api.getAuthToken() && import.meta.env.DEV) {
+      const testToken =
+        'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo4Mywic3ViIjo4MywiZXhwIjoxNzI1OTkxNjEzfQ.bfqKF9Kzwquj7m7o6_UJ9wLzDdPRYwNpCG6FMKqJ_ow';
+      api.setAuthToken(testToken);
+    }
     fetchJobs();
   });
 </script>
@@ -83,6 +115,36 @@
     </div>
   </div>
 {:else}
+  <div class="mb-4">
+    <SearchInput
+      bind:value={searchTerm}
+      placeholder="Pesquisar por descrição, comentário, trabalho, status..."
+    />
+  </div>
+
+  {#if filteredJobs.length === 0}
+    <div class="alert alert-info">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        class="stroke-current shrink-0 w-6 h-6"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        ></path>
+      </svg>
+      <span>Nenhum job encontrado para "{searchTerm}"</span>
+    </div>
+  {:else}
+    <div class="text-sm text-base-content/60 mb-2">
+      Mostrando {filteredJobs.length} de {jobs.length} jobs
+    </div>
+  {/if}
+
   <div class="overflow-x-auto">
     <table class="table table-zebra">
       <thead>
@@ -98,7 +160,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each jobs as job}
+        {#each filteredJobs as job}
           <tr class="hover">
             <td class="font-mono text-sm">
               {job.id}
@@ -113,12 +175,17 @@
               {/if}
             </td>
             <td class="w-12 text-center">
-              {#if job.comment}
-                <div class="tooltip" data-tip={job.comment}>
-                  <Icon
-                    name="comment"
-                    className="h-4 w-4 text-primary hover:text-primary-focus cursor-help"
-                  />
+              {#if job.latest_comment}
+                <div class="tooltip tooltip-left" data-tip={job.latest_comment.content}>
+                  <div class="flex items-center gap-1">
+                    <Icon
+                      name="comment"
+                      className="h-4 w-4 text-primary hover:text-primary-focus cursor-help"
+                    />
+                    {#if job.comments_count && job.comments_count > 1}
+                      <span class="badge badge-xs badge-primary">{job.comments_count}</span>
+                    {/if}
+                  </div>
                 </div>
               {:else}
                 <span class="text-base-content/30">-</span>
@@ -146,31 +213,30 @@
               </span>
             </td>
             <td>
-              {#if getTeamAvatars(job).length > 0}
-                {@const teamMembers = getTeamAvatars(job)}
-                {#if teamMembers.length === 1}
+              {#if job.assignees_summary && job.assignees_summary.length > 0}
+                {#if job.assignees_summary.length === 1}
                   <!-- Single member -->
                   <div class="avatar placeholder">
                     <div class="bg-primary text-primary-content rounded-full w-8 h-8">
                       <span class="text-xs font-medium">
-                        {teamMembers[0].id.toString().slice(-2)}
+                        {getInitials(job.assignees_summary[0])}
                       </span>
                     </div>
                   </div>
-                {:else if teamMembers.length === 2}
+                {:else if job.assignees_summary.length === 2}
                   <!-- Two members -->
                   <div class="avatar-group -space-x-4">
                     <div class="avatar placeholder">
                       <div class="bg-primary text-primary-content rounded-full w-8 h-8">
                         <span class="text-xs font-medium">
-                          {teamMembers[0].id.toString().slice(-2)}
+                          {getInitials(job.assignees_summary[0])}
                         </span>
                       </div>
                     </div>
                     <div class="avatar placeholder">
                       <div class="bg-secondary text-secondary-content rounded-full w-8 h-8">
                         <span class="text-xs font-medium">
-                          {teamMembers[1].id.toString().slice(-2)}
+                          {getInitials(job.assignees_summary[1])}
                         </span>
                       </div>
                     </div>
@@ -181,21 +247,21 @@
                     <div class="avatar placeholder">
                       <div class="bg-primary text-primary-content rounded-full w-8 h-8">
                         <span class="text-xs font-medium">
-                          {teamMembers[0].id.toString().slice(-2)}
+                          {getInitials(job.assignees_summary[0])}
                         </span>
                       </div>
                     </div>
                     <div class="avatar placeholder">
                       <div class="bg-secondary text-secondary-content rounded-full w-8 h-8">
                         <span class="text-xs font-medium">
-                          {teamMembers[1].id.toString().slice(-2)}
+                          {getInitials(job.assignees_summary[1])}
                         </span>
                       </div>
                     </div>
                     <div class="avatar placeholder">
                       <div class="bg-accent text-accent-content rounded-full w-8 h-8">
                         <span class="text-xs font-bold">
-                          +{teamMembers.length - 2}
+                          +{job.assignees_summary.length - 2}
                         </span>
                       </div>
                     </div>

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import AuthSidebar from '../components/AuthSidebar.svelte';
-  import Icon from '../icons.svelte';
+  import Icon from '../icons/icons.svelte';
   import { authStore } from '../stores/authStore.js';
   import JobList from '../components/jobs/JobList.svelte';
 </script>

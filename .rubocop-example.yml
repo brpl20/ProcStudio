@@ -1,0 +1,49 @@
+inherit_gem:
+  rubocop-rails-omakase: rubocop.yml
+
+AllCops:
+  DisplayCopNames: true
+
+  # Exclude directories that don't need to be linted
+  Exclude:
+    - "bin/**/*"
+    - "db/schema.rb"
+    - "db/migrate/*"
+    - "vendor/**/*"
+    - "node_modules/**/*"
+    - "tmp/**/*"
+    - "config/initializers/*"
+    - "config/environments/*"
+
+# Disable documentation checks for faster development
+Style/Documentation:
+  Enabled: false
+
+# Disable frozen string literal comments for cleaner files
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+# Configure line length for better readability
+Layout/LineLength:
+  Max: 120
+  AllowURI: true
+  URISchemes:
+    - http
+    - https
+
+# Customize RSpec configurations for cleaner tests
+RSpec:
+  # Exclude certain directories from RSpec cops
+  Exclude:
+    - "spec/support/**/*"
+    - "spec/factories/**/*"
+
+# Customize Rails-specific configurations
+Rails:
+  # Enable all Rails cops for comprehensive checking
+  Enabled: true
+
+# Customize performance-related configurations
+Performance:
+  # Enable all performance cops for optimized code
+  Enabled: true

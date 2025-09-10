@@ -1,23 +1,31 @@
 plugins:
   - rubocop-rails
   - rubocop-performance
+  # - rubocop-rspec
 
 inherit_from: .rubocop_todo.yml
 
 AllCops:
   NewCops: enable
-  TargetRubyVersion: 3.0.0
+  TargetRubyVersion: 3.2.7
+  TargetRailsVersion: 8.0
+  DisplayCopNames: true
+
   SuggestExtensions: false
   Exclude:
+    - ./**/*
     - db/**/*
     - vendor/**/*
     - log/**/*
     - tmp/**/*
     - storage/**/*
     - bin/*
+    - lib/tasks/**/*
+    - ai-tools/**/*
+    - docx/**/*
+    - public/**/*
     - node_modules/**/*
     - frontend/**/*
-    - lib/tasks/**/*
 
 # Layout Cops
 Layout/LineLength:

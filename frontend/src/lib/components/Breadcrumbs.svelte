@@ -1,6 +1,6 @@
 <script lang="ts">
   import { router } from '../stores/routerStore.js';
-  import Icon from '../icons.svelte';
+  import Icon from '../icons/icons.svelte';
 
   interface BreadcrumbItem {
     label: string;
