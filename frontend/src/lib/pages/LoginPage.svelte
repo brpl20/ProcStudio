@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import AuthLayout from '../components/AuthLayout.svelte';
-  import { authStore } from '../stores/authStore.js';
+  import { authStore } from '../stores/authStore';
   import { router } from '../stores/routerStore.js';
   import api from '../api/index';
   import Icon from '../icons/icons.svelte';

@@ -1,8 +1,9 @@
 // src/stores/userProfileStore.ts
-import { writable, derived, type Writable, type Readable } from 'svelte/store';
-import { authStore } from './authStore.js';
-import api from '../api/index.ts';
-import type { UserProfileData } from '../api/types/user.types.js';
+import { writable, derived, get, type Writable, type Readable } from 'svelte/store';
+import { authStore } from './authStore';
+import { usersCacheStore } from './usersCacheStore';
+import api from '../api/index';
+import type { UserProfileData } from '../api/types/user.types';
 
 // Re-export the API type for convenience
 export type UserProfile = UserProfileData;
@@ -23,7 +24,7 @@ function createUserProfileStore() {
   return {
     subscribe,
 
-    // Fetch current user profile information
+    // Fetch current user profile - now uses cache first
     async fetchCurrentUser(userId: string): Promise<void> {
       if (!userId) {
         return;
@@ -32,23 +33,52 @@ function createUserProfileStore() {
       update((state) => ({ ...state, isLoading: true, error: null }));
 
       try {
-        const response = await api.users.getUser(userId);
+        // First, ensure cache is initialized
+        await usersCacheStore.initialize();
+        
+        // Try to get from cache first
+        let profile = usersCacheStore.getProfileByUserId(userId);
+        
+        if (profile) {
+          console.log(`Found user profile in cache for user ${userId}`);
+          update((state) => ({ ...state, profile, isLoading: false }));
+          return;
+        }
 
-        // Extract user profile from the response
-        if (response.data && response.included) {
-          const profile = api.users.extractUserProfile(response, userId);
+        // If not in cache or cache needs refresh, fetch from API
+        if (usersCacheStore.needsRefresh()) {
+          console.log('Cache needs refresh, fetching all profiles...');
+          await usersCacheStore.fetchAllProfiles();
+          profile = usersCacheStore.getProfileByUserId(userId);
+        }
+
+        if (profile) {
           update((state) => ({ ...state, profile, isLoading: false }));
         } else {
-          throw new Error('Invalid response format');
+          // Fallback: try direct API call for specific profile
+          console.log(`Profile not in cache for user ${userId}, trying direct API call...`);
+          const response = await api.users.getUser(userId);
+          
+          if (response.data && response.included) {
+            profile = api.users.extractUserProfile(response, userId);
+            update((state) => ({ ...state, profile, isLoading: false }));
+          } else {
+            throw new Error('User profile not found');
+          }
         }
       } catch (error: unknown) {
-        // Error logged for debugging
+        console.error('Error fetching user profile:', error);
         update((state) => ({
           ...state,
           isLoading: false,
           error: (error as Error)?.message || 'Error fetching profile'
         }));
       }
+    },
+
+    // Set profile directly (useful when we have the data already)
+    setProfile(profile: UserProfileData): void {
+      update((state) => ({ ...state, profile, isLoading: false, error: null }));
     },
 
     // Clear profile data

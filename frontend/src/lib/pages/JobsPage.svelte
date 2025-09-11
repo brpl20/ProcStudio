@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import AuthSidebar from '../components/AuthSidebar.svelte';
   import Icon from '../icons/icons.svelte';
-  import { authStore } from '../stores/authStore.js';
+  import { authStore } from '../stores/authStore';
   import JobList from '../components/jobs/JobList.svelte';
   import api, { type Job } from '../api';
 

@@ -68,7 +68,7 @@
       onfocus={handleFocus}
       onblur={handleBlur}
       {placeholder}
-      class="input input-bordered input-sm w-full pl-9 {localValue.trim() ? 'pr-9' : 'pr-3'} 
+      class="input input-bordered input-sm w-full pl-9 {localValue.trim() ? 'pr-9' : 'pr-3'}
              {isFocused ? 'input-primary' : ''}"
     />
 

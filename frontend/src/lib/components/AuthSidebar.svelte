@@ -1,12 +1,13 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { WebsiteName } from '../config.js';
-  import { authStore } from '../stores/authStore.js';
+  import { authStore } from '../stores/authStore';
   import {
     userProfileStore,
     currentUserProfile,
     type UserProfile
-  } from '../stores/userProfileStore.ts';
+  } from '../stores/userProfileStore';
+  import { usersCacheStore } from '../stores/usersCacheStore';
   import { router } from '../stores/routerStore.js';
   import Icon from '../icons/icons.svelte';
   import TopBar from './TopBar.svelte';
@@ -21,13 +22,17 @@
   $: currentUser = $authStore.user;
   $: userProfile = $currentUserProfile;
   $: isLoadingProfile = $userProfileStore.isLoading;
+  
+  // Get avatar from cache if available
+  $: userId = currentUser?.data?.id;
+  $: cachedAvatarUrl = userId ? usersCacheStore.getAvatarUrlByUserId(userId) : null;
 
   // Computed user display properties
   $: userDisplayName = getUserDisplayName(userProfile, currentUser, isLoadingProfile);
   $: userRole = getUserRole(userProfile, currentUser);
   $: userEmail = getUserEmail(userProfile, currentUser);
   $: userInitials = getUserInitials(userDisplayName);
-  $: userAvatarUrl = getUserAvatarUrl(userProfile, currentUser);
+  $: userAvatarUrl = cachedAvatarUrl || getUserAvatarUrl(userProfile, currentUser);
 
   function getUserDisplayName(profile: any, user: any, loading: boolean): string {
     if (loading) {

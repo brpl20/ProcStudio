@@ -101,7 +101,7 @@
   <button
     bind:this={buttonRef}
     onclick={toggleDropdown}
-    class="btn btn-sm gap-2 
+    class="btn btn-sm gap-2
            {hasActiveFilter
              ? 'btn-primary btn-outline'
              : 'btn-outline'}

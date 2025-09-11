@@ -1,6 +1,6 @@
 <script>
   import { WebsiteName } from '../config.js';
-  import { authStore } from '../stores/authStore.js';
+  import { authStore } from '../stores/authStore';
   import { router } from '../stores/routerStore.js';
 
   export let showFooter = true;

@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
-  import { authStore } from './lib/stores/authStore.js';
+  import { authStore } from './lib/stores/authStore';
+  import { usersCacheStore } from './lib/stores/usersCacheStore';
   import { router } from './lib/stores/routerStore.js';
   import SessionTimeout from './lib/components/SessionTimeout.svelte';
 
@@ -115,6 +116,15 @@
 
   onMount(async () => {
     await authStore.init();
+    
+    // Initialize users cache if authenticated
+    if ($authStore.isAuthenticated) {
+      console.log('Initializing users cache...');
+      usersCacheStore.initialize().catch(error => {
+        console.error('Failed to initialize users cache:', error);
+      });
+    }
+    
     // Redirecionar usuário autenticado para dashboard se estiver na landing
     if ($authStore.isAuthenticated && $router.currentPath === '/') {
       router.navigate('/dashboard');
