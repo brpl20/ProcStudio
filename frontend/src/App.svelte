@@ -18,7 +18,7 @@
   import CustomersPage from './lib/pages/CustomersPage.svelte';
   import CustomersNewPage from './lib/pages/CustomersNewPage.svelte';
   import CustomersEditPage from './lib/pages/CustomersEditPage.svelte';
-  import CustomerProfilePage from './pages/CustomerProfilePage.svelte';
+  import CustomerProfilePage from './lib/pages/CustomerProfilePage.svelte';
   import ProfileCompletionEnhanced from './lib/pages/ProfileCompletionEnhanced.svelte';
 
   // Reactive stores

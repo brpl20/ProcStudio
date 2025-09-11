@@ -1,10 +1,10 @@
 <!-- pages/CustomerProfilePage.svelte -->
 <script lang="ts">
   import { onMount } from 'svelte';
-  import AuthSidebar from '../lib/components/AuthSidebar.svelte';
-  import CustomerProfileView from '../lib/components/customers/CustomerProfileView.svelte';
-  import type { Customer } from '../lib/api/types/customer.types';
-  import { api } from '../lib/api';
+  import AuthSidebar from '../components/AuthSidebar.svelte';
+  import CustomerProfileView from '../components/customers/CustomerProfileView.svelte';
+  import type { Customer } from '../api/types/customer.types';
+  import { api } from '../api';
 
   export let customerId: number;
 

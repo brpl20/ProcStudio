@@ -47,6 +47,10 @@ export interface UserProfileAttributes {
   birth?: string;
   mother_name?: string;
   addresses?: AddressAttributes[];
+
+  // Avatar attributes
+  avatar?: string;
+  avatar_url?: string;
 }
 
 export interface UserProfileData {
@@ -132,6 +136,7 @@ export interface UpdateUserProfileRequest {
     birth: string;
     mother_name: string;
     office_id: number;
+    avatar: string;
   }>;
 }
 

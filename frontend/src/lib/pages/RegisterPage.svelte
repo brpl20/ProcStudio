@@ -3,7 +3,7 @@
   import { authStore } from '../stores/authStore.js';
   import { router } from '../stores/routerStore.js';
   import api from '../api/index';
-  import { validateAndNormalizeOab } from '../oabValidator';
+  import { validateAndNormalizeOab } from '../validation/oabValidator';
 
   let email = '';
   let password = '';

@@ -27,6 +27,7 @@
   $: userRole = getUserRole(userProfile, currentUser);
   $: userEmail = getUserEmail(userProfile, currentUser);
   $: userInitials = getUserInitials(userDisplayName);
+  $: userAvatarUrl = getUserAvatarUrl(userProfile, currentUser);
 
   function getUserDisplayName(profile: any, user: any, loading: boolean): string {
     if (loading) {
@@ -76,6 +77,10 @@
         .toUpperCase()
         .slice(0, 2) || 'U'
     );
+  }
+
+  function getUserAvatarUrl(profile: any, user: any): string | null {
+    return profile?.attributes?.avatar_url || profile?.attributes?.avatar || null;
   }
 
   function handleLogout(): void {
@@ -258,7 +263,15 @@
                 <div class="flex items-center gap-3 w-full">
                   <div class="avatar placeholder">
                     <div class="bg-primary text-primary-content rounded-full w-8">
-                      <span class="text-sm">{userInitials}</span>
+                      {#if userAvatarUrl}
+                        <img
+                          src={userAvatarUrl}
+                          alt="Avatar"
+                          class="rounded-full w-8 h-8 object-cover"
+                        />
+                      {:else}
+                        <span class="text-sm">{userInitials}</span>
+                      {/if}
                     </div>
                   </div>
                   <div class="flex-1 text-left">
@@ -287,7 +300,15 @@
                   <div class="flex items-center gap-3 pointer-events-none">
                     <div class="avatar placeholder">
                       <div class="bg-primary text-primary-content rounded-full w-10">
-                        <span class="text-lg">{userInitials}</span>
+                        {#if userAvatarUrl}
+                          <img
+                            src={userAvatarUrl}
+                            alt="Avatar"
+                            class="rounded-full w-10 h-10 object-cover"
+                          />
+                        {:else}
+                          <span class="text-lg">{userInitials}</span>
+                        {/if}
                       </div>
                     </div>
                     <div class="flex-1">
