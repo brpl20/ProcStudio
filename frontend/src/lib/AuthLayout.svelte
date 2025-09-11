@@ -1,5 +1,5 @@
 <script>
-  import { authStore } from './stores/authStore.js';
+  import { authStore } from './stores/authStore';
   import Login from './Login.svelte';
   import Register from './Register.svelte';
   import ApiTester from './ApiTester.svelte';

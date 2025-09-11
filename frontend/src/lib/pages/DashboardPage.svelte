@@ -2,7 +2,7 @@
   import AuthSidebar from '../components/AuthSidebar.svelte';
   import UserProfile from '../UserProfile.svelte';
   // import ApiTester from '../ApiTester.svelte';
-  import { authStore } from '../stores/authStore.js';
+  import { authStore } from '../stores/authStore';
 
   $: ({ user } = $authStore);
 </script>

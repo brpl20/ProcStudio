@@ -1,6 +1,6 @@
 <script>
   import { onMount, onDestroy } from 'svelte';
-  import { authStore } from '../stores/authStore.js';
+  import { authStore } from '../stores/authStore';
   import { router } from '../stores/routerStore.js';
 
   export let timeoutMinutes = 30; // Default 30 minutes

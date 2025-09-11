@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { authStore } from '../stores/authStore.js';
-  import { userProfileStore, currentUserProfile } from '../stores/userProfileStore.js';
+  import { authStore } from '../stores/authStore';
+  import { userProfileStore, currentUserProfile } from '../stores/userProfileStore';
+  import { usersCacheStore } from '../stores/usersCacheStore';
   import { router } from '../stores/routerStore.js';
   import Icon from '../icons/icons.svelte';
   import { WebsiteName } from '../config.js';
@@ -15,10 +16,15 @@
   const currentUser = $derived($authStore.user);
   const userProfile = $derived($currentUserProfile);
   const isLoadingProfile = $derived($userProfileStore.isLoading);
+  
+  // Get avatar from cache if available
+  const userId = $derived(currentUser?.data?.id);
+  const cachedAvatarUrl = $derived(userId ? usersCacheStore.getAvatarUrlByUserId(userId) : null);
 
   // Computed user display properties
   const userDisplayName = $derived(getUserDisplayName(userProfile, currentUser, isLoadingProfile));
   const userInitials = $derived(getUserInitials(userDisplayName));
+  const userAvatarUrl = $derived(cachedAvatarUrl || userProfile?.attributes?.avatar_url || userProfile?.attributes?.avatar);
 
   function getUserDisplayName(profile: any, user: any, loading: boolean): string {
     if (loading) {
@@ -86,7 +92,15 @@
         <div role="button" class="btn btn-ghost btn-circle avatar">
           <div class="avatar placeholder">
             <div class="bg-primary text-primary-content rounded-full w-10">
-              <span class="text-xl">{userInitials}</span>
+              {#if userAvatarUrl}
+                <img 
+                  src={userAvatarUrl} 
+                  alt={userDisplayName}
+                  class="rounded-full w-10 h-10 object-cover"
+                />
+              {:else}
+                <span class="text-xl">{userInitials}</span>
+              {/if}
             </div>
           </div>
         </div>

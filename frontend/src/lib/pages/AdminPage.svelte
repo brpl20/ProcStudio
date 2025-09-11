@@ -1,65 +1,53 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import AuthSidebar from '../components/AuthSidebar.svelte';
   import CepTestForm from '../components/test/CepTestForm.svelte';
-  import { currentUserProfile, userProfileStore } from '../stores/userProfileStore.ts';
-  import { authStore } from '../stores/authStore.js';
-  import api from '../api/index.ts';
+  import { authStore } from '../stores/authStore';
+  import { userProfileStore, currentUserProfile } from '../stores/userProfileStore';
+  import { usersCacheStore, cacheStatus, allUserProfiles } from '../stores/usersCacheStore';
 
+  // Reactive statements for user data
+  $: authUser = $authStore.user;
   $: userProfile = $currentUserProfile;
-  $: avatarUrl = userProfile?.attributes?.avatar_url || userProfile?.attributes?.avatar;
-  $: currentUser = $authStore.user;
+  $: userId = authUser?.data?.id;
+  $: cachedProfile = userId ? usersCacheStore.getProfileByUserId(userId) : null;
+  
+  // Cache status
+  $: cacheInfo = $cacheStatus;
 
-  let apiResponse = null;
-  let profileResponse = null;
+  // Display data
+  let loading = true;
+  let error = null;
 
   onMount(async () => {
     // eslint-disable-next-line no-console
-    console.log('=== ADMIN PAGE AVATAR DEBUG ===');
+    console.log('=== ADMIN PAGE DEBUG ===');
     // eslint-disable-next-line no-console
-    console.log('Current user from authStore:', $authStore.user);
+    console.log('Auth User:', authUser);
     // eslint-disable-next-line no-console
-    console.log('Current user profile from store:', $currentUserProfile);
-
-    try {
-      // Get current user ID
-      const userId = $authStore.user?.data?.id;
-      // eslint-disable-next-line no-console
-      console.log('User ID for API call:', userId);
-
-      if (userId) {
-        // Make direct API call to get user data
+    console.log('User ID:', userId);
+    // eslint-disable-next-line no-console
+    console.log('Cache Status:', $cacheStatus);
+    
+    if (userId) {
+      try {
+        // Fetch user profile (will use cache)
+        await userProfileStore.fetchCurrentUser(String(userId));
+        loading = false;
         // eslint-disable-next-line no-console
-        console.log('Making API call to get user...');
-        const userResponse = await api.users.getUser(userId);
-        apiResponse = userResponse;
+        console.log('User Profile Loaded:', $currentUserProfile);
         // eslint-disable-next-line no-console
-        console.log('User API Response:', userResponse);
-
-        // Try to get user profiles list
+        console.log('Cached Profile:', cachedProfile);
+      } catch (err) {
+        error = err;
+        loading = false;
         // eslint-disable-next-line no-console
-        console.log('Making API call to get user profiles...');
-        const profilesResponse = await api.users.getUserProfiles();
-        // eslint-disable-next-line no-console
-        console.log('User Profiles API Response:', profilesResponse);
-
-        // If we have user profile ID, get specific profile
-        const userProfileId = userResponse.data?.relationships?.user_profile?.data?.id;
-        if (userProfileId) {
-          // eslint-disable-next-line no-console
-          console.log('Making API call to get specific user profile:', userProfileId);
-          const specificProfileResponse = await api.users.getUserProfile(userProfileId);
-          profileResponse = specificProfileResponse;
-          // eslint-disable-next-line no-console
-          console.log('Specific Profile API Response:', specificProfileResponse);
-        }
-
-        // eslint-disable-next-line no-console
-        console.log('=== END AVATAR DEBUG ===');
+        console.error('Error loading profile:', err);
       }
-    } catch (error) {
+    } else {
+      loading = false;
       // eslint-disable-next-line no-console
-      console.error('Error fetching user data:', error);
+      console.log('No user ID available');
     }
   });
 </script>
@@ -77,98 +65,172 @@
       </div>
     </div>
 
-    <!-- CEP Test Section -->
-    <div class="divider">CEP Validator Test</div>
-    <CepTestForm />
-
-    <!-- Avatar Test Section -->
-    <div class="divider">Avatar Test</div>
+    <!-- Cache Status Section -->
+    <div class="divider">Cache Status</div>
     <div class="card bg-base-100 shadow-xl">
       <div class="card-body">
-        <h3 class="card-title">Current User Avatar Debug</h3>
-
-        <div class="space-y-4">
-          <!-- Debug Info -->
-          <div class="bg-base-200 p-4 rounded-lg">
-            <h4 class="font-semibold mb-2">Raw Data:</h4>
-            <div class="text-sm space-y-1">
-              <p><strong>User Profile ID:</strong> {userProfile?.id || 'Not loaded'}</p>
-              <p><strong>Avatar URL:</strong> {avatarUrl || 'No avatar URL'}</p>
-              <p>
-                <strong>Raw Avatar:</strong>
-                {userProfile?.attributes?.avatar || 'No avatar field'}
-              </p>
-              <p>
-                <strong>Raw Avatar URL:</strong>
-                {userProfile?.attributes?.avatar_url || 'No avatar_url field'}
-              </p>
+        <h3 class="card-title">Users Cache Information</h3>
+        <div class="stats stats-vertical lg:stats-horizontal shadow">
+          <div class="stat">
+            <div class="stat-title">Cache Status</div>
+            <div class="stat-value text-sm">
+              {cacheInfo.isInitialized ? 'Initialized' : 'Not Initialized'}
+            </div>
+            <div class="stat-desc">
+              {cacheInfo.isLoading ? 'Loading...' : 'Ready'}
             </div>
           </div>
-
-          <!-- Avatar Display Test -->
-          <div class="flex items-center gap-6">
-            <div>
-              <h4 class="font-semibold mb-2">Large Avatar (80px):</h4>
-              <div class="avatar placeholder">
-                <div class="bg-primary text-primary-content rounded-full w-20">
-                  {#if avatarUrl}
-                    <img src={avatarUrl} alt="Avatar" class="rounded-full w-20 h-20 object-cover" />
-                  {:else}
-                    <span class="text-2xl">U3</span>
-                  {/if}
-                </div>
-              </div>
+          
+          <div class="stat">
+            <div class="stat-title">Cached Profiles</div>
+            <div class="stat-value">{cacheInfo.profileCount}</div>
+            <div class="stat-desc">User profiles in cache</div>
+          </div>
+          
+          <div class="stat">
+            <div class="stat-title">Last Fetched</div>
+            <div class="stat-value text-sm">
+              {cacheInfo.lastFetched ? cacheInfo.lastFetched.toLocaleTimeString() : 'Never'}
             </div>
-
-            <div>
-              <h4 class="font-semibold mb-2">Medium Avatar (40px):</h4>
-              <div class="avatar placeholder">
-                <div class="bg-primary text-primary-content rounded-full w-10">
-                  {#if avatarUrl}
-                    <img src={avatarUrl} alt="Avatar" class="rounded-full w-10 h-10 object-cover" />
-                  {:else}
-                    <span class="text-lg">U3</span>
-                  {/if}
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h4 class="font-semibold mb-2">Small Avatar (32px):</h4>
-              <div class="avatar placeholder">
-                <div class="bg-primary text-primary-content rounded-full w-8">
-                  {#if avatarUrl}
-                    <img src={avatarUrl} alt="Avatar" class="rounded-full w-8 h-8 object-cover" />
-                  {:else}
-                    <span class="text-sm">U3</span>
-                  {/if}
-                </div>
-              </div>
+            <div class="stat-desc">
+              {cacheInfo.lastFetched ? cacheInfo.lastFetched.toLocaleDateString() : ''}
             </div>
           </div>
-
-          <!-- API Response Display -->
-          <div class="bg-base-200 p-4 rounded-lg">
-            <h4 class="font-semibold mb-2">User API Response:</h4>
-            <pre class="text-xs overflow-auto max-h-40">{JSON.stringify(apiResponse, null, 2)}</pre>
-          </div>
-
-          <div class="bg-base-200 p-4 rounded-lg">
-            <h4 class="font-semibold mb-2">Profile API Response:</h4>
-            <pre class="text-xs overflow-auto max-h-40">{JSON.stringify(
-                profileResponse,
-                null,
-                2
-              )}</pre>
-          </div>
-
-          <!-- Raw JSON Display -->
-          <div class="bg-base-200 p-4 rounded-lg">
-            <h4 class="font-semibold mb-2">User Profile Store JSON:</h4>
-            <pre class="text-xs overflow-auto max-h-40">{JSON.stringify(userProfile, null, 2)}</pre>
-          </div>
+        </div>
+        
+        <div class="mt-4 flex gap-2">
+          <button 
+            class="btn btn-sm btn-primary"
+            on:click={() => usersCacheStore.fetchAllProfiles()}
+            disabled={cacheInfo.isLoading}
+          >
+            {cacheInfo.isLoading ? 'Loading...' : 'Refresh Cache'}
+          </button>
+          <button 
+            class="btn btn-sm btn-outline"
+            on:click={() => usersCacheStore.clearCache()}
+          >
+            Clear Cache
+          </button>
         </div>
       </div>
     </div>
+
+    <!-- User Data Section -->
+    <div class="divider">User Data Test</div>
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body">
+        <h3 class="card-title">Current User Information</h3>
+        
+        {#if loading}
+          <div class="flex justify-center p-8">
+            <span class="loading loading-spinner loading-lg"></span>
+          </div>
+        {:else if error}
+          <div class="alert alert-error">
+            <span>Error loading user data: {error.message || error}</span>
+          </div>
+        {:else}
+          <div class="space-y-4">
+            <!-- Auth User Data from authStore -->
+            <div class="bg-base-200 p-4 rounded-lg">
+              <h4 class="font-semibold mb-2">Auth User (from login):</h4>
+              {#if authUser}
+                <div class="grid grid-cols-2 gap-2 text-sm">
+                  <div><strong>ID:</strong> {authUser.data?.id || 'N/A'}</div>
+                  <div><strong>Name:</strong> {authUser.data?.name || 'N/A'}</div>
+                  <div><strong>Last Name:</strong> {authUser.data?.last_name || 'N/A'}</div>
+                  <div><strong>OAB:</strong> {authUser.data?.oab || 'N/A'}</div>
+                  <div><strong>Role:</strong> {authUser.data?.role || 'N/A'}</div>
+                  <div><strong>Gender:</strong> {authUser.data?.gender || 'N/A'}</div>
+                </div>
+              {:else}
+                <p>No auth user data available</p>
+              {/if}
+            </div>
+
+            <!-- User Profile Data from userProfileStore -->
+            <div class="bg-base-200 p-4 rounded-lg">
+              <h4 class="font-semibold mb-2">User Profile (from API):</h4>
+              {#if userProfile}
+                <div class="grid grid-cols-2 gap-2 text-sm">
+                  <div><strong>Profile ID:</strong> {userProfile.id || 'N/A'}</div>
+                  <div><strong>Name:</strong> {userProfile.attributes?.name || 'N/A'}</div>
+                  <div><strong>Last Name:</strong> {userProfile.attributes?.last_name || 'N/A'}</div>
+                  <div><strong>OAB:</strong> {userProfile.attributes?.oab || 'N/A'}</div>
+                  <div><strong>CPF:</strong> {userProfile.attributes?.cpf || 'N/A'}</div>
+                  <div><strong>RG:</strong> {userProfile.attributes?.rg || 'N/A'}</div>
+                  <div><strong>Avatar URL:</strong> {userProfile.attributes?.avatar_url || userProfile.attributes?.avatar || 'N/A'}</div>
+                </div>
+              {:else}
+                <p>No user profile data available</p>
+              {/if}
+            </div>
+
+            <!-- Raw JSON for debugging -->
+            <details class="collapse collapse-arrow bg-base-200">
+              <summary class="collapse-title font-semibold">Raw Auth User JSON</summary>
+              <div class="collapse-content">
+                <pre class="text-xs overflow-auto">{JSON.stringify(authUser, null, 2)}</pre>
+              </div>
+            </details>
+
+            <details class="collapse collapse-arrow bg-base-200">
+              <summary class="collapse-title font-semibold">Raw User Profile JSON</summary>
+              <div class="collapse-content">
+                <pre class="text-xs overflow-auto">{JSON.stringify(userProfile, null, 2)}</pre>
+              </div>
+            </details>
+          </div>
+        {/if}
+      </div>
+    </div>
+
+    <!-- Avatar Gallery from Cache -->
+    <div class="divider">Cached Avatars Gallery</div>
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body">
+        <h3 class="card-title">All User Avatars from Cache</h3>
+        
+        {#if $allUserProfiles.length > 0}
+          <div class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+            {#each $allUserProfiles.slice(0, 24) as profile}
+              <div class="text-center">
+                <div class="avatar placeholder">
+                  <div class="bg-neutral text-neutral-content rounded-full w-16">
+                    {#if profile.attributes?.avatar_url || profile.attributes?.avatar}
+                      <img 
+                        src={profile.attributes.avatar_url || profile.attributes.avatar} 
+                        alt={profile.attributes.name}
+                        class="rounded-full"
+                      />
+                    {:else}
+                      <span class="text-xl">
+                        {profile.attributes?.name?.charAt(0) || '?'}
+                      </span>
+                    {/if}
+                  </div>
+                </div>
+                <div class="text-xs mt-1 truncate">
+                  {profile.attributes?.name || 'Unknown'}
+                </div>
+              </div>
+            {/each}
+          </div>
+          
+          {#if $allUserProfiles.length > 24}
+            <div class="text-sm text-base-content/60 mt-2">
+              Showing 24 of {$allUserProfiles.length} cached profiles
+            </div>
+          {/if}
+        {:else}
+          <p class="text-base-content/60">No profiles in cache</p>
+        {/if}
+      </div>
+    </div>
+
+    <!-- CEP Test Section -->
+    <div class="divider">CEP Validator Test</div>
+    <CepTestForm />
   </div>
 </AuthSidebar>
