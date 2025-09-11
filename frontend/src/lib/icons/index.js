@@ -24,6 +24,10 @@ import Error from './Error.svelte';
 import Success from './Success.svelte';
 import Warning from './Warning.svelte';
 import Comment from './Comment.svelte';
+import Clear from './Clear.svelte';
+import Filter from './Filter.svelte';
+import Info from './Info.svelte';
+import Check from './Check.svelte';
 import Default from './Default.svelte';
 
 // Icon component exports
@@ -53,6 +57,10 @@ export {
   Success,
   Warning,
   Comment,
+  Clear,
+  Filter,
+  Info,
+  Check,
   Default
 };
 
@@ -83,6 +91,10 @@ export const iconMap = {
   success: Success,
   warning: Warning,
   comment: Comment,
+  clear: Clear,
+  filter: Filter,
+  info: Info,
+  check: Check,
   default: Default
 };
 

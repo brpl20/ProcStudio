@@ -1,11 +1,15 @@
-<script>
+<script lang="ts">
   import { getIcon } from './index.js';
 
-  export let name;
-  export let className = 'h-5 w-5';
-  export let strokeWidth = '2';
+  interface Props {
+    name: string;
+    className?: string;
+    strokeWidth?: string;
+  }
 
-  $: IconComponent = getIcon(name);
+  const { name, className = 'h-5 w-5', strokeWidth = '2' }: Props = $props();
+
+  const IconComponent = $derived(getIcon(name));
 </script>
 
-<svelte:component this={IconComponent} {className} {strokeWidth} />
+<IconComponent {className} {strokeWidth} />

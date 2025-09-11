@@ -1,10 +1,9 @@
 <script lang="ts">
   interface Props {
     className?: string;
-    strokeWidth?: string;
   }
 
-  const { className = 'h-5 w-5', strokeWidth = '2' }: Props = $props();
+  const { className = 'h-5 w-5' }: Props = $props();
 </script>
 
 <svg
@@ -17,7 +16,7 @@
   <path
     stroke-linecap="round"
     stroke-linejoin="round"
-    stroke-width={strokeWidth}
-    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+    stroke-width="2"
+    d="M5 13l4 4L19 7"
   />
 </svg>
