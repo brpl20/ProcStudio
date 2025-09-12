@@ -103,6 +103,97 @@ export interface UserResponse {
   included?: UserProfileData[];
 }
 
+export interface WhoAmIProfile {
+  id: number;
+  name: string;
+  last_name: string;
+  full_name: string;
+  role: string;
+  status: string;
+  gender: string;
+  oab: string;
+  rg: string;
+  cpf: string;
+  nationality: string;
+  origin: string | null;
+  civil_status: string;
+  birth: string;
+  mother_name: string | null;
+  avatar_url: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface WhoAmITeam {
+  id: number;
+  name: string;
+  subdomain: string;
+}
+
+export interface WhoAmIOffice {
+  id: number;
+  name: string;
+  cnpj: string;
+  partnership_type: string;
+  partnership_percentage: string;
+  entry_date: string | null;
+}
+
+export interface WhoAmIPhone {
+  id: number;
+  phone_number: string;
+  phone_type: string | null;
+}
+
+export interface WhoAmIAddress {
+  id: number;
+  street: string;
+  number: string;
+  complement: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  zip_code: string;
+  address_type: string;
+}
+
+export interface WhoAmIBankAccount {
+  id: number;
+  bank_name: string;
+  type_account: string;
+  agency: string;
+  account: string;
+  operation?: string;
+  pix?: string;
+}
+
+export interface WhoAmIData {
+  id: string;
+  type: string;
+  attributes: {
+    email: string;
+    status: string;
+    created_at: string;
+    updated_at: string;
+    team: WhoAmITeam;
+    profile: WhoAmIProfile;
+    office: WhoAmIOffice | null;
+    offices: WhoAmIOffice[];
+    phones: WhoAmIPhone[];
+    addresses: WhoAmIAddress[];
+    bank_accounts: WhoAmIBankAccount[];
+    works_count: number;
+    jobs_count: number;
+    deleted: boolean;
+  };
+}
+
+export interface WhoAmIResponse {
+  success: boolean;
+  message: string;
+  data: WhoAmIData;
+}
+
 export interface CreateUserRequest {
   user: {
     email: string;

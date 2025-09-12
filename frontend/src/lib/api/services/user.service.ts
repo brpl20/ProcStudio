@@ -12,11 +12,20 @@ import type {
   UpdateUserRequest,
   UpdateUserProfileRequest,
   UserProfileData,
-  ApiSuccessResponse
+  ApiSuccessResponse,
+  WhoAmIResponse
 } from '../types';
 
 export class UserService {
   constructor(private http: HttpClient) {}
+
+  /**
+   * Get current user information (whoami)
+   * Returns complete user profile with avatar, team, offices, etc.
+   */
+  async whoami(): Promise<WhoAmIResponse> {
+    return this.http.get<WhoAmIResponse>(API_ENDPOINTS.WHOAMI);
+  }
 
   /**
    * Get all users

@@ -3,14 +3,12 @@
   import AuthSidebar from '../components/AuthSidebar.svelte';
   import CepTestForm from '../components/test/CepTestForm.svelte';
   import { authStore } from '../stores/authStore';
-  import { userProfileStore, currentUserProfile } from '../stores/userProfileStore';
   import { usersCacheStore, cacheStatus, allUserProfiles } from '../stores/usersCacheStore';
+  import api from '../api/index';
+  import type { WhoAmIResponse } from '../api/types';
 
   // Reactive statements for user data
   $: authUser = $authStore.user;
-  $: userProfile = $currentUserProfile;
-  $: userId = authUser?.data?.id;
-  $: cachedProfile = userId ? usersCacheStore.getProfileByUserId(userId) : null;
   
   // Cache status
   $: cacheInfo = $cacheStatus;
@@ -18,36 +16,34 @@
   // Display data
   let loading = true;
   let error = null;
+  let currentUserData: WhoAmIResponse | null = null;
+
+  // Derived data from whoami
+  $: whoAmIUser = currentUserData?.data;
+  $: userProfile = whoAmIUser?.attributes?.profile;
 
   onMount(async () => {
     // eslint-disable-next-line no-console
     console.log('=== ADMIN PAGE DEBUG ===');
     // eslint-disable-next-line no-console
     console.log('Auth User:', authUser);
-    // eslint-disable-next-line no-console
-    console.log('User ID:', userId);
-    // eslint-disable-next-line no-console
-    console.log('Cache Status:', $cacheStatus);
     
-    if (userId) {
-      try {
-        // Fetch user profile (will use cache)
-        await userProfileStore.fetchCurrentUser(String(userId));
-        loading = false;
-        // eslint-disable-next-line no-console
-        console.log('User Profile Loaded:', $currentUserProfile);
-        // eslint-disable-next-line no-console
-        console.log('Cached Profile:', cachedProfile);
-      } catch (err) {
-        error = err;
-        loading = false;
-        // eslint-disable-next-line no-console
-        console.error('Error loading profile:', err);
-      }
-    } else {
+    try {
+      // Use new whoami method to get complete user information
+      // This should work with any authenticated user regardless of authUser data
+      // eslint-disable-next-line no-console
+      console.log('Calling whoami endpoint...');
+      currentUserData = await api.users.whoami();
       loading = false;
       // eslint-disable-next-line no-console
-      console.log('No user ID available');
+      console.log('WhoAmI Data:', currentUserData);
+      // eslint-disable-next-line no-console
+      console.log('User Profile:', userProfile);
+    } catch (err) {
+      error = err;
+      loading = false;
+      // eslint-disable-next-line no-console
+      console.error('Error loading whoami data:', err);
     }
   });
 </script>
@@ -149,19 +145,58 @@
               {/if}
             </div>
 
-            <!-- User Profile Data from userProfileStore -->
+            <!-- User Profile Data from whoami -->
             <div class="bg-base-200 p-4 rounded-lg">
-              <h4 class="font-semibold mb-2">User Profile (from API):</h4>
+              <h4 class="font-semibold mb-2">User Profile (from whoami):</h4>
               {#if userProfile}
-                <div class="grid grid-cols-2 gap-2 text-sm">
-                  <div><strong>Profile ID:</strong> {userProfile.id || 'N/A'}</div>
-                  <div><strong>Name:</strong> {userProfile.attributes?.name || 'N/A'}</div>
-                  <div><strong>Last Name:</strong> {userProfile.attributes?.last_name || 'N/A'}</div>
-                  <div><strong>OAB:</strong> {userProfile.attributes?.oab || 'N/A'}</div>
-                  <div><strong>CPF:</strong> {userProfile.attributes?.cpf || 'N/A'}</div>
-                  <div><strong>RG:</strong> {userProfile.attributes?.rg || 'N/A'}</div>
-                  <div><strong>Avatar URL:</strong> {userProfile.attributes?.avatar_url || userProfile.attributes?.avatar || 'N/A'}</div>
+                <div class="flex items-start gap-4 mb-4">
+                  <!-- Avatar Display -->
+                  <div class="avatar">
+                    <div class="w-16 rounded-full">
+                      {#if userProfile.avatar_url}
+                        <img src={userProfile.avatar_url} alt={userProfile.full_name} />
+                      {:else}
+                        <div class="bg-neutral text-neutral-content rounded-full w-16 h-16 flex items-center justify-center">
+                          <span class="text-xl">{userProfile.name?.charAt(0) || '?'}</span>
+                        </div>
+                      {/if}
+                    </div>
+                  </div>
+                  
+                  <!-- Profile Info -->
+                  <div class="flex-1 grid grid-cols-2 gap-2 text-sm">
+                    <div><strong>Profile ID:</strong> {userProfile.id || 'N/A'}</div>
+                    <div><strong>Full Name:</strong> {userProfile.full_name || 'N/A'}</div>
+                    <div><strong>Name:</strong> {userProfile.name || 'N/A'}</div>
+                    <div><strong>Last Name:</strong> {userProfile.last_name || 'N/A'}</div>
+                    <div><strong>Role:</strong> {userProfile.role || 'N/A'}</div>
+                    <div><strong>OAB:</strong> {userProfile.oab || 'N/A'}</div>
+                    <div><strong>CPF:</strong> {userProfile.cpf || 'N/A'}</div>
+                    <div><strong>RG:</strong> {userProfile.rg || 'N/A'}</div>
+                    <div><strong>Gender:</strong> {userProfile.gender || 'N/A'}</div>
+                    <div><strong>Status:</strong> {userProfile.status || 'N/A'}</div>
+                    <div><strong>Nationality:</strong> {userProfile.nationality || 'N/A'}</div>
+                    <div><strong>Civil Status:</strong> {userProfile.civil_status || 'N/A'}</div>
+                    <div><strong>Birth:</strong> {userProfile.birth || 'N/A'}</div>
+                    <div><strong>Avatar URL:</strong> <a href={userProfile.avatar_url} target="_blank" rel="noopener" class="link link-primary">{userProfile.avatar_url ? 'View' : 'N/A'}</a></div>
+                  </div>
                 </div>
+                
+                <!-- Team and Office Info -->
+                {#if whoAmIUser?.attributes?.team}
+                  <div class="bg-base-300 p-2 rounded mt-2">
+                    <strong>Team:</strong> {whoAmIUser.attributes.team.name} (ID: {whoAmIUser.attributes.team.id})
+                  </div>
+                {/if}
+                
+                {#if whoAmIUser?.attributes?.offices && whoAmIUser.attributes.offices.length > 0}
+                  <div class="bg-base-300 p-2 rounded mt-2">
+                    <strong>Offices:</strong>
+                    {#each whoAmIUser.attributes.offices as office}
+                      <div class="text-sm">{office.name} - {office.partnership_type} ({office.partnership_percentage}%)</div>
+                    {/each}
+                  </div>
+                {/if}
               {:else}
                 <p>No user profile data available</p>
               {/if}
@@ -176,9 +211,9 @@
             </details>
 
             <details class="collapse collapse-arrow bg-base-200">
-              <summary class="collapse-title font-semibold">Raw User Profile JSON</summary>
+              <summary class="collapse-title font-semibold">Raw WhoAmI Response JSON</summary>
               <div class="collapse-content">
-                <pre class="text-xs overflow-auto">{JSON.stringify(userProfile, null, 2)}</pre>
+                <pre class="text-xs overflow-auto">{JSON.stringify(currentUserData, null, 2)}</pre>
               </div>
             </details>
           </div>

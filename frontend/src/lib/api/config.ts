@@ -20,6 +20,7 @@ export const API_ENDPOINTS = {
   USERS: '/users',
   USER_PROFILES: '/user_profiles',
   PROFILE_COMPLETION: '/user_profiles/complete_profile',
+  WHOAMI: '/whoami',
 
   // Teams
   TEAMS: '/teams',

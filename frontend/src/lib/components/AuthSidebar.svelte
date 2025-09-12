@@ -2,13 +2,9 @@
   import { onMount } from 'svelte';
   import { WebsiteName } from '../config.js';
   import { authStore } from '../stores/authStore';
-  import {
-    userProfileStore,
-    currentUserProfile,
-    type UserProfile
-  } from '../stores/userProfileStore';
-  import { usersCacheStore } from '../stores/usersCacheStore';
   import { router } from '../stores/routerStore.js';
+  import api from '../api/index';
+  import type { WhoAmIResponse } from '../api/types';
   import Icon from '../icons/icons.svelte';
   import TopBar from './TopBar.svelte';
   import Footer from './Footer.svelte';
@@ -19,44 +15,25 @@
 
   $: isAuthenticated = $authStore.isAuthenticated;
   $: currentPath = $router.currentPath;
-  $: currentUser = $authStore.user;
-  $: userProfile = $currentUserProfile;
-  $: isLoadingProfile = $userProfileStore.isLoading;
   
-  // Get avatar from cache if available
-  $: userId = currentUser?.data?.id;
-  $: cachedAvatarUrl = userId ? usersCacheStore.getAvatarUrlByUserId(userId) : null;
-
-  // Computed user display properties
-  $: userDisplayName = getUserDisplayName(userProfile, currentUser, isLoadingProfile);
-  $: userRole = getUserRole(userProfile, currentUser);
-  $: userEmail = getUserEmail(userProfile, currentUser);
+  // WhoAmI data
+  let currentUserData: WhoAmIResponse | null = null;
+  let isLoadingProfile = true;
+  
+  // Derived data from whoami
+  $: whoAmIUser = currentUserData?.data;
+  $: userProfile = whoAmIUser?.attributes?.profile;
+  
+  // Computed user display properties using whoami data
+  $: userDisplayName = userProfile?.full_name || userProfile?.name || 'Usuário';
+  $: userRole = getUserRole(userProfile);
+  $: userEmail = whoAmIUser?.attributes?.email || '';
   $: userInitials = getUserInitials(userDisplayName);
-  $: userAvatarUrl = cachedAvatarUrl || getUserAvatarUrl(userProfile, currentUser);
+  $: userAvatarUrl = userProfile?.avatar_url;
 
-  function getUserDisplayName(profile: any, user: any, loading: boolean): string {
-    if (loading) {
-      return '';
-    }
-
-    if (profile?.attributes) {
-      const firstName = profile.attributes.name || '';
-      const lastName = profile.attributes.last_name || '';
-      return `${firstName} ${lastName}`.trim() || 'Nome não definido';
-    }
-
-    if (user?.data) {
-      const firstName = user.data.name || '';
-      const lastName = user.data.last_name || '';
-      return `${firstName} ${lastName}`.trim() || user.data.email || 'Usuário';
-    }
-
-    return 'Usuário';
-  }
-
-  function getUserRole(profile: any, user: any): string {
-    const role = profile?.attributes?.role || user?.data?.role || '';
-    const gender = profile?.attributes?.gender || user?.data?.gender || '';
+  function getUserRole(profile: any): string {
+    const role = profile?.role || '';
+    const gender = profile?.gender || '';
 
     // Translate lawyer role based on gender
     if (role && role.toLowerCase().includes('lawyer')) {
@@ -64,10 +41,6 @@
     }
 
     return role;
-  }
-
-  function getUserEmail(profile: any, user: any): string {
-    return profile?.attributes?.email || user?.data?.email || '';
   }
 
   function getUserInitials(name: string): string {
@@ -84,10 +57,6 @@
     );
   }
 
-  function getUserAvatarUrl(profile: any, user: any): string | null {
-    return profile?.attributes?.avatar_url || profile?.attributes?.avatar || null;
-  }
-
   function handleLogout(): void {
     authStore.logout();
     router.navigate('/');
@@ -100,8 +69,23 @@
     }
   }
 
-  // The currentUserProfile derived store handles automatic fetching
-  // No manual onMount needed
+  function handleUserClick(): void {
+    router.navigate('/user-config');
+    closeDrawer();
+  }
+
+  // Fetch whoami data on mount
+  onMount(async () => {
+    if (isAuthenticated) {
+      try {
+        currentUserData = await api.users.whoami();
+        isLoadingProfile = false;
+      } catch (error) {
+        console.error('Error loading user data:', error);
+        isLoadingProfile = false;
+      }
+    }
+  });
 </script>
 
 <AuthGuard>
@@ -332,6 +316,16 @@
                     </div>
                   </li>
                 {/if}
+
+                <div class="divider my-1"></div>
+
+                <!-- Profile Configuration -->
+                <li>
+                  <button class="px-3 py-2" on:click={handleUserClick}>
+                    <Icon name="user" className="w-4 h-4" strokeWidth="1.5" />
+                    Meu Perfil
+                  </button>
+                </li>
 
                 <div class="divider my-1"></div>
 
