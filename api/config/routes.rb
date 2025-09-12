@@ -237,6 +237,12 @@ Rails.application.routes.draw do
       post '/login', to: 'auth#authenticate'
       delete '/logout', to: 'auth#destroy'
 
+      # Current user endpoints
+      get '/whoami', to: 'current_user#whoami'
+      get '/user_info/:identifier', to: 'current_user#user_info'
+      get '/user_by_profile/:profile_id', to: 'current_user#user_by_profile'
+      get '/user_by_id/:user_id', to: 'current_user#user_by_id'
+
       # Mirror auth routes (redirect to main login)
       namespace :auth do
         post '/login', to: redirect('/api/v1/login')

@@ -1,0 +1,17 @@
+{
+  "user1": {
+    "token": "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo4MSwiYWRtaW5faWQiOjgxLCJleHAiOjE3NTc3MjUwOTcsIm5hbWUiOiJEYXllbmkiLCJsYXN0X25hbWUiOiJDcmlzdGluYSBEZSBPbGl2ZWlyYSIsInJvbGUiOiJsYXd5ZXIifQ.XKj3K9oI0LzV2-n2rz3NrZwXdvV_uW9NZib6B6g10zs",
+    "userData": {
+      "email": "u3@gmail.com",
+      "token": "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo4MSwiYWRtaW5faWQiOjgxLCJleHAiOjE3NTc3MjUwOTcsIm5hbWUiOiJEYXllbmkiLCJsYXN0X25hbWUiOiJDcmlzdGluYSBEZSBPbGl2ZWlyYSIsInJvbGUiOiJsYXd5ZXIifQ.XKj3K9oI0LzV2-n2rz3NrZwXdvV_uW9NZib6B6g10zs",
+      "needs_profile_completion": false,
+      "message": "Login realizado com sucesso",
+      "role": "lawyer",
+      "name": "Dayeni",
+      "last_name": "Cristina De Oliveira",
+      "oab": "PR_54161",
+      "gender": "female"
+    },
+    "timestamp": "2025-09-12T00:58:17.971Z"
+  }
+}

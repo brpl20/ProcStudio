@@ -11,7 +11,7 @@
     className?: string;
   }
 
-  let {
+  const {
     value = $bindable(''),
     placeholder = 'Pesquisar...',
     debounceMs = 200,
