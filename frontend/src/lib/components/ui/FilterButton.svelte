@@ -57,13 +57,11 @@
   }
 
   function selectOption(option: FilterOption<T>) {
-    value = option.value;
     onFilterChange(option.value);
     isOpen = false;
   }
 
   function clearFilter() {
-    value = 'all' as T;
     onFilterChange('all' as T);
   }
 

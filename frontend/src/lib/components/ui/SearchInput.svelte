@@ -9,6 +9,7 @@
     debounceMs?: number;
     width?: string;
     className?: string;
+    onSearchChange?: (value: string) => void;
   }
 
   const {
@@ -16,7 +17,8 @@
     placeholder = 'Pesquisar...',
     debounceMs = 200,
     width = 'w-64',
-    className = ''
+    className = '',
+    onSearchChange = () => {}
   }: Props = $props();
 
   let timer: ReturnType<typeof setTimeout>;
@@ -26,13 +28,13 @@
   function handleInput() {
     clearTimeout(timer);
     timer = setTimeout(() => {
-      value = localValue;
+      onSearchChange(localValue);
     }, debounceMs);
   }
 
   function clearSearch() {
     localValue = '';
-    value = '';
+    onSearchChange('');
   }
 
   function handleFocus() {
