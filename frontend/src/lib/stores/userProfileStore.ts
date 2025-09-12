@@ -35,19 +35,17 @@ function createUserProfileStore() {
       try {
         // First, ensure cache is initialized
         await usersCacheStore.initialize();
-        
+
         // Try to get from cache first
         let profile = usersCacheStore.getProfileByUserId(userId);
-        
+
         if (profile) {
-          console.log(`Found user profile in cache for user ${userId}`);
           update((state) => ({ ...state, profile, isLoading: false }));
           return;
         }
 
         // If not in cache or cache needs refresh, fetch from API
         if (usersCacheStore.needsRefresh()) {
-          console.log('Cache needs refresh, fetching all profiles...');
           await usersCacheStore.fetchAllProfiles();
           profile = usersCacheStore.getProfileByUserId(userId);
         }
@@ -56,9 +54,8 @@ function createUserProfileStore() {
           update((state) => ({ ...state, profile, isLoading: false }));
         } else {
           // Fallback: try direct API call for specific profile
-          console.log(`Profile not in cache for user ${userId}, trying direct API call...`);
           const response = await api.users.getUser(userId);
-          
+
           if (response.data && response.included) {
             profile = api.users.extractUserProfile(response, userId);
             update((state) => ({ ...state, profile, isLoading: false }));
@@ -67,7 +64,6 @@ function createUserProfileStore() {
           }
         }
       } catch (error: unknown) {
-        console.error('Error fetching user profile:', error);
         update((state) => ({
           ...state,
           isLoading: false,

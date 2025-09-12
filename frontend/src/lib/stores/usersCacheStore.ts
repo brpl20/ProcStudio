@@ -28,17 +28,15 @@ const storage = {
         lastFetched
       };
       const serialized = JSON.stringify(data);
-      
+
       // Check size before saving
       if (serialized.length > CACHE_CONFIG.MAX_STORAGE_SIZE) {
-        console.warn('Cache too large for localStorage, skipping persistence');
         return false;
       }
-      
+
       localStorage.setItem(CACHE_CONFIG.STORAGE_KEY, serialized);
       return true;
-    } catch (error) {
-      console.error('Failed to save cache to localStorage:', error);
+    } catch {
       return false;
     }
   },
@@ -46,10 +44,12 @@ const storage = {
   load(): { profiles: Map<string, UserProfileData>; lastFetched: number } | null {
     try {
       const stored = localStorage.getItem(CACHE_CONFIG.STORAGE_KEY);
-      if (!stored) return null;
+      if (!stored) {
+return null;
+}
 
       const data = JSON.parse(stored);
-      
+
       // Check if cache is expired
       if (data.lastFetched && Date.now() - data.lastFetched > CACHE_CONFIG.CACHE_DURATION) {
         localStorage.removeItem(CACHE_CONFIG.STORAGE_KEY);
@@ -60,8 +60,7 @@ const storage = {
         profiles: new Map(data.profiles),
         lastFetched: data.lastFetched
       };
-    } catch (error) {
-      console.error('Failed to load cache from localStorage:', error);
+    } catch {
       localStorage.removeItem(CACHE_CONFIG.STORAGE_KEY);
       return null;
     }
@@ -87,7 +86,7 @@ function createUsersCacheStore() {
   // Initialize from localStorage on creation
   async function initialize(forceRefresh = false): Promise<void> {
     const state = get({ subscribe });
-    
+
     // Already initialized and not forcing refresh
     if (state.isInitialized && !forceRefresh) {
       return;
@@ -97,9 +96,8 @@ function createUsersCacheStore() {
     if (!forceRefresh) {
       const cached = storage.load();
       if (cached) {
-        console.log('Loaded user profiles from localStorage cache');
         const avatarUrls = new Map<string, string>();
-        
+
         // Extract avatar URLs for quick access
         cached.profiles.forEach((profile, userId) => {
           const avatarUrl = profile.attributes?.avatar_url || profile.attributes?.avatar;
@@ -128,17 +126,16 @@ function createUsersCacheStore() {
     update((state) => ({ ...state, isLoading: true, error: null }));
 
     try {
-      console.log('Fetching all user profiles from API...');
       const response = await api.users.getUserProfiles();
-      
+
       if (response.success && response.data) {
         const profiles = new Map<string, UserProfileData>();
         const avatarUrls = new Map<string, string>();
-        
+
         // Process all profiles
         response.data.forEach((profile: UserProfileData) => {
           profiles.set(profile.id, profile);
-          
+
           // Extract avatar URL for quick access
           const avatarUrl = profile.attributes?.avatar_url || profile.attributes?.avatar;
           if (avatarUrl) {
@@ -160,13 +157,10 @@ function createUsersCacheStore() {
           isInitialized: true,
           error: null
         }));
-
-        console.log(`Cached ${profiles.size} user profiles with ${avatarUrls.size} avatars`);
       } else {
         throw new Error('Invalid response format');
       }
     } catch (error: unknown) {
-      console.error('Error fetching user profiles:', error);
       update((state) => ({
         ...state,
         isLoading: false,
@@ -185,7 +179,7 @@ function createUsersCacheStore() {
   function getProfileByUserId(userId: string | number): UserProfileData | undefined {
     const state = get({ subscribe });
     const userIdStr = String(userId);
-    
+
     // Search through profiles to find one with matching user_id
     for (const profile of state.profiles.values()) {
       if (String(profile.attributes?.user_id) === userIdStr) {
@@ -210,7 +204,7 @@ function createUsersCacheStore() {
   // Get user profile by email (alternative lookup)
   function getProfileByEmail(email: string): UserProfileData | undefined {
     const state = get({ subscribe });
-    
+
     for (const profile of state.profiles.values()) {
       if (profile.attributes?.access_email === email) {
         return profile;
@@ -223,13 +217,13 @@ function createUsersCacheStore() {
   function searchProfiles(query: string): UserProfileData[] {
     const state = get({ subscribe });
     const lowerQuery = query.toLowerCase();
-    
+
     return Array.from(state.profiles.values()).filter((profile) => {
       const name = profile.attributes?.name?.toLowerCase() || '';
       const lastName = profile.attributes?.last_name?.toLowerCase() || '';
       const email = profile.attributes?.access_email?.toLowerCase() || '';
       const oab = profile.attributes?.oab?.toLowerCase() || '';
-      
+
       return (
         name.includes(lowerQuery) ||
         lastName.includes(lowerQuery) ||
@@ -248,8 +242,10 @@ function createUsersCacheStore() {
   // Check if cache needs refresh
   function needsRefresh(): boolean {
     const state = get({ subscribe });
-    if (!state.lastFetched) return true;
-    
+    if (!state.lastFetched) {
+return true;
+}
+
     return Date.now() - state.lastFetched > CACHE_CONFIG.CACHE_DURATION;
   }
 

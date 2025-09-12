@@ -16,14 +16,18 @@
   $: isAuthenticated = $authStore.isAuthenticated;
   $: currentPath = $router.currentPath;
   
+  // Drawer state management
+  let isDrawerOpen = true; // Start open on desktop
+  let isUserToggled = false; // Track if user manually toggled
+
   // WhoAmI data
   let currentUserData: WhoAmIResponse | null = null;
   let isLoadingProfile = true;
-  
+
   // Derived data from whoami
   $: whoAmIUser = currentUserData?.data;
   $: userProfile = whoAmIUser?.attributes?.profile;
-  
+
   // Computed user display properties using whoami data
   $: userDisplayName = userProfile?.full_name || userProfile?.name || 'Usuário';
   $: userRole = getUserRole(userProfile);
@@ -73,25 +77,60 @@
     router.navigate('/user-config');
     closeDrawer();
   }
+  
+  function toggleDrawer(): void {
+    isDrawerOpen = !isDrawerOpen;
+    isUserToggled = true;
+    const adminDrawer = document.getElementById('admin-drawer') as HTMLInputElement;
+    if (adminDrawer) {
+      adminDrawer.checked = false;
+    }
+  }
 
-  // Fetch whoami data on mount
+  // Fetch whoami data on mount and handle responsive drawer
   onMount(async () => {
     if (isAuthenticated) {
       try {
         currentUserData = await api.users.whoami();
         isLoadingProfile = false;
       } catch (error) {
-        console.error('Error loading user data:', error);
         isLoadingProfile = false;
       }
     }
+    
+    // Handle window resize for responsive drawer behavior
+    function handleResize() {
+      if (!isUserToggled) {
+        // Only auto-adjust if user hasn't manually toggled
+        const isDesktop = window.innerWidth >= 1024; // lg breakpoint
+        isDrawerOpen = isDesktop;
+      }
+    }
+    
+    handleResize(); // Set initial state
+    window.addEventListener('resize', handleResize);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
   });
 </script>
 
 <AuthGuard>
   <div class="drawer lg:drawer-open">
     <input id="admin-drawer" type="checkbox" class="drawer-toggle" />
-    <div class="drawer-content flex flex-col min-h-screen">
+    <div class="drawer-content flex flex-col min-h-screen bg-base-200">
+      <!-- Floating toggle button for desktop when drawer is closed -->
+      {#if !isDrawerOpen && isUserToggled}
+        <button
+          class="btn btn-circle btn-primary fixed top-4 left-4 z-50 hidden lg:flex"
+          on:click={toggleDrawer}
+          title="Abrir menu"
+        >
+          <Icon name="menu" className="w-5 h-5" />
+        </button>
+      {/if}
+      
       <!-- Top Bar -->
       <TopBar showMenuButton={true} />
 
@@ -110,14 +149,27 @@
     <!-- Menu lateral -->
     <div class="drawer-side">
       <label for="admin-drawer" class="drawer-overlay"></label>
-      <ul class="menu menu-lg p-4 w-80 min-h-full bg-base-100 lg:border-r text-base-content">
-        <!-- Título -->
+      <ul class={`menu menu-lg p-4 ${isUserToggled && !isDrawerOpen ? 'w-20' : 'w-80'} min-h-full bg-base-100 lg:border-r text-base-content transition-all duration-300`}>
+        <!-- Título com botão de toggle -->
         <li>
-          <div class="normal-case menu-title text-xl font-bold text-primary flex flex-row">
-            <a href="/" class="grow" on:click|preventDefault={() => router.navigate('/')}>
-              {WebsiteName}
-            </a>
-            <label for="admin-drawer" class="lg:hidden ml-3"> ✕ </label>
+          <div class="normal-case menu-title text-xl font-bold text-primary flex flex-row items-center">
+            {#if !(isUserToggled && !isDrawerOpen)}
+              <a href="/" class="grow" on:click|preventDefault={() => router.navigate('/')}>
+                {WebsiteName}
+              </a>
+            {/if}
+            <!-- Desktop toggle button -->
+            <button
+              class="btn btn-ghost btn-sm hidden lg:flex"
+              on:click={toggleDrawer}
+              title={isDrawerOpen ? 'Recolher menu' : 'Expandir menu'}
+            >
+              <Icon name={isDrawerOpen ? 'chevron-left' : 'chevron-right'} className="w-5 h-5" />
+            </button>
+            {#if !(isUserToggled && !isDrawerOpen)}
+              <!-- Mobile close button -->
+              <label for="admin-drawer" class="lg:hidden ml-3"> ✕ </label>
+            {/if}
           </div>
         </li>
 
@@ -125,7 +177,7 @@
         <li>
           <a
             href="/dashboard"
-            class={currentPath === '/dashboard' ? 'active' : ''}
+            class={currentPath === '/dashboard' ? 'active bg-primary !text-white [&_svg]:!text-white' : 'text-base-content hover:text-base-content [&_svg]:text-primary'}
             on:click|preventDefault={() => {
               router.navigate('/dashboard');
               closeDrawer();
@@ -140,7 +192,7 @@
         <li>
           <a
             href="/admin"
-            class={currentPath === '/admin' ? 'active' : ''}
+            class={currentPath === '/admin' ? 'active bg-primary !text-white [&_svg]:!text-white' : 'text-base-content hover:text-base-content [&_svg]:text-primary'}
             on:click|preventDefault={() => {
               router.navigate('/admin');
               closeDrawer();
@@ -155,7 +207,7 @@
         <li>
           <a
             href="/settings"
-            class={currentPath === '/settings' ? 'active' : ''}
+            class={currentPath === '/settings' ? 'active bg-primary !text-white [&_svg]:!text-white' : 'text-base-content hover:text-base-content [&_svg]:text-primary'}
             on:click|preventDefault={() => {
               router.navigate('/settings');
               closeDrawer();
@@ -170,7 +222,7 @@
         <li>
           <a
             href="/reports"
-            class={currentPath === '/reports' ? 'active' : ''}
+            class={currentPath === '/reports' ? 'active bg-primary !text-white [&_svg]:!text-white' : 'text-base-content hover:text-base-content [&_svg]:text-primary'}
             on:click|preventDefault={() => {
               router.navigate('/reports');
               closeDrawer();
@@ -185,7 +237,7 @@
         <li>
           <a
             href="/jobs"
-            class={currentPath === '/jobs' ? 'active' : ''}
+            class={currentPath === '/jobs' ? 'active bg-primary !text-white [&_svg]:!text-white' : 'text-base-content hover:text-base-content [&_svg]:text-primary'}
             on:click|preventDefault={() => {
               router.navigate('/jobs');
               closeDrawer();
@@ -200,7 +252,7 @@
         <li>
           <a
             href="/teams"
-            class={currentPath === '/teams' ? 'active' : ''}
+            class={currentPath === '/teams' ? 'active bg-primary !text-white [&_svg]:!text-white' : 'text-base-content hover:text-base-content [&_svg]:text-primary'}
             on:click|preventDefault={() => {
               router.navigate('/teams');
               closeDrawer();
@@ -215,7 +267,7 @@
         <li>
           <a
             href="/works"
-            class={currentPath === '/works' ? 'active' : ''}
+            class={currentPath === '/works' ? 'active bg-primary !text-white [&_svg]:!text-white' : 'text-base-content hover:text-base-content [&_svg]:text-primary'}
             on:click|preventDefault={() => {
               router.navigate('/works');
               closeDrawer();
@@ -230,7 +282,7 @@
         <li>
           <a
             href="/customers"
-            class={currentPath === '/customers' ? 'active' : ''}
+            class={currentPath === '/customers' ? 'active bg-primary !text-white [&_svg]:!text-white' : 'text-base-content hover:text-base-content [&_svg]:text-primary'}
             on:click|preventDefault={() => {
               router.navigate('/customers');
               closeDrawer();
@@ -282,7 +334,7 @@
               </button>
 
               <ul
-                class="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-72 mb-2 border border-base-300 z-[100]"
+                class="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-72 mb-2 border border-base-300 z-[100] animate-[slideUp_0.2s_ease-out]"
               >
                 <!-- User info section -->
                 <li class="px-3 py-2">
@@ -317,7 +369,7 @@
                   </li>
                 {/if}
 
-                <div class="divider my-1"></div>
+                <div class="divider my-1 h-px bg-base-content/10"></div>
 
                 <!-- Profile Configuration -->
                 <li>
@@ -327,7 +379,7 @@
                   </button>
                 </li>
 
-                <div class="divider my-1"></div>
+                <div class="divider my-1 h-px bg-base-content/10"></div>
 
                 <!-- Help and Support -->
                 <li>
@@ -343,7 +395,7 @@
                   </button>
                 </li>
 
-                <div class="divider my-1"></div>
+                <div class="divider my-1 h-px bg-base-content/10"></div>
 
                 <!-- Logout -->
                 <li>
@@ -361,51 +413,3 @@
   </div>
 </AuthGuard>
 
-<style>
-  .drawer-content {
-    background-color: var(--color-base-200, #faedd6);
-  }
-
-  .dropdown-content {
-    animation: slideUp 0.2s ease-out;
-  }
-
-  @keyframes slideUp {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .divider {
-    height: 1px;
-    background: var(--fallback-bc, oklch(var(--bc) / 0.1));
-    margin: 0.5rem 0;
-  }
-
-  /* Keep icons blue while text stays dark */
-  .menu :global(svg) {
-    color: var(--color-primary);
-  }
-
-  .menu li a {
-    color: var(--color-base-content);
-  }
-
-  .menu li a:hover {
-    color: var(--color-base-content);
-  }
-
-  .menu li a.active {
-    background-color: var(--color-primary);
-    color: var(--color-primary-content);
-  }
-
-  .menu li a.active :global(svg) {
-    color: var(--color-primary-content);
-  }
-</style>
