@@ -65,4 +65,8 @@ class UserProfileSerializer
     addresses = object.addresses
     addresses&.map { |address| AddressSerializer.new(address).serializable_hash[:data][:attributes] }
   end
+
+  attribute :avatar_url do |object|
+    object.avatar_url(only_path: false)
+  end
 end

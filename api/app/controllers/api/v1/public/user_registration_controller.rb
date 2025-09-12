@@ -78,7 +78,7 @@ module Api
         end
 
         def fetch_lawyer_data_from_oab(oab_number)
-          oab_service = OabApiService.new
+          oab_service = LegalData::LegalDataService.new
           oab_service.find_lawyer(oab_number)
         rescue StandardError => e
           Rails.logger.warn "Could not fetch OAB data for team creation: #{e.message}"
@@ -103,7 +103,7 @@ module Api
         end
 
         def create_profile_from_oab(user)
-          oab_service = OabApiService.new
+          oab_service = LegalData::LegalDataService.new
           lawyer_data = oab_service.find_lawyer(user.oab)
 
           Rails.logger.info "OAB API returned data: #{lawyer_data.inspect}" if Rails.env.development?
@@ -130,8 +130,16 @@ module Api
             # Criar telefone se disponível
             create_phone_from_data(user_profile, lawyer_data) if lawyer_data[:phone].present?
 
-            # Salvar URL da foto do perfil como atributo temporário
-            user_profile.update(origin: lawyer_data[:profile_picture_url]) if lawyer_data[:profile_picture_url]
+            # Attach avatar from S3 URL if available
+            if lawyer_data[:profile_picture_url].present?
+              avatar_service = LegalData::AvatarAttachmentService.new
+              success = avatar_service.attach_from_url(user_profile, lawyer_data[:profile_picture_url])
+              
+              # Store the original URL as backup in origin field
+              user_profile.update(origin: lawyer_data[:profile_picture_url])
+              
+              Rails.logger.info "Avatar attachment #{success ? 'succeeded' : 'failed'} for user_profile #{user_profile.id}"
+            end
           end
         rescue StandardError => e
           Rails.logger.error "Error creating profile from OAB: #{e.message}"

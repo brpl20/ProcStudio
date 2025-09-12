@@ -1,5 +1,5 @@
 // src/stores/userProfileStore.ts
-import { writable, derived, get, type Writable, type Readable } from 'svelte/store';
+import { writable, derived, type Writable, type Readable } from 'svelte/store';
 import { authStore } from './authStore';
 import { usersCacheStore } from './usersCacheStore';
 import api from '../api/index';

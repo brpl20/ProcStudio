@@ -119,8 +119,10 @@
     
     // Initialize users cache if authenticated
     if ($authStore.isAuthenticated) {
+      // eslint-disable-next-line no-console
       console.log('Initializing users cache...');
       usersCacheStore.initialize().catch(error => {
+        // eslint-disable-next-line no-console
         console.error('Failed to initialize users cache:', error);
       });
     }

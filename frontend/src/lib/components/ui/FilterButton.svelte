@@ -22,7 +22,7 @@
     onFilterChange?: (value: T) => void;
   }
 
-  let {
+  const {
     value = $bindable<T>('all' as T),
     options,
     placeholder = 'Filtrar',
