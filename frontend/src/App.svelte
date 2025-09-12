@@ -119,17 +119,17 @@
 
   onMount(async () => {
     await authStore.init();
-    
+
     // Initialize users cache if authenticated
     if ($authStore.isAuthenticated) {
       // eslint-disable-next-line no-console
       console.log('Initializing users cache...');
-      usersCacheStore.initialize().catch(error => {
+      usersCacheStore.initialize().catch((error) => {
         // eslint-disable-next-line no-console
         console.error('Failed to initialize users cache:', error);
       });
     }
-    
+
     // Redirecionar usuário autenticado para dashboard se estiver na landing
     if ($authStore.isAuthenticated && $router.currentPath === '/') {
       router.navigate('/dashboard');

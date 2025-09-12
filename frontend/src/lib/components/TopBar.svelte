@@ -16,7 +16,7 @@
   const currentUser = $derived($authStore.user);
   const userProfile = $derived($currentUserProfile);
   const isLoadingProfile = $derived($userProfileStore.isLoading);
-  
+
   // Get avatar from cache if available
   const userId = $derived(currentUser?.data?.id);
   const cachedAvatarUrl = $derived(userId ? usersCacheStore.getAvatarUrlByUserId(userId) : null);
@@ -93,8 +93,8 @@
           <div class="avatar placeholder">
             <div class="bg-primary text-primary-content rounded-full w-10">
               {#if userAvatarUrl}
-                <img 
-                  src={userAvatarUrl} 
+                <img
+                  src={userAvatarUrl}
                   alt={userDisplayName}
                   class="rounded-full w-10 h-10 object-cover"
                 />

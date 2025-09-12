@@ -24,7 +24,6 @@
     } catch (err) {
       error = err;
       loading = false;
-      console.error('Error loading user data:', err);
     }
   });
 </script>
@@ -34,7 +33,7 @@
     <div class="card bg-base-100 shadow-xl">
       <div class="card-body">
         <h2 class="card-title text-3xl mb-6">Meu Perfil</h2>
-        
+
         {#if loading}
           <div class="flex justify-center p-8">
             <span class="loading loading-spinner loading-lg"></span>
@@ -45,7 +44,7 @@
           </div>
         {:else if userProfile}
           <div class="space-y-6">
-            
+
             <!-- Profile Header with Avatar -->
             <div class="flex items-center gap-6 p-6 bg-base-200 rounded-lg">
               <div class="avatar">
@@ -59,7 +58,7 @@
                   {/if}
                 </div>
               </div>
-              
+
               <div class="flex-1">
                 <h3 class="text-2xl font-bold">{userProfile.full_name}</h3>
                 <p class="text-lg opacity-70">{userProfile.role === 'lawyer' ? (userProfile.gender === 'female' ? 'Advogada' : 'Advogado') : userProfile.role}</p>
@@ -74,68 +73,68 @@
                 <h4 class="card-title">Informações Pessoais</h4>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label class="label">
+                    <label class="label" for="full-name">
                       <span class="label-text font-semibold">Nome Completo</span>
                     </label>
-                    <input type="text" value={userProfile.full_name} class="input input-bordered w-full" readonly />
+                    <input id="full-name" type="text" value={userProfile.full_name} class="input input-bordered w-full" readonly />
                   </div>
-                  
+
                   <div>
-                    <label class="label">
+                    <label class="label" for="cpf">
                       <span class="label-text font-semibold">CPF</span>
                     </label>
-                    <input type="text" value={userProfile.cpf} class="input input-bordered w-full" readonly />
+                    <input id="cpf" type="text" value={userProfile.cpf} class="input input-bordered w-full" readonly />
                   </div>
-                  
+
                   <div>
-                    <label class="label">
+                    <label class="label" for="rg">
                       <span class="label-text font-semibold">RG</span>
                     </label>
-                    <input type="text" value={userProfile.rg} class="input input-bordered w-full" readonly />
+                    <input id="rg" type="text" value={userProfile.rg} class="input input-bordered w-full" readonly />
                   </div>
-                  
+
                   <div>
-                    <label class="label">
+                    <label class="label" for="birth">
                       <span class="label-text font-semibold">Data de Nascimento</span>
                     </label>
-                    <input type="text" value={userProfile.birth} class="input input-bordered w-full" readonly />
+                    <input id="birth" type="text" value={userProfile.birth} class="input input-bordered w-full" readonly />
                   </div>
-                  
+
                   <div>
-                    <label class="label">
+                    <label class="label" for="nationality">
                       <span class="label-text font-semibold">Nacionalidade</span>
                     </label>
-                    <input type="text" value={userProfile.nationality} class="input input-bordered w-full" readonly />
+                    <input id="nationality" type="text" value={userProfile.nationality} class="input input-bordered w-full" readonly />
                   </div>
-                  
+
                   <div>
-                    <label class="label">
+                    <label class="label" for="civil-status">
                       <span class="label-text font-semibold">Estado Civil</span>
                     </label>
-                    <input type="text" value={userProfile.civil_status} class="input input-bordered w-full" readonly />
+                    <input id="civil-status" type="text" value={userProfile.civil_status} class="input input-bordered w-full" readonly />
                   </div>
-                  
+
                   <div>
-                    <label class="label">
+                    <label class="label" for="gender">
                       <span class="label-text font-semibold">Gênero</span>
                     </label>
-                    <input type="text" value={userProfile.gender === 'female' ? 'Feminino' : 'Masculino'} class="input input-bordered w-full" readonly />
+                    <input id="gender" type="text" value={userProfile.gender === 'female' ? 'Feminino' : 'Masculino'} class="input input-bordered w-full" readonly />
                   </div>
-                  
+
                   <div>
-                    <label class="label">
+                    <div class="label">
                       <span class="label-text font-semibold">Status</span>
-                    </label>
+                    </div>
                     <div class="badge badge-success">{userProfile.status}</div>
                   </div>
                 </div>
-                
+
                 {#if userProfile.mother_name}
                   <div class="mt-4">
-                    <label class="label">
+                    <label class="label" for="mother-name">
                       <span class="label-text font-semibold">Nome da Mãe</span>
                     </label>
-                    <input type="text" value={userProfile.mother_name} class="input input-bordered w-full" readonly />
+                    <input id="mother-name" type="text" value={userProfile.mother_name} class="input input-bordered w-full" readonly />
                   </div>
                 {/if}
               </div>
@@ -148,16 +147,16 @@
                   <h4 class="card-title">Informações da Equipe</h4>
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label class="label">
+                      <label class="label" for="team-name">
                         <span class="label-text font-semibold">Nome da Equipe</span>
                       </label>
-                      <input type="text" value={userTeam.name} class="input input-bordered w-full" readonly />
+                      <input id="team-name" type="text" value={userTeam.name} class="input input-bordered w-full" readonly />
                     </div>
                     <div>
-                      <label class="label">
+                      <label class="label" for="subdomain">
                         <span class="label-text font-semibold">Subdomínio</span>
                       </label>
-                      <input type="text" value={userTeam.subdomain} class="input input-bordered w-full" readonly />
+                      <input id="subdomain" type="text" value={userTeam.subdomain} class="input input-bordered w-full" readonly />
                     </div>
                   </div>
                 </div>
@@ -237,7 +236,7 @@
                 <div class="stat-value text-primary">{whoAmIUser?.attributes?.works_count || 0}</div>
                 <div class="stat-desc">Total de trabalhos</div>
               </div>
-              
+
               <div class="stat">
                 <div class="stat-title">Jobs</div>
                 <div class="stat-value text-secondary">{whoAmIUser?.attributes?.jobs_count || 0}</div>

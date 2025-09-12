@@ -9,7 +9,7 @@
 
   // Reactive statements for user data
   $: authUser = $authStore.user;
-  
+
   // Cache status
   $: cacheInfo = $cacheStatus;
 
@@ -23,27 +23,12 @@
   $: userProfile = whoAmIUser?.attributes?.profile;
 
   onMount(async () => {
-    // eslint-disable-next-line no-console
-    console.log('=== ADMIN PAGE DEBUG ===');
-    // eslint-disable-next-line no-console
-    console.log('Auth User:', authUser);
-    
     try {
-      // Use new whoami method to get complete user information
-      // This should work with any authenticated user regardless of authUser data
-      // eslint-disable-next-line no-console
-      console.log('Calling whoami endpoint...');
       currentUserData = await api.users.whoami();
       loading = false;
-      // eslint-disable-next-line no-console
-      console.log('WhoAmI Data:', currentUserData);
-      // eslint-disable-next-line no-console
-      console.log('User Profile:', userProfile);
     } catch (err) {
       error = err;
       loading = false;
-      // eslint-disable-next-line no-console
-      console.error('Error loading whoami data:', err);
     }
   });
 </script>
@@ -76,13 +61,13 @@
               {cacheInfo.isLoading ? 'Loading...' : 'Ready'}
             </div>
           </div>
-          
+
           <div class="stat">
             <div class="stat-title">Cached Profiles</div>
             <div class="stat-value">{cacheInfo.profileCount}</div>
             <div class="stat-desc">User profiles in cache</div>
           </div>
-          
+
           <div class="stat">
             <div class="stat-title">Last Fetched</div>
             <div class="stat-value text-sm">
@@ -93,16 +78,16 @@
             </div>
           </div>
         </div>
-        
+
         <div class="mt-4 flex gap-2">
-          <button 
+          <button
             class="btn btn-sm btn-primary"
             on:click={() => usersCacheStore.fetchAllProfiles()}
             disabled={cacheInfo.isLoading}
           >
             {cacheInfo.isLoading ? 'Loading...' : 'Refresh Cache'}
           </button>
-          <button 
+          <button
             class="btn btn-sm btn-outline"
             on:click={() => usersCacheStore.clearCache()}
           >
@@ -117,7 +102,7 @@
     <div class="card bg-base-100 shadow-xl">
       <div class="card-body">
         <h3 class="card-title">Current User Information</h3>
-        
+
         {#if loading}
           <div class="flex justify-center p-8">
             <span class="loading loading-spinner loading-lg"></span>
@@ -162,7 +147,7 @@
                       {/if}
                     </div>
                   </div>
-                  
+
                   <!-- Profile Info -->
                   <div class="flex-1 grid grid-cols-2 gap-2 text-sm">
                     <div><strong>Profile ID:</strong> {userProfile.id || 'N/A'}</div>
@@ -181,14 +166,14 @@
                     <div><strong>Avatar URL:</strong> <a href={userProfile.avatar_url} target="_blank" rel="noopener" class="link link-primary">{userProfile.avatar_url ? 'View' : 'N/A'}</a></div>
                   </div>
                 </div>
-                
+
                 <!-- Team and Office Info -->
                 {#if whoAmIUser?.attributes?.team}
                   <div class="bg-base-300 p-2 rounded mt-2">
                     <strong>Team:</strong> {whoAmIUser.attributes.team.name} (ID: {whoAmIUser.attributes.team.id})
                   </div>
                 {/if}
-                
+
                 {#if whoAmIUser?.attributes?.offices && whoAmIUser.attributes.offices.length > 0}
                   <div class="bg-base-300 p-2 rounded mt-2">
                     <strong>Offices:</strong>
@@ -226,7 +211,7 @@
     <div class="card bg-base-100 shadow-xl">
       <div class="card-body">
         <h3 class="card-title">All User Avatars from Cache</h3>
-        
+
         {#if $allUserProfiles.length > 0}
           <div class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
             {#each $allUserProfiles.slice(0, 24) as profile}
@@ -234,8 +219,8 @@
                 <div class="avatar placeholder">
                   <div class="bg-neutral text-neutral-content rounded-full w-16">
                     {#if profile.attributes?.avatar_url || profile.attributes?.avatar}
-                      <img 
-                        src={profile.attributes.avatar_url || profile.attributes.avatar} 
+                      <img
+                        src={profile.attributes.avatar_url || profile.attributes.avatar}
                         alt={profile.attributes.name}
                         class="rounded-full"
                       />
@@ -252,7 +237,7 @@
               </div>
             {/each}
           </div>
-          
+
           {#if $allUserProfiles.length > 24}
             <div class="text-sm text-base-content/60 mt-2">
               Showing 24 of {$allUserProfiles.length} cached profiles
