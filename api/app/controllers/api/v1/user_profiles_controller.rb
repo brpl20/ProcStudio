@@ -283,7 +283,7 @@ module Api
       def user_profiles_params
         params.require(:user_profile).permit(
           :role, :status, :user_id, :office_id, :name, :last_name, :gender, :oab,
-          :rg, :cpf, :nationality, :civil_status, :birth, :mother_name, :origin,
+          :rg, :cpf, :nationality, :civil_status, :birth, :mother_name, :origin, :avatar,
           user_attributes: [:id, :email, :access_email, :password, :password_confirmation],
           office_attributes: [:name, :cnpj],
           addresses_attributes: [:id, :description, :zip_code, :street, :number, :neighborhood, :city,
