@@ -115,6 +115,43 @@ export class UserService {
   }
 
   /**
+   * Upload avatar for user profile
+   */
+  async uploadAvatar(profileId: string, file: File): Promise<{ data: UserProfileData }> {
+    const formData = new FormData();
+    formData.append('user_profile[avatar]', file);
+    return this.http.put<{ data: UserProfileData }>(
+      `${API_ENDPOINTS.USER_PROFILES}/${profileId}`,
+      formData,
+      {
+        headers: {
+          // Let browser set Content-Type with boundary for multipart/form-data
+        }
+      }
+    );
+  }
+
+  /**
+   * Remove avatar from user profile
+   */
+  async removeAvatar(profileId: string): Promise<{ data: UserProfileData }> {
+    return this.http.put<{ data: UserProfileData }>(
+      `${API_ENDPOINTS.USER_PROFILES}/${profileId}`,
+      { user_profile: { remove_avatar: true } }
+    );
+  }
+
+  /**
+   * Update avatar color for user profile
+   */
+  async updateAvatarColor(profileId: string, color: string): Promise<{ data: UserProfileData }> {
+    return this.http.put<{ data: UserProfileData }>(
+      `${API_ENDPOINTS.USER_PROFILES}/${profileId}`,
+      { user_profile: { avatar_color: color } }
+    );
+  }
+
+  /**
    * Soft delete a user profile
    */
   async deleteUserProfile(profileId: string): Promise<ApiSuccessResponse<{ id: string }>> {
