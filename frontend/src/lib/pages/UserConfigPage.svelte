@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import AuthSidebar from '../components/AuthSidebar.svelte';
+  import AvatarUpload from '../components/ui/AvatarUpload.svelte';
   import api from '../api/index';
   import type { WhoAmIResponse } from '../api/types';
 
@@ -8,6 +9,9 @@
   let loading = true;
   let error = null;
   let currentUserData: WhoAmIResponse | null = null;
+  let uploadingAvatar = false;
+  let showAvatarEditor = false;
+  let successMessage = '';
 
   // Derived data from whoami
   $: whoAmIUser = currentUserData?.data;
@@ -26,6 +30,74 @@
       loading = false;
     }
   });
+
+  async function handleAvatarUpload(event: CustomEvent) {
+    const { file } = event.detail;
+    if (!userProfile?.id) {
+return;
+}
+
+    uploadingAvatar = true;
+    error = null;
+    successMessage = '';
+
+    try {
+      await api.users.uploadAvatar(String(userProfile.id), file);
+      // Refresh user data
+      currentUserData = await api.users.whoami();
+      successMessage = 'Foto do perfil atualizada com sucesso!';
+      showAvatarEditor = false;
+      setTimeout(() => successMessage = '', 3000);
+    } catch (err) {
+      error = err.message || 'Erro ao fazer upload da foto';
+    } finally {
+      uploadingAvatar = false;
+    }
+  }
+
+  async function handleAvatarRemove() {
+    if (!userProfile?.id) {
+return;
+}
+
+    uploadingAvatar = true;
+    error = null;
+    successMessage = '';
+
+    try {
+      await api.users.removeAvatar(String(userProfile.id));
+      // Refresh user data
+      currentUserData = await api.users.whoami();
+      successMessage = 'Foto removida com sucesso!';
+      setTimeout(() => successMessage = '', 3000);
+    } catch (err) {
+      error = err.message || 'Erro ao remover a foto';
+    } finally {
+      uploadingAvatar = false;
+    }
+  }
+
+  async function handleColorChange(event: CustomEvent) {
+    const { color } = event.detail;
+    if (!userProfile?.id) {
+return;
+}
+
+    uploadingAvatar = true;
+    error = null;
+
+    try {
+      await api.users.updateAvatarColor(String(userProfile.id), color);
+      // Refresh user data
+      currentUserData = await api.users.whoami();
+      successMessage = 'Cor do avatar atualizada com sucesso!';
+      setTimeout(() => successMessage = '', 3000);
+    } catch (err) {
+      error = err.message || 'Erro ao atualizar cor do avatar';
+    } finally {
+      uploadingAvatar = false;
+    }
+  }
 </script>
 
 <AuthSidebar activeSection="user-config">
@@ -44,6 +116,25 @@
           </div>
         {:else if userProfile}
           <div class="space-y-6">
+
+            <!-- Success/Error Messages -->
+            {#if successMessage}
+              <div class="alert alert-success">
+                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>{successMessage}</span>
+              </div>
+            {/if}
+
+            {#if error && !loading}
+              <div class="alert alert-error">
+                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>{error}</span>
+              </div>
+            {/if}
 
             <!-- Profile Header with Avatar -->
             <div class="flex items-center gap-6 p-6 bg-base-200 rounded-lg">
@@ -64,6 +155,14 @@
                 <p class="text-lg opacity-70">{userProfile.role === 'lawyer' ? (userProfile.gender === 'female' ? 'Advogada' : 'Advogado') : userProfile.role}</p>
                 <p class="text-sm opacity-60">OAB: {userProfile.oab}</p>
                 <p class="text-sm opacity-60">Email: {whoAmIUser?.attributes?.email}</p>
+                <div class="mt-3">
+                  <button
+                    class="btn btn-primary btn-sm"
+                    on:click={() => showAvatarEditor = true}
+                  >
+                    Alterar Foto
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -253,9 +352,11 @@
                     Editar Perfil
                     <span class="badge badge-ghost">Em breve</span>
                   </button>
-                  <button class="btn btn-outline" disabled>
+                  <button
+                    class="btn btn-outline"
+                    on:click={() => showAvatarEditor = true}
+                  >
                     Alterar Foto
-                    <span class="badge badge-ghost">Em breve</span>
                   </button>
                   <button class="btn btn-outline" disabled>
                     Alterar Senha
@@ -274,4 +375,45 @@
       </div>
     </div>
   </div>
+
+  <!-- Avatar Editor Modal -->
+  {#if showAvatarEditor}
+    <div class="modal modal-open">
+      <div class="modal-box max-w-3xl">
+        <button
+          class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+          on:click={() => showAvatarEditor = false}
+        >✕</button>
+
+        <h3 class="font-bold text-lg mb-4">Editar Foto do Perfil</h3>
+
+        <AvatarUpload
+          currentAvatarUrl={userProfile?.avatar_url}
+          userName={userProfile?.name || ''}
+          loading={uploadingAvatar}
+          on:upload={handleAvatarUpload}
+          on:remove={handleAvatarRemove}
+          on:colorChange={handleColorChange}
+          on:error={(e) => error = e.detail.message}
+        />
+
+        <div class="modal-action">
+          <button
+            class="btn"
+            on:click={() => showAvatarEditor = false}
+          >
+            Fechar
+          </button>
+        </div>
+      </div>
+      <div
+        role="button"
+        tabindex="0"
+        class="modal-backdrop"
+        on:click={() => showAvatarEditor = false}
+        on:keydown={(e) => e.key === 'Escape' && (showAvatarEditor = false)}
+        aria-label="Fechar editor de avatar"
+      ></div>
+    </div>
+  {/if}
 </AuthSidebar>

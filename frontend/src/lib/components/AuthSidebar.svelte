@@ -15,7 +15,7 @@
 
   $: isAuthenticated = $authStore.isAuthenticated;
   $: currentPath = $router.currentPath;
-  
+
   // Drawer state management
   let isDrawerOpen = true; // Start open on desktop
   let isUserToggled = false; // Track if user manually toggled
@@ -77,7 +77,7 @@
     router.navigate('/user-config');
     closeDrawer();
   }
-  
+
   function toggleDrawer(): void {
     isDrawerOpen = !isDrawerOpen;
     isUserToggled = true;
@@ -97,7 +97,7 @@
         isLoadingProfile = false;
       }
     }
-    
+
     // Handle window resize for responsive drawer behavior
     function handleResize() {
       if (!isUserToggled) {
@@ -106,10 +106,10 @@
         isDrawerOpen = isDesktop;
       }
     }
-    
+
     handleResize(); // Set initial state
     window.addEventListener('resize', handleResize);
-    
+
     return () => {
       window.removeEventListener('resize', handleResize);
     };
@@ -130,7 +130,7 @@
           <Icon name="menu" className="w-5 h-5" />
         </button>
       {/if}
-      
+
       <!-- Top Bar -->
       <TopBar showMenuButton={true} />
 

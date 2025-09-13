@@ -80,9 +80,12 @@ src: #
       test: # 
         CepTestForm.svelte: # 
       ui: # 
+        AvatarGroup.svelte: # 
         ConfirmDialog.svelte: # 
+        FilterButton.svelte: # 
         FormSection.svelte: # 
         Pagination.svelte: # 
+        SearchInput.svelte: # 
         StatusBadge.svelte: # 
       users: # 
         UserForm.svelte: # 
@@ -106,18 +109,22 @@ src: #
       Admin.svelte: # 
       ArrowLeft.svelte: # 
       Briefcase.svelte: # 
+      Check.svelte: # 
       ChevronUp.svelte: # 
+      Clear.svelte: # 
       Comment.svelte: # 
       Customer.svelte: # 
       Dashboard.svelte: # 
       Default.svelte: # 
       Error.svelte: # 
+      Filter.svelte: # 
       Hamburger.svelte: # 
       Heart.svelte: # 
       Help.svelte: # 
       icons-README.md: # 
       icons.svelte: # 
       index.js: # 
+      Info.svelte: # 
       Lightning.svelte: # 
       Logout.svelte: # 
       LogoutAlt.svelte: # 
@@ -133,6 +140,7 @@ src: #
       Work.svelte: # 
     pages: # 
       AdminPage.svelte: # 
+      CustomerProfilePage.svelte: # 
       CustomersEditPage.svelte: # 
       CustomersNewPage.svelte: # 
       CustomersPage.svelte: # 
@@ -146,17 +154,19 @@ src: #
       ReportsPage.svelte: # 
       SettingsPage.svelte: # 
       TeamsPage.svelte: # 
+      UserConfigPage.svelte: # 
       UserCreatePage.svelte: # 
       WorksPage.svelte: # 
     schemas: # 
       customer-form.ts: # 
       office-form.ts: # 
     stores: # 
-      authStore.js: # 
+      authStore.ts: # 
       customerStore.ts: # 
       officeFormStore.ts: # 
       routerStore.js: # 
       userProfileStore.ts: # 
+      usersCacheStore.ts: # 
       userStore.ts: # 
       validationStore.ts: # 
     utils: # 
@@ -175,6 +185,7 @@ src: #
       cpf.ts: # 
       email.ts: # 
       index.ts: # 
+      oabValidator.ts: # 
       password.ts: # 
       proLabore.ts: # 
       types.ts: # 
@@ -185,11 +196,8 @@ src: #
     HomePage.svelte: # 
     Login.svelte: # 
     Navigation.svelte: # 
-    oabValidator.ts: # 
     Register.svelte: # 
     UserProfile.svelte: # 
-  pages: # 
-    CustomerProfilePage.svelte: # 
   App.svelte: # 
   main.js: # 
   vite-env.d.ts: # 
