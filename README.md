@@ -9,6 +9,7 @@ Svelte 5.0
 
 - [API](./docs/API.md)
 - [Authentication System](./docs/AuthReview.md)
+- [Avatar Upload Backend](./docs/Avatar-Upload-Backend.md)
 - [Offices](./docs/Offices.md)
 - [Works](./docs/Works.md)
 - [Works Procedures](./docs/Works-Procedures.md)
