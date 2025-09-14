@@ -265,7 +265,13 @@ module Api
         end
 
         if params[:priority].present?
-          notifications = notifications.where(priority: params[:priority])
+          # Support both string names and integer values
+          priority_value = if params[:priority].match?(/^\d+$/)
+                            params[:priority].to_i
+                          else
+                            Notification.priorities[params[:priority]]
+                          end
+          notifications = notifications.where(priority: priority_value) if priority_value
         end
 
         if params[:from_date].present?

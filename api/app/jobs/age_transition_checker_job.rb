@@ -103,7 +103,7 @@ class AgeTransitionCheckerJob < ApplicationJob
         notification_type: 'compliance',
         title: title,
         body: description,
-        priority: '3', # Urgent priority for age transitions
+        priority: :urgent, # Urgent priority for age transitions
         sender_type: 'System',
         sender_id: nil,
         action_url: "/customers/#{profile.id}/compliance",

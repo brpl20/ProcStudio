@@ -3,6 +3,9 @@
 require 'sidekiq/web' if defined?(Sidekiq)
 
 Rails.application.routes.draw do
+  # Mount Action Cable for WebSocket connections
+  mount ActionCable.server => '/cable'
+  
   # Mount Sidekiq Web UI (only in development/staging, protect in production)
   mount Sidekiq::Web => '/sidekiq' if Rails.env.development? || Rails.env.staging?
 

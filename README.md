@@ -7,6 +7,7 @@ Svelte 5.0
 
 ## Índice
 
+### Documentação Técnica
 - [API](./docs/API.md)
 - [Authentication System](./docs/AuthReview.md)
 - [Avatar Upload Backend](./docs/Avatar-Upload-Backend.md)
@@ -15,11 +16,28 @@ Svelte 5.0
 - [Works Procedures](./docs/Works-Procedures.md)
 - [Works - Honoraries & Legal Costs](./docs/Works-Honoraries-LegalCosts.md)
 - [S3 Multi-Tenancy Architecture](./docs/s3_docs.md)
-- [Instalacão](./docs/Instalação.md)
-- [Padrão de Desesenvolvimento](./docs/Padrão-de-desenvolvimento.md)
-- [Deploy](./docs/Deploy.md)
 - [Policies](./docs/PoliciesReview.md)
 - [Linting Rules](./docs/linting.md)
+
+### Desenvolvimento e Deploy
+- [Instalacão](./docs/Instalação.md)
+- [Padrão de Desesenvolvimento](./docs/Padrão-de-desenvolvimento.md)
+- [Padrão de Desesenvolvimento com IA](#padrão-de-desenvolvimento-com-inteligência-artificial)
+- [Deploy](./docs/Deploy.md)
+- [Monitoramento](#monitoramento)
+- [Troubleshooting](#troubleshooting)
+
+### Visão do Projeto
+- [Visão e Evolução do Projeto](#visão-e-evolução-do-projeto)
+- [Princípios](#princípios)
+- [Público Alvo](#público-alvo)
+- [Outros Projetos](#outros-projetos)
+
+### Ferramentas e Recursos
+- [Helpers](#helpers)
+- [APIs Internas](#apis-internas)
+- [Docx](#docx)
+- [Prototipagem e Figma](#prototipagem-e-figma)
 
 ## Visão e Evolução do Projeto
 

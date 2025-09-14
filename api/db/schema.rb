@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_13_214818) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_14_121359) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -382,7 +382,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_13_214818) do
   create_table "notifications", force: :cascade do |t|
     t.string "title"
     t.boolean "read", default: false
-    t.string "priority", default: "0"
+    t.integer "priority", default: 1
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "body"
@@ -397,6 +397,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_13_214818) do
     t.index ["priority"], name: "index_notifications_on_priority"
     t.index ["read"], name: "index_notifications_on_read"
     t.index ["sender_type", "sender_id"], name: "index_notifications_on_sender_type_and_sender_id"
+    t.index ["user_profile_id", "priority", "created_at"], name: "index_notifications_on_user_profile_priority_created"
     t.index ["user_profile_id"], name: "index_notifications_on_user_profile_id"
   end
 

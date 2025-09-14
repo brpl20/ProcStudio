@@ -69,6 +69,7 @@ class Job < ApplicationRecord
   }
 
   after_create :ensure_creator_as_assignee
+  after_create :notify_assigned_users
 
   enum :status, {
     pending: 'pending',
@@ -175,5 +176,69 @@ class Job < ApplicationRecord
     return unless assignees.empty? && created_by&.user_profile.present?
 
     add_assignee(created_by.user_profile, role: 'assignee')
+  end
+
+  def notify_assigned_users
+    # Notify all assignees about the new job
+    assignees.each do |assignee|
+      next if assignee == created_by.user_profile # Don't notify the creator
+
+      Notification.create!(
+        user_profile: assignee,
+        title: "Nova tarefa atribuída",
+        body: "A tarefa ##{id} foi atribuída a você: #{description || 'Sem descrição'}",
+        notification_type: "task_assignment",
+        priority: priority_to_notification_priority,
+        action_url: "/jobs/#{id}",
+        sender_type: "User",
+        sender_id: created_by.id,
+        data: {
+          job_id: id,
+          job_description: description,
+          job_deadline: deadline.to_s,
+          job_priority: priority,
+          work_id: work_id,
+          customer_id: profile_customer_id,
+          customer_name: profile_customer&.name
+        }
+      )
+    end
+
+    # Notify supervisors about the new job
+    supervisors.each do |supervisor|
+      Notification.create!(
+        user_profile: supervisor,
+        title: "Nova tarefa para supervisão",
+        body: "Você foi designado como supervisor da tarefa ##{id}: #{description || 'Sem descrição'}",
+        notification_type: "task_assignment",
+        priority: priority_to_notification_priority,
+        action_url: "/jobs/#{id}",
+        sender_type: "User",
+        sender_id: created_by.id,
+        data: {
+          job_id: id,
+          job_description: description,
+          job_deadline: deadline.to_s,
+          job_priority: priority,
+          role: "supervisor",
+          work_id: work_id,
+          customer_id: profile_customer_id,
+          customer_name: profile_customer&.name
+        }
+      )
+    end
+  end
+
+  def priority_to_notification_priority
+    case priority
+    when 'urgent', 'high'
+      :urgent
+    when 'medium'
+      :high
+    when 'low'
+      :normal
+    else
+      :normal # default
+    end
   end
 end

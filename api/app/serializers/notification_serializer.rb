@@ -40,10 +40,17 @@ class NotificationSerializer
              :notification_type,
              :data,
              :read,
-             :priority,
              :action_url,
              :created_at,
              :updated_at
+  
+  attribute :priority do |notification|
+    {
+      value: notification.priority,
+      name: notification.priority,
+      numeric: Notification.priorities[notification.priority]
+    }
+  end
 
   attribute :sender do |notification|
     if notification.sender

@@ -71,5 +71,8 @@ export type {
   JsonApiOfficesWithLawyersResponse
 } from './office.types';
 
+// Notification types
+export * from './notification.types';
+
 // Re-export shared types from office.types
 export type { Phone, Address, Email, BankAccount } from './office.types';
