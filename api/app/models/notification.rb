@@ -48,24 +48,22 @@ class Notification < ApplicationRecord
     compliance
   ].freeze
 
-  PRIORITIES = {
+  enum :priority, {
     low: 0,
     normal: 1,
     high: 2,
     urgent: 3
-  }.freeze
+  }, default: :normal
 
   validates :title, presence: true
   validates :notification_type, presence: true, inclusion: { in: TYPES }
-  validates :priority, inclusion: { in: PRIORITIES.values.map(&:to_s) }, allow_blank: true
 
   scope :unread, -> { where(read: false) }
   scope :by_priority, -> { order(priority: :desc, created_at: :desc) }
   scope :recent, -> { order(created_at: :desc) }
   scope :for_user_profile, ->(user_profile) { where(user_profile: user_profile) }
 
-  # Uncomment after Action Cable is fully configured
-  # after_create_commit :broadcast_notification
+  after_create_commit :broadcast_notification
 
   def mark_as_read!
     update!(read: true)
@@ -76,11 +74,7 @@ class Notification < ApplicationRecord
   end
 
   def high_priority?
-    priority.to_i >= PRIORITIES[:high]
-  end
-
-  def priority_value
-    priority.to_i
+    high? || urgent?
   end
 
   private

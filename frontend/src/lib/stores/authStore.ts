@@ -2,6 +2,7 @@
 import { writable, derived, type Writable, type Readable } from 'svelte/store';
 import api from '../api/index';
 import type { LoginResponse, ProfileCompletionResponse } from '../api/types';
+import { notificationStore } from './notificationStore';
 
 // Define the auth store state interface
 interface AuthState {
@@ -64,6 +65,11 @@ function createAuthStore() {
         isAuthenticated: true,
         user: storedUserData
       }));
+
+      // Connect to WebSocket if user is authenticated
+      if (storedUserData?.token) {
+        notificationStore.connect(storedUserData.token);
+      }
     } else {
       update((state) => ({
         ...state,
@@ -85,6 +91,11 @@ function createAuthStore() {
       profileData: userData.data,
       missingFields: userData.data.missing_fields || []
     }));
+
+    // Connect to WebSocket after successful login
+    if (userData.token) {
+      notificationStore.connect(userData.token);
+    }
   }
 
   // Handle successful registration
@@ -108,6 +119,8 @@ function createAuthStore() {
     try {
       await api.auth.logout();
     } finally {
+      // Disconnect from WebSocket before clearing auth data
+      notificationStore.disconnect();
       storage.clearUserData();
       set(initialState);
     }

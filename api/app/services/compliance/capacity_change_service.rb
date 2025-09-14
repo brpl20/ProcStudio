@@ -46,7 +46,7 @@ module Compliance
           notification_type: 'compliance',
           title: title,
           body: description,
-          priority: '2', # High priority for compliance
+          priority: :high, # High priority for compliance
           sender_type: 'ProfileCustomer',
           sender_id: profile_customer.id,
           action_url: "/customers/#{profile_customer.id}/compliance",

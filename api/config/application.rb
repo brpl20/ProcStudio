@@ -14,7 +14,7 @@ require "action_mailer/railtie"
 # require "action_mailbox/engine"
 # require "action_text/engine"
 require "action_view/railtie"
-# require "action_cable/engine"
+require "action_cable/engine"
 require "rails/test_unit/railtie"
 
 # Require the gems listed in Gemfile, including any gems
@@ -31,6 +31,12 @@ module Procstudio_api
     config.active_record.default_timezone = :local
 
     config.action_mailer.default_url_options = { host: 'procstudio.com.br' }
+
+    # Action Cable configuration
+    config.action_cable.mount_path = '/cable'
+    config.action_cable.url = 'ws://localhost:3000/cable'
+    config.action_cable.allowed_request_origins = ['http://localhost:5173', 'http://localhost:3000']
+    config.action_cable.disable_request_forgery_protection = true if Rails.env.development?
 
     config.autoload_paths << "#{config.root}/app/models/filters"
     config.autoload_paths << "#{config.root}/app/models/services"
