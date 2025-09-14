@@ -95,12 +95,14 @@
     <SearchInput
       bind:value={searchTerm}
       placeholder="Pesquisar por descrição, comentário, trabalho, status..."
+      onSearchChange={(value) => searchTerm = value}
     />
     <FilterButton
       bind:value={priorityFilter}
       options={priorityOptions}
       placeholder="Prioridade"
       allOptionLabel="Todas"
+      onFilterChange={(value) => priorityFilter = value}
     />
   </div>
 
