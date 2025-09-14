@@ -7,37 +7,87 @@ Svelte 5.0
 
 ## Índice
 
-### Documentação Técnica
-- [API](./docs/API.md)
-- [Authentication System](./docs/AuthReview.md)
-- [Avatar Upload Backend](./docs/Avatar-Upload-Backend.md)
-- [Offices](./docs/Offices.md)
-- [Works](./docs/Works.md)
-- [Works Procedures](./docs/Works-Procedures.md)
-- [Works - Honoraries & Legal Costs](./docs/Works-Honoraries-LegalCosts.md)
-- [S3 Multi-Tenancy Architecture](./docs/s3_docs.md)
-- [Policies](./docs/PoliciesReview.md)
-- [Linting Rules](./docs/linting.md)
-
-### Desenvolvimento e Deploy
-- [Instalacão](./docs/Instalação.md)
-- [Padrão de Desesenvolvimento](./docs/Padrão-de-desenvolvimento.md)
-- [Padrão de Desesenvolvimento com IA](#padrão-de-desenvolvimento-com-inteligência-artificial)
-- [Deploy](./docs/Deploy.md)
-- [Monitoramento](#monitoramento)
-- [Troubleshooting](#troubleshooting)
-
 ### Visão do Projeto
 - [Visão e Evolução do Projeto](#visão-e-evolução-do-projeto)
 - [Princípios](#princípios)
 - [Público Alvo](#público-alvo)
 - [Outros Projetos](#outros-projetos)
 
+### Documentação Técnica
+- Prototipagem
+  - [Prototipagem e Figma](#prototipagem-e-figma)
+
+- API
+  - [API](./docs/API.md)
+
+- Auth & Register
+  - [Authentication](./docs/Auth.md)
+  - [Registration](./docs/Registration.md)
+  - [Profile Completion]
+  - [Legal Data API]
+
+- SuperAdmin
+  - [SuperAdmin](Super-Admin.md)
+
+- Users, Teams and Offices
+  - [Users](./docs/User.md)
+    - [Avatar Upload Backend](./docs/User-Avatar-Upload-Backend.md)
+  - [Teams](./docs/Team.md)
+  - [Office](./docs/Office.md)
+- [Policies](./docs/Policies.md)
+
+- Notificações
+  - [Notificações Backend](./docs/Notifications-backend.md)
+  - [Notificações Frontend](./docs/Notifications-frontend.md)
+
+- Background Jobs
+  - [SideKick](./docs/SideKick.md)
+
+- Compliance System
+
+- Draft System
+
+- Models
+  - [Jobs]
+  - [Customers]
+  - [Works](./docs/Work.md)
+    - [Works Endpoints](./docs/Work-Endpoints.md)
+    - [Works - Honoraries & Legal Costs](./docs/Work-Honoraries-LegalCosts.md)
+      - [Works - Honoraries & Legal Costs Examples](./docs/Work-Honoraries-LegalCosts-examples.md)
+    - [Works Procedures](./docs/Work-Procedures.md)
+      - [Works Procedures Migration](./docs/Work-Procedures-migration.md)
+
+- Active Storage e Amazon S3
+  - [S3](./docs/s3.md)
+
+## Frontend
+- Dragable
+- Debugging
+- MCP
+- Virtual List
+- Draft Helper
+
+
 ### Ferramentas e Recursos
 - [Helpers](#helpers)
 - [APIs Internas](#apis-internas)
 - [Docx](#docx)
-- [Prototipagem e Figma](#prototipagem-e-figma)
+
+## Instalação e Início
+- [Instalacão](./docs/Instalação.md)
+
+### Desenvolvimento
+- [Padrão de Desesenvolvimento](./docs/coding-pattern.md)
+- [Padrão de Desesenvolvimento com IA](./docs/coding-pattern-ai.md)
+- [Linting Rules](./docs/code-linting.md)
+- Monitoramento (TD)
+- [Troubleshooting](./docs/code-troubleshooting.md)
+
+## Tests
+Todo
+
+## Deploy
+- [Deploy](./docs/Deploy.md)
 
 ## Visão e Evolução do Projeto
 
@@ -112,7 +162,9 @@ Um dos nossos maiores gargalos iniciais é o atendimento e conforto do usuário.
 
 ## Prototipagem e Figma
 
-Acabamos abandonando a prototipagem pelo figma, ao invés disso é melhor abrir um repositório a parte ou uma branch para validação instruindo a IA a realizar os códigos de frontend isolados, confira neste respositório a [prototipagem básica do sistema](https://github.com/brpl20/prc_admin-fe).
+Acabamos abandonando a prototipagem pelo figma, ao invés disso é melhor abrir um repositório a parte ou uma branch para validação instruindo a IA a realizar os códigos de frontend isolados que o ganho de produtividade será [x1000](https://www.linkedin.com/pulse/prototipagem-1000x-revolucionando-o-design-de-com-ia-pellizzetti-qwpuf/?trackingId=FmVefBY3qSqmpju6nviBhQ%3D%3D), confira neste respositório a [prototipagem básica do sistema](https://github.com/brpl20/prc_admin-fe).
+
+
 
 ## Arquivos compartilhados
 - Temos uma pasta compartilhada no google drive em que teremos:
