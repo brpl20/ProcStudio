@@ -4,6 +4,7 @@
   import CepTestForm from '../components/test/CepTestForm.svelte';
   import { authStore } from '../stores/authStore';
   import { usersCacheStore, cacheStatus, allUserProfiles } from '../stores/usersCacheStore';
+  import { notificationStore, unreadCount, isConnected, recentNotifications } from '../stores/notificationStore';
   import api from '../api/index';
   import type { WhoAmIResponse } from '../api/types';
 
@@ -246,6 +247,178 @@
         {:else}
           <p class="text-base-content/60">No profiles in cache</p>
         {/if}
+      </div>
+    </div>
+
+    <!-- WebSocket Notifications Test Section -->
+    <div class="divider">WebSocket Notifications Test</div>
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body">
+        <h3 class="card-title">Real-time Notifications</h3>
+
+        <!-- Connection Status -->
+        <div class="stats stats-vertical lg:stats-horizontal shadow">
+          <div class="stat">
+            <div class="stat-title">WebSocket Status</div>
+            <div class="stat-value text-sm {$isConnected ? 'text-success' : 'text-error'}">
+              {$isConnected ? '🟢 Connected' : '🔴 Disconnected'}
+            </div>
+            <div class="stat-desc">
+              {$isConnected ? 'Ready to receive notifications' : 'Not connected to server'}
+            </div>
+          </div>
+
+          <div class="stat">
+            <div class="stat-title">Unread Count</div>
+            <div class="stat-value">{$unreadCount}</div>
+            <div class="stat-desc">Unread notifications</div>
+          </div>
+
+          <div class="stat">
+            <div class="stat-title">Recent Notifications</div>
+            <div class="stat-value">{$recentNotifications.length}</div>
+            <div class="stat-desc">Last 10 notifications</div>
+          </div>
+        </div>
+
+        <!-- Debug Info -->
+        <div class="alert alert-info mb-4">
+          <div class="text-sm">
+            <strong>WebSocket Debug Info:</strong><br>
+            Connected: {$isConnected ? 'Yes' : 'No'}<br>
+            Has Token: {$authStore.user?.data?.token ? 'Yes' : 'No'}<br>
+            Token Preview: {$authStore.user?.data?.token ? `${$authStore.user.data.token.substring(0, 20)}...` : 'None'}<br>
+            Button Disabled: {$isConnected || !$authStore.user?.data?.token ? 'Yes' : 'No'}<br><br>
+            <strong>Auth Store Debug:</strong><br>
+            Is Authenticated: {$authStore.isAuthenticated ? 'Yes' : 'No'}<br>
+            User Object: {$authStore.user ? 'Present' : 'Null'}<br>
+            User Structure: {JSON.stringify(Object.keys($authStore.user || {}))}<br>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap gap-2 mt-4">
+          <button
+            class="btn btn-sm btn-primary"
+            on:click={() => {
+              const token = $authStore.user?.data?.token || '';
+              console.log('🔑 Using token for WebSocket:', token ? `${token.substring(0, 20)}...` : 'No token');
+              notificationStore.connect(token);
+            }}
+            disabled={$isConnected || !$authStore.user?.data?.token}
+          >
+            Connect WebSocket
+          </button>
+
+          <button
+            class="btn btn-sm btn-outline"
+            on:click={() => notificationStore.disconnect()}
+            disabled={!$isConnected}
+          >
+            Disconnect
+          </button>
+
+          <button
+            class="btn btn-sm btn-info"
+            on:click={() => notificationStore.requestUnreadCount()}
+            disabled={!$isConnected}
+          >
+            Request Unread Count
+          </button>
+
+          <button
+            class="btn btn-sm btn-warning"
+            on:click={() => notificationStore.markAllAsRead()}
+            disabled={!$isConnected || $unreadCount === 0}
+          >
+            Mark All as Read
+          </button>
+        </div>
+
+        <!-- Recent Notifications List -->
+        <div class="mt-6">
+          <h4 class="font-semibold mb-3">Recent Notifications</h4>
+
+          {#if $recentNotifications.length === 0}
+            <div class="alert alert-info">
+              <span>No notifications received yet. Create a Job in the backend to test notifications.</span>
+            </div>
+          {:else}
+            <div class="space-y-2">
+              {#each $recentNotifications as notification}
+                <div class="card bg-base-200 compact">
+                  <div class="card-body">
+                    <div class="flex justify-between items-start">
+                      <div class="flex-1">
+                        <h5 class="font-medium {notification.read ? 'text-base-content/70' : 'text-base-content'}">
+                          {notification.title}
+                        </h5>
+                        <p class="text-sm text-base-content/80 mt-1">
+                          {notification.message}
+                        </p>
+
+                        <div class="flex items-center gap-2 mt-2 text-xs">
+                          <span class="badge badge-outline">
+                            {notification.notification_type}
+                          </span>
+                          <span class="badge badge-outline">
+                            Priority: {notification.priority}
+                          </span>
+                          <span class="text-base-content/60">
+                            {new Date(notification.created_at).toLocaleString()}
+                          </span>
+                        </div>
+
+                        {#if notification.data}
+                          <details class="mt-2">
+                            <summary class="text-xs cursor-pointer text-base-content/60">View data</summary>
+                            <pre class="text-xs mt-1 bg-base-300 p-2 rounded overflow-auto max-h-20">
+{JSON.stringify(notification.data, null, 2)}
+                            </pre>
+                          </details>
+                        {/if}
+                      </div>
+
+                      <div class="flex items-center gap-2">
+                        {#if !notification.read}
+                          <button
+                            class="btn btn-xs btn-outline"
+                            on:click={() => notificationStore.markAsRead(notification.id)}
+                            disabled={!$isConnected}
+                          >
+                            Mark Read
+                          </button>
+                        {:else}
+                          <span class="badge badge-success badge-xs">Read</span>
+                        {/if}
+
+                        {#if notification.action_url}
+                          <button class="btn btn-xs btn-primary" disabled>
+                            Go to {notification.action_url}
+                          </button>
+                        {/if}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {/each}
+            </div>
+          {/if}
+        </div>
+
+        <!-- Test Instructions -->
+        <div class="alert alert-warning mt-6">
+          <div>
+            <h4 class="font-semibold">Testing Instructions:</h4>
+            <ol class="list-decimal list-inside text-sm space-y-1 mt-2">
+              <li>Make sure WebSocket is connected (green status above)</li>
+              <li>Use the authenticator tool to create a Job: <code>node ai-tools/authenticator.js create job</code></li>
+              <li>Or use the Rails console: <code>Job.create!(user: User.first, description: "Test job", ...)</code></li>
+              <li>Watch for real-time notifications to appear above</li>
+              <li>Test marking notifications as read</li>
+            </ol>
+          </div>
+        </div>
       </div>
     </div>
 
