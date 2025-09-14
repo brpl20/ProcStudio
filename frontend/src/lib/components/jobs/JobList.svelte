@@ -103,6 +103,7 @@
       options={priorityOptions}
       placeholder="Filtros"
       allOptionLabel="Todas"
+      onFilterChange={(value) => priorityFilter = value}
     />
   </div>
 
