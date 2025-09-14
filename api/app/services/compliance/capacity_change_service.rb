@@ -37,21 +37,30 @@ module Compliance
       team = profile_customer.customer&.teams&.first
       return unless team # Skip if no team associated
 
-      ComplianceNotification.create!(
-        notification_type: 'manual_capacity_update',
-        title: title,
-        description: description,
-        status: 'pending',
-        team: team,
-        resource_type: 'ProfileCustomer',
-        resource_id: profile_customer.id,
-        metadata: {
-          previous_capacity: previous_capacity,
-          new_capacity: new_capacity,
-          changed_at: Time.current.to_s,
-          age: calculate_age
-        }
-      )
+      # Notify team admins about compliance change
+      team.users.joins(:user_profile).where(user_profiles: { role: ['lawyer', 'super_admin'] }).each do |user|
+        next unless user.user_profile
+        
+        Notification.create!(
+          user_profile: user.user_profile,
+          notification_type: 'compliance',
+          title: title,
+          body: description,
+          priority: '2', # High priority for compliance
+          sender_type: 'ProfileCustomer',
+          sender_id: profile_customer.id,
+          action_url: "/customers/#{profile_customer.id}/compliance",
+          data: {
+            compliance_type: 'manual_capacity_update',
+            previous_capacity: previous_capacity,
+            new_capacity: new_capacity,
+            changed_at: Time.current.to_s,
+            age: calculate_age,
+            profile_customer_id: profile_customer.id,
+            profile_customer_name: profile_customer.name
+          }
+        )
+      end
     end
 
     def determine_notification_title

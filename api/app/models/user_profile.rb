@@ -46,6 +46,7 @@ class UserProfile < ApplicationRecord
   belongs_to :office, optional: true
 
   has_one_attached :avatar
+  has_many :notifications, dependent: :destroy
 
   delegate :team, to: :user
 

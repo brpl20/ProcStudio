@@ -116,24 +116,36 @@ class Represent < ApplicationRecord
     create_compliance_notification('representation_ended')
   end
 
-  def create_compliance_notification(notification_type)
+  def create_compliance_notification(compliance_type)
     return unless team
 
-    ComplianceNotification.create!(
-      notification_type: notification_type,
-      title: notification_title(notification_type),
-      description: notification_description(notification_type),
-      status: 'pending',
-      team: team,
-      resource_type: 'Represent',
-      resource_id: id,
-      metadata: {
-        profile_customer_id: profile_customer_id,
-        representor_id: representor_id,
-        relationship_type: relationship_type,
-        active: active
-      }
-    )
+    title = notification_title(compliance_type)
+    description = notification_description(compliance_type)
+    
+    # Notify team admins about representation changes
+    team.users.joins(:user_profile).where(user_profiles: { role: ['lawyer', 'super_admin'] }).each do |user|
+      next unless user.user_profile
+      
+      Notification.create!(
+        user_profile: user.user_profile,
+        notification_type: 'compliance',
+        title: title,
+        body: description,
+        priority: '1', # Normal priority for representation changes
+        sender_type: 'Represent',
+        sender_id: id,
+        action_url: "/customers/#{profile_customer_id}/represents",
+        data: {
+          compliance_type: compliance_type,
+          profile_customer_id: profile_customer_id,
+          profile_customer_name: profile_customer&.name,
+          representor_id: representor_id,
+          representor_name: representor&.name,
+          relationship_type: relationship_type,
+          active: active
+        }
+      )
+    end
   rescue StandardError => e
     Rails.logger.error "Failed to create compliance notification: #{e.message}"
   end
