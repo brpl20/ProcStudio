@@ -2,6 +2,8 @@
 
 # ProcStudio API - Authorization Policies Documentation
 
+Não perca tempo com as Politicas de controle, essas políticas foram feitas no Pundit, porém precisaremos mudar para a Gem CanCanCan que permite um controle mais granular. Outra questão importante é que os usuários precisam poder alterar essas configurações, o que não é possível com o Pundit.
+
 ## Overview
 
 The ProcStudio API implements a comprehensive authorization system using **Pundit** for role-based access control (RBAC). The system enforces granular permissions across different user roles and provides multi-tenancy isolation through team scoping. This document provides a detailed analysis of the authorization policies, their implementation, and security considerations.
@@ -25,7 +27,7 @@ The system defines a clear role hierarchy with specific permissions:
 - **paralegal** - Legal assistant with moderate permissions
 - **secretary** - Administrative support with limited permissions
 
-#### Operational Roles  
+#### Operational Roles
 - **trainee** - Junior legal role with restricted permissions
 - **counter** - Accounting/financial role
 - **excounter** - Former accounting role (legacy)
@@ -37,7 +39,7 @@ The system defines a clear role hierarchy with specific permissions:
 ApplicationPolicy (Base)
 ├── Admin::BasePolicy (Admin namespace)
 │   ├── Admin::OfficePolicy
-│   ├── Admin::UserPolicy  
+│   ├── Admin::UserPolicy
 │   ├── Admin::CustomerPolicy
 │   ├── Admin::WorkPolicy
 │   ├── Admin::JobPolicy
@@ -269,7 +271,7 @@ Different actions have different permission requirements:
 
 - **Read Operations** (index/show) - Generally permissive
 - **Create Operations** - More restrictive, usually require mid-level+ roles
-- **Update Operations** - Often include ownership checks for junior roles  
+- **Update Operations** - Often include ownership checks for junior roles
 - **Delete Operations** - Most restrictive, usually senior roles only
 - **Restore Operations** - Similar to update permissions
 
@@ -351,7 +353,7 @@ RSpec.describe Admin::OfficePolicy do
       expect(subject).to permit(lawyer, Office)
     end
 
-    it "denies trainees from creating offices" do  
+    it "denies trainees from creating offices" do
       expect(subject).not_to permit(trainee, Office)
     end
   end
@@ -383,7 +385,7 @@ CREATE TABLE user_profiles (
 
 ### Team Association
 
-```sql  
+```sql
 -- users belong to teams for multi-tenancy
 CREATE TABLE users (
   id bigint PRIMARY KEY,
@@ -405,7 +407,7 @@ deleted_at datetime,  -- Soft deletion support
 
 ### 1. Defense in Depth
 - **Multiple Authorization Layers** - Controller, model, and view-level checks
-- **Automatic Team Scoping** - Prevents accidental cross-team access  
+- **Automatic Team Scoping** - Prevents accidental cross-team access
 - **Ownership Validation** - Additional protection for sensitive operations
 
 ### 2. Principle of Least Privilege
@@ -465,7 +467,7 @@ end
    - Verify policy method exists for the action
    - Confirm record ownership if required
 
-2. **Missing Authorization**  
+2. **Missing Authorization**
    - Ensure `authorize` is called in controller actions
    - Check `after_action :verify_authorized` is present
    - Verify policy class exists and follows naming convention
@@ -504,7 +506,7 @@ try {
 
 For authorization issues:
 - **Check application logs** for detailed policy failure reasons
-- **Review user roles** in user_profile table  
+- **Review user roles** in user_profile table
 - **Verify team associations** for multi-tenancy issues
 - **Test policies in Rails console** for debugging
 
@@ -515,7 +517,7 @@ For authorization issues:
 The ProcStudio API authorization system provides:
 
 - **Comprehensive Role-Based Access Control** with 8 distinct user roles
-- **Multi-Tenant Security** with automatic team scoping  
+- **Multi-Tenant Security** with automatic team scoping
 - **Granular Permissions** covering all major operations
 - **Ownership-Based Access** for enhanced data protection
 - **Scalable Architecture** supporting future enhancements

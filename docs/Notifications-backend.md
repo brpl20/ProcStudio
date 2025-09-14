@@ -6,7 +6,7 @@ Sistema de notificações criado para comunicação entre os usuários e outras 
 
 # Backend
 
-O Backend vai se conectar com o frontend usando Websockets com [ActionCable](https://guides.rubyonrails.org/action_cable_overview.html).
+O Backend vai se conectar com o frontend usando [Websockets]() com [ActionCable](https://guides.rubyonrails.org/action_cable_overview.html). Confira a estrate'gia de implementação [aqui]()
 
 1. Notification Model - Enhanced with polymorphic sender, priority levels, notification types, and WebSocket broadcasting
 2. NotificationsController - Full CRUD operations with filtering, pagination, and batch operations
@@ -27,7 +27,7 @@ updated_at:,
 team_id:,
 title:,  # string => Título da notificação
 read: false, # boolean => Se foi lido ou não
-priority: "0", # string => Default "0" => prioridade da notificação: low: 0 - normal: 1 - high:2 - urgent: 3,
+priority: "1", # enum => Default "1" => prioridade da notificação: low: 0 - normal: 1 - high:2 - urgent: 3 { acho que pode ser usado tanto o "low" quanto o 0 para qualquer um deles }
 body:,  # text => o que vai ser comunicado na notificação
 notification_type:, # string fechado => info, success, warning, error, system, user_action, process_update, task_assignment, compliance
 data: {}, # jsonb => Qualquer informação que deva estar na notificação
@@ -65,8 +65,6 @@ vs 41-63)
   - NotificationsController:9-12 loads all notifications before filtering
   - Missing database indexes for frequent queries
 
-6. Code Smell - Magic Numbers
-  - Priority values stored as strings ('0', '1', '2', '3') instead of using enums properly
 
 Recommended Improvements:
 

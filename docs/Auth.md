@@ -1,6 +1,6 @@
 [Back](../README.md)
 
-# ProcStudio API - Authentication System Documentation
+# ProcStudio - Authentication System Documentation
 
 ## Overview
 
