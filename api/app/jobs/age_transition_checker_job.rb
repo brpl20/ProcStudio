@@ -94,20 +94,29 @@ class AgeTransitionCheckerJob < ApplicationJob
     team = profile.customer&.teams&.first
     return unless team # Skip if no team associated
 
-    ComplianceNotification.create!(
-      notification_type: 'age_transition',
-      title: title,
-      description: description,
-      status: 'pending',
-      team: team,
-      resource_type: 'ProfileCustomer',
-      resource_id: profile.id,
-      metadata: {
-        old_capacity: old_capacity,
-        new_capacity: new_capacity,
-        age: age,
-        transition_date: Date.current.to_s
-      }
-    )
+    # Notify team admins about age transition compliance
+    team.users.joins(:user_profile).where(user_profiles: { role: ['lawyer', 'super_admin'] }).each do |user|
+      next unless user.user_profile
+      
+      Notification.create!(
+        user_profile: user.user_profile,
+        notification_type: 'compliance',
+        title: title,
+        body: description,
+        priority: '3', # Urgent priority for age transitions
+        sender_type: 'System',
+        sender_id: nil,
+        action_url: "/customers/#{profile.id}/compliance",
+        data: {
+          compliance_type: 'age_transition',
+          old_capacity: old_capacity,
+          new_capacity: new_capacity,
+          age: age,
+          transition_date: Date.current.to_s,
+          profile_customer_id: profile.id,
+          profile_customer_name: profile.name
+        }
+      )
+    end
   end
 end
