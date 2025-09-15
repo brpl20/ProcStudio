@@ -29,6 +29,7 @@
     "postcss": "^8.4.31",
     "prettier": "^3.6.2",
     "prettier-plugin-svelte": "^3.4.0",
+    "simple-svelte-autocomplete": "^2.5.2",
     "svelte": "^5.38.1",
     "typescript": "^5.9.2",
     "vite": "^7.1.2"
@@ -36,7 +37,9 @@
   "dependencies": {
     "@rails/actioncable": "^8.0.201",
     "@tailwindcss/vite": "^4.1.12",
+    "@types/quill": "^2.0.14",
     "daisyui": "^5.0.50",
+    "quill": "^2.0.3",
     "tailwindcss": "^4.1.12"
   },
   "lint-staged": {
