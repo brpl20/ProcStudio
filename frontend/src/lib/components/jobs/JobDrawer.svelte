@@ -43,13 +43,13 @@
         placeholder: 'Escreva sua mensagem aqui...',
         modules: {
           toolbar: [
-            [{ 'header': [1, 2, 3, false] }],
+            [{ header: [1, 2, 3, false] }],
             ['bold', 'italic', 'underline', 'strike'],
             ['blockquote', 'code-block'],
-            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-            [{ 'indent': '-1' }, { 'indent': '+1' }],
-            [{ 'color': [] }, { 'background': [] }],
-            [{ 'align': [] }],
+            [{ list: 'ordered' }, { list: 'bullet' }],
+            [{ indent: '-1' }, { indent: '+1' }],
+            [{ color: [] }, { background: [] }],
+            [{ align: [] }],
             ['link', 'image'],
             ['clean']
           ]
@@ -87,8 +87,8 @@
 
   function handleKeydown(event: KeyboardEvent) {
     if (!showAutocomplete) {
-return;
-}
+      return;
+    }
 
     switch (event.key) {
       case 'ArrowDown':
@@ -115,8 +115,8 @@ return;
 
   function handleTextChange() {
     if (!quill) {
-return;
-}
+      return;
+    }
 
     // Clear existing debounce timer
     if (debounceTimer) {
@@ -131,13 +131,13 @@ return;
 
   function processTextChange() {
     if (!quill) {
-return;
-}
+      return;
+    }
 
     const range = quill.getSelection();
     if (!range) {
-return;
-}
+      return;
+    }
 
     const text = quill.getText();
     const cursorPos = range.index;
@@ -185,8 +185,8 @@ return;
 
   function handleUserSelect(user: UserProfileData) {
     if (!quill || !currentMentionRange) {
-return;
-}
+      return;
+    }
 
     // Delete the @ and partial name
     quill.deleteText(currentMentionRange.index, currentMentionRange.length);
@@ -196,8 +196,8 @@ return;
 
     // Insert formatted mention
     quill.insertText(currentMentionRange.index, `@${userName}`, {
-      'bold': true,
-      'color': '#0066cc'
+      bold: true,
+      color: '#0066cc'
     });
 
     // Insert a space after the mention
@@ -222,7 +222,8 @@ return;
     if (quill) {
       const content = quill.root.innerHTML;
       const text = quill.getText();
-      console.log('Saved content:', { html: content, text });
+      // TODO: Implement save functionality
+      // For now, the content is captured but not persisted
     }
   }
 
@@ -234,7 +235,8 @@ return;
 
     const lowerTerm = term.toLowerCase();
     return userProfiles.filter((profile) => {
-      const fullName = `${profile.attributes?.name || ''} ${profile.attributes?.last_name || ''}`.toLowerCase();
+      const fullName =
+        `${profile.attributes?.name || ''} ${profile.attributes?.last_name || ''}`.toLowerCase();
       const email = profile.attributes?.access_email?.toLowerCase() || '';
 
       return fullName.includes(lowerTerm) || email.includes(lowerTerm);
@@ -243,8 +245,8 @@ return;
 
   function getUserLabel(user: UserProfileData) {
     if (!user) {
-return '';
-}
+      return '';
+    }
     const name = `${user.attributes?.name || ''} ${user.attributes?.last_name || ''}`.trim();
     const email = user.attributes?.access_email || '';
     return name ? `${name} (${email})` : email;
@@ -252,10 +254,9 @@ return '';
 
   // Group users by role
   function getUsersByRole(users: UserProfileData[], role: string) {
-    return users.filter((user) =>
-      !user.attributes?.role ||
-      user.attributes.role === role ||
-      user.attributes.role === 'lawyer' // Default to lawyer if no role or matching role
+    return users.filter(
+      (user) =>
+        !user.attributes?.role || user.attributes.role === role || user.attributes.role === 'lawyer' // Default to lawyer if no role or matching role
     );
   }
 </script>
@@ -269,13 +270,20 @@ return '';
     <div class="menu bg-base-100 text-base-content min-h-full w-96 p-0">
       <div class="flex items-center justify-between p-4 border-b">
         <h3 class="text-lg font-semibold">Anotações</h3>
-        <button
-          class="btn btn-sm btn-ghost btn-circle"
-          aria-label="Fechar"
-          onclick={closeDrawer}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        <button class="btn btn-sm btn-ghost btn-circle" aria-label="Fechar" onclick={closeDrawer}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
@@ -296,8 +304,19 @@ return '';
                 <!-- Lawyer Header -->
                 <div class="sticky top-0 bg-base-200 px-4 py-2 border-b">
                   <h4 class="font-semibold text-sm flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"
+                      />
                     </svg>
                     Advogados
                   </h4>
@@ -310,13 +329,19 @@ return '';
                     </div>
                   {:else}
                     <div class="text-xs text-base-content/60 mb-2 px-2">
-                      {filteredUsers.length} usuário{filteredUsers.length !== 1 ? 's' : ''} encontrado{filteredUsers.length !== 1 ? 's' : ''}
+                      {filteredUsers.length} usuário{filteredUsers.length !== 1 ? 's' : ''} encontrado{filteredUsers.length !==
+                      1
+                        ? 's'
+                        : ''}
                     </div>
                     {#each filteredUsers.slice(0, 8) as user, index}
                       <button
-                        class="w-full text-left p-3 rounded-lg flex items-center gap-3 transition-colors {index === selectedIndex ? 'bg-primary/10 ring-2 ring-primary' : 'hover:bg-base-200'}"
+                        class="w-full text-left p-3 rounded-lg flex items-center gap-3 transition-colors {index ===
+                        selectedIndex
+                          ? 'bg-primary/10 ring-2 ring-primary'
+                          : 'hover:bg-base-200'}"
                         onclick={() => handleUserSelect(user)}
-                        onmouseenter={() => selectedIndex = index}
+                        onmouseenter={() => (selectedIndex = index)}
                       >
                         {#if user.attributes?.avatar_url}
                           <img
@@ -325,13 +350,16 @@ return '';
                             class="w-10 h-10 rounded-full object-cover"
                           />
                         {:else}
-                          <div class="w-10 h-10 rounded-full bg-primary text-primary-content flex items-center justify-center text-sm font-semibold">
+                          <div
+                            class="w-10 h-10 rounded-full bg-primary text-primary-content flex items-center justify-center text-sm font-semibold"
+                          >
                             {(user.attributes?.name || '?')[0].toUpperCase()}
                           </div>
                         {/if}
                         <div class="flex-1 min-w-0">
                           <div class="font-medium truncate">
-                            {user.attributes?.name || ''} {user.attributes?.last_name || ''}
+                            {user.attributes?.name || ''}
+                            {user.attributes?.last_name || ''}
                           </div>
                           <div class="text-xs text-base-content/60 truncate">
                             {user.attributes?.access_email || ''}
@@ -344,8 +372,19 @@ return '';
                         </div>
                         {#if index === selectedIndex}
                           <div class="text-xs text-primary">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              class="h-5 w-5"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                              />
                             </svg>
                           </div>
                         {/if}
@@ -355,7 +394,9 @@ return '';
                 </div>
 
                 <!-- Keyboard shortcuts hint -->
-                <div class="sticky bottom-0 bg-base-200 px-4 py-2 border-t text-xs text-base-content/60">
+                <div
+                  class="sticky bottom-0 bg-base-200 px-4 py-2 border-t text-xs text-base-content/60"
+                >
                   <div class="flex gap-4">
                     <span>↑↓ Navegar</span>
                     <span>Enter Selecionar</span>
@@ -365,19 +406,13 @@ return '';
               </div>
             {/if}
           </div>
-          <div class="text-xs text-base-content/60 mt-1">
-            Digite @ para mencionar um usuário
-          </div>
+          <div class="text-xs text-base-content/60 mt-1">Digite @ para mencionar um usuário</div>
         </div>
 
         <div class="mt-auto pt-4 border-t">
           <div class="flex gap-2 justify-end">
-            <button class="btn btn-ghost" onclick={closeDrawer}>
-              Cancelar
-            </button>
-            <button class="btn btn-primary" onclick={handleSave}>
-              Salvar
-            </button>
+            <button class="btn btn-ghost" onclick={closeDrawer}> Cancelar </button>
+            <button class="btn btn-primary" onclick={handleSave}> Salvar </button>
           </div>
         </div>
       </div>
