@@ -16,6 +16,17 @@ fi
 
 # Check for frontend files
 if git diff --cached --name-only | grep -q "^frontend/"; then
+  echo "Running frontend pre-commit checks..."
   cd frontend
+  
+  # Run ESLint on staged files
   npx lint-staged
+  LINT_EXIT_CODE=$?
+  
+  if [ $LINT_EXIT_CODE -ne 0 ]; then
+    echo "❌ Frontend linting failed. Please fix the errors before committing."
+    exit 1
+  fi
 fi
+
+exit 0
