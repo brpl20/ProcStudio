@@ -27,7 +27,7 @@ function createNotificationStore() {
       // In development, connect directly to Rails server WebSocket
       return `ws://localhost:3000/cable?token=${token}`;
     }
-    
+
     // Handle absolute URLs
     const wsProtocol = API_CONFIG.BASE_URL.startsWith('https') ? 'wss' : 'ws';
     const wsUrl = API_CONFIG.BASE_URL.replace(/^https?/, wsProtocol);
