@@ -5,7 +5,7 @@ API RESTful desenvolvida em Ruby on Rails para o sistema ProcStudio.
 ## Frontend
 Svelte 5.0
 
-## Índice
+## Índice - Updated
 
 ### Visão do Projeto
 - [Visão e Evolução do Projeto](#visão-e-evolução-do-projeto)
