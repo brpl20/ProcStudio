@@ -9,7 +9,7 @@
 #  body              :text
 #  data              :jsonb
 #  notification_type :string
-#  priority          :string           default("0")
+#  priority          :integer          default("normal")
 #  read              :boolean          default(FALSE)
 #  sender_type       :string
 #  title             :string
@@ -20,12 +20,13 @@
 #
 # Indexes
 #
-#  index_notifications_on_created_at                 (created_at)
-#  index_notifications_on_notification_type          (notification_type)
-#  index_notifications_on_priority                   (priority)
-#  index_notifications_on_read                       (read)
-#  index_notifications_on_sender_type_and_sender_id  (sender_type,sender_id)
-#  index_notifications_on_user_profile_id            (user_profile_id)
+#  index_notifications_on_created_at                     (created_at)
+#  index_notifications_on_notification_type              (notification_type)
+#  index_notifications_on_priority                       (priority)
+#  index_notifications_on_read                           (read)
+#  index_notifications_on_sender_type_and_sender_id      (sender_type,sender_id)
+#  index_notifications_on_user_profile_id                (user_profile_id)
+#  index_notifications_on_user_profile_priority_created  (user_profile_id,priority,created_at)
 #
 # Foreign Keys
 #

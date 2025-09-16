@@ -39,8 +39,12 @@
 class UserProfile < ApplicationRecord
   include DeletedFilterConcern
   include AvatarUrlConcern
+  include Draftable
 
   acts_as_paranoid
+
+  # Define draftable form types
+  draft_form_types :profile_edit, :complete_profile, :bank_account_setup, :address_update
 
   belongs_to :user, inverse_of: :user_profile
   belongs_to :office, optional: true

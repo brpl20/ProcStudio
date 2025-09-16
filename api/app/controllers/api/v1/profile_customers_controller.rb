@@ -50,6 +50,7 @@ module Api
       def create
         profile_customer = ProfileCustomer.new(profile_customers_params)
         profile_customer.created_by_id = current_user.id
+        
         if profile_customer.save
           # Reload to ensure all associations are loaded
           profile_customer.reload
@@ -77,6 +78,11 @@ module Api
             ).serializable_hash[:data]
           }, status: :created
         else
+          # More detailed validation error logging
+          Rails.logger.error "ProfileCustomer validation failed:"
+          Rails.logger.error "Errors: #{profile_customer.errors.full_messages}"
+          Rails.logger.error "Attributes: #{profile_customers_params.inspect}"
+          
           error_messages = profile_customer.errors.full_messages
           render json: {
             success: false,
@@ -84,15 +90,55 @@ module Api
             errors: error_messages
           }, status: :unprocessable_entity
         end
-      rescue StandardError => e
-        Rails.logger.error "ProfileCustomer creation error: #{e.class} - #{e.message}"
-        Rails.logger.error e.backtrace.first(10).join("\n") if e.backtrace
-        error_message = 'Erro ao criar perfil de cliente. Tente novamente.'
+      rescue ActiveRecord::RecordInvalid => e
+        # Handle validation errors from associated models (like Customer)
+        Rails.logger.error "ProfileCustomer associated model validation error: #{e.message}"
+        Rails.logger.error "Record errors: #{e.record.errors.full_messages}" if e.record
+        
         render json: {
           success: false,
-          message: error_message,
-          errors: [error_message]
-        }, status: :internal_server_error
+          message: "Validation error: #{e.message}",
+          errors: e.record&.errors&.full_messages || [e.message]
+        }, status: :unprocessable_entity
+      rescue ActiveRecord::RecordNotUnique => e
+        # Handle database uniqueness constraint violations
+        Rails.logger.error "ProfileCustomer uniqueness constraint violation: #{e.message}"
+        
+        render json: {
+          success: false,
+          message: 'Este email já está em uso. Tente um email diferente.',
+          errors: ['Duplicate record: email already exists']
+        }, status: :unprocessable_entity
+      rescue ActionController::ParameterMissing => e
+        # Handle missing required parameters
+        Rails.logger.error "ProfileCustomer missing parameters: #{e.message}"
+        
+        render json: {
+          success: false,
+          message: "Required parameter missing: #{e.param}",
+          errors: ["Missing parameter: #{e.param}"]
+        }, status: :bad_request
+      rescue StandardError => e
+        # Detailed error logging for debugging
+        Rails.logger.error "ProfileCustomer creation unexpected error: #{e.class} - #{e.message}"
+        Rails.logger.error "Backtrace: #{e.backtrace.first(15).join("\n")}" if e.backtrace
+        Rails.logger.error "Parameters: #{profile_customers_params.inspect}"
+        
+        # In development, show more details; in production, keep generic
+        if Rails.env.development?
+          render json: {
+            success: false,
+            message: "Development Error: #{e.class} - #{e.message}",
+            errors: [e.message],
+            backtrace: e.backtrace.first(10)
+          }, status: :internal_server_error
+        else
+          render json: {
+            success: false,
+            message: 'Erro interno do servidor. Tente novamente ou contacte o suporte.',
+            errors: ['Internal server error']
+          }, status: :internal_server_error
+        end
       end
 
       def update

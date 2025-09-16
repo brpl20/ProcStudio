@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Api::V1::Customer::ProfileCustomersController < FrontofficeController
-  include Draftable
+  include DraftControllerConcern
 
   before_action :load_active_storage_url_options unless Rails.env.production?
 

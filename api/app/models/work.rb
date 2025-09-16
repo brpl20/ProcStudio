@@ -45,8 +45,12 @@
 #
 class Work < ApplicationRecord
   include DeletedFilterConcern
+  include Draftable
 
   acts_as_paranoid
+
+  # Define draftable form types
+  draft_form_types :work_creation, :work_edit, :procedure_setup, :honorary_setup, :document_upload
 
   belongs_to :team
   belongs_to :law_area, optional: true

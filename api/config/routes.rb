@@ -90,12 +90,13 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :drafts, only: [:index, :show, :destroy] do
+      resources :drafts, only: [:index, :show, :create, :update, :destroy] do
         collection do
-          post :save
+          post :save # Keep for backwards compatibility
         end
         member do
           post :recover
+          patch :fulfill
         end
       end
 

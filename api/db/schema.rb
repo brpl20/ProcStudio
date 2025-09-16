@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_14_121359) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_15_150306) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -187,7 +187,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_14_121359) do
 
   create_table "drafts", force: :cascade do |t|
     t.string "draftable_type", null: false
-    t.bigint "draftable_id", null: false
+    t.bigint "draftable_id"
     t.bigint "user_id"
     t.bigint "customer_id"
     t.string "form_type", null: false
@@ -201,7 +201,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_14_121359) do
     t.index ["draftable_type", "draftable_id"], name: "index_drafts_on_draftable"
     t.index ["expires_at"], name: "index_drafts_on_expires_at"
     t.index ["status"], name: "index_drafts_on_status"
-    t.index ["team_id", "draftable_type", "draftable_id", "form_type"], name: "index_drafts_unique_form_with_team", unique: true
+    t.index ["team_id", "draftable_type", "draftable_id", "form_type"], name: "index_drafts_unique_existing_records", unique: true, where: "(draftable_id IS NOT NULL)"
+    t.index ["team_id", "user_id", "form_type", "draftable_type"], name: "index_drafts_new_records", where: "(draftable_id IS NULL)"
     t.index ["team_id"], name: "index_drafts_on_team_id"
     t.index ["user_id"], name: "index_drafts_on_user_id"
   end
