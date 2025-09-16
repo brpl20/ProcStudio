@@ -7,10 +7,18 @@ Svelte 5.0
 
 ## Índice - Updated
 
-### Visão do Projeto
 - [Visão e Evolução do Projeto](#visão-e-evolução-do-projeto)
+  - [Modelo de Negócios](#modelo-de-negócios)
+  - [Declaração de Missão](#declaracao-de-missao)
   - [Princípios](#princípios)
-  - [Público Alvo](#público-alvo)
+      - [Usuário e Aprendizado](#usuário-e-aprendizado-com-o-usuário)
+      - [Zero Papel](#zero-papel)
+      - [Mobilidade](#mobilidade)
+      - [Integração](#integração)
+      - [Público Alvo](#público-alvo)
+      - [Customização](#customização-pelo-usuário)
+      - [Atendimento automatizado](#atendimento-automatizado)
+
 - Prototipagem
   - [Prototipagem e Figma](#prototipagem-e-figma)
 
@@ -30,8 +38,8 @@ Svelte 5.0
   - [API](./docs/API.md)
 
 - API Externa
-  - [Cep e Wap][./docs/external-api-cep-wap.md]
-  - [Legal Data][./docs/external-api-legal_data.md]
+  - [Cep e Wap](./docs/external-api-cep-wap.md)
+  - [Legal Data](./docs/external-api-legal_data.md)
 
 - User Auth & Register
   - [Authentication](./docs/Auth.md)
@@ -41,10 +49,10 @@ Svelte 5.0
   - [Avatar Upload Backend](./docs/User-Avatar-Upload-Backend.md)
 
 - Políticas de Autorização de Usuário
-- [Policies](./docs/Policies.md)
+  - [Policies](./docs/Policies.md)
 
 - SuperAdmin
-  - [SuperAdmin](Super-Admin.md)
+  - [SuperAdmin](./docs/Super-Admin.md)
 
 - Teams and Offices
   - [Teams](./docs/Team.md)
@@ -113,10 +121,12 @@ Svelte 5.0
 ## Monitoramento
 - [Monitoramento](./docs/Monitoramento.md)
 
-
 ---
 
 ## Visão e Evolução do Projeto
+
+### Modelo de Negócios
+https://youtu.be/XqIycze_D2c
 
 ### Declaração de Missão
 O ProcStudio foi concebido para revolucionar como advogados geram documentos legais, transformando um processo tradicionalmente complexo e demorado em um fluxo de trabalho simplificado e eficiente, desta forma...
@@ -157,15 +167,6 @@ Além da geração de documentos, instituir uma política de zero papel no escri
 
 Desta forma, devemos auxiliar nosso usuário também na digitalização de documentos, o que é uma implementação também necessária em um escritório. Devemos adotar tecnologias modernas de digitalização, indexação, arquivamento para facilitar esse objetivo comum.
 
-#### Público Alvo
-Nosso foco é entre um advogado iniciante e intermediário, geralmente que trabalha de forma autônoma, com parceiros advogados e/ou contadores, uma secretária e um estagiário ou somente um dos dois.
-
-Não necessariamente teremos um serviço de armazenamento em nuvem, porém, em certa medida a tendência é que seja necessário uma quantidade grande de armazenamento mesmo em razão da geração dos documentos e seu armazenamento e formas de autenticação e confiabilidade.
-
-Neste sentido, precisamos otimizar os arquivos de PDF de forma fluída, sem necessidade de intervenção do usuário, bem como adicionar leitura de OCR e até em um futuro a geração de cadastros e documentos com base em OCR, o que tem sido facilitado com a carteira de motorista digital e o cadastro Gov.Br (biblioteca de OCR em desenvolvimento).
-
-A ideia é encontrar um advogado que esteja procurando uma forma de se organizar melhor no seu escritório e ajuda-lo nesta busca oferecendo os serviços do ProcStudio.
-
 #### Mobilidade
 Nossa meta também é a criação de aplicativos móveis capazes de dar o mesmo conforto na geração de documentos, hoje não podemos pensar no desenvolvimento sem pensar também no aspecto de mobilidade.
 
@@ -178,12 +179,21 @@ Não queremos reinventar a roda. Por exemplo, seria muito mais fácil fazer a ge
 
 Mais fácil para nós, porém, melhor para o cliente? Com certeza não, porque o DOCX é um formato universal utilizado há décadas que está enraizado na cultura brasileira. E não podemos ser arrogantes ao ponto de pensar que o documento será gerado de forma tão perfeita que não será necessária uma revisão final, e quem melhor do que o próprio advogado que gera o documento para avaliar e entender se aquele documento está apto a ser assinado por todas as partes?
 
+#### Público Alvo
+Nosso foco é entre um advogado iniciante e intermediário, geralmente que trabalha de forma autônoma, com parceiros advogados e/ou contadores, uma secretária e um estagiário ou somente um dos dois.
+
+Não necessariamente teremos um serviço de armazenamento em nuvem, porém, em certa medida a tendência é que seja necessário uma quantidade grande de armazenamento mesmo em razão da geração dos documentos e seu armazenamento e formas de autenticação e confiabilidade.
+
+Neste sentido, precisamos otimizar os arquivos de PDF de forma fluída, sem necessidade de intervenção do usuário, bem como adicionar leitura de OCR e até em um futuro a geração de cadastros e documentos com base em OCR, o que tem sido facilitado com a carteira de motorista digital e o cadastro Gov.Br (biblioteca de OCR em desenvolvimento).
+
+A ideia é encontrar um advogado que esteja procurando uma forma de se organizar melhor no seu escritório e ajuda-lo nesta busca oferecendo os serviços do ProcStudio.
+
 #### Customização pelo usuário
 Precisamos de um sistema dinâmico que o usuário possa ajudar a construir e criar por si mesmo, não dependendo tanto de atualizações dos desenvolvedores para adaptação de suas necessidades particulares, o que é possível observar como tendência de grandes aplicativos como Trello, Monday e outros semelhantes.
 
 Essa ajuda do usuário também será sempre fundamental para melhorias e o crescimento do sistema, temos muito a aprender com advogados espalhados por todo o Brasil.
 
-#### Atendimento automatizado - redução de custos
+#### Atendimento automatizado
 Um dos nossos maiores gargalos iniciais é o atendimento e conforto do usuário. Uma forma de atendê-los de forma personalizada é o ideal, porém, no momento inicial, ainda inviável, de forma que precisamos pensar em soluções de atendimento ao usuário de baixo custo, como a criação de Wikis e ChatBots para tirar as dúvidas mais comuns e entender os pontos de atrito entre o usuário e o sistema.
 
 ## Prototipagem e Figma
@@ -195,7 +205,6 @@ Acabamos abandonando a prototipagem pelo figma, ao invés disso é melhor abrir 
   - identidade visual => `/prc-identidade-visual
 
 ## Helpers
-### Rails Model Checker and Annotations
 
 Como usamos muito os Modelos do Rails, criei esse helper para facilitar a sua visualização. atualmente ele pega todos os campos do modelo e organiza para nós com o seu tipo, identificando também as relações do modelo, para funcionar rode o seguinte comando:
 
