@@ -11,6 +11,9 @@
  *   npx mocha ./api/ProfileCustomers/tests.js --update        # Run only update tests
  *   npx mocha ./api/ProfileCustomers/tests.js --delete-soft   # Run only soft delete tests
  *   npx mocha ./api/ProfileCustomers/tests.js --delete-hard   # Run only hard delete tests
+ *   npx mocha ./api/ProfileCustomers/tests.js --restore       # Run only restore tests
+ *   npx mocha ./api/ProfileCustomers/tests.js --cascade       # Run only cascade deletion tests
+ *   npx mocha ./api/ProfileCustomers/tests.js --authorization # Run only authorization tests
  *   npx mocha ./api/ProfileCustomers/tests.js --isolation     # Run only isolation tests
  */
 
@@ -26,6 +29,9 @@ const testFlags = {
   '--update': 'update',
   '--delete-soft': 'delete-soft',
   '--delete-hard': 'delete-hard',
+  '--restore': 'restore',
+  '--cascade': 'cascade',
+  '--authorization': 'authorization',
   '--isolation': 'isolation',
   // Short aliases
   '-c': 'create',
@@ -33,6 +39,9 @@ const testFlags = {
   '-u': 'update',
   '-ds': 'delete-soft',
   '-dh': 'delete-hard',
+  '-rs': 'restore',
+  '-cs': 'cascade',
+  '-a': 'authorization',
   '-i': 'isolation'
 };
 
@@ -52,13 +61,14 @@ console.log('P'.repeat(60));
 
 // Run tests
 if (testToRun) {
-  console.log(`\n=Ë Running ${testToRun.toUpperCase()} tests only\n`);
+  console.log(`\n=ï¿½ Running ${testToRun.toUpperCase()} tests only\n`);
   runSpecificTest(testToRun);
 } else {
-  console.log('\n=Ë Running ALL tests\n');
+  console.log('\n=ï¿½ Running ALL tests\n');
   console.log('Tip: Use flags to run specific tests:');
-  console.log('  --create, --read, --update, --delete-soft, --delete-hard, --isolation');
-  console.log('  or short: -c, -r, -u, -ds, -dh, -i\n');
+  console.log('  --create, --read, --update, --delete-soft, --delete-hard');
+  console.log('  --restore, --cascade, --authorization, --isolation');
+  console.log('  or short: -c, -r, -u, -ds, -dh, -rs, -cs, -a, -i\n');
   runAllTests();
 }
 

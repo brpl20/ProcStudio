@@ -67,6 +67,8 @@ Svelte 5.0
 - Virtual List
 - Draft Helper
 
+## Testes
+
 
 ### Ferramentas e Recursos
 - [Helpers](#helpers)

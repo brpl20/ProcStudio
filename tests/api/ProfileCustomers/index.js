@@ -10,6 +10,9 @@ const { runReadTests } = require('./read');
 const { runUpdateTests } = require('./update');
 const { runSoftDeleteTests } = require('./delete-soft');
 const { runHardDeleteTests } = require('./delete-hard');
+const { runRestoreTests } = require('./restore');
+const { runCascadeDeletionTests } = require('./cascade-deletion');
+const { runAuthorizationDeletionTests } = require('./authorization-deletion');
 const { runIsolationTests } = require('./isolation');
 
 /**
@@ -50,6 +53,9 @@ const runAllTests = () => {
     runUpdateTests();   // PUT/PATCH
     runSoftDeleteTests(); // Soft DELETE
     runHardDeleteTests(); // Hard DELETE/destroy
+    runRestoreTests();  // Restore from soft delete
+    runCascadeDeletionTests(); // Cascade deletion behavior
+    runAuthorizationDeletionTests(); // Authorization and error handling
     runIsolationTests(); // Security & Isolation
   });
 };
@@ -81,12 +87,21 @@ const runSpecificTest = (testType) => {
       case 'delete-hard':
         runHardDeleteTests();
         break;
+      case 'restore':
+        runRestoreTests();
+        break;
+      case 'cascade':
+        runCascadeDeletionTests();
+        break;
+      case 'authorization':
+        runAuthorizationDeletionTests();
+        break;
       case 'isolation':
         runIsolationTests();
         break;
       default:
         console.error(`Unknown test type: ${testType}`);
-        console.log('Available test types: create, read, update, delete-soft, delete-hard, isolation');
+        console.log('Available test types: create, read, update, delete-soft, delete-hard, restore, cascade, authorization, isolation');
         process.exit(1);
     }
   });
@@ -104,5 +119,8 @@ module.exports = {
   runUpdateTests,
   runSoftDeleteTests,
   runHardDeleteTests,
+  runRestoreTests,
+  runCascadeDeletionTests,
+  runAuthorizationDeletionTests,
   runIsolationTests
 };
