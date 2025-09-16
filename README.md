@@ -9,32 +9,46 @@ Svelte 5.0
 
 ### Visão do Projeto
 - [Visão e Evolução do Projeto](#visão-e-evolução-do-projeto)
-- [Princípios](#princípios)
-- [Público Alvo](#público-alvo)
-- [Outros Projetos](#outros-projetos)
-
-### Documentação Técnica
+  - [Princípios](#princípios)
+  - [Público Alvo](#público-alvo)
 - Prototipagem
   - [Prototipagem e Figma](#prototipagem-e-figma)
 
-- API
+### Ferramentas e Recursos
+- [Arquivos](#arquivos-compartilhados)
+- [Helpers](#helpers)
+- [FakeFiller](#formulários)
+- [Senhas](#senhas)
+- [Domínios e Registros](#domínios-e-registros)
+- [Pagamentos](#pagamentos)
+- [Desafios](#desafios)
+- [Docx](#docx)
+
+### Documentação Técnica
+
+- API Interna
   - [API](./docs/API.md)
 
-- Auth & Register
+- API Externa
+  - [Cep e Wap][./docs/external-api-cep-wap.md]
+  - [Legal Data][./docs/external-api-legal_data.md]
+
+- User Auth & Register
   - [Authentication](./docs/Auth.md)
-  - [Registration](./docs/Registration.md)
-  - [Profile Completion]
-  - [Legal Data API]
+  - [Users](./docs/User.md)
+  - [User Registration](./docs/User-Registration.md)
+  - [User Profile Completion](./docs/User-Profile-Completion.md)
+  - [Avatar Upload Backend](./docs/User-Avatar-Upload-Backend.md)
+
+- Políticas de Autorização de Usuário
+- [Policies](./docs/Policies.md)
 
 - SuperAdmin
   - [SuperAdmin](Super-Admin.md)
 
-- Users, Teams and Offices
-  - [Users](./docs/User.md)
-    - [Avatar Upload Backend](./docs/User-Avatar-Upload-Backend.md)
+- Teams and Offices
   - [Teams](./docs/Team.md)
   - [Office](./docs/Office.md)
-- [Policies](./docs/Policies.md)
 
 - Notificações
   - [Notificações Backend](./docs/Notifications-backend.md)
@@ -43,53 +57,64 @@ Svelte 5.0
 - Background Jobs
   - [SideKick](./docs/SideKick.md)
 
+- Deletion Policies - Políticas de Deletação
+  - [Deletion](./docs/Deletion.md)
+
 - Compliance System
+  - Será um sistema para verificação de conformidade do sistema com relação aos clientes, jobs, works, honorários etc. Atualmente temos dois arquivos no ./brpl que precisarão ser revistos em momento oportuno. Neste primeiros códigos teve um pequeno sistema de notificações específico para as verificações de conformidade que serão integrados com o sistema de notificação definitivo.
 
-- Draft System
+- Draft System - Rascunhos
+  - [Draft](./docs/Draft.md)
 
-- Models
-  - [Jobs]
-  - [Customers]
-  - [Works](./docs/Work.md)
-    - [Works Endpoints](./docs/Work-Endpoints.md)
-    - [Works - Honoraries & Legal Costs](./docs/Work-Honoraries-LegalCosts.md)
-      - [Works - Honoraries & Legal Costs Examples](./docs/Work-Honoraries-LegalCosts-examples.md)
-    - [Works Procedures](./docs/Work-Procedures.md)
-      - [Works Procedures Migration](./docs/Work-Procedures-migration.md)
+- Job
+  - [Job](./docs/Job.md)
+
+- Customer
+  - [Customer & ProfileCustomer](./docs/Customer.md)
+
+- Work
+  - [Power](./docs/Power.md)
+  - [Work](./docs/Work.md)
+    - [Work Endpoints](./docs/Work-Endpoints.md)
+    - [Work - Honoraries & Legal Costs](./docs/Work-Honoraries-LegalCosts.md)
+      - [Work - Honoraries & Legal Costs Examples](./docs/Work-Honoraries-LegalCosts-examples.md)
+    - [Work Procedures](./docs/Work-Procedures.md)
+      - [Work Procedures Migration](./docs/Work-Procedures-migration.md)
 
 - Active Storage e Amazon S3
   - [S3](./docs/s3.md)
 
+- DB issues
+  - [Polimorphic Tables](./docs/Polimorphic-Tables.md)
+
 ## Frontend
-- Dragable
-- Debugging
-- MCP
-- Virtual List
-- Draft Helper
+- [Dragable](./docs/frontend-dragable.md)
+- [Debugging](./docs/frontend-svelte-debugging.md)
+- [MCP](./docs/frontend-svelte-mcp.md)
+- [Virtual List](./docs/frontend-svelte-virtual-list.md)
+- [Draft Helper](./docs/frontend_draft_helper.js)
 
 ## Testes
-
-
-### Ferramentas e Recursos
-- [Helpers](#helpers)
-- [APIs Internas](#apis-internas)
-- [Docx](#docx)
+- [Tests](./docs/Test.md)
 
 ## Instalação e Início
 - [Instalacão](./docs/Instalação.md)
 
 ### Desenvolvimento
-- [Padrão de Desesenvolvimento](./docs/coding-pattern.md)
-- [Padrão de Desesenvolvimento com IA](./docs/coding-pattern-ai.md)
-- [Linting Rules](./docs/code-linting.md)
-- Monitoramento (TD)
+- [Padrão de Desenvolvimento](./docs/code-padrao.md)
+- [Padrão de Desenvolvimento com IA](./docs/code-padrao-ia.md)
+- [Guia de Contribuição](./docs/code-contribuicao.md)
+- [Regras de Linting](./docs/code-linting.md)
 - [Troubleshooting](./docs/code-troubleshooting.md)
-
-## Tests
-Todo
 
 ## Deploy
 - [Deploy](./docs/Deploy.md)
+
+## Monitoramento
+- [Monitoramento](./docs/Monitoramento.md)
+
+
+---
 
 ## Visão e Evolução do Projeto
 
@@ -139,6 +164,8 @@ Não necessariamente teremos um serviço de armazenamento em nuvem, porém, em c
 
 Neste sentido, precisamos otimizar os arquivos de PDF de forma fluída, sem necessidade de intervenção do usuário, bem como adicionar leitura de OCR e até em um futuro a geração de cadastros e documentos com base em OCR, o que tem sido facilitado com a carteira de motorista digital e o cadastro Gov.Br (biblioteca de OCR em desenvolvimento).
 
+A ideia é encontrar um advogado que esteja procurando uma forma de se organizar melhor no seu escritório e ajuda-lo nesta busca oferecendo os serviços do ProcStudio.
+
 #### Mobilidade
 Nossa meta também é a criação de aplicativos móveis capazes de dar o mesmo conforto na geração de documentos, hoje não podemos pensar no desenvolvimento sem pensar também no aspecto de mobilidade.
 
@@ -159,14 +186,9 @@ Essa ajuda do usuário também será sempre fundamental para melhorias e o cresc
 #### Atendimento automatizado - redução de custos
 Um dos nossos maiores gargalos iniciais é o atendimento e conforto do usuário. Uma forma de atendê-los de forma personalizada é o ideal, porém, no momento inicial, ainda inviável, de forma que precisamos pensar em soluções de atendimento ao usuário de baixo custo, como a criação de Wikis e ChatBots para tirar as dúvidas mais comuns e entender os pontos de atrito entre o usuário e o sistema.
 
-### Outros Projetos
-- ProcStudioIA: Sistema de geração de contratos através de inteligência artificial.
-
 ## Prototipagem e Figma
 
 Acabamos abandonando a prototipagem pelo figma, ao invés disso é melhor abrir um repositório a parte ou uma branch para validação instruindo a IA a realizar os códigos de frontend isolados que o ganho de produtividade será [x1000](https://www.linkedin.com/pulse/prototipagem-1000x-revolucionando-o-design-de-com-ia-pellizzetti-qwpuf/?trackingId=FmVefBY3qSqmpju6nviBhQ%3D%3D), confira neste respositório a [prototipagem básica do sistema](https://github.com/brpl20/prc_admin-fe).
-
-
 
 ## Arquivos compartilhados
 - Temos uma pasta compartilhada no google drive em que teremos:
@@ -190,9 +212,6 @@ Use a extensão [fakefiller](https://fakefiller.com/) para preencher formulário
 - CNPJ Generator: Gerador de CNPJ válido para formulários;
   - `test/helpers/cnpj.rb`
 
-## APIs Internas
-Temos duas [APIs próprias](https://github.com/brpl20/procstudio_apis), uma para a busca de advogados: `legal_data` e a outra para leitura de OCR: `procstudio_ocr`.
-
 ## Senhas
 - Bitwarden
 
@@ -203,26 +222,15 @@ Temos duas [APIs próprias](https://github.com/brpl20/procstudio_apis), uma para
 - PROCSTUDIOAI.COM.BR => Principal ProcStudioAI
 - PROCSTUDIOIA.COM.BR
 
-## SSH - Servidores - Deploy
-- Um arquivo separado será criado (todo).
+---
 
-## Jornada do Usuário
-A ideia é encontrar um advogado que esteja procurando uma forma de se organizar melhor no seu escritório e ajuda-lo nesta busca oferecendo os serviços do ProcStudio.
 
 ## Pagamentos
 Vamos utilizar Stripe que tem boa integração com o Ruby e já temos conta cadastrada.
 
-## Problemas dificeis de resolver
+## Desafios
 - Reduzir o PDF  para caber em uma única página quando ocupar pouco mais de um parágrafo na segunda folha: arquivos de Word podem mudar de formatação e não serem muito precisos, especialmente quando convertermos em PDF, o que pode gerar um documento desagradável, ruim, deixando por exemplo apenas uma assinatura na segunda folha.
-
-## Início Rápido - Instalação
-- [Instalacão](./docs/Instalação.md)
-
-## Padrão de Desenvolvimento
-- [Padrão de Desesenvolvimento](./docs/Padrão-de-desenvolvimento.md)
-
-## Padrão de Desenvolvimento com Inteligência Artificial
-- [Padrão de Desesenvolvimento com IA](./docs/Padrão-de-desenvolvimento-com-IA.md)
+- Melhorar o sistema de deletação e arquivamento, combinar com regras de LGPD e anonimização.
 
 ## Docx
 - Usamos a GEM [ruby-docx](https://github.com/ruby-docx/docx) para lidar com arquivos Docx, porém demos uma atualizada nela para corrigir alguns bugs e implementar outras funcionalidades. Como o arquivo Docx é muito chato de lidar, poderemos utilizar outros recursos como APIs internas, assim podemos utilizar todas as ferramentas em qualquer linguagem: Python, Node para conseguirmos o resultado ideal com esse formato de arquivo.
@@ -231,8 +239,6 @@ Arquivos de teste locais estão em `./docx`
 
 Nosso fork está em: [https://github.com/brpl20/ruby-docx](https://github.com/brpl20/ruby-docx)
 
-## Deployment
-- [Padrão de Desesenvolvimento](./docs/Padrão-de-desenvolvimento.md)
 
 ## Monitoramento
 - [Monitoramento](./docs/Monitoramento.md)
