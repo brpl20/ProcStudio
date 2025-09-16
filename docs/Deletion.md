@@ -1,3 +1,5 @@
+[back](../README.md)
+
 # Deletion System Documentation
 
 ## Overview
@@ -164,10 +166,10 @@ class TrashCleanupJob < ApplicationJob
   queue_as :low
 
   RETENTION_DAYS = 30
-  
+
   def perform
     cleanup_date = RETENTION_DAYS.days.ago
-    
+
     # Models with soft delete capability
     models_to_clean = [
       Customer,
@@ -180,28 +182,28 @@ class TrashCleanupJob < ApplicationJob
       Office,
       Draft::Work
     ]
-    
+
     models_to_clean.each do |model|
       cleanup_model(model, cleanup_date)
     end
-    
+
     log_cleanup_summary
   end
-  
+
   private
-  
+
   def cleanup_model(model, cleanup_date)
     deleted_records = model.only_deleted.where('deleted_at < ?', cleanup_date)
     count = deleted_records.count
-    
+
     if count > 0
       Rails.logger.info "Cleaning up #{count} #{model.name} records deleted before #{cleanup_date}"
-      
+
       # Batch deletion to avoid memory issues
       deleted_records.find_in_batches(batch_size: 100) do |batch|
         batch.each(&:destroy_fully!)
       end
-      
+
       # Track in audit log
       AuditLog.create!(
         action: 'trash_cleanup',
@@ -212,7 +214,7 @@ class TrashCleanupJob < ApplicationJob
       )
     end
   end
-  
+
   def log_cleanup_summary
     Rails.logger.info "Trash cleanup completed at #{Time.current}"
   end
@@ -237,18 +239,18 @@ namespace :trash do
   task :cleanup, [:days] => :environment do |t, args|
     days = (args[:days] || 30).to_i
     puts "Cleaning up records soft-deleted more than #{days} days ago..."
-    
+
     TrashCleanupJob.new.perform_with_retention(days)
-    
+
     puts "Cleanup completed!"
   end
-  
+
   desc "Show statistics of soft-deleted records"
   task stats: :environment do
     puts "\n=== Soft-Deleted Records Statistics ==="
     puts "Model | Total Deleted | Older than 30 days"
     puts "-" * 50
-    
+
     [Customer, ProfileCustomer, User, UserProfile, Job, Work].each do |model|
       total = model.only_deleted.count
       old = model.only_deleted.where('deleted_at < ?', 30.days.ago).count
@@ -280,8 +282,8 @@ end
 class Api::V1::TrashController < BackofficeController
   def index
     trash_items = gather_trash_items
-    render json: { 
-      success: true, 
+    render json: {
+      success: true,
       data: trash_items,
       meta: {
         total_count: trash_items.sum { |item| item[:count] },
@@ -289,9 +291,9 @@ class Api::V1::TrashController < BackofficeController
       }
     }
   end
-  
+
   private
-  
+
   def gather_trash_items
     [
       { type: 'customers', items: current_team.customers.only_deleted },
@@ -314,9 +316,9 @@ end
 def bulk_restore
   model_class = params[:model_type].classify.constantize
   ids = params[:ids]
-  
+
   restored = model_class.only_deleted.where(id: ids).map(&:recover)
-  
+
   render json: {
     success: true,
     message: "#{restored.count} items restored",
@@ -330,7 +332,7 @@ end
 # DELETE /api/v1/trash/empty
 def empty
   authorize :trash, :empty?
-  
+
   if params[:confirm] == 'DELETE_PERMANENTLY'
     count = empty_user_trash
     render json: {
@@ -373,7 +375,7 @@ end
 # RSpec example for deletion testing
 RSpec.describe "Deletion System" do
   let(:profile_customer) { create(:profile_customer) }
-  
+
   describe "soft delete" do
     it "marks record as deleted" do
       profile_customer.destroy
@@ -381,7 +383,7 @@ RSpec.describe "Deletion System" do
       expect(ProfileCustomer.only_deleted).to include(profile_customer)
     end
   end
-  
+
   describe "hard delete" do
     it "permanently removes record" do
       id = profile_customer.id
@@ -389,7 +391,7 @@ RSpec.describe "Deletion System" do
       expect(ProfileCustomer.with_deleted.find_by(id: id)).to be_nil
     end
   end
-  
+
   describe "restore" do
     it "recovers soft-deleted record" do
       profile_customer.destroy
