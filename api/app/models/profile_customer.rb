@@ -47,8 +47,12 @@
 #
 class ProfileCustomer < ApplicationRecord
   include DeletedFilterConcern
+  include Draftable
 
   acts_as_paranoid
+
+  # Define draftable form types
+  draft_form_types :customer_profile_edit, :document_upload, :representation_setup, :bank_account_setup
 
   # Track changes for compliance, only tracking capacity changes manually
   has_paper_trail only: [:capacity], on: [:update]
@@ -125,7 +129,6 @@ class ProfileCustomer < ApplicationRecord
   has_many :jobs, dependent: :destroy
   has_many :documents, dependent: :destroy
   has_many :recommendations, dependent: :destroy
-  has_many :drafts, as: :draftable, dependent: :destroy
 
   # Relationships for representation
   # As a representor (guardian/assistant), this person can represent multiple customers

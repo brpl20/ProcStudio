@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Draftable
+module DraftControllerConcern
   extend ActiveSupport::Concern
 
   included do

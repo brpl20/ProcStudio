@@ -34,8 +34,12 @@
 
 class Job < ApplicationRecord
   include DeletedFilterConcern
+  include Draftable
 
   acts_as_paranoid
+
+  # Define draftable form types
+  draft_form_types :job_creation, :job_edit, :assignee_update, :comment_draft
 
   belongs_to :team
   belongs_to :work, optional: true

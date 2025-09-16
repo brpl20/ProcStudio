@@ -13,19 +13,20 @@
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #  customer_id    :bigint
-#  draftable_id   :bigint           not null
+#  draftable_id   :bigint
 #  team_id        :bigint
 #  user_id        :bigint
 #
 # Indexes
 #
-#  index_drafts_on_customer_id         (customer_id)
-#  index_drafts_on_draftable           (draftable_type,draftable_id)
-#  index_drafts_on_expires_at          (expires_at)
-#  index_drafts_on_status              (status)
-#  index_drafts_on_team_id             (team_id)
-#  index_drafts_on_user_id             (user_id)
-#  index_drafts_unique_form_with_team  (team_id,draftable_type,draftable_id,form_type) UNIQUE
+#  index_drafts_new_records              (team_id,user_id,form_type,draftable_type) WHERE (draftable_id IS NULL)
+#  index_drafts_on_customer_id           (customer_id)
+#  index_drafts_on_draftable             (draftable_type,draftable_id)
+#  index_drafts_on_expires_at            (expires_at)
+#  index_drafts_on_status                (status)
+#  index_drafts_on_team_id               (team_id)
+#  index_drafts_on_user_id               (user_id)
+#  index_drafts_unique_existing_records  (team_id,draftable_type,draftable_id,form_type) UNIQUE WHERE (draftable_id IS NOT NULL)
 #
 # Foreign Keys
 #
