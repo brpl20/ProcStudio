@@ -247,10 +247,3 @@ Vamos utilizar Stripe que tem boa integração com o Ruby e já temos conta cada
 Arquivos de teste locais estão em `./docx`
 
 Nosso fork está em: [https://github.com/brpl20/ruby-docx](https://github.com/brpl20/ruby-docx)
-
-
-## Monitoramento
-- [Monitoramento](./docs/Monitoramento.md)
-
-## Troubleshooting
-- [Troubleshooting](./docs/Troubleshooting.md)
