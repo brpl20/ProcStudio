@@ -4,8 +4,12 @@ require 'docx'
 require 'tempfile'
 module Api
   module V1
+    # rubocop:disable Metrics/ClassLength
     class ProfileCustomersController < BackofficeController
+      include InputSanitizer
+
       before_action :load_active_storage_url_options unless Rails.env.production?
+      before_action :validate_input_safety?, only: [:create, :update]
 
       before_action :profile_customer, only: [:update, :show]
       before_action :perform_authorization, except: [:update]
@@ -50,7 +54,7 @@ module Api
       def create
         profile_customer = ProfileCustomer.new(profile_customers_params)
         profile_customer.created_by_id = current_user.id
-        
+
         if profile_customer.save
           # Reload to ensure all associations are loaded
           profile_customer.reload
@@ -79,10 +83,10 @@ module Api
           }, status: :created
         else
           # More detailed validation error logging
-          Rails.logger.error "ProfileCustomer validation failed:"
+          Rails.logger.error 'ProfileCustomer validation failed:'
           Rails.logger.error "Errors: #{profile_customer.errors.full_messages}"
           Rails.logger.error "Attributes: #{profile_customers_params.inspect}"
-          
+
           error_messages = profile_customer.errors.full_messages
           render json: {
             success: false,
@@ -94,16 +98,25 @@ module Api
         # Handle validation errors from associated models (like Customer)
         Rails.logger.error "ProfileCustomer associated model validation error: #{e.message}"
         Rails.logger.error "Record errors: #{e.record.errors.full_messages}" if e.record
-        
+
         render json: {
           success: false,
           message: "Validation error: #{e.message}",
           errors: e.record&.errors&.full_messages || [e.message]
         }, status: :unprocessable_entity
+      rescue ArgumentError => e
+        # Handle invalid enum values
+        Rails.logger.error "ProfileCustomer invalid argument: #{e.message}"
+
+        render json: {
+          success: false,
+          message: e.message,
+          errors: [e.message]
+        }, status: :unprocessable_entity
       rescue ActiveRecord::RecordNotUnique => e
         # Handle database uniqueness constraint violations
         Rails.logger.error "ProfileCustomer uniqueness constraint violation: #{e.message}"
-        
+
         render json: {
           success: false,
           message: 'Este email já está em uso. Tente um email diferente.',
@@ -112,7 +125,7 @@ module Api
       rescue ActionController::ParameterMissing => e
         # Handle missing required parameters
         Rails.logger.error "ProfileCustomer missing parameters: #{e.message}"
-        
+
         render json: {
           success: false,
           message: "Required parameter missing: #{e.param}",
@@ -123,7 +136,7 @@ module Api
         Rails.logger.error "ProfileCustomer creation unexpected error: #{e.class} - #{e.message}"
         Rails.logger.error "Backtrace: #{e.backtrace.first(15).join("\n")}" if e.backtrace
         Rails.logger.error "Parameters: #{profile_customers_params.inspect}"
-        
+
         # In development, show more details; in production, keep generic
         if Rails.env.development?
           render json: {
@@ -170,6 +183,53 @@ module Api
             errors: error_messages
           }, status: :unprocessable_entity
         end
+      rescue ActiveRecord::RecordInvalid => e
+        # Handle validation errors from associated models
+        Rails.logger.error "ProfileCustomer update validation error: #{e.message}"
+
+        render json: {
+          success: false,
+          message: "Validation error: #{e.message}",
+          errors: e.record&.errors&.full_messages || [e.message]
+        }, status: :unprocessable_entity
+      rescue ActiveModel::UnknownAttributeError, ArgumentError => e
+        # Handle unknown attributes and invalid enum values
+        Rails.logger.error "ProfileCustomer attribute error: #{e.message}"
+
+        render json: {
+          success: false,
+          message: "Invalid attribute: #{e.message}",
+          errors: [e.message]
+        }, status: :unprocessable_entity
+      rescue ActionController::ParameterMissing => e
+        # Handle missing required parameters
+        Rails.logger.error "ProfileCustomer missing parameters: #{e.message}"
+
+        render json: {
+          success: false,
+          message: "Required parameter missing: #{e.param}",
+          errors: ["Missing parameter: #{e.param}"]
+        }, status: :bad_request
+      rescue StandardError => e
+        # Log error for debugging
+        Rails.logger.error "ProfileCustomer update unexpected error: #{e.class} - #{e.message}"
+        Rails.logger.error "Backtrace: #{e.backtrace.first(10).join("\n")}" if e.backtrace
+
+        # In development, show more details; in production, keep generic
+        if Rails.env.development?
+          render json: {
+            success: false,
+            message: "Development Error: #{e.class} - #{e.message}",
+            errors: [e.message],
+            backtrace: e.backtrace.first(5)
+          }, status: :unprocessable_entity
+        else
+          render json: {
+            success: false,
+            message: 'Erro ao atualizar perfil. Por favor, verifique os dados enviados.',
+            errors: ['Invalid data provided']
+          }, status: :unprocessable_entity
+        end
       end
 
       def destroy
@@ -178,7 +238,8 @@ module Api
           profile_customer.destroy_fully!
           message = 'Perfil de cliente removido permanentemente'
         else
-          @profile_customer.destroy
+          profile_customer = ProfileCustomer.find(params[:id])
+          profile_customer.destroy
           message = 'Perfil de cliente removido com sucesso'
         end
 
@@ -245,5 +306,6 @@ module Api
         authorize [:admin, :work], :"#{action_name}?"
       end
     end
+    # rubocop:enable Metrics/ClassLength
   end
 end

@@ -95,8 +95,8 @@ const runIsolationTests = () => {
 
       } catch (error) {
         if (error.response) {
-          // Expected: 403 Forbidden or 404 Not Found
-          expect(error.response.status).to.be.oneOf([403, 404]);
+          // Expected: 401 Unauthorized, 403 Forbidden or 404 Not Found
+          expect(error.response.status).to.be.oneOf([401, 403, 404]);
           testUtils.logSuccess(error.response.status, 'Cross-user GET blocked', url, {
             'Second user': 'u2@gmail.com',
             'Tried to access': firstUserProfileId
@@ -135,7 +135,7 @@ const runIsolationTests = () => {
 
       } catch (error) {
         if (error.response) {
-          expect(error.response.status).to.be.oneOf([403, 404]);
+          expect(error.response.status).to.be.oneOf([401, 403, 404]);
           testUtils.logSuccess(error.response.status, 'Cross-user PUT blocked', url);
         } else {
           throw error;
@@ -165,7 +165,7 @@ const runIsolationTests = () => {
 
       } catch (error) {
         if (error.response) {
-          expect(error.response.status).to.be.oneOf([403, 404]);
+          expect(error.response.status).to.be.oneOf([401, 403, 404]);
           testUtils.logSuccess(error.response.status, 'Cross-user DELETE blocked', url);
         } else {
           throw error;

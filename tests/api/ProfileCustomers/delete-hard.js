@@ -1,5 +1,6 @@
 /**
  * DELETE - Hard Delete (Destroy) Profile Customer Tests
+ * Tests the destroy_fully parameter for permanent deletion
  */
 
 const { 
@@ -21,7 +22,7 @@ const {
  * Run hard delete (destroy) tests
  */
 const runHardDeleteTests = () => {
-  describe('DELETE /profile_customers/:id/destroy (Hard Delete)', function() {
+  describe('DELETE /profile_customers/:id?destroy_fully=true (Hard Delete)', function() {
 
     let profileForHardDelete = null;
 
@@ -46,68 +47,46 @@ const runHardDeleteTests = () => {
       }
     });
 
-    it('Should permanently delete a profile customer', async function() {
+    it('Should permanently delete a profile customer with destroy_fully=true', async function() {
       if (!profileForHardDelete) {
         testUtils.skipTest(this, 'No profile customer ID available for hard deletion');
         return;
       }
 
       const headers = { ...config.api.headers, ...testState.authHelper.getAuthHeaders() };
-      // Try multiple possible endpoints for hard delete
-      const possibleUrls = [
-        `${config.baseURL}/profile_customers/${profileForHardDelete}/destroy`,
-        `${config.baseURL}/profile_customers/${profileForHardDelete}/force`,
-        `${config.baseURL}/profile_customers/${profileForHardDelete}?force=true`,
-        `${config.baseURL}/profile_customers/${profileForHardDelete}?hard=true`
-      ];
+      const url = `${baseURL}/profile_customers/${profileForHardDelete}`;
 
-      let deleted = false;
-      let lastError = null;
+      try {
+        const response = await axios({
+          method: 'delete',
+          url: url,
+          headers: headers,
+          params: { destroy_fully: true }
+        });
 
-      for (const url of possibleUrls) {
-        try {
-          const response = await axios({
-            method: 'delete',
-            url: url,
-            headers: headers
-          });
-
-          // Hard delete can return 200, 204, or other success codes
-          expect(response.status).to.be.oneOf([200, 204]);
-          
-          testUtils.logSuccess(response.status, 'Hard delete profile', url, {
-            'ID': profileForHardDelete,
-            'Message': response.data?.message || 'Permanently deleted'
-          });
-
-          deleted = true;
-          profileForHardDelete = null;
-          break;
-
-        } catch (error) {
-          lastError = error;
-          // Try next URL
-        }
-      }
-
-      if (!deleted && lastError) {
-        // If none of the hard delete endpoints work, log info
-        console.log(`   Info: Hard delete endpoint not found, trying standard delete`);
+        // Hard delete typically returns 200 with success message
+        expect(response.status).to.equal(200);
+        expect(response.data).to.exist;
         
-        // Fall back to standard delete
-        const standardUrl = `${config.baseURL}/profile_customers/${profileForHardDelete}`;
-        try {
-          const response = await axios({
-            method: 'delete',
-            url: standardUrl,
-            headers: headers
-          });
-
-          testUtils.logSuccess(response.status, 'Delete profile (hard delete unavailable)', standardUrl);
-          profileForHardDelete = null;
-        } catch (error) {
-          errorHandlers.handleApiError(error, 'Hard delete profile', standardUrl);
+        // Check for success response structure
+        if (response.data.success !== undefined) {
+          expect(response.data.success).to.be.true;
         }
+        if (response.data.message) {
+          expect(response.data.message).to.be.a('string');
+          expect(response.data.message.toLowerCase()).to.include('permanente');
+        }
+        
+        testUtils.logSuccess(response.status, 'Hard delete profile', url, {
+          'ID': profileForHardDelete,
+          'Message': response.data.message || 'Permanently deleted',
+          'Deletion Type': response.data.data?.deletion_type || 'hard_delete'
+        });
+
+        profileForHardDelete = null;
+
+      } catch (error) {
+        errorHandlers.handleApiError(error, 'Hard delete profile', url);
       }
     });
 
@@ -121,7 +100,7 @@ const runHardDeleteTests = () => {
       // Try to access a hard deleted profile (use a known deleted ID)
       const deletedId = '99999998'; // Use a safe non-existent ID
       const headers = { ...config.api.headers, ...testState.authHelper.getAuthHeaders() };
-      const url = `${config.baseURL}/profile_customers/${deletedId}`;
+      const url = `${baseURL}/profile_customers/${deletedId}`;
 
       try {
         const response = await axios({
@@ -149,7 +128,7 @@ const runHardDeleteTests = () => {
       try {
         // First create a profile
         const headers = { ...config.api.headers, ...testState.authHelper.getAuthHeaders() };
-        const createUrl = `${config.baseURL}/profile_customers`;
+        const createUrl = `${baseURL}/profile_customers`;
         const createData = generateCompleteProfileCustomer();
 
         const createResponse = await axios({
@@ -162,7 +141,7 @@ const runHardDeleteTests = () => {
         profileToDelete = createResponse.data.data?.id || createResponse.data.id;
 
         // Soft delete it first
-        const softDeleteUrl = `${config.baseURL}/profile_customers/${profileToDelete}`;
+        const softDeleteUrl = `${baseURL}/profile_customers/${profileToDelete}`;
         await axios({
           method: 'delete',
           url: softDeleteUrl,
@@ -170,11 +149,12 @@ const runHardDeleteTests = () => {
         });
 
         // Now hard delete it
-        const hardDeleteUrl = `${config.baseURL}/profile_customers/${profileToDelete}/destroy`;
+        const hardDeleteUrl = `${baseURL}/profile_customers/${profileToDelete}`;
         const hardDeleteResponse = await axios({
           method: 'delete',
           url: hardDeleteUrl,
-          headers: headers
+          headers: headers,
+          params: { destroy_fully: true }
         });
 
         expect(hardDeleteResponse.status).to.be.oneOf([200, 204]);
@@ -195,13 +175,14 @@ const runHardDeleteTests = () => {
 
     it('Should fail to hard delete non-existent profile', async function() {
       const headers = { ...config.api.headers, ...testState.authHelper.getAuthHeaders() };
-      const url = `${config.baseURL}/profile_customers/99999999/destroy`;
+      const url = `${baseURL}/profile_customers/99999999`;
 
       try {
         const response = await axios({
           method: 'delete',
           url: url,
-          headers: headers
+          headers: headers,
+          params: { destroy_fully: true }
         });
 
         // Should not reach here
@@ -209,8 +190,8 @@ const runHardDeleteTests = () => {
 
       } catch (error) {
         if (error.response) {
-          expect(error.response.status).to.be.oneOf([404, 405]); // 405 if endpoint doesn't exist
-          testUtils.logSuccess(error.response.status, 'Not found or not supported', url);
+          expect(error.response.status).to.equal(404);
+          testUtils.logSuccess(error.response.status, 'Not found as expected', url);
         } else {
           throw error;
         }
@@ -223,7 +204,7 @@ const runHardDeleteTests = () => {
       
       try {
         const headers = { ...config.api.headers, ...testState.authHelper.getAuthHeaders() };
-        const createUrl = `${config.baseURL}/profile_customers`;
+        const createUrl = `${baseURL}/profile_customers`;
         const createData = generateCompleteProfileCustomer();
 
         const createResponse = await axios({
@@ -237,7 +218,7 @@ const runHardDeleteTests = () => {
         testUtils.addToCleanup(profileId);
 
         // Try to hard delete without auth
-        const deleteUrl = `${config.baseURL}/profile_customers/${profileId}/destroy`;
+        const deleteUrl = `${baseURL}/profile_customers/${profileId}/destroy`;
         
         const deleteResponse = await axios({
           method: 'delete',
@@ -254,7 +235,7 @@ const runHardDeleteTests = () => {
         } else if (error.response?.status === 405) {
           // Hard delete endpoint might not exist, try standard delete
           try {
-            const standardUrl = `${config.baseURL}/profile_customers/${profileId}`;
+            const standardUrl = `${baseURL}/profile_customers/${profileId}`;
             await axios({
               method: 'delete',
               url: standardUrl,
@@ -283,7 +264,7 @@ const runHardDeleteTests = () => {
       
       try {
         const headers = { ...config.api.headers, ...testState.authHelper.getAuthHeaders() };
-        const createUrl = `${config.baseURL}/profile_customers`;
+        const createUrl = `${baseURL}/profile_customers`;
         const createData = generateCompleteProfileCustomer();
         
         // Ensure we have related data
@@ -306,7 +287,7 @@ const runHardDeleteTests = () => {
         profileId = createResponse.data.data?.id || createResponse.data.id;
 
         // Hard delete with cascade
-        const deleteUrl = `${config.baseURL}/profile_customers/${profileId}/destroy`;
+        const deleteUrl = `${baseURL}/profile_customers/${profileId}/destroy`;
         const deleteResponse = await axios({
           method: 'delete',
           url: deleteUrl,
@@ -321,7 +302,7 @@ const runHardDeleteTests = () => {
         if (profileId) {
           // Try standard delete as fallback
           try {
-            const standardUrl = `${config.baseURL}/profile_customers/${profileId}`;
+            const standardUrl = `${baseURL}/profile_customers/${profileId}`;
             const headers = { ...config.api.headers, ...testState.authHelper.getAuthHeaders() };
             await axios({
               method: 'delete',
@@ -349,7 +330,7 @@ const runHardDeleteTests = () => {
       for (const id of testState.cleanupIds) {
         try {
           // Try hard delete first
-          const hardDeleteUrl = `${config.baseURL}/profile_customers/${id}/destroy`;
+          const hardDeleteUrl = `${baseURL}/profile_customers/${id}/destroy`;
           await axios({
             method: 'delete',
             url: hardDeleteUrl,
@@ -359,7 +340,7 @@ const runHardDeleteTests = () => {
         } catch (error) {
           // Fall back to soft delete
           try {
-            const softDeleteUrl = `${config.baseURL}/profile_customers/${id}`;
+            const softDeleteUrl = `${baseURL}/profile_customers/${id}`;
             await axios({
               method: 'delete',
               url: softDeleteUrl,
