@@ -1,0 +1,7 @@
+{
+  "model_/Users/brpl/code/ProcStudio/api/app/models/profile_customer.rb": "529d17c3c04d44d761662f1fb4dd7349",
+  "controller_/Users/brpl/code/ProcStudio/api/app/controllers/api/v1/profile_customers_controller.rb": "0e22307416c8f1992721dd7c8146cedf",
+  "serializer_/Users/brpl/code/ProcStudio/api/app/serializers/profile_customer_serializer.rb": "e50a1e768358267e31bcd2ed96d5193e",
+  "filter_/Users/brpl/code/ProcStudio/api/app/models/filters/profile_customer_filter.rb": "d1413f0deb5a026f54f8bb822df6ba14",
+  "policy_/Users/brpl/code/ProcStudio/api/app/policies/customer/profile_customer_policy.rb": "b845cab2b8a5c8fbbb3ab5a75ead6b77"
+}

@@ -5,6 +5,7 @@
 
 const { testState, config } = require('./config');
 const AuthHelper = require('../auth_helper');
+const { inspectBackend } = require('./backend_inspector');
 const { runCreateTests } = require('./create');
 const { runReadTests } = require('./read');
 const { runUpdateTests } = require('./update');
@@ -44,6 +45,20 @@ const runAllTests = () => {
     this.timeout(30000);
     
     before(async function() {
+      // Set flag for simplified output
+      testState.isFullTestRun = true;
+      
+      // Run backend inspection first
+      console.log('\n📋 Running backend inspection...');
+      try {
+        const inspectionResults = inspectBackend({ quiet: true });
+        if (inspectionResults.changes.length > 0) {
+          console.log(`⚠️  Backend changes detected! Consider running individual tests to verify.`);
+        }
+      } catch (error) {
+        console.log(`⚠️  Backend inspection failed: ${error.message}`);
+      }
+      
       await initialize();
     });
     
@@ -68,6 +83,8 @@ const runSpecificTest = (testType) => {
     this.timeout(30000);
     
     before(async function() {
+      // Don't set isFullTestRun flag for individual tests
+      testState.isFullTestRun = false;
       await initialize();
     });
     
