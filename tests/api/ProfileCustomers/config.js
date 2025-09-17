@@ -19,7 +19,8 @@ const testState = {
   randomProfileCustomerId: null,
   createdProfileCustomerId: null,
   profileCustomersList: [],
-  cleanupIds: []
+  cleanupIds: [],
+  isFullTestRun: false  // Flag to control output verbosity
 };
 
 // Common validation functions
@@ -51,16 +52,24 @@ const validators = {
 const errorHandlers = {
   handleApiError: (error, operation, url) => {
     if (error.response) {
-      console.error(`❌ ${error.response.status} - ${operation}`);
-      console.error(`   Route: ${url}`);
-      console.error(`   Response:`, error.response.data);
+      if (testState.isFullTestRun) {
+        testUtils.logError(error.response.status, operation, error);
+      } else {
+        console.error(`❌ ${error.response.status} - ${operation}`);
+        console.error(`   Route: ${url}`);
+        console.error(`   Response:`, error.response.data);
+      }
       throw new Error(
         `Request failed with status ${error.response.status}: ${JSON.stringify(error.response.data)}`
       );
     } else {
-      console.error(`❌ Network error - ${operation}`);
-      console.error(`   Route: ${url}`);
-      console.error(`   Error:`, error.message);
+      if (testState.isFullTestRun) {
+        testUtils.logError('Network', operation, error);
+      } else {
+        console.error(`❌ Network error - ${operation}`);
+        console.error(`   Route: ${url}`);
+        console.error(`   Error:`, error.message);
+      }
       throw error;
     }
   }
@@ -69,11 +78,31 @@ const errorHandlers = {
 // Test utilities
 const testUtils = {
   logSuccess: (status, operation, url, additionalInfo = {}) => {
-    console.log(`✅ ${status} - ${operation}`);
-    console.log(`   Route: ${url}`);
-    Object.entries(additionalInfo).forEach(([key, value]) => {
-      console.log(`   ${key}: ${value}`);
-    });
+    if (testState.isFullTestRun) {
+      // Simplified output for full test runs
+      console.log(`✅ ${status} - ${operation} - OK`);
+    } else {
+      // Detailed output for individual tests
+      console.log(`✅ ${status} - ${operation}`);
+      console.log(`   Route: ${url}`);
+      Object.entries(additionalInfo).forEach(([key, value]) => {
+        console.log(`   ${key}: ${value}`);
+      });
+    }
+  },
+
+  logError: (status, operation, error) => {
+    if (testState.isFullTestRun) {
+      // Simplified error output for full test runs
+      const testCommand = getTestCommand(operation);
+      console.log(`❌ ${status} - ${operation} - ERROR -> Run autonomous test at: ${testCommand}`);
+    } else {
+      // Keep existing detailed error logging for individual tests
+      console.log(`❌ ${status} - ${operation} - ERROR`);
+      if (error) {
+        console.log(`   Error: ${error.message || error}`);
+      }
+    }
   },
 
   skipTest: (context, reason) => {
@@ -87,6 +116,31 @@ const testUtils = {
     }
   }
 };
+
+// Helper function to determine test command based on operation
+function getTestCommand(operation) {
+  const op = operation.toLowerCase();
+  if (op.includes('create') || op.includes('post')) {
+    return 'npm run test:profile:create';
+  } else if (op.includes('read') || op.includes('get') || op.includes('index')) {
+    return 'npm run test:profile:read';
+  } else if (op.includes('update') || op.includes('put') || op.includes('patch')) {
+    return 'npm run test:profile:update';
+  } else if (op.includes('delete') && op.includes('soft')) {
+    return 'npm run test:profile:delete-soft';
+  } else if (op.includes('delete') && op.includes('hard')) {
+    return 'npm run test:profile:delete-hard';
+  } else if (op.includes('restore')) {
+    return 'npm run test:profile:restore';
+  } else if (op.includes('cascade')) {
+    return 'npm run test:profile:cascade';
+  } else if (op.includes('authorization')) {
+    return 'npm run test:profile:authorization';
+  } else if (op.includes('isolation')) {
+    return 'npm run test:profile:isolation';
+  }
+  return 'npm run test:profile:customer';
+}
 
 module.exports = {
   config,
