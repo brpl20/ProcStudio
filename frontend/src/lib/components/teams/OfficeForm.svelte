@@ -11,6 +11,7 @@
   import { createCepAddressHandler } from '../../utils/cep-address-mapper';
 
   // Import the new Svelte 5 store
+  import { officeFormLawyersStore } from '../../stores/officeFormStore.svelte';
 
   import {
     SOCIETY_OPTIONS,
@@ -30,6 +31,11 @@
     type OfficeFormData,
     type PartnerFormData
   } from '../../schemas/office-form';
+  import {
+    adjustPartnerPercentages,
+    validatePartners,
+    submitOfficeForm
+  } from '../../utils/office-form-processor';
 
   const office = $state(null);
 

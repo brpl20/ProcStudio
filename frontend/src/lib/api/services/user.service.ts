@@ -81,8 +81,13 @@ export class UserService {
   /**
    * Get all user profiles
    */
-  async getUserProfiles(): Promise<ApiSuccessResponse<UserProfileData[]>> {
-    return this.http.get<ApiSuccessResponse<UserProfileData[]>>(API_ENDPOINTS.USER_PROFILES);
+  async getUserProfiles(options?: {
+    signal?: AbortSignal;
+  }): Promise<ApiSuccessResponse<UserProfileData[]>> {
+    return this.http.get<ApiSuccessResponse<UserProfileData[]>>(
+      API_ENDPOINTS.USER_PROFILES,
+      options
+    );
   }
 
   /**
@@ -135,20 +140,18 @@ export class UserService {
    * Remove avatar from user profile
    */
   async removeAvatar(profileId: string): Promise<{ data: UserProfileData }> {
-    return this.http.put<{ data: UserProfileData }>(
-      `${API_ENDPOINTS.USER_PROFILES}/${profileId}`,
-      { user_profile: { remove_avatar: true } }
-    );
+    return this.http.put<{ data: UserProfileData }>(`${API_ENDPOINTS.USER_PROFILES}/${profileId}`, {
+      user_profile: { remove_avatar: true }
+    });
   }
 
   /**
    * Update avatar color for user profile
    */
   async updateAvatarColor(profileId: string, color: string): Promise<{ data: UserProfileData }> {
-    return this.http.put<{ data: UserProfileData }>(
-      `${API_ENDPOINTS.USER_PROFILES}/${profileId}`,
-      { user_profile: { avatar_color: color } }
-    );
+    return this.http.put<{ data: UserProfileData }>(`${API_ENDPOINTS.USER_PROFILES}/${profileId}`, {
+      user_profile: { avatar_color: color }
+    });
   }
 
   /**
