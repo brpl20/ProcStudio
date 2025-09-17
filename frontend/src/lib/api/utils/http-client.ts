@@ -10,6 +10,7 @@ export interface RequestOptions {
   headers?: Record<string, string>;
   body?: unknown;
   timeout?: number;
+  signal?: AbortSignal;
 }
 
 export interface ApiErrorResponse {
@@ -52,7 +53,7 @@ export class HttpClient {
    */
   async request<T>(method: string, endpoint: string, options: RequestOptions = {}): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
-    const { headers = {}, body } = options;
+    const { headers = {}, body, signal } = options;
 
     const requestHeaders = {
       ...this.defaultHeaders,
@@ -61,7 +62,8 @@ export class HttpClient {
 
     const requestOptions: RequestInit = {
       method,
-      headers: requestHeaders
+      headers: requestHeaders,
+      signal
     };
 
     if (body && method !== 'GET') {
