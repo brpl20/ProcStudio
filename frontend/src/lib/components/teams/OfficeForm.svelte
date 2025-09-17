@@ -9,13 +9,9 @@
   import Email from '../forms_commons/Email.svelte';
   import Bank from '../forms_commons/Bank.svelte';
   import { createCepAddressHandler } from '../../utils/cep-address-mapper';
-  import {
-    officeFormLawyersStore,
-    selectedPartnersStore,
-    availableLawyersStore,
-    getAvailableLawyersForPartnerIndex,
-    officeFormLawyersUtils
-  } from '../../stores/officeFormStore';
+
+  // Import the new Svelte 5 store
+
   import {
     SOCIETY_OPTIONS,
     ACCOUNTING_OPTIONS,
@@ -34,12 +30,6 @@
     type OfficeFormData,
     type PartnerFormData
   } from '../../schemas/office-form';
-  import {
-    processOfficeFormData,
-    submitOfficeForm,
-    validatePartners,
-    adjustPartnerPercentages
-  } from '../../utils/office-form-processor';
 
   const office = $state(null);
 
@@ -64,15 +54,12 @@
   const { minimumWage, inssCeiling } = getCurrentInssConstants();
   let proLaboreErrors = $state<Record<number, string>>({});
 
-  // Subscribe to stores
-  const lawyersState = $derived($officeFormLawyersStore);
-  const availableLawyers = $derived($availableLawyersStore);
-  const selectedPartners = $derived($selectedPartnersStore);
+  // Direct access to store - no need for $derived or subscriptions
+  const store = officeFormLawyersStore;
 
   // Create a reactive computation for available lawyers per partner
-  // This will re-compute whenever partners array or lawyersState changes
   const availableLawyersPerPartner = $derived.by(() => {
-    if (!lawyersState.lawyers || !Array.isArray(lawyersState.lawyers)) {
+    if (!store.lawyers || !Array.isArray(store.lawyers)) {
       return [];
     }
 
@@ -86,7 +73,7 @@
 
       // Return lawyers that are not selected by other partners
       // Convert both to strings for comparison
-      return lawyersState.lawyers.filter(
+      return store.lawyers.filter(
         (lawyer) => !selectedIds.some((selectedId) => String(selectedId) === String(lawyer.id))
       );
     });
@@ -151,7 +138,7 @@
   }
 
   function addPartner() {
-    if (!officeFormLawyersUtils.canAddMorePartners(partners.length)) {
+    if (!store.canAddMorePartners(partners.length)) {
       return;
     }
 
@@ -296,7 +283,7 @@
   onMount(async () => {
     try {
       // Load lawyers using the store - always try to load to ensure fresh data
-      await officeFormLawyersStore.loadLawyers();
+      await store.loadLawyers();
 
       // Wait a tick to ensure stores are updated
       await new Promise((resolve) => setTimeout(resolve, 0));
@@ -317,7 +304,7 @@
       // Initialize partners store with existing selections if any
       if (office.user_offices?.length > 0) {
         const lawyerIds = office.user_offices.map((uo) => uo.user_id).filter((id) => id);
-        selectedPartnersStore.setAll(lawyerIds);
+        store.setAllPartners(lawyerIds);
       }
     }
 
@@ -644,16 +631,16 @@
         {/snippet}
       </FormSection>
 
-      <!-- Partners Section -->
+      <!-- Partners Section - UPDATED -->
       <FormSection title="Sócios do Escritório">
         {#snippet children()}
           <!-- Loading/Error States -->
-          {#if lawyersState.loading}
+          {#if store.loading}
             <div class="alert alert-info mb-4">
               <span class="loading loading-spinner loading-sm"></span>
               <span>Carregando advogados...</span>
             </div>
-          {:else if lawyersState.error}
+          {:else if store.error}
             <div class="alert alert-error mb-4">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -668,8 +655,8 @@
                   d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <span>Erro: {lawyersState.error}</span>
-              <button class="btn btn-sm" onclick={() => officeFormLawyersStore.loadLawyers()}
+              <span>Erro: {store.error}</span>
+              <button class="btn btn-sm" onclick={() => store.loadLawyers()}
                 >Tentar novamente</button
               >
             </div>
@@ -679,10 +666,10 @@
               <div>
                 <div class="text-sm">
                   <strong>Debug:</strong>
-                  {lawyersState.lawyers.length} advogados carregados
-                  {#if lawyersState.lawyers.length > 0}
+                  {store.lawyers.length} advogados carregados
+                  {#if store.lawyers.length > 0}
                     <div class="mt-2">
-                      {#each lawyersState.lawyers as lawyer, i}
+                      {#each store.lawyers as lawyer, i}
                         <div class="text-xs">
                           {i + 1}: ID={lawyer.id}, Nome={lawyer.attributes?.name}
                           {lawyer.attributes?.last_name}
@@ -695,7 +682,7 @@
             </div>
           {/if}
 
-          {#if !lawyersState.lawyers || lawyersState.lawyers.length === 0}
+          {#if !store.lawyers || store.lawyers.length === 0}
             <div class="alert alert-info">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -735,7 +722,7 @@
                       class="select select-bordered w-full"
                       value={partner.lawyer_id}
                       onchange={(e) => {
-                        const selectedLawyer = officeFormLawyersUtils.findById(e.target.value);
+                        const selectedLawyer = store.findById(e.target.value);
                         if (selectedLawyer) {
                           handlePartnerChange(index, 'lawyer_id', selectedLawyer);
                         }
@@ -744,7 +731,7 @@
                       <option value="">Selecione o Advogado</option>
                       {#each availableLawyersPerPartner[index] || [] as lawyer}
                         <option value={lawyer.id}>
-                          {officeFormLawyersUtils.getFullName(lawyer)}
+                          {store.getFullName(lawyer)}
                         </option>
                       {/each}
                     </select>
@@ -861,13 +848,13 @@
           <div class="flex flex-col items-start">
             <button
               class="btn btn-outline"
-              disabled={!officeFormLawyersUtils.canAddMorePartners(partners.length)}
+              disabled={!store.canAddMorePartners(partners.length)}
               onclick={addPartner}
             >
               ➕ Adicionar Sócio
             </button>
 
-            {#if !officeFormLawyersUtils.canAddMorePartners(partners.length)}
+            {#if !store.canAddMorePartners(partners.length)}
               <p class="text-sm text-gray-500 mt-2">
                 Cadastre mais advogados para alterar seu quadro societário.
                 <button type="button" class="link link-primary bg-transparent border-none p-0"

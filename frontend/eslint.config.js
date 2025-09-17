@@ -25,7 +25,12 @@ export default [
         clearInterval: 'readonly',
         process: 'readonly',
         Buffer: 'readonly',
-        global: 'readonly'
+        global: 'readonly',
+        $state: 'readonly',
+        $derived: 'readonly',
+        $effect: 'readonly',
+        $bindable: 'readonly',
+        $props: 'readonly'
       }
     },
     rules: {
