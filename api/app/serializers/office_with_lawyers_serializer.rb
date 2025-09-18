@@ -13,6 +13,7 @@ class OfficeWithLawyersSerializer
       profile = lawyer.user_profile
       {
         id: lawyer.id,
+        user_office_id: user_office&.id,
         email: lawyer.email,
         oab: lawyer.oab,
         name: profile&.name || lawyer.email.split('@').first,

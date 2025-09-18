@@ -96,11 +96,19 @@ Svelte 5.0
   - [Polimorphic Tables](./docs/Polimorphic-Tables.md)
 
 ## Frontend
-- [Dragable](./docs/frontend-dragable.md)
-- [Debugging](./docs/frontend-svelte-debugging.md)
-- [MCP](./docs/frontend-svelte-mcp.md)
-- [Virtual List](./docs/frontend-svelte-virtual-list.md)
-- [Draft Helper](./docs/frontend_draft_helper.js)
+- Learning and Svelte
+  - [Dragable](./docs/frontend-dragable.md)
+  - [Types e JSON Conversion](./docs/frontend-json-to-types.md)
+  - [Debugging](./docs/frontend-svelte-debugging.md)
+  - [Filters and Lists](./docs/frontend-filters-and-lists.md)
+  - [MCP](./docs/frontend-svelte-mcp.md)
+  - [Virtual List](./docs/frontend-svelte-virtual-list.md)
+  - [Draft Helper](./docs/frontend_draft_helper.js)
+
+### Frontend - Components and Forms
+- [Forms and Decoupling](./docs/frontend-forms-and-decoupling.md)
+- Forms Specific:
+  - [CNPJ](./docs/frontend-cnpj.md)
 
 ## Testes
 - [Tests](./docs/Test.md)

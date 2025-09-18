@@ -1,16 +1,22 @@
 <!-- CNPJ.svelte -->
 <script>
   import { createEventDispatcher } from 'svelte';
-  import { validateCNPJRequired, formatCNPJ } from '../../validation/cnpj';
+  import { validateCNPJ, formatCNPJ } from '../../validation/cnpj';
 
   // Props with defaults
   export let value = '';
   export let errors = null;
   export let touched = false;
   export let disabled = false;
-  export let validateFn = validateCNPJRequired; // Default to built-in validation
+
+  // Master switch: allow parent to disable validation entirely
+  export let validate = true;
+
+  // Validation/formatting functions (kept internal by default)
+  export let validateFn = validateCNPJ; // non-required validator by default
   export let formatFn = formatCNPJ; // Default to built-in formatting
-  export let id = 'cnpj'; // Allow customizing the ID
+
+  export let id = 'cnpj';
   export let required = true;
   export let labelText = 'CNPJ';
   export let placeholder = '00.000.000/0000-00';
@@ -21,30 +27,41 @@
   // Set up event dispatcher
   const dispatch = createEventDispatcher();
 
-  // Handle input with optional formatting
+  // Handle input with optional formatting (no live validation)
   function handleInput(event) {
     let newValue = event.target.value;
 
-    // Apply formatting if provided
     if (formatFn) {
       newValue = formatFn(newValue);
     }
 
-    value = newValue; // Update the bound value
+    value = newValue;
     dispatch('input', { value: newValue, id });
   }
 
-  // Handle blur with validation
+  // Handle blur with validation based on required and presence of value
   function handleBlur() {
-    touched = true; // Mark as touched on blur
+    touched = true;
     dispatch('blur', { id, value });
 
-    // If validation function provided, validate on blur
-    if (validateFn && required) {
-      const error = validateFn(value);
-      errors = error; // Erros back and forth
-      dispatch('validate', { id, value, error });
+    if (!validate) {
+      errors = null;
+      dispatch('validate', { id, value, error: null });
+      return;
     }
+
+    const hasValue = String(value ?? '').trim().length > 0;
+
+    if (required && !hasValue) {
+      errors = 'CNPJ é obrigatório';
+    } else if (hasValue && validateFn) {
+      errors = validateFn(value);
+    } else {
+      // optional and blank => no error
+      errors = null;
+    }
+
+    dispatch('validate', { id, value, error: errors });
   }
 </script>
 

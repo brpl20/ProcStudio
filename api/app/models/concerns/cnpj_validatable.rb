@@ -5,7 +5,7 @@ module CnpjValidatable
   extend ActiveSupport::Concern
 
   included do
-    validates :cnpj, presence: true, uniqueness: true
+    validates :cnpj, uniqueness: true, allow_blank: true
     validate :cnpj_format_valid
     before_save :normalize_cnpj
   end
