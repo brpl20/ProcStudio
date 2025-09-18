@@ -8,14 +8,14 @@
   import Phone from '../forms_commons/Phone.svelte';
   import Email from '../forms_commons/Email.svelte';
   import Bank from '../forms_commons/Bank.svelte';
+  import BasicInformation from '../forms_commons_wrappers/BasicInformation.svelte';
+  import OabInformation from '../forms_commons_wrappers/OabInformation.svelte';
   import { createCepAddressHandler } from '../../utils/cep-address-mapper';
 
   // Import the new Svelte 5 store
   import { officeFormLawyersStore } from '../../stores/officeFormStore.svelte';
 
   import {
-    SOCIETY_OPTIONS,
-    ACCOUNTING_OPTIONS,
     PARTNERSHIP_TYPES,
     getCurrentInssConstants
   } from '../../constants/formOptions';
@@ -371,140 +371,10 @@
       {/if}
 
       <!-- Basic Information -->
-      <FormSection title="Informações Básicas">
-        {#snippet children()}
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="form-control flex flex-col">
-              <label class="label pb-1" for="office-name">
-                <span class="label-text">Nome do Escritório *</span>
-              </label>
-              <input
-                id="office-name"
-                type="text"
-                class="input input-bordered w-full"
-                bind:value={formData.name}
-                placeholder="Nome do escritório"
-                required
-              />
-            </div>
-
-            <Cnpj required bind:value={formData.cnpj} id="office-cnpj" labelText={'CNPJ'} />
-
-            <div class="form-control flex flex-col">
-              <label class="label pb-1" for="office-society">
-                <span class="label-text">Tipo de Sociedade</span>
-              </label>
-              <select
-                id="office-society"
-                class="select select-bordered w-full"
-                bind:value={formData.society}
-              >
-                {#each SOCIETY_OPTIONS as option}
-                  <option value={option.value}>{option.label}</option>
-                {/each}
-              </select>
-            </div>
-
-            <div class="form-control flex flex-col">
-              <label class="label pb-1" for="office-accounting-type">
-                <span class="label-text">Enquadramento Contábil</span>
-              </label>
-              <select
-                id="office-accounting-type"
-                class="select select-bordered w-full"
-                bind:value={formData.accounting_type}
-              >
-                {#each ACCOUNTING_OPTIONS as option}
-                  <option value={option.value}>{option.label}</option>
-                {/each}
-              </select>
-            </div>
-
-            <div class="form-control flex flex-col">
-              <label class="label pb-1" for="office-foundation">
-                <span class="label-text">Data de Fundação</span>
-              </label>
-              <input
-                id="office-foundation"
-                type="date"
-                class="input input-bordered w-full"
-                bind:value={formData.foundation}
-              />
-            </div>
-
-            <div class="form-control flex flex-col">
-              <label class="label pb-1" for="office-site">
-                <span class="label-text">Site</span>
-              </label>
-              <input
-                id="office-site"
-                type="url"
-                class="input input-bordered w-full"
-                bind:value={formData.site}
-              />
-            </div>
-          </div>
-        {/snippet}
-      </FormSection>
+      <BasicInformation bind:formData={formData} title="Informações Básicas" showSite={true} />
 
       <!-- OAB Information -->
-      <FormSection title="Informações OAB">
-        {#snippet children()}
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="form-control flex flex-col">
-              <label class="label pb-1" for="office-oab-id">
-                <span class="label-text">OAB ID</span>
-              </label>
-              <input
-                id="office-oab-id"
-                type="text"
-                class="input input-bordered w-full"
-                bind:value={formData.oab_id}
-                placeholder="Número OAB"
-              />
-            </div>
-
-            <div class="form-control flex flex-col">
-              <label class="label pb-1" for="office-oab-status">
-                <span class="label-text">Status OAB</span>
-              </label>
-              <input
-                id="office-oab-status"
-                type="text"
-                class="input input-bordered w-full"
-                bind:value={formData.oab_status}
-                placeholder="Status na OAB"
-              />
-            </div>
-
-            <div class="form-control flex flex-col">
-              <label class="label pb-1" for="office-oab-inscricao">
-                <span class="label-text">Inscrição OAB</span>
-              </label>
-              <input
-                id="office-oab-inscricao"
-                type="text"
-                class="input input-bordered w-full"
-                bind:value={formData.oab_inscricao}
-                placeholder="Número da inscrição"
-              />
-            </div>
-
-            <div class="form-control flex flex-col">
-              <label class="label pb-1" for="office-oab-link">
-                <span class="label-text">Link OAB</span>
-              </label>
-              <input
-                id="office-oab-link"
-                type="url"
-                class="input input-bordered w-full"
-                bind:value={formData.oab_link}
-                placeholder="Link do perfil na OAB"
-              />
-            </div>
-          </div>
-        {/snippet}
-      </FormSection>
+      <OabInformation bind:formData={formData} />
 
       <!-- Financial Information -->
       <FormSection title="Informações Financeiras">
