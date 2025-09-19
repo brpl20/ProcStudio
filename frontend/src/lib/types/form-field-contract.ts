@@ -8,30 +8,30 @@ export interface FormFieldProps<T = string> {
   value: T;
   id?: string;
   name?: string;
-  
+
   // Display props
   labelText?: string;
   placeholder?: string;
   hint?: string;
-  
+
   // State props
   required?: boolean;
   disabled?: boolean;
   readonly?: boolean;
-  
+
   // Validation props
   errors?: string | null;
   touched?: boolean;
   validate?: boolean;
-  
+
   // Styling props
   wrapperClass?: string;
   inputClass?: string;
   labelClass?: string;
-  
+
   // Testing props
   testId?: string;
-  
+
   // Accessibility props
   ariaLabel?: string;
   ariaDescribedBy?: string;
