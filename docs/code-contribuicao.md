@@ -1,26 +1,22 @@
 [Voltar](../README.md)
 
-# 📝 Guia de Contribuição - ProcStudio
+# Guia de Contribuição - ProcStudio
 
-## 🎯 Visão Geral
+## Visão Geral
 
 Este documento estabelece as diretrizes e processos para contribuir com o projeto ProcStudio. Seguir estas convenções garante um fluxo de trabalho eficiente e rastreabilidade completa entre issues, commits e pull requests.
 
-## 🚀 Como Começar
+## Kaízen 
 
-### Pré-requisitos
+Quando você ver alguma coisa errada, levante uma bandeira vermelha e alerte todos da linha de produção que existem melhorias a serem feitas. Na API nós tínhamos um erro que o nosso Rails era o único Rails do mundo que usava o termo `bundler install` ao invés de `bundle install` e isso sempre gerava confusão. Entra programador, sai programador e ninguém nunca foi atrás para resolver esse problema, simplesmente aceitando que especificamente neste Rails, o único do planeta deveria ser utilizado `bundler`! Até que quando eu iniciei a trabalhar mais efetivamente no sistema resolvi atacar este problema e o erro estava em mudar um `[` para `(`, o que fazia com que a leitura ficasse incorreta: https://github.com/brpl20/ProcStudio/commit/bf26e7199f8d19c9e9ad78ba255ea9d263e3e53e
 
-1. **Configuração do Ambiente**
-   - Siga as instruções de instalação no [README.md](../README.md)
-   - Configure as ferramentas de desenvolvimento (RuboCop, ESLint, Prettier)
-   - Instale os Git hooks via Husky
+A lição é: _Não passe por cima dos problemas, não ignore os bugs, eles voltarão para te assombrar. Se algo estiver errado, pare conserte, peça ajuda e cresça aprendendo com o sistema._
 
-2. **Acesso ao Repositório**
-   - Fork o repositório (para contribuidores externos)
-   - Clone o repositório localmente
-   - Configure o upstream (se usando fork)
 
-## 🌿 Fluxo de Trabalho Git
+TD: Terminar essa documentação <---- Parei Aqui ! 
+
+
+## Fluxo de Trabalho Git
 
 ### 1. Estrutura de Branches
 
