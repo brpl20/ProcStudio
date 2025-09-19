@@ -36,7 +36,7 @@
 <FormSection {title}>
   {#snippet children()}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <OfficeName 
+      <OfficeName
         bind:value={formData.name}
         id="office-name"
         labelText="Nome do Escritório"
@@ -44,26 +44,26 @@
         required
       />
 
-      <Cnpj 
+      <Cnpj
         bind:value={formData.cnpj}
         id="office-cnpj"
         labelText="CNPJ"
         required
       />
 
-      <SocietyType 
+      <SocietyType
         bind:value={formData.society}
         id="office-society"
         labelText="Tipo de Sociedade"
       />
 
-      <AccountingType 
+      <AccountingType
         bind:value={formData.accounting_type}
         id="office-accounting-type"
         labelText="Enquadramento Contábil"
       />
 
-      <FoundationDate 
+      <FoundationDate
         bind:value={formData.foundation}
         id="office-foundation"
         labelText="Data de Fundação"

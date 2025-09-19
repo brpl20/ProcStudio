@@ -43,7 +43,7 @@
 <FormSection {title}>
   {#snippet children()}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <OabOfficeId 
+      <OabOfficeId
         bind:value={formData.oab_id}
         id="office-oab-id"
         labelText="Identificação OAB"
@@ -52,7 +52,7 @@
         touched={touched?.oab_id}
       />
 
-      <OabStatus 
+      <OabStatus
         bind:value={formData.oab_status}
         id="office-oab-status"
         labelText="Status na OAB"
@@ -61,7 +61,7 @@
         touched={touched?.oab_status}
       />
 
-      <OabOfficeInscricao 
+      <OabOfficeInscricao
         bind:value={formData.oab_inscricao}
         id="office-oab-inscricao"
         labelText="Inscrição OAB"
@@ -70,7 +70,7 @@
         touched={touched?.oab_inscricao}
       />
 
-      <OabOfficeLink 
+      <OabOfficeLink
         bind:value={formData.oab_link}
         id="office-oab-link"
         labelText="Link OAB"

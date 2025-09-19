@@ -4,8 +4,9 @@
   import Cnpj from '../components/forms_commons/Cnpj.svelte';
   import BasicInformation from '../components/forms_commons_wrappers/BasicInformation.svelte';
   import OabInformation from '../components/forms_commons_wrappers/OabInformation.svelte';
-  import Address from '../components/forms_commons/Address.svelte';
+  import ParnershipManagement from '../components/forms_offices_wrappers/PartnershipManagement.svelte';
   import Cep from '../components/forms_commons/Cep.svelte';
+  import Address from '../components/forms_commons/Address.svelte';
   import Phone from '../components/forms_commons/Phone.svelte';
   import Email from '../components/forms_commons/Email.svelte';
   import Bank from '../components/forms_commons/Bank.svelte';
@@ -59,6 +60,10 @@
 <div>
   <spam>CNPJ</spam>
   <Cnpj required={false} disabled={true} />
+</div>
+
+<div>
+  <ParnershipManagement />
 </div>
 
 <style>
