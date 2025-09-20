@@ -3,6 +3,7 @@
   import api from '../../api';
   import OfficeForm from './OfficeForm.svelte';
   import OfficeList from './OfficeList.svelte';
+  import { lawyerStore } from '../../stores/lawyerStore.svelte';
 
   let offices = [];
   let loading = true;
@@ -10,6 +11,13 @@
   let showForm = false;
   let editingOffice = null;
   let showDeleted = false;
+  
+  // Check for active lawyers
+  $: hasActiveLawyers = lawyerStore.activeLawyers.length > 0;
+  $: canCreateOffice = hasActiveLawyers;
+  $: tooltipMessage = !hasActiveLawyers 
+    ? 'É necessário ter pelo menos um advogado ativo no sistema para criar um escritório' 
+    : '';
 
   async function loadOffices() {
     try {
@@ -88,6 +96,8 @@
   }
 
   onMount(() => {
+    // Initialize lawyer store to check for active lawyers
+    lawyerStore.init();
     loadOffices();
   });
 </script>
@@ -99,10 +109,17 @@
     <div class="mb-6">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-2xl font-bold text-gray-900">Gerenciar Escritórios</h2>
-        <button class="btn btn-primary" on:click={handleCreate}>
-          <span class="mr-2">➕</span>
-          Novo Escritório
-        </button>
+        <div class="tooltip tooltip-left" data-tip={tooltipMessage}>
+          <button 
+            class="btn btn-primary" 
+            class:btn-disabled={!canCreateOffice}
+            disabled={!canCreateOffice}
+            on:click={handleCreate}
+          >
+            <span class="mr-2">➕</span>
+            Novo Escritório
+          </button>
+        </div>
       </div>
 
       <div class="flex items-center gap-4 mb-4">
@@ -118,6 +135,21 @@
           </label>
         </div>
       </div>
+      
+      {#if !hasActiveLawyers}
+        <div class="alert alert-warning">
+          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.732 15.5c-.77.833.192 2.5 1.732 2.5z" />
+          </svg>
+          <div>
+            <h3 class="font-bold">Atenção!</h3>
+            <div class="text-sm">
+              Não é possível criar um escritório sem advogados ativos no sistema.
+              Por favor, cadastre e ative pelo menos um advogado antes de criar um escritório.
+            </div>
+          </div>
+        </div>
+      {/if}
     </div>
 
     {#if loading}
