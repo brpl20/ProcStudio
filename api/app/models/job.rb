@@ -77,8 +77,16 @@ class Job < ApplicationRecord
 
   enum :status, {
     pending: 'pending',
-    delayed: 'delayed',
-    finished: 'finished'
+    in_progress: 'in_progress',
+    completed: 'completed',
+    cancelled: 'cancelled'
+  }
+
+  enum :priority, {
+    low: 'low',
+    medium: 'medium',
+    high: 'high',
+    urgent: 'urgent'
   }
 
   after_find :check_and_update_status
@@ -151,13 +159,19 @@ class Job < ApplicationRecord
 
   private
 
-  def check_and_update_status
-    return unless status == 'pending'
-    return unless deadline < Time.zone.today
+  # Esse sistema era para verificar o atraso da tarefa, porém mudamos essa lógica
+  # Para ficar no frontend e tiramos o selo de "atrasado" uma vez que iria se sobrepor a outros selos
+  # Como in_progress o que poderia ser perigoso para a equipe
+  # Ao invés disso vamos apenasr marcar como atrasado de alguma outra forma que seja compatível
+  # com o sistema de selos/badges
+  #
+  # def check_and_update_status
+  #   return unless status == 'pending'
+  #   return unless deadline < Time.zone.today
 
-    self.status = 'delayed'
-    save!
-  end
+  #   self.status = 'delayed'
+  #   save!
+  # end
 
   def work_same_team
     errors.add(:work, 'deve ser do mesmo team') unless work.team == team
@@ -189,12 +203,12 @@ class Job < ApplicationRecord
 
       Notification.create!(
         user_profile: assignee,
-        title: "Nova tarefa atribuída",
+        title: 'Nova tarefa atribuída',
         body: "A tarefa ##{id} foi atribuída a você: #{description || 'Sem descrição'}",
-        notification_type: "task_assignment",
+        notification_type: 'task_assignment',
         priority: priority_to_notification_priority,
         action_url: "/jobs/#{id}",
-        sender_type: "User",
+        sender_type: 'User',
         sender_id: created_by.id,
         data: {
           job_id: id,
@@ -212,19 +226,19 @@ class Job < ApplicationRecord
     supervisors.each do |supervisor|
       Notification.create!(
         user_profile: supervisor,
-        title: "Nova tarefa para supervisão",
+        title: 'Nova tarefa para supervisão',
         body: "Você foi designado como supervisor da tarefa ##{id}: #{description || 'Sem descrição'}",
-        notification_type: "task_assignment",
+        notification_type: 'task_assignment',
         priority: priority_to_notification_priority,
         action_url: "/jobs/#{id}",
-        sender_type: "User",
+        sender_type: 'User',
         sender_id: created_by.id,
         data: {
           job_id: id,
           job_description: description,
           job_deadline: deadline.to_s,
           job_priority: priority,
-          role: "supervisor",
+          role: 'supervisor',
           work_id: work_id,
           customer_id: profile_customer_id,
           customer_name: profile_customer&.name
