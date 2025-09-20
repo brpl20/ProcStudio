@@ -52,7 +52,7 @@
       <option value={option.value}>{option.label}</option>
     {/each}
   </select>
-  
+
   {#if isSingleLawyer}
     <div class="alert alert-info mt-2">
       <svg

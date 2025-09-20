@@ -14,6 +14,7 @@
 
 <div>
   <spam>Basic Info:</spam>
+  <spam>Cuidar com o CNPJ aqui está sendo importado sem as configs</spam>
   <BasicInformation />
 </div>
 
@@ -58,11 +59,12 @@
 </div>
 
 <div>
-  <spam>CNPJ</spam>
+  <spam>CNPJ ?</spam>
   <Cnpj required={false} disabled={true} />
 </div>
 
 <div>
+  <spam>Parnership Management</spam>
   <ParnershipManagement />
 </div>
 

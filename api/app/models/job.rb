@@ -89,7 +89,7 @@ class Job < ApplicationRecord
     urgent: 'urgent'
   }
 
-  after_find :check_and_update_status
+  # after_find :check_and_update_status # Handled differently now
 
   # Métodos helper
   def primary_assignee
