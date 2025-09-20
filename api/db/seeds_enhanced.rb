@@ -5,13 +5,13 @@ require 'faker'
 # Set Faker locale
 Faker::Config.locale = 'pt-BR'
 
-puts '🌱 Starting enhanced seed process with multi-tenancy demonstration...'
-puts '=' * 50
+Rails.logger.debug '🌱 Starting enhanced seed process with multi-tenancy demonstration...'
+Rails.logger.debug '=' * 50
 
 # ==========================================
 # TEAMS - Multi-tenancy Foundation
 # ==========================================
-puts '📁 Creating Teams with Settings...'
+Rails.logger.debug '📁 Creating Teams with Settings...'
 team_principal = Team.find_or_create_by!(name: 'Escritório Principal') do |t|
   t.subdomain = 'principal'
   t.settings = {
@@ -25,7 +25,7 @@ team_principal = Team.find_or_create_by!(name: 'Escritório Principal') do |t|
       'deadline_alerts' => 3
     }
   }
-  puts "  ✅ Created team: #{t.name} (subdomain: #{t.subdomain})"
+  Rails.logger.debug { "  ✅ Created team: #{t.name} (subdomain: #{t.subdomain})" }
 end
 
 team_filial = Team.find_or_create_by!(name: 'Escritório Filial SP') do |t|
@@ -41,7 +41,7 @@ team_filial = Team.find_or_create_by!(name: 'Escritório Filial SP') do |t|
       'deadline_alerts' => 5
     }
   }
-  puts "  ✅ Created team: #{t.name} (subdomain: #{t.subdomain})"
+  Rails.logger.debug { "  ✅ Created team: #{t.name} (subdomain: #{t.subdomain})" }
 end
 
 team_parceiro = Team.find_or_create_by!(name: 'Escritório Parceiro RJ') do |t|
@@ -57,13 +57,13 @@ team_parceiro = Team.find_or_create_by!(name: 'Escritório Parceiro RJ') do |t|
       'deadline_alerts' => 7
     }
   }
-  puts "  ✅ Created team: #{t.name} (subdomain: #{t.subdomain})"
+  Rails.logger.debug { "  ✅ Created team: #{t.name} (subdomain: #{t.subdomain})" }
 end
 
 # ==========================================
 # LAW AREAS (Áreas do Direito)
 # ==========================================
-puts '⚖️  Creating Law Areas...'
+Rails.logger.debug '⚖️  Creating Law Areas...'
 law_areas_data = [
   { code: 'ADM', name: 'Administrativo', parent: nil },
   { code: 'CIV', name: 'Cível', parent: nil },
@@ -107,7 +107,7 @@ law_areas_data = [
 
 law_areas_data.each do |data|
   parent = data[:parent] ? LawArea.find_by(code: data[:parent], parent_area_id: nil) : nil
-  
+
   LawArea.find_or_create_by!(
     code: data[:code],
     parent_area_id: parent&.id,
@@ -116,7 +116,7 @@ law_areas_data.each do |data|
     la.name = data[:name]
     la.active = true
     la.sort_order = law_areas_data.index(data)
-    puts "  ✅ Created law area: #{la.full_name}"
+    Rails.logger.debug { "  ✅ Created law area: #{la.full_name}" }
   end
 end
 
@@ -129,13 +129,13 @@ LawArea.find_or_create_by!(
 ) do |la|
   la.active = true
   la.sort_order = 100
-  puts "  ✅ Created team-specific law area: #{la.name} for #{team_principal.name}"
+  Rails.logger.debug { "  ✅ Created team-specific law area: #{la.name} for #{team_principal.name}" }
 end
 
 # ==========================================
 # OFFICES with Complete Details
 # ==========================================
-puts '🏢 Creating Offices with Financial Details...'
+Rails.logger.debug '🏢 Creating Offices with Financial Details...'
 
 # Principal Office - Large firm
 office_principal = Office.find_or_create_by!(cnpj: '49.609.519/0001-60') do |o|
@@ -148,10 +148,10 @@ office_principal = Office.find_or_create_by!(cnpj: '49.609.519/0001-60') do |o|
   o.accounting_type = 'real_profit' # Larger firms use real profit
   o.foundation = Date.parse('2015-09-25')
   o.site = 'www.pradoadvocacia.com.br'
-  o.quote_value = 15000.00 # Monthly quota for partners
+  o.quote_value = 15_000.00 # Monthly quota for partners
   o.number_of_quotes = 12
   o.team = team_principal
-  puts "  ✅ Created office: #{o.name}"
+  Rails.logger.debug { "  ✅ Created office: #{o.name}" }
 end
 
 # Add multiple addresses for principal office
@@ -165,7 +165,7 @@ office_principal.addresses.find_or_create_by!(
   a.city = 'Cascavel'
   a.state = 'PR'
   a.complement = 'Edifício Empresarial, Salas 1001-1005'
-  puts "  ✅ Created main address for office: #{office_principal.name}"
+  Rails.logger.debug { "  ✅ Created main address for office: #{office_principal.name}" }
 end
 
 office_principal.addresses.find_or_create_by!(
@@ -178,16 +178,16 @@ office_principal.addresses.find_or_create_by!(
   a.city = 'Cascavel'
   a.state = 'PR'
   a.complement = 'Sala 201'
-  puts "  ✅ Created billing address for office: #{office_principal.name}"
+  Rails.logger.debug { "  ✅ Created billing address for office: #{office_principal.name}" }
 end
 
 # Add phones for principal office
-office_principal.phones.find_or_create_by!(phone_number: '4532259000') do |p|
-  puts "  ✅ Created main phone for office: #{office_principal.name}"
+office_principal.phones.find_or_create_by!(phone_number: '4532259000') do |_p|
+  Rails.logger.debug "  ✅ Created main phone for office: #{office_principal.name}"
 end
 
-office_principal.phones.find_or_create_by!(phone_number: '45999887766') do |p|
-  puts "  ✅ Created mobile phone for office: #{office_principal.name}"
+office_principal.phones.find_or_create_by!(phone_number: '45999887766') do |_p|
+  Rails.logger.debug "  ✅ Created mobile phone for office: #{office_principal.name}"
 end
 
 # Filial Office - Medium firm
@@ -204,7 +204,7 @@ office_filial = Office.find_or_create_by!(cnpj: '11.222.333/0001-81') do |o|
   o.quote_value = 8000.00
   o.number_of_quotes = 12
   o.team = team_filial
-  puts "  ✅ Created office: #{o.name}"
+  Rails.logger.debug { "  ✅ Created office: #{o.name}" }
 end
 
 office_filial.addresses.find_or_create_by!(
@@ -217,11 +217,11 @@ office_filial.addresses.find_or_create_by!(
   a.city = 'São Paulo'
   a.state = 'SP'
   a.complement = 'Conjunto 402'
-  puts "  ✅ Created address for office: #{office_filial.name}"
+  Rails.logger.debug { "  ✅ Created address for office: #{office_filial.name}" }
 end
 
 office_filial.phones.find_or_create_by!(phone_number: '1132847000') do |_p|
-  puts "  ✅ Created phone for office: #{office_filial.name}"
+  Rails.logger.debug "  ✅ Created phone for office: #{office_filial.name}"
 end
 
 # Partner Office - Solo practitioner
@@ -237,7 +237,7 @@ office_parceiro = Office.find_or_create_by!(cnpj: '44.555.666/0001-77') do |o|
   o.quote_value = 5000.00
   o.number_of_quotes = 12
   o.team = team_parceiro
-  puts "  ✅ Created office: #{o.name}"
+  Rails.logger.debug { "  ✅ Created office: #{o.name}" }
 end
 
 office_parceiro.addresses.find_or_create_by!(
@@ -250,17 +250,17 @@ office_parceiro.addresses.find_or_create_by!(
   a.city = 'Rio de Janeiro'
   a.state = 'RJ'
   a.complement = 'Sala 1205'
-  puts "  ✅ Created address for office: #{office_parceiro.name}"
+  Rails.logger.debug { "  ✅ Created address for office: #{office_parceiro.name}" }
 end
 
 office_parceiro.phones.find_or_create_by!(phone_number: '2133334444') do |_p|
-  puts "  ✅ Created phone for office: #{office_parceiro.name}"
+  Rails.logger.debug "  ✅ Created phone for office: #{office_parceiro.name}"
 end
 
 # ==========================================
 # USERS with Diverse Roles
 # ==========================================
-puts '👤 Creating Users with Diverse Roles and UserProfiles...'
+Rails.logger.debug '👤 Creating Users with Diverse Roles and UserProfiles...'
 
 # Team Principal Users
 # Senior Partner
@@ -269,7 +269,7 @@ user_senior_partner = User.find_or_create_by!(email: 'joao.prado@pradoadvocacia.
   u.password_confirmation = 'Password123!'
   u.team = team_principal
   u.status = 'active'
-  puts "  ✅ Created user: #{u.email}"
+  Rails.logger.debug { "  ✅ Created user: #{u.email}" }
 end
 
 profile_senior_partner = UserProfile.find_or_create_by!(user: user_senior_partner) do |p|
@@ -287,7 +287,7 @@ profile_senior_partner = UserProfile.find_or_create_by!(user: user_senior_partne
   p.mother_name = 'Rosinha Mendes Prado'
   p.origin = 'Cascavel, PR'
   p.office = office_principal
-  puts "  ✅ Created profile: #{p.full_name} (Senior Partner)"
+  Rails.logger.debug { "  ✅ Created profile: #{p.full_name} (Senior Partner)" }
 end
 
 # Create UserOffice with partnership details
@@ -298,7 +298,7 @@ UserOffice.find_or_create_by!(
   uo.partnership_type = 'partner'
   uo.partnership_percentage = 40.0
   uo.joining_date = Date.parse('2015-09-25')
-  puts "  ✅ Created partnership: #{profile_senior_partner.full_name} - 40% partner"
+  Rails.logger.debug { "  ✅ Created partnership: #{profile_senior_partner.full_name} - 40% partner" }
 end
 
 # Junior Partner
@@ -307,7 +307,7 @@ user_junior_partner = User.find_or_create_by!(email: 'maria.silva@pradoadvocacia
   u.password_confirmation = 'Password123!'
   u.team = team_principal
   u.status = 'active'
-  puts "  ✅ Created user: #{u.email}"
+  Rails.logger.debug { "  ✅ Created user: #{u.email}" }
 end
 
 profile_junior_partner = UserProfile.find_or_create_by!(user: user_junior_partner) do |p|
@@ -325,7 +325,7 @@ profile_junior_partner = UserProfile.find_or_create_by!(user: user_junior_partne
   p.mother_name = 'Ana Silva'
   p.origin = 'São Paulo, SP'
   p.office = office_principal
-  puts "  ✅ Created profile: #{p.full_name} (Junior Partner)"
+  Rails.logger.debug { "  ✅ Created profile: #{p.full_name} (Junior Partner)" }
 end
 
 UserOffice.find_or_create_by!(
@@ -335,7 +335,7 @@ UserOffice.find_or_create_by!(
   uo.partnership_type = 'partner'
   uo.partnership_percentage = 20.0
   uo.joining_date = Date.parse('2020-01-01')
-  puts "  ✅ Created partnership: #{profile_junior_partner.full_name} - 20% partner"
+  Rails.logger.debug { "  ✅ Created partnership: #{profile_junior_partner.full_name} - 20% partner" }
 end
 
 # Associate Lawyer
@@ -344,7 +344,7 @@ user_associate = User.find_or_create_by!(email: 'carlos.mendes@pradoadvocacia.co
   u.password_confirmation = 'Password123!'
   u.team = team_principal
   u.status = 'active'
-  puts "  ✅ Created user: #{u.email}"
+  Rails.logger.debug { "  ✅ Created user: #{u.email}" }
 end
 
 profile_associate = UserProfile.find_or_create_by!(user: user_associate) do |p|
@@ -361,7 +361,7 @@ profile_associate = UserProfile.find_or_create_by!(user: user_associate) do |p|
   p.birth = Date.parse('1992-03-15')
   p.mother_name = 'Lucia Mendes'
   p.office = office_principal
-  puts "  ✅ Created profile: #{p.full_name} (Associate)"
+  Rails.logger.debug { "  ✅ Created profile: #{p.full_name} (Associate)" }
 end
 
 UserOffice.find_or_create_by!(
@@ -371,7 +371,7 @@ UserOffice.find_or_create_by!(
   uo.partnership_type = 'associate'
   uo.partnership_percentage = 0.0
   uo.joining_date = Date.parse('2022-03-01')
-  puts "  ✅ Created association: #{profile_associate.full_name} - Associate"
+  Rails.logger.debug { "  ✅ Created association: #{profile_associate.full_name} - Associate" }
 end
 
 # Trainee Lawyer
@@ -380,7 +380,7 @@ user_trainee = User.find_or_create_by!(email: 'julia.costa@pradoadvocacia.com.br
   u.password_confirmation = 'Password123!'
   u.team = team_principal
   u.status = 'active'
-  puts "  ✅ Created user: #{u.email}"
+  Rails.logger.debug { "  ✅ Created user: #{u.email}" }
 end
 
 profile_trainee = UserProfile.find_or_create_by!(user: user_trainee) do |p|
@@ -397,7 +397,7 @@ profile_trainee = UserProfile.find_or_create_by!(user: user_trainee) do |p|
   p.birth = Date.parse('1998-07-20')
   p.mother_name = 'Patricia Costa'
   p.office = office_principal
-  puts "  ✅ Created profile: #{p.full_name} (Trainee)"
+  Rails.logger.debug { "  ✅ Created profile: #{p.full_name} (Trainee)" }
 end
 
 # Paralegal
@@ -406,7 +406,7 @@ user_paralegal = User.find_or_create_by!(email: 'pedro.santos@pradoadvocacia.com
   u.password_confirmation = 'Password123!'
   u.team = team_principal
   u.status = 'active'
-  puts "  ✅ Created user: #{u.email}"
+  Rails.logger.debug { "  ✅ Created user: #{u.email}" }
 end
 
 profile_paralegal = UserProfile.find_or_create_by!(user: user_paralegal) do |p|
@@ -422,7 +422,7 @@ profile_paralegal = UserProfile.find_or_create_by!(user: user_paralegal) do |p|
   p.birth = Date.parse('1990-11-05')
   p.mother_name = 'Rosa Santos'
   p.office = office_principal
-  puts "  ✅ Created profile: #{p.full_name} (Paralegal)"
+  Rails.logger.debug { "  ✅ Created profile: #{p.full_name} (Paralegal)" }
 end
 
 # Secretary
@@ -431,7 +431,7 @@ user_secretary = User.find_or_create_by!(email: 'ana.secretaria@pradoadvocacia.c
   u.password_confirmation = 'Password123!'
   u.team = team_principal
   u.status = 'active'
-  puts "  ✅ Created user: #{u.email}"
+  Rails.logger.debug { "  ✅ Created user: #{u.email}" }
 end
 
 profile_secretary = UserProfile.find_or_create_by!(user: user_secretary) do |p|
@@ -447,7 +447,7 @@ profile_secretary = UserProfile.find_or_create_by!(user: user_secretary) do |p|
   p.birth = Date.parse('1995-03-10')
   p.mother_name = 'Maria Costa'
   p.office = office_principal
-  puts "  ✅ Created profile: #{p.full_name} (Secretary)"
+  Rails.logger.debug { "  ✅ Created profile: #{p.full_name} (Secretary)" }
 end
 
 # Counter (Accountant)
@@ -456,7 +456,7 @@ user_counter = User.find_or_create_by!(email: 'roberto.contador@pradoadvocacia.c
   u.password_confirmation = 'Password123!'
   u.team = team_principal
   u.status = 'active'
-  puts "  ✅ Created user: #{u.email}"
+  Rails.logger.debug { "  ✅ Created user: #{u.email}" }
 end
 
 profile_counter = UserProfile.find_or_create_by!(user: user_counter) do |p|
@@ -472,7 +472,7 @@ profile_counter = UserProfile.find_or_create_by!(user: user_counter) do |p|
   p.birth = Date.parse('1982-09-12')
   p.mother_name = 'Lucia Oliveira'
   p.office = office_principal
-  puts "  ✅ Created profile: #{p.full_name} (Counter)"
+  Rails.logger.debug { "  ✅ Created profile: #{p.full_name} (Counter)" }
 end
 
 # Team Filial Users
@@ -481,7 +481,7 @@ user_filial_lawyer = User.find_or_create_by!(email: 'amanda.lawyer@silvasantos.a
   u.password_confirmation = 'Password123!'
   u.team = team_filial
   u.status = 'active'
-  puts "  ✅ Created user: #{u.email}"
+  Rails.logger.debug { "  ✅ Created user: #{u.email}" }
 end
 
 profile_filial_lawyer = UserProfile.find_or_create_by!(user: user_filial_lawyer) do |p|
@@ -498,7 +498,7 @@ profile_filial_lawyer = UserProfile.find_or_create_by!(user: user_filial_lawyer)
   p.birth = Date.parse('1991-06-30')
   p.mother_name = 'Teresa Ferreira'
   p.office = office_filial
-  puts "  ✅ Created profile: #{p.full_name} (Filial Lawyer)"
+  Rails.logger.debug { "  ✅ Created profile: #{p.full_name} (Filial Lawyer)" }
 end
 
 UserOffice.find_or_create_by!(
@@ -508,7 +508,7 @@ UserOffice.find_or_create_by!(
   uo.partnership_type = 'partner'
   uo.partnership_percentage = 50.0
   uo.joining_date = Date.parse('2020-01-15')
-  puts "  ✅ Created partnership: #{profile_filial_lawyer.full_name} - 50% partner"
+  Rails.logger.debug { "  ✅ Created partnership: #{profile_filial_lawyer.full_name} - 50% partner" }
 end
 
 # Team Parceiro Users
@@ -517,7 +517,7 @@ user_parceiro_lawyer = User.find_or_create_by!(email: 'andre.costa@costaadv.com.
   u.password_confirmation = 'Password123!'
   u.team = team_parceiro
   u.status = 'active'
-  puts "  ✅ Created user: #{u.email}"
+  Rails.logger.debug { "  ✅ Created user: #{u.email}" }
 end
 
 profile_parceiro_lawyer = UserProfile.find_or_create_by!(user: user_parceiro_lawyer) do |p|
@@ -534,7 +534,7 @@ profile_parceiro_lawyer = UserProfile.find_or_create_by!(user: user_parceiro_law
   p.birth = Date.parse('1985-12-10')
   p.mother_name = 'Helena Costa'
   p.office = office_parceiro
-  puts "  ✅ Created profile: #{p.full_name} (Partner Lawyer)"
+  Rails.logger.debug { "  ✅ Created profile: #{p.full_name} (Partner Lawyer)" }
 end
 
 UserOffice.find_or_create_by!(
@@ -544,13 +544,13 @@ UserOffice.find_or_create_by!(
   uo.partnership_type = 'owner'
   uo.partnership_percentage = 100.0
   uo.joining_date = Date.parse('2022-06-01')
-  puts "  ✅ Created ownership: #{profile_parceiro_lawyer.full_name} - 100% owner"
+  Rails.logger.debug { "  ✅ Created ownership: #{profile_parceiro_lawyer.full_name} - 100% owner" }
 end
 
 # ==========================================
 # BANK ACCOUNTS
 # ==========================================
-puts '🏦 Creating Bank Accounts...'
+Rails.logger.debug '🏦 Creating Bank Accounts...'
 
 # Office bank accounts
 BankAccount.find_or_create_by!(
@@ -563,7 +563,7 @@ BankAccount.find_or_create_by!(
   ba.account_holder = 'Prado & Associados Advocacia'
   ba.cpf_cnpj = office_principal.cnpj
   ba.is_primary = true
-  puts "  ✅ Created bank account for office: #{office_principal.name}"
+  Rails.logger.debug { "  ✅ Created bank account for office: #{office_principal.name}" }
 end
 
 BankAccount.find_or_create_by!(
@@ -576,7 +576,7 @@ BankAccount.find_or_create_by!(
   ba.account_holder = 'Prado & Associados Advocacia'
   ba.cpf_cnpj = office_principal.cnpj
   ba.is_primary = false
-  puts "  ✅ Created savings account for office: #{office_principal.name}"
+  Rails.logger.debug { "  ✅ Created savings account for office: #{office_principal.name}" }
 end
 
 # User bank account
@@ -590,13 +590,13 @@ BankAccount.find_or_create_by!(
   ba.account_holder = profile_senior_partner.full_name
   ba.cpf_cnpj = profile_senior_partner.cpf
   ba.is_primary = true
-  puts "  ✅ Created bank account for user: #{profile_senior_partner.full_name}"
+  Rails.logger.debug { "  ✅ Created bank account for user: #{profile_senior_partner.full_name}" }
 end
 
 # ==========================================
 # CUSTOMERS with Diverse Types and Capacities
 # ==========================================
-puts '👥 Creating Diverse Customers and ProfileCustomers...'
+Rails.logger.debug '👥 Creating Diverse Customers and ProfileCustomers...'
 
 # Customer 1 - Fully Capable Individual
 customer_capable = Customer.find_or_create_by!(email: 'carlos.oliveira@gmail.com') do |c|
@@ -604,7 +604,7 @@ customer_capable = Customer.find_or_create_by!(email: 'carlos.oliveira@gmail.com
   c.password_confirmation = 'ClientPass123!'
   c.confirmed_at = Time.current
   c.created_by_id = user_senior_partner.id
-  puts "  ✅ Created customer: #{c.email}"
+  Rails.logger.debug { "  ✅ Created customer: #{c.email}" }
 end
 
 profile_customer_capable = ProfileCustomer.find_or_create_by!(customer: customer_capable) do |pc|
@@ -624,7 +624,7 @@ profile_customer_capable = ProfileCustomer.find_or_create_by!(customer: customer
   pc.inss_password = 'INSS2024'
   pc.nit = '12345678901'
   pc.created_by_id = user_senior_partner.id
-  puts "  ✅ Created profile customer: #{pc.full_name} (Capable)"
+  Rails.logger.debug { "  ✅ Created profile customer: #{pc.full_name} (Capable)" }
 end
 
 # Add multiple addresses
@@ -637,7 +637,7 @@ profile_customer_capable.addresses.find_or_create_by!(
   a.neighborhood = 'Centro'
   a.city = 'Cascavel'
   a.state = 'PR'
-  puts "  ✅ Created main address for customer"
+  Rails.logger.debug '  ✅ Created main address for customer'
 end
 
 profile_customer_capable.addresses.find_or_create_by!(
@@ -649,11 +649,11 @@ profile_customer_capable.addresses.find_or_create_by!(
   a.neighborhood = 'Centro'
   a.city = 'Cascavel'
   a.state = 'PR'
-  puts "  ✅ Created correspondence address for customer"
+  Rails.logger.debug '  ✅ Created correspondence address for customer'
 end
 
 profile_customer_capable.phones.find_or_create_by!(phone_number: '4598765432') do |_p|
-  puts "  ✅ Created phone for customer"
+  Rails.logger.debug '  ✅ Created phone for customer'
 end
 
 # Customer bank account
@@ -667,7 +667,7 @@ BankAccount.find_or_create_by!(
   ba.account_holder = profile_customer_capable.full_name
   ba.cpf_cnpj = profile_customer_capable.cpf
   ba.is_primary = true
-  puts "  ✅ Created bank account for customer: #{profile_customer_capable.full_name}"
+  Rails.logger.debug { "  ✅ Created bank account for customer: #{profile_customer_capable.full_name}" }
 end
 
 # Customer 2 - Large Company (Legal Person)
@@ -676,7 +676,7 @@ customer_company = Customer.find_or_create_by!(email: 'juridico@grandecorp.com.b
   c.password_confirmation = 'ClientPass123!'
   c.confirmed_at = Time.current
   c.created_by_id = user_senior_partner.id
-  puts "  ✅ Created customer: #{c.email}"
+  Rails.logger.debug { "  ✅ Created customer: #{c.email}" }
 end
 
 profile_customer_company = ProfileCustomer.find_or_create_by!(customer: customer_company) do |pc|
@@ -693,7 +693,7 @@ profile_customer_company = ProfileCustomer.find_or_create_by!(customer: customer
   pc.capacity = 'able'
   pc.status = 'active'
   pc.created_by_id = user_senior_partner.id
-  puts "  ✅ Created profile customer: #{pc.name} (Company)"
+  Rails.logger.debug { "  ✅ Created profile customer: #{pc.name} (Company)" }
 end
 
 profile_customer_company.addresses.find_or_create_by!(
@@ -706,11 +706,11 @@ profile_customer_company.addresses.find_or_create_by!(
   a.city = 'São Paulo'
   a.state = 'SP'
   a.complement = 'Torre A, 25º andar'
-  puts "  ✅ Created address for company"
+  Rails.logger.debug '  ✅ Created address for company'
 end
 
 profile_customer_company.phones.find_or_create_by!(phone_number: '1133445566') do |_p|
-  puts "  ✅ Created phone for company"
+  Rails.logger.debug '  ✅ Created phone for company'
 end
 
 # Customer 3 - Minor (Relatively Incapable)
@@ -719,7 +719,7 @@ customer_minor = Customer.find_or_create_by!(email: 'pedro.menor@gmail.com') do 
   c.password_confirmation = 'ClientPass123!'
   c.confirmed_at = Time.current
   c.created_by_id = user_junior_partner.id
-  puts "  ✅ Created customer: #{c.email}"
+  Rails.logger.debug { "  ✅ Created customer: #{c.email}" }
 end
 
 profile_customer_minor = ProfileCustomer.find_or_create_by!(customer: customer_minor) do |pc|
@@ -737,7 +737,7 @@ profile_customer_minor = ProfileCustomer.find_or_create_by!(customer: customer_m
   pc.capacity = 'relatively' # Minor - relatively incapable
   pc.status = 'active'
   pc.created_by_id = user_junior_partner.id
-  puts "  ✅ Created profile customer: #{pc.full_name} (Minor)"
+  Rails.logger.debug { "  ✅ Created profile customer: #{pc.full_name} (Minor)" }
 end
 
 # Customer 4 - Elderly with Guardian (Unable)
@@ -746,7 +746,7 @@ customer_elderly = Customer.find_or_create_by!(email: 'jose.senior@gmail.com') d
   c.password_confirmation = 'ClientPass123!'
   c.confirmed_at = Time.current
   c.created_by_id = user_associate.id
-  puts "  ✅ Created customer: #{c.email}"
+  Rails.logger.debug { "  ✅ Created customer: #{c.email}" }
 end
 
 profile_customer_elderly = ProfileCustomer.find_or_create_by!(customer: customer_elderly) do |pc|
@@ -765,7 +765,7 @@ profile_customer_elderly = ProfileCustomer.find_or_create_by!(customer: customer
   pc.status = 'active'
   pc.number_benefit = 'BEN123456789' # Social security benefit number
   pc.created_by_id = user_associate.id
-  puts "  ✅ Created profile customer: #{pc.full_name} (Unable)"
+  Rails.logger.debug { "  ✅ Created profile customer: #{pc.full_name} (Unable)" }
 end
 
 # Customer 5 - Deceased (for estate management)
@@ -774,7 +774,7 @@ customer_deceased = Customer.find_or_create_by!(email: 'espolio.antonio@gmail.co
   c.password_confirmation = 'ClientPass123!'
   c.confirmed_at = Time.current
   c.created_by_id = user_senior_partner.id
-  puts "  ✅ Created customer: #{c.email}"
+  Rails.logger.debug { "  ✅ Created customer: #{c.email}" }
 end
 
 profile_customer_deceased = ProfileCustomer.find_or_create_by!(customer: customer_deceased) do |pc|
@@ -793,7 +793,7 @@ profile_customer_deceased = ProfileCustomer.find_or_create_by!(customer: custome
   pc.status = 'deceased'
   pc.deceased_at = Date.parse('2023-12-01')
   pc.created_by_id = user_senior_partner.id
-  puts "  ✅ Created profile customer: #{pc.full_name} (Deceased - Estate)"
+  Rails.logger.debug { "  ✅ Created profile customer: #{pc.full_name} (Deceased - Estate)" }
 end
 
 # Customer 6 - Counter type (Professional partner)
@@ -802,10 +802,10 @@ customer_counter = Customer.find_or_create_by!(email: 'contador@contabilidade.co
   c.password_confirmation = 'ClientPass123!'
   c.confirmed_at = Time.current
   c.created_by_id = user_counter.id
-  puts "  ✅ Created customer: #{c.email}"
+  Rails.logger.debug { "  ✅ Created customer: #{c.email}" }
 end
 
-profile_customer_counter = ProfileCustomer.find_or_create_by!(customer: customer_counter) do |pc|
+ProfileCustomer.find_or_create_by!(customer: customer_counter) do |pc|
   pc.customer_type = 'counter' # Professional partner
   pc.name = 'Contabilidade Express'
   pc.cnpj = '88.999.777/0001-55'
@@ -815,7 +815,7 @@ profile_customer_counter = ProfileCustomer.find_or_create_by!(customer: customer
   pc.capacity = 'able'
   pc.status = 'active'
   pc.created_by_id = user_counter.id
-  puts "  ✅ Created profile customer: #{pc.name} (Counter/Professional)"
+  Rails.logger.debug { "  ✅ Created profile customer: #{pc.name} (Counter/Professional)" }
 end
 
 # Create representative relationships
@@ -825,7 +825,7 @@ Represent.find_or_create_by!(
   team: team_principal
 ) do |r|
   r.relationship_type = 'parent'
-  puts '  ✅ Created representative relationship: Parent for Minor'
+  Rails.logger.debug '  ✅ Created representative relationship: Parent for Minor'
 end
 
 Represent.find_or_create_by!(
@@ -834,7 +834,7 @@ Represent.find_or_create_by!(
   team: team_principal
 ) do |r|
   r.relationship_type = 'guardian'
-  puts '  ✅ Created representative relationship: Guardian for Elderly'
+  Rails.logger.debug '  ✅ Created representative relationship: Guardian for Elderly'
 end
 
 Represent.find_or_create_by!(
@@ -843,13 +843,13 @@ Represent.find_or_create_by!(
   team: team_principal
 ) do |r|
   r.relationship_type = 'estate_administrator'
-  puts '  ✅ Created representative relationship: Estate Administrator'
+  Rails.logger.debug '  ✅ Created representative relationship: Estate Administrator'
 end
 
 # ==========================================
 # TEAM-CUSTOMER ASSOCIATIONS (Cross-team access)
 # ==========================================
-puts '🔗 Creating Team-Customer Associations to Demonstrate Isolation...'
+Rails.logger.debug '🔗 Creating Team-Customer Associations to Demonstrate Isolation...'
 
 # Team Principal has access to most customers
 TeamCustomer.find_or_create_by!(team: team_principal, customer: customer_capable, customer_email: customer_capable.email)
@@ -866,12 +866,12 @@ TeamCustomer.find_or_create_by!(team: team_filial, customer: customer_capable, c
 # Team Parceiro has limited access (only one client)
 TeamCustomer.find_or_create_by!(team: team_parceiro, customer: customer_company, customer_email: customer_company.email)
 
-puts "  ✅ Created team-customer associations demonstrating isolation"
+Rails.logger.debug '  ✅ Created team-customer associations demonstrating isolation'
 
 # ==========================================
 # POWERS (Poderes para Procuração)
 # ==========================================
-puts '📜 Creating Powers...'
+Rails.logger.debug '📜 Creating Powers...'
 power_categories = {
   'administrative' => [
     'Representar perante órgãos públicos federais',
@@ -917,7 +917,7 @@ power_categories.each do |category, descriptions|
     Power.find_or_create_by!(description: desc) do |p|
       p.category = category
       p.is_base = ['Propor ações judiciais', 'Receber valores', 'Assinar documentos públicos'].include?(desc)
-      puts "  ✅ Created power: #{p.description} (#{category})"
+      Rails.logger.debug { "  ✅ Created power: #{p.description} (#{category})" }
     end
   end
 end
@@ -925,7 +925,7 @@ end
 # ==========================================
 # COMPREHENSIVE WORKS
 # ==========================================
-puts '📋 Creating Comprehensive Works with Financial Details...'
+Rails.logger.debug '📋 Creating Comprehensive Works with Financial Details...'
 
 # Work 1 - Complex Family Law Case (Team Principal)
 work_family = Work.find_or_create_by!(
@@ -947,7 +947,7 @@ work_family = Work.find_or_create_by!(
   w.compensations_five_years = 'R$ 1.250.000,00' # Asset division projection
   w.compensations_service = 'R$ 50.000,00' # Service compensation
   w.created_by_id = user_senior_partner.id
-  puts "  ✅ Created work: #{w.folder} - Complex Family Law"
+  Rails.logger.debug { "  ✅ Created work: #{w.folder} - Complex Family Law" }
 end
 
 CustomerWork.find_or_create_by!(work: work_family, profile_customer: profile_customer_capable)
@@ -976,7 +976,7 @@ work_labor = Work.find_or_create_by!(
   w.gain_projection = 'R$ 150.000,00'
   w.compensations_five_years = 'R$ 3.000.000,00' # Total claim value
   w.created_by_id = user_junior_partner.id
-  puts "  ✅ Created work: #{w.folder} - Labor Case"
+  Rails.logger.debug { "  ✅ Created work: #{w.folder} - Labor Case" }
 end
 
 CustomerWork.find_or_create_by!(work: work_labor, profile_customer: profile_customer_company)
@@ -1000,7 +1000,7 @@ work_social_security = Work.find_or_create_by!(
   w.gain_projection = 'R$ 15.000,00'
   w.compensations_five_years = 'R$ 60.000,00' # Retroactive benefits
   w.created_by_id = user_associate.id
-  puts "  ✅ Created work: #{w.folder} - Social Security"
+  Rails.logger.debug { "  ✅ Created work: #{w.folder} - Social Security" }
 end
 
 CustomerWork.find_or_create_by!(work: work_social_security, profile_customer: profile_customer_elderly)
@@ -1024,7 +1024,7 @@ work_estate = Work.find_or_create_by!(
   w.gain_projection = 'R$ 80.000,00'
   w.compensations_five_years = 'R$ 4.000.000,00' # Estate value
   w.created_by_id = user_senior_partner.id
-  puts "  ✅ Created work: #{w.folder} - Estate/Succession"
+  Rails.logger.debug { "  ✅ Created work: #{w.folder} - Estate/Succession" }
 end
 
 CustomerWork.find_or_create_by!(work: work_estate, profile_customer: profile_customer_deceased)
@@ -1047,7 +1047,7 @@ work_criminal = Work.find_or_create_by!(
   w.lawsuit = true
   w.gain_projection = 'R$ 100.000,00'
   w.created_by_id = user_filial_lawyer.id
-  puts "  ✅ Created work: #{w.folder} - Criminal Defense (Team Filial)"
+  Rails.logger.debug { "  ✅ Created work: #{w.folder} - Criminal Defense (Team Filial)" }
 end
 
 CustomerWork.find_or_create_by!(work: work_criminal, profile_customer: profile_customer_company)
@@ -1070,7 +1070,7 @@ work_tax = Work.find_or_create_by!(
   w.gain_projection = 'R$ 20.000,00'
   w.compensations_five_years = 'R$ 100.000,00' # Tax savings
   w.created_by_id = user_parceiro_lawyer.id
-  puts "  ✅ Created work: #{w.folder} - Tax Case (Team Parceiro)"
+  Rails.logger.debug { "  ✅ Created work: #{w.folder} - Tax Case (Team Parceiro)" }
 end
 
 CustomerWork.find_or_create_by!(work: work_tax, profile_customer: profile_customer_company)
@@ -1093,7 +1093,7 @@ work_archived = Work.find_or_create_by!(
   w.gain_projection = 'R$ 30.000,00'
   w.compensations_service = 'R$ 150.000,00' # Settlement amount
   w.created_by_id = user_associate.id
-  puts "  ✅ Created work: #{w.folder} - Archived Case"
+  Rails.logger.debug { "  ✅ Created work: #{w.folder} - Archived Case" }
 end
 
 CustomerWork.find_or_create_by!(work: work_archived, profile_customer: profile_customer_capable)
@@ -1103,7 +1103,7 @@ OfficeWork.find_or_create_by!(work: work_archived, office: office_principal)
 # ==========================================
 # COMPREHENSIVE JOBS
 # ==========================================
-puts '📝 Creating Comprehensive Jobs with Different Priorities and Statuses...'
+Rails.logger.debug '📝 Creating Comprehensive Jobs with Different Priorities and Statuses...'
 
 # Jobs for Family Law Case
 job_family_1 = Job.find_or_create_by!(
@@ -1117,7 +1117,7 @@ job_family_1 = Job.find_or_create_by!(
   j.team = team_principal
   j.profile_customer = profile_customer_capable
   j.created_by_id = user_senior_partner.id
-  puts "  ✅ Created job: #{j.description}"
+  Rails.logger.debug { "  ✅ Created job: #{j.description}" }
 end
 JobUserProfile.find_or_create_by!(job: job_family_1, user_profile: profile_senior_partner, role: 'assignee')
 
@@ -1132,7 +1132,7 @@ job_family_2 = Job.find_or_create_by!(
   j.team = team_principal
   j.profile_customer = profile_customer_capable
   j.created_by_id = user_senior_partner.id
-  puts "  ✅ Created job: #{j.description}"
+  Rails.logger.debug { "  ✅ Created job: #{j.description}" }
 end
 JobUserProfile.find_or_create_by!(job: job_family_2, user_profile: profile_paralegal, role: 'assignee')
 JobUserProfile.find_or_create_by!(job: job_family_2, user_profile: profile_secretary, role: 'collaborator')
@@ -1147,7 +1147,7 @@ job_family_3 = Job.find_or_create_by!(
   j.comment = 'Verificar disponibilidade do cliente e advogado da parte contrária'
   j.team = team_principal
   j.created_by_id = user_junior_partner.id
-  puts "  ✅ Created job: #{j.description}"
+  Rails.logger.debug { "  ✅ Created job: #{j.description}" }
 end
 JobUserProfile.find_or_create_by!(job: job_family_3, user_profile: profile_secretary, role: 'assignee')
 
@@ -1163,7 +1163,7 @@ job_labor_1 = Job.find_or_create_by!(
   j.team = team_principal
   j.profile_customer = profile_customer_company
   j.created_by_id = user_junior_partner.id
-  puts "  ✅ Created job: #{j.description}"
+  Rails.logger.debug { "  ✅ Created job: #{j.description}" }
 end
 JobUserProfile.find_or_create_by!(job: job_labor_1, user_profile: profile_trainee, role: 'assignee')
 JobUserProfile.find_or_create_by!(job: job_labor_1, user_profile: profile_paralegal, role: 'collaborator')
@@ -1178,7 +1178,7 @@ job_labor_2 = Job.find_or_create_by!(
   j.comment = 'Usar planilha padrão do escritório. Considerar DSR e reflexos.'
   j.team = team_principal
   j.created_by_id = user_associate.id
-  puts "  ✅ Created job: #{j.description}"
+  Rails.logger.debug { "  ✅ Created job: #{j.description}" }
 end
 JobUserProfile.find_or_create_by!(job: job_labor_2, user_profile: profile_counter, role: 'assignee')
 
@@ -1194,7 +1194,7 @@ job_social_1 = Job.find_or_create_by!(
   j.team = team_principal
   j.profile_customer = profile_customer_elderly
   j.created_by_id = user_associate.id
-  puts "  ✅ Created job: #{j.description}"
+  Rails.logger.debug { "  ✅ Created job: #{j.description}" }
 end
 JobUserProfile.find_or_create_by!(job: job_social_1, user_profile: profile_associate, role: 'assignee')
 
@@ -1209,7 +1209,7 @@ job_social_2 = Job.find_or_create_by!(
   j.team = team_principal
   j.profile_customer = profile_customer_elderly
   j.created_by_id = user_associate.id
-  puts "  ✅ Created job: #{j.description}"
+  Rails.logger.debug { "  ✅ Created job: #{j.description}" }
 end
 JobUserProfile.find_or_create_by!(job: job_social_2, user_profile: profile_paralegal, role: 'assignee')
 
@@ -1225,7 +1225,7 @@ job_estate_1 = Job.find_or_create_by!(
   j.team = team_principal
   j.profile_customer = profile_customer_deceased
   j.created_by_id = user_senior_partner.id
-  puts "  ✅ Created job: #{j.description}"
+  Rails.logger.debug { "  ✅ Created job: #{j.description}" }
 end
 JobUserProfile.find_or_create_by!(job: job_estate_1, user_profile: profile_junior_partner, role: 'assignee')
 
@@ -1239,7 +1239,7 @@ job_estate_2 = Job.find_or_create_by!(
   j.comment = 'Aguardar conclusão das avaliações. 4 herdeiros necessários.'
   j.team = team_principal
   j.created_by_id = user_senior_partner.id
-  puts "  ✅ Created job: #{j.description}"
+  Rails.logger.debug { "  ✅ Created job: #{j.description}" }
 end
 JobUserProfile.find_or_create_by!(job: job_estate_2, user_profile: profile_senior_partner, role: 'assignee')
 
@@ -1255,7 +1255,7 @@ job_criminal_1 = Job.find_or_create_by!(
   j.team = team_filial
   j.profile_customer = profile_customer_company
   j.created_by_id = user_filial_lawyer.id
-  puts "  ✅ Created job: #{j.description}"
+  Rails.logger.debug { "  ✅ Created job: #{j.description}" }
 end
 JobUserProfile.find_or_create_by!(job: job_criminal_1, user_profile: profile_filial_lawyer, role: 'assignee')
 
@@ -1271,7 +1271,7 @@ job_tax_1 = Job.find_or_create_by!(
   j.team = team_parceiro
   j.profile_customer = profile_customer_company
   j.created_by_id = user_parceiro_lawyer.id
-  puts "  ✅ Created job: #{j.description}"
+  Rails.logger.debug { "  ✅ Created job: #{j.description}" }
 end
 JobUserProfile.find_or_create_by!(job: job_tax_1, user_profile: profile_parceiro_lawyer, role: 'assignee')
 
@@ -1286,114 +1286,114 @@ job_overdue = Job.find_or_create_by!(
   j.comment = 'ATRASADO! Verificar possibilidade de protocolo ainda hoje.'
   j.team = team_principal
   j.created_by_id = user_senior_partner.id
-  puts "  ✅ Created job: #{j.description} (OVERDUE)"
+  Rails.logger.debug { "  ✅ Created job: #{j.description} (OVERDUE)" }
 end
 JobUserProfile.find_or_create_by!(job: job_overdue, user_profile: profile_senior_partner, role: 'assignee')
 
 # ==========================================
 # FINAL STATISTICS
 # ==========================================
-puts '=' * 50
-puts '✅ Enhanced seed completed successfully!'
-puts '📊 Database Statistics:'
-puts "\n🏢 Teams & Offices:"
-puts "  - Teams: #{Team.count}"
-puts "  - Offices: #{Office.count}"
-puts "    - Individual: #{Office.where(society: 'individual').count}"
-puts "    - Simple: #{Office.where(society: 'simple').count}"
-puts "    - Company: #{Office.where(society: 'company').count}"
-puts "  - Office Addresses: #{Address.where(addressable_type: 'Office').count}"
-puts "  - Office Phones: #{Phone.where(phoneable_type: 'Office').count}"
+Rails.logger.debug '=' * 50
+Rails.logger.debug '✅ Enhanced seed completed successfully!'
+Rails.logger.debug '📊 Database Statistics:'
+Rails.logger.debug "\n🏢 Teams & Offices:"
+Rails.logger.debug { "  - Teams: #{Team.count}" }
+Rails.logger.debug { "  - Offices: #{Office.count}" }
+Rails.logger.debug { "    - Individual: #{Office.where(society: 'individual').count}" }
+Rails.logger.debug { "    - Simple: #{Office.where(society: 'simple').count}" }
+Rails.logger.debug { "    - Company: #{Office.where(society: 'company').count}" }
+Rails.logger.debug { "  - Office Addresses: #{Address.where(addressable_type: 'Office').count}" }
+Rails.logger.debug { "  - Office Phones: #{Phone.where(phoneable_type: 'Office').count}" }
 
-puts "\n👥 Users & Profiles:"
-puts "  - Users: #{User.count}"
-puts "  - User Profiles: #{UserProfile.count}"
-puts "    - Lawyers: #{UserProfile.where(role: 'lawyer').count}"
-puts "    - Trainees: #{UserProfile.where(role: 'trainee').count}"
-puts "    - Paralegals: #{UserProfile.where(role: 'paralegal').count}"
-puts "    - Secretaries: #{UserProfile.where(role: 'secretary').count}"
-puts "    - Counters: #{UserProfile.where(role: 'counter').count}"
-puts "  - User-Office Partnerships: #{UserOffice.count}"
+Rails.logger.debug "\n👥 Users & Profiles:"
+Rails.logger.debug { "  - Users: #{User.count}" }
+Rails.logger.debug { "  - User Profiles: #{UserProfile.count}" }
+Rails.logger.debug { "    - Lawyers: #{UserProfile.where(role: 'lawyer').count}" }
+Rails.logger.debug { "    - Trainees: #{UserProfile.where(role: 'trainee').count}" }
+Rails.logger.debug { "    - Paralegals: #{UserProfile.where(role: 'paralegal').count}" }
+Rails.logger.debug { "    - Secretaries: #{UserProfile.where(role: 'secretary').count}" }
+Rails.logger.debug { "    - Counters: #{UserProfile.where(role: 'counter').count}" }
+Rails.logger.debug { "  - User-Office Partnerships: #{UserOffice.count}" }
 
-puts "\n👤 Customers:"
-puts "  - Customers: #{Customer.count}"
-puts "  - Profile Customers: #{ProfileCustomer.count}"
-puts "    - Physical Persons: #{ProfileCustomer.where(customer_type: 'physical_person').count}"
-puts "    - Legal Persons: #{ProfileCustomer.where(customer_type: 'legal_person').count}"
-puts "    - Counters: #{ProfileCustomer.where(customer_type: 'counter').count}"
-puts "  - Customer Capacities:"
-puts "    - Able: #{ProfileCustomer.where(capacity: 'able').count}"
-puts "    - Relatively Incapable: #{ProfileCustomer.where(capacity: 'relatively').count}"
-puts "    - Unable: #{ProfileCustomer.where(capacity: 'unable').count}"
-puts "  - Deceased Customers: #{ProfileCustomer.where(status: 'deceased').count}"
-puts "  - Representative Relationships: #{Represent.count}"
-puts "  - Customer Addresses: #{Address.where(addressable_type: 'ProfileCustomer').count}"
-puts "  - Customer Phones: #{Phone.where(phoneable_type: 'ProfileCustomer').count}"
+Rails.logger.debug "\n👤 Customers:"
+Rails.logger.debug { "  - Customers: #{Customer.count}" }
+Rails.logger.debug { "  - Profile Customers: #{ProfileCustomer.count}" }
+Rails.logger.debug { "    - Physical Persons: #{ProfileCustomer.where(customer_type: 'physical_person').count}" }
+Rails.logger.debug { "    - Legal Persons: #{ProfileCustomer.where(customer_type: 'legal_person').count}" }
+Rails.logger.debug { "    - Counters: #{ProfileCustomer.where(customer_type: 'counter').count}" }
+Rails.logger.debug '  - Customer Capacities:'
+Rails.logger.debug { "    - Able: #{ProfileCustomer.where(capacity: 'able').count}" }
+Rails.logger.debug { "    - Relatively Incapable: #{ProfileCustomer.where(capacity: 'relatively').count}" }
+Rails.logger.debug { "    - Unable: #{ProfileCustomer.where(capacity: 'unable').count}" }
+Rails.logger.debug { "  - Deceased Customers: #{ProfileCustomer.where(status: 'deceased').count}" }
+Rails.logger.debug { "  - Representative Relationships: #{Represent.count}" }
+Rails.logger.debug { "  - Customer Addresses: #{Address.where(addressable_type: 'ProfileCustomer').count}" }
+Rails.logger.debug { "  - Customer Phones: #{Phone.where(phoneable_type: 'ProfileCustomer').count}" }
 
-puts "\n🔗 Team Isolation:"
-puts "  - Team-Customer Associations: #{TeamCustomer.count}"
-puts "    - Team Principal customers: #{TeamCustomer.where(team: team_principal).count}"
-puts "    - Team Filial customers: #{TeamCustomer.where(team: team_filial).count}"
-puts "    - Team Parceiro customers: #{TeamCustomer.where(team: team_parceiro).count}"
+Rails.logger.debug "\n🔗 Team Isolation:"
+Rails.logger.debug { "  - Team-Customer Associations: #{TeamCustomer.count}" }
+Rails.logger.debug { "    - Team Principal customers: #{TeamCustomer.where(team: team_principal).count}" }
+Rails.logger.debug { "    - Team Filial customers: #{TeamCustomer.where(team: team_filial).count}" }
+Rails.logger.debug { "    - Team Parceiro customers: #{TeamCustomer.where(team: team_parceiro).count}" }
 
-puts "\n📋 Work & Jobs:"
-puts "  - Law Areas: #{LawArea.count}"
-puts "    - System Areas: #{LawArea.where(created_by_team_id: nil).count}"
-puts "    - Team-specific Areas: #{LawArea.where.not(created_by_team_id: nil).count}"
-puts "  - Works: #{Work.count}"
-puts "    - In Progress: #{Work.where(status: 'in_progress').count}"
-puts "    - Archived: #{Work.where(status: 'archived').count}"
-puts "  - Jobs: #{Job.count}"
-puts "    - Pending: #{Job.where(status: 'pending').count}"
-puts "    - In Progress: #{Job.where(status: 'in_progress').count}"
-puts "    - Completed: #{Job.where(status: 'completed').count}"
-puts "    - Overdue: #{Job.where('deadline < ?', Time.current).where(status: 'pending').count}"
+Rails.logger.debug "\n📋 Work & Jobs:"
+Rails.logger.debug { "  - Law Areas: #{LawArea.count}" }
+Rails.logger.debug { "    - System Areas: #{LawArea.where(created_by_team_id: nil).count}" }
+Rails.logger.debug { "    - Team-specific Areas: #{LawArea.where.not(created_by_team_id: nil).count}" }
+Rails.logger.debug { "  - Works: #{Work.count}" }
+Rails.logger.debug { "    - In Progress: #{Work.where(status: 'in_progress').count}" }
+Rails.logger.debug { "    - Archived: #{Work.where(status: 'archived').count}" }
+Rails.logger.debug { "  - Jobs: #{Job.count}" }
+Rails.logger.debug { "    - Pending: #{Job.where(status: 'pending').count}" }
+Rails.logger.debug { "    - In Progress: #{Job.where(status: 'in_progress').count}" }
+Rails.logger.debug { "    - Completed: #{Job.where(status: 'completed').count}" }
+Rails.logger.debug { "    - Overdue: #{Job.where(deadline: ...Time.current).where(status: 'pending').count}" }
 
-puts "\n💰 Financial:"
-puts "  - Bank Accounts: #{BankAccount.count}"
-puts "    - Office Accounts: #{BankAccount.where(accountable_type: 'Office').count}"
-puts "    - User Accounts: #{BankAccount.where(accountable_type: 'UserProfile').count}"
-puts "    - Customer Accounts: #{BankAccount.where(accountable_type: 'ProfileCustomer').count}"
-puts "  - Powers: #{Power.count}"
-puts "    - Categories: #{Power.distinct.pluck(:category).join(', ')}"
+Rails.logger.debug "\n💰 Financial:"
+Rails.logger.debug { "  - Bank Accounts: #{BankAccount.count}" }
+Rails.logger.debug { "    - Office Accounts: #{BankAccount.where(accountable_type: 'Office').count}" }
+Rails.logger.debug { "    - User Accounts: #{BankAccount.where(accountable_type: 'UserProfile').count}" }
+Rails.logger.debug { "    - Customer Accounts: #{BankAccount.where(accountable_type: 'ProfileCustomer').count}" }
+Rails.logger.debug { "  - Powers: #{Power.count}" }
+Rails.logger.debug { "    - Categories: #{Power.distinct.pluck(:category).join(', ')}" }
 
-puts '=' * 50
+Rails.logger.debug '=' * 50
 
-puts "\n📧 Test Credentials by Team:"
-puts "\n🏢 Team Principal (subdomain: principal):"
-puts 'Staff:'
-puts '  - Senior Partner: joao.prado@pradoadvocacia.com.br | Password123!'
-puts '  - Junior Partner: maria.silva@pradoadvocacia.com.br | Password123!'
-puts '  - Associate: carlos.mendes@pradoadvocacia.com.br | Password123!'
-puts '  - Trainee: julia.costa@pradoadvocacia.com.br | Password123!'
-puts '  - Paralegal: pedro.santos@pradoadvocacia.com.br | Password123!'
-puts '  - Secretary: ana.secretaria@pradoadvocacia.com.br | Password123!'
-puts '  - Counter: roberto.contador@pradoadvocacia.com.br | Password123!'
+Rails.logger.debug "\n📧 Test Credentials by Team:"
+Rails.logger.debug "\n🏢 Team Principal (subdomain: principal):"
+Rails.logger.debug 'Staff:'
+Rails.logger.debug '  - Senior Partner: joao.prado@pradoadvocacia.com.br | Password123!'
+Rails.logger.debug '  - Junior Partner: maria.silva@pradoadvocacia.com.br | Password123!'
+Rails.logger.debug '  - Associate: carlos.mendes@pradoadvocacia.com.br | Password123!'
+Rails.logger.debug '  - Trainee: julia.costa@pradoadvocacia.com.br | Password123!'
+Rails.logger.debug '  - Paralegal: pedro.santos@pradoadvocacia.com.br | Password123!'
+Rails.logger.debug '  - Secretary: ana.secretaria@pradoadvocacia.com.br | Password123!'
+Rails.logger.debug '  - Counter: roberto.contador@pradoadvocacia.com.br | Password123!'
 
-puts "\n🏢 Team Filial (subdomain: filial-sp):"
-puts '  - Lawyer: amanda.lawyer@silvasantos.adv.br | Password123!'
+Rails.logger.debug "\n🏢 Team Filial (subdomain: filial-sp):"
+Rails.logger.debug '  - Lawyer: amanda.lawyer@silvasantos.adv.br | Password123!'
 
-puts "\n🏢 Team Parceiro (subdomain: parceiro-rj):"
-puts '  - Lawyer: andre.costa@costaadv.com.br | Password123!'
+Rails.logger.debug "\n🏢 Team Parceiro (subdomain: parceiro-rj):"
+Rails.logger.debug '  - Lawyer: andre.costa@costaadv.com.br | Password123!'
 
-puts "\nCustomers:"
-puts '  - Capable Individual: carlos.oliveira@gmail.com | ClientPass123!'
-puts '  - Large Company: juridico@grandecorp.com.br | ClientPass123!'
-puts '  - Minor (w/ representative): pedro.menor@gmail.com | ClientPass123!'
-puts '  - Elderly (w/ guardian): jose.senior@gmail.com | ClientPass123!'
-puts '  - Estate: espolio.antonio@gmail.com | ClientPass123!'
-puts '  - Counter/Professional: contador@contabilidade.com.br | ClientPass123!'
+Rails.logger.debug "\nCustomers:"
+Rails.logger.debug '  - Capable Individual: carlos.oliveira@gmail.com | ClientPass123!'
+Rails.logger.debug '  - Large Company: juridico@grandecorp.com.br | ClientPass123!'
+Rails.logger.debug '  - Minor (w/ representative): pedro.menor@gmail.com | ClientPass123!'
+Rails.logger.debug '  - Elderly (w/ guardian): jose.senior@gmail.com | ClientPass123!'
+Rails.logger.debug '  - Estate: espolio.antonio@gmail.com | ClientPass123!'
+Rails.logger.debug '  - Counter/Professional: contador@contabilidade.com.br | ClientPass123!'
 
-puts "\n🔐 System Isolation Features Demonstrated:"
-puts '  ✅ Multi-team setup with separate subdomains'
-puts '  ✅ Team-specific settings and configurations'
-puts '  ✅ Cross-team customer access (shared clients)'
-puts '  ✅ Team-specific law areas'
-puts '  ✅ Different office types and accounting methods'
-puts '  ✅ Partnership percentages and types'
-puts '  ✅ Various user roles with different permissions'
-puts '  ✅ Customer capacity system (able/relatively/unable)'
-puts '  ✅ Representative relationships (parent/guardian/estate)'
-puts '  ✅ Comprehensive financial tracking'
-puts '  ✅ Multiple address and contact types'
-puts '  ✅ Complete work lifecycle with jobs'
+Rails.logger.debug "\n🔐 System Isolation Features Demonstrated:"
+Rails.logger.debug '  ✅ Multi-team setup with separate subdomains'
+Rails.logger.debug '  ✅ Team-specific settings and configurations'
+Rails.logger.debug '  ✅ Cross-team customer access (shared clients)'
+Rails.logger.debug '  ✅ Team-specific law areas'
+Rails.logger.debug '  ✅ Different office types and accounting methods'
+Rails.logger.debug '  ✅ Partnership percentages and types'
+Rails.logger.debug '  ✅ Various user roles with different permissions'
+Rails.logger.debug '  ✅ Customer capacity system (able/relatively/unable)'
+Rails.logger.debug '  ✅ Representative relationships (parent/guardian/estate)'
+Rails.logger.debug '  ✅ Comprehensive financial tracking'
+Rails.logger.debug '  ✅ Multiple address and contact types'
+Rails.logger.debug '  ✅ Complete work lifecycle with jobs'

@@ -36,12 +36,12 @@ FactoryBot.define do
     description { 'MyString' }
     deadline { Time.zone.today + 1 }
     status { 'pending' }
-    priority { 'MyString' }
+    priority { 'medium' }
     comment { 'MyString' }
   end
 
   trait :job_complete do
-    status { 'finished' }
+    status { 'completed' }
     profile_customer_id { create(:profile_customer).id }
     profile_admin_id { create(:profile_admin).id }
     work_id { create(:work).id }

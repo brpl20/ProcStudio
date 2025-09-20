@@ -60,44 +60,23 @@ RSpec.describe Job, type: :model do
     it 'defines status enum correctly' do
       expect(Job.statuses).to eq(
         'pending' => 'pending',
-        'delayed' => 'delayed',
-        'finished' => 'finished'
+        'in_progress' => 'in_progress',
+        'completed' => 'completed',
+        'cancelled' => 'cancelled'
+      )
+    end
+
+    it 'defines priority enum correctly' do
+      expect(Job.priorities).to eq(
+        'low' => 'low',
+        'medium' => 'medium',
+        'high' => 'high',
+        'urgent' => 'urgent'
       )
     end
   end
 
-  describe 'Status auto-update after find' do
-    it 'changes status from pending to delayed if deadline is in the past' do
-      job = described_class.create!(
-        description: 'Tarefa atrasada',
-        deadline: 2.days.ago,
-        status: 'pending',
-        profile_admin: create(:profile_admin)
-      )
-
-      expect(job.reload.status).to eq('delayed')
-    end
-
-    it 'does not change status if already finished' do
-      job = described_class.create!(
-        description: 'Tarefa finalizada',
-        deadline: 2.days.ago,
-        status: 'finished',
-        profile_admin: create(:profile_admin)
-      )
-
-      expect(job.reload.status).to eq('finished')
-    end
-
-    it 'does not change status if deadline is today or in the future' do
-      job = described_class.create!(
-        description: 'Tarefa atual',
-        deadline: Time.zone.today,
-        status: 'pending',
-        profile_admin: create(:profile_admin)
-      )
-
-      expect(job.reload.status).to eq('pending')
-    end
-  end
+  # Status auto-update tests removed as the feature has been disabled
+  # The check_and_update_status method is commented out in the model
+  # to handle delay status in frontend instead
 end

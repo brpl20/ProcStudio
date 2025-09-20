@@ -31,8 +31,7 @@ export const JOBSTATUS: BadgeFormOption[] = [
   { value: 'pending', label: 'Pendente', badgeClass: 'badge badge-warning' },
   { value: 'in_progress', label: 'Em Progresso', badgeClass: 'badge badge-neutral' },
   { value: 'completed', label: 'Concluído', badgeClass: 'badge badge-success' },
-  { value: 'cancelled', label: 'Cancelado', badgeClass: 'badge badge-error' },
-  { value: 'delayed', label: 'Atrasado', badgeClass: 'badge badge-warning' }
+  { value: 'cancelled', label: 'Cancelado', badgeClass: 'badge badge-error' }
 ];
 
 export const JOBPRIORITY: BadgeFormOption[] = [
