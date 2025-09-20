@@ -18,7 +18,6 @@
 #  origin       :string
 #  rg           :string
 #  role         :string
-#  status       :string
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  office_id    :bigint
@@ -53,6 +52,7 @@ class UserProfile < ApplicationRecord
   has_many :notifications, dependent: :destroy
 
   delegate :team, to: :user
+  delegate :status, :active?, :inactive?, to: :user
 
   validate :office_same_team, if: -> { office.present? }
 
@@ -65,11 +65,6 @@ class UserProfile < ApplicationRecord
     excounter: 'excounter',
     representant: 'representant',
     super_admin: 'super_admin'
-  }
-
-  enum :status, {
-    active: 'active',
-    inactive: 'inactive'
   }
 
   enum :civil_status, {

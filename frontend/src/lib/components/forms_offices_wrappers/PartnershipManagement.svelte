@@ -1,6 +1,5 @@
 <script lang="ts">
   import FormSection from '../ui/FormSection.svelte';
-  import TestSingleLawyer from '../forms_offices/TestSingleLawyer.svelte';
   import SingleLawyerPartner from '../forms_offices/SingleLawyerPartner.svelte';
   import SingleLawyerProLabore from '../forms_offices/SingleLawyerProLabore.svelte';
   import PartnerLawyerSelect from '../forms_offices/PartnerLawyerSelect.svelte';
