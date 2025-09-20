@@ -53,7 +53,7 @@
       />
     </svg>
     <div class="text-sm">
-      O Sócio único deverá receber um pro-labore ajustado de acordo com o salário mínimo. 
+      O Sócio único deverá receber um pro-labore ajustado de acordo com o salário mínimo.
       Valor R$ 0,00 significa que o sócio não receberá pro-labore.
     </div>
   </div>

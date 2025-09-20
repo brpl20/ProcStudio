@@ -11,12 +11,12 @@
   let showForm = false;
   let editingOffice = null;
   let showDeleted = false;
-  
+
   // Check for active lawyers
   $: hasActiveLawyers = lawyerStore.activeLawyers.length > 0;
   $: canCreateOffice = hasActiveLawyers;
-  $: tooltipMessage = !hasActiveLawyers 
-    ? 'É necessário ter pelo menos um advogado ativo no sistema para criar um escritório' 
+  $: tooltipMessage = !hasActiveLawyers
+    ? 'É necessário ter pelo menos um advogado ativo no sistema para criar um escritório'
     : '';
 
   async function loadOffices() {
@@ -110,8 +110,8 @@
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-2xl font-bold text-gray-900">Gerenciar Escritórios</h2>
         <div class="tooltip tooltip-left" data-tip={tooltipMessage}>
-          <button 
-            class="btn btn-primary" 
+          <button
+            class="btn btn-primary"
             class:btn-disabled={!canCreateOffice}
             disabled={!canCreateOffice}
             on:click={handleCreate}
@@ -135,7 +135,7 @@
           </label>
         </div>
       </div>
-      
+
       {#if !hasActiveLawyers}
         <div class="alert alert-warning">
           <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">

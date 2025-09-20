@@ -5,7 +5,7 @@
     lawyer: Lawyer | null;
   };
 
-  let {
+  const {
     lawyer = null
   }: Props = $props();
 

@@ -56,7 +56,7 @@
         count: lawyerStore.availableLawyers.length
       });
     });
-    
+
     return () => {
       // Cleanup on unmount
       lawyerStore.cancel();
@@ -66,7 +66,7 @@
   // Derived state for single lawyer scenario
   const isSingleLawyer = $derived(lawyerStore.availableLawyers.length === 1);
   const singleLawyer = $derived(isSingleLawyer ? lawyerStore.availableLawyers[0] : null);
-  
+
   // Auto-setup for single lawyer
   $effect(() => {
     if (isSingleLawyer && singleLawyer && partners.length === 0) {
@@ -156,15 +156,14 @@
 
   // Check if can add more partners (based on available lawyers)
   const canAddMorePartners = $derived(
-    !isSingleLawyer && lawyerStore.availableLawyers.length > partners.filter(p => p.lawyer_id).length
+    !isSingleLawyer && lawyerStore.availableLawyers.length > partners.filter((p) => p.lawyer_id).length
   );
-  
+
   // Helper to get full name
   function getFullName(lawyer: Lawyer) {
     return `${lawyer.attributes.name} ${lawyer.attributes.last_name || ''}`.trim();
   }
 </script>
-
 
 <!-- Partnership Section -->
 <FormSection title="Quadro Societário">
@@ -195,7 +194,7 @@
         <!-- Show single lawyer info -->
         <SingleLawyerPartner lawyer={singleLawyer} />
       {/if}
-      
+
       {#if !isSingleLawyer && partners.length > 0}
       {#each partners as partner, index}
         <div class="bg-base-200 rounded-lg p-4 mb-4">
@@ -249,7 +248,7 @@
         </div>
       {/each}
       {/if}
-      
+
       {#if !isSingleLawyer}
         <PercentageWarning
           totalPercentage={getTotalPercentage()}
