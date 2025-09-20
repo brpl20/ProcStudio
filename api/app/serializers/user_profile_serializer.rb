@@ -18,7 +18,6 @@
 #  origin       :string
 #  rg           :string
 #  role         :string
-#  status       :string
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  office_id    :bigint

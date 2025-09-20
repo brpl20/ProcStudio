@@ -18,6 +18,21 @@
   $: tooltipMessage = !hasActiveLawyers
     ? 'É necessário ter pelo menos um advogado ativo no sistema para criar um escritório'
     : '';
+  
+  // Debug logging
+  $: {
+    console.log('OfficeManagement - Debug:', {
+      totalLawyers: lawyerStore.lawyers.length,
+      activeLawyers: lawyerStore.activeLawyers.length,
+      hasActiveLawyers,
+      canCreateOffice,
+      loading: lawyerStore.loading,
+      initialized: lawyerStore.initialized
+    });
+    if (lawyerStore.lawyers.length > 0) {
+      console.log('First lawyer:', lawyerStore.lawyers[0]);
+    }
+  }
 
   async function loadOffices() {
     try {
