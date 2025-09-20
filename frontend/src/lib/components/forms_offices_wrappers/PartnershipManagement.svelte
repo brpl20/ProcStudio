@@ -1,5 +1,8 @@
 <script lang="ts">
   import FormSection from '../ui/FormSection.svelte';
+  import TestSingleLawyer from '../forms_offices/TestSingleLawyer.svelte';
+  import SingleLawyerPartner from '../forms_offices/SingleLawyerPartner.svelte';
+  import SingleLawyerProLabore from '../forms_offices/SingleLawyerProLabore.svelte';
   import PartnerLawyerSelect from '../forms_offices/PartnerLawyerSelect.svelte';
   import PartnershipType from '../forms_offices/PartnershipType.svelte';
   import OwnershipPercentage from '../forms_offices/OwnershipPercentage.svelte';
@@ -43,9 +46,40 @@
     onRemovePartner
   }: Props = $props();
 
-  // Store initialization
+  // Store initialization with proper cleanup
   $effect(() => {
-    lawyerStore.init();
+    console.log('Initializing lawyerStore...');
+    lawyerStore.init().then(() => {
+      console.log('LawyerStore initialized:', {
+        lawyers: lawyerStore.lawyers,
+        availableLawyers: lawyerStore.availableLawyers,
+        count: lawyerStore.availableLawyers.length
+      });
+    });
+    
+    return () => {
+      // Cleanup on unmount
+      lawyerStore.cancel();
+    };
+  });
+
+  // Derived state for single lawyer scenario
+  const isSingleLawyer = $derived(lawyerStore.availableLawyers.length === 1);
+  const singleLawyer = $derived(isSingleLawyer ? lawyerStore.availableLawyers[0] : null);
+  
+  // Auto-setup for single lawyer
+  $effect(() => {
+    if (isSingleLawyer && singleLawyer && partners.length === 0) {
+      const newPartner: Partner = {
+        lawyer_id: singleLawyer.id,
+        lawyer_name: `${singleLawyer.attributes.name} ${singleLawyer.attributes.last_name || ''}`.trim(),
+        partnership_type: 'socio',
+        ownership_percentage: 100,
+        is_managing_partner: true,
+        pro_labore_amount: 0
+      };
+      partners = [newPartner];
+    }
   });
 
   // Calculate total percentage
@@ -122,9 +156,15 @@
 
   // Check if can add more partners (based on available lawyers)
   const canAddMorePartners = $derived(
-    lawyerStore.availableLawyers.length > partners.filter(p => p.lawyer_id).length
+    !isSingleLawyer && lawyerStore.availableLawyers.length > partners.filter(p => p.lawyer_id).length
   );
+  
+  // Helper to get full name
+  function getFullName(lawyer: Lawyer) {
+    return `${lawyer.attributes.name} ${lawyer.attributes.last_name || ''}`.trim();
+  }
 </script>
+
 
 <!-- Partnership Section -->
 <FormSection title="Quadro Societário">
@@ -133,7 +173,30 @@
       <div class="flex justify-center p-4">
         <span class="loading loading-spinner"></span>
       </div>
-    {:else if partners.length > 0}
+    {:else if lawyerStore.error}
+      <div class="alert alert-error">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="stroke-current shrink-0 h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.732 15.5c-.77.833.192 2.5 1.732 2.5z"
+          />
+        </svg>
+        <span>Erro ao carregar advogados: {lawyerStore.error}</span>
+      </div>
+    {:else}
+      {#if isSingleLawyer && singleLawyer}
+        <!-- Show single lawyer info -->
+        <SingleLawyerPartner lawyer={singleLawyer} />
+      {/if}
+      
+      {#if !isSingleLawyer && partners.length > 0}
       {#each partners as partner, index}
         <div class="bg-base-200 rounded-lg p-4 mb-4">
           <div class="flex justify-between items-center mb-4">
@@ -185,47 +248,80 @@
           {/if}
         </div>
       {/each}
+      {/if}
+      
+      {#if !isSingleLawyer}
+        <PercentageWarning
+          totalPercentage={getTotalPercentage()}
+          showWarning={checkIsOverPercentage()}
+        />
+      {/if}
     {/if}
 
-    <PercentageWarning
-      totalPercentage={getTotalPercentage()}
-      showWarning={checkIsOverPercentage()}
-    />
+    {#if !isSingleLawyer}
+      <div class="flex flex-col items-start">
+        <button
+          class="btn btn-outline"
+          disabled={!canAddMorePartners}
+          onclick={addPartner}
+          type="button"
+        >
+          ➕ Adicionar Sócio
+        </button>
 
-    <div class="flex flex-col items-start">
-      <button
-        class="btn btn-outline"
-        disabled={!canAddMorePartners}
-        onclick={addPartner}
-        type="button"
-      >
-        ➕ Adicionar Sócio
-      </button>
-
-      {#if !canAddMorePartners}
-        <p class="text-sm text-gray-500 mt-2">
-          Cadastre mais advogados para alterar seu quadro societário.
-          <button type="button" class="link link-primary bg-transparent border-none p-0">
-            Cadastrar novo usuário
-          </button>
-        </p>
-      {/if}
-    </div>
+        {#if !canAddMorePartners}
+          <p class="text-sm text-gray-500 mt-2">
+            Cadastre mais advogados para alterar seu quadro societário.
+            <button type="button" class="link link-primary bg-transparent border-none p-0">
+              Cadastrar novo usuário
+            </button>
+          </p>
+        {/if}
+      </div>
+    {:else}
+      <p class="text-sm text-gray-500">
+        Cadastre mais advogados para habilitar o quadro societário.
+        <button type="button" class="link link-primary bg-transparent border-none p-0">
+          Cadastrar novo usuário
+        </button>
+      </p>
+    {/if}
   {/snippet}
 </FormSection>
 
 <!-- Profit Distribution Section -->
 <FormSection title="Distribuição de Lucros">
   {#snippet children()}
-    <ProfitDistribution
-      bind:value={profitDistribution}
-      id="profit-distribution"
-    />
+    {#if !isSingleLawyer}
+      <ProfitDistribution
+        bind:value={profitDistribution}
+        id="profit-distribution"
+      />
 
-    <ProfitDistributionInfo
-      distributionType={profitDistribution}
-      {partners}
-    />
+      <ProfitDistributionInfo
+        distributionType={profitDistribution}
+        {partners}
+      />
+    {:else}
+      <div class="alert alert-info">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="stroke-current shrink-0 h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+        <span>
+          Os lucros da sociedade serão todos destinados ao único sócio.
+        </span>
+      </div>
+    {/if}
   {/snippet}
 </FormSection>
 
@@ -237,46 +333,59 @@
     />
 
     {#if partnersWithProLabore}
-      <ProLaboreInfo />
+      {#if !isSingleLawyer}
+        <ProLaboreInfo />
 
-      <div class="space-y-4">
-        <h4 class="font-semibold">Valores de Pro-Labore por Sócio:</h4>
+        <div class="space-y-4">
+          <h4 class="font-semibold">Valores de Pro-Labore por Sócio:</h4>
 
-        {#each partners as partner, index}
-          {#if partner.lawyer_name}
-            <ProLaboreInput
-              partnerName={partner.lawyer_name}
-              partnershipType={partner.partnership_type}
-              bind:value={partner.pro_labore_amount}
-              error={proLaboreErrors[index]}
-              id="pro-labore-{index}"
-              onchange={(value) => {
-                handlePartnerFieldChange(index, 'pro_labore_amount', value);
-                validateProLabore(index, value);
-              }}
-            />
-          {/if}
-        {/each}
-
-        {#if partners.filter((p) => p.lawyer_name).length === 0}
-          <div class="alert alert-warning">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="stroke-current shrink-0 h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.732 15.5c-.77.833.192 2.5 1.732 2.5z"
+          {#each partners as partner, index}
+            {#if partner.lawyer_name}
+              <ProLaboreInput
+                partnerName={partner.lawyer_name}
+                partnershipType={partner.partnership_type}
+                bind:value={partner.pro_labore_amount}
+                error={proLaboreErrors[index]}
+                id="pro-labore-{index}"
+                onchange={(value) => {
+                  handlePartnerFieldChange(index, 'pro_labore_amount', value);
+                  validateProLabore(index, value);
+                }}
               />
-            </svg>
-            <span>Adicione e selecione sócios para definir os valores de pro-labore.</span>
-          </div>
-        {/if}
-      </div>
+            {/if}
+          {/each}
+
+          {#if partners.filter((p) => p.lawyer_name).length === 0}
+            <div class="alert alert-warning">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="stroke-current shrink-0 h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.732 15.5c-.77.833.192 2.5 1.732 2.5z"
+                />
+              </svg>
+              <span>Adicione e selecione sócios para definir os valores de pro-labore.</span>
+            </div>
+          {/if}
+        </div>
+      {:else if singleLawyer}
+        <SingleLawyerProLabore
+          lawyerName={getFullName(singleLawyer)}
+          bind:value={partners[0].pro_labore_amount}
+          onchange={(value) => {
+            if (partners[0]) {
+              partners[0].pro_labore_amount = value;
+              onPartnerChange?.(0, 'pro_labore_amount', value);
+            }
+          }}
+        />
+      {/if}
     {/if}
   {/snippet}
 </FormSection>
