@@ -61,10 +61,10 @@
   // Handle CEP events
   function handleCepInput(event: CustomEvent) {
     cepValue = event.detail.value;
-    
+
     // Update zip_code in address when CEP changes
     address.zip_code = cepValue;
-    
+
     dispatch('cep-input', event.detail);
   }
 
@@ -80,10 +80,10 @@
   // Handle address found from CEP validation
   function handleAddressFound(event: CustomEvent) {
     const addressData: AddressInfo = event.detail.address;
-    
+
     // Map CEP response to address object
     const mappedAddress = mapCepToAddress(addressData);
-    
+
     // Update address fields with data from CEP, preserving user-entered values
     address = {
       ...address,
@@ -94,21 +94,21 @@
       zip_code: cepValue // Always use the CEP value
     };
 
-    dispatch('address-found', { 
-      ...event.detail, 
-      mappedAddress: address 
+    dispatch('address-found', {
+      ...event.detail,
+      mappedAddress: address
     });
   }
 
   // Handle address input events
   function handleAddressInput(event: CustomEvent) {
     const { field, value, index } = event.detail;
-    
+
     // Update CEP value if zip_code changes
     if (field === 'zip_code') {
       cepValue = value;
     }
-    
+
     dispatch('address-input', event.detail);
   }
 
@@ -136,7 +136,7 @@
     testId={cepTestId}
     {useAPIValidation}
     {showAddressInfo}
-    disabled={disabled}
+    {disabled}
     on:input={handleCepInput}
     on:blur={handleCepBlur}
     on:validate={handleCepValidate}

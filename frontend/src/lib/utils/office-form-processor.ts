@@ -200,6 +200,21 @@ export async function submitOfficeForm(
     contractFiles
   );
 
+  // Debug logging to help verify the fix
+  console.log('=== OFFICE FORM DEBUG ===');
+  console.log('Is multipart:', processed.isMultipart);
+  console.log('Data type:', processed.formData instanceof FormData ? 'FormData' : 'JSON Object');
+  if (processed.formData instanceof FormData) {
+    console.log('FormData entries:');
+    for (const [key, value] of processed.formData.entries()) {
+      console.log(`  ${key}:`, value instanceof File ? `[File: ${value.name}]` : value);
+    }
+  } else {
+    console.log('JSON payload keys:', Object.keys(processed.formData));
+    console.log('Sample data:', processed.formData);
+  }
+  console.log('=== END DEBUG ===');
+
   let response;
 
   if (officeId) {
