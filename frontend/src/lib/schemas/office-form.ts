@@ -54,13 +54,21 @@ export interface PartnerFormData {
   pro_labore_amount: number;
 }
 
+// Compensation attributes for user offices
+export interface CompensationAttributes {
+  compensation_type: 'pro_labore';
+  amount: number;
+  effective_date: string; // YYYY-MM-DD format
+  payment_frequency: 'monthly' | 'weekly' | 'annually';
+}
+
 // User office attributes for API
 export interface UserOfficeAttributes {
   user_id: number | string;
   partnership_type: string;
   partnership_percentage: string;
-  pro_labore_amount: number;
-  is_managing_partner: boolean;
+  is_administrator: boolean;
+  compensations_attributes?: CompensationAttributes[];
   _destroy: boolean;
 }
 
@@ -320,67 +328,67 @@ export function transformFromOffice(office: Office): OfficeFormData {
     phones_attributes:
       office.phones?.length > 0
         ? office.phones.map((p) => ({
-          phone_number: p.phone_number,
-          id: p.id
-        }))
+            phone_number: p.phone_number,
+            id: p.id
+          }))
         : [{ phone_number: '' }],
 
     addresses_attributes:
       office.addresses?.length > 0
         ? office.addresses.map((a) => ({
-          street: a.street || '',
-          number: a.number || '',
-          complement: a.complement || '',
-          neighborhood: a.neighborhood || '',
-          city: a.city || '',
-          state: a.state || '',
-          zip_code: a.zip_code || '',
-          address_type: a.address_type || 'main',
-          id: a.id
-        }))
+            street: a.street || '',
+            number: a.number || '',
+            complement: a.complement || '',
+            neighborhood: a.neighborhood || '',
+            city: a.city || '',
+            state: a.state || '',
+            zip_code: a.zip_code || '',
+            address_type: a.address_type || 'main',
+            id: a.id
+          }))
         : [
-          {
-            street: '',
-            number: '',
-            complement: '',
-            neighborhood: '',
-            city: '',
-            state: '',
-            zip_code: '',
-            address_type: 'main'
-          }
-        ],
+            {
+              street: '',
+              number: '',
+              complement: '',
+              neighborhood: '',
+              city: '',
+              state: '',
+              zip_code: '',
+              address_type: 'main'
+            }
+          ],
 
     emails_attributes:
       office.emails?.length > 0
         ? office.emails.map((e) => ({
-          email: e.email,
-          id: e.id
-        }))
+            email: e.email,
+            id: e.id
+          }))
         : [{ email: '' }],
 
     bank_accounts_attributes:
       office.bank_accounts?.length > 0
         ? office.bank_accounts.map((b) => ({
-          bank_name: b.bank_name || '',
-          bank_number: b.bank_number,
-          type_account: b.type_account || 'Corrente',
-          agency: b.agency || '',
-          account: b.account || '',
-          operation: b.operation || '',
-          pix: b.pix || '',
-          id: b.id
-        }))
+            bank_name: b.bank_name || '',
+            bank_number: b.bank_number,
+            type_account: b.type_account || 'Corrente',
+            agency: b.agency || '',
+            account: b.account || '',
+            operation: b.operation || '',
+            pix: b.pix || '',
+            id: b.id
+          }))
         : [
-          {
-            bank_name: '',
-            type_account: 'Corrente',
-            agency: '',
-            account: '',
-            operation: '',
-            pix: ''
-          }
-        ]
+            {
+              bank_name: '',
+              type_account: 'Corrente',
+              agency: '',
+              account: '',
+              operation: '',
+              pix: ''
+            }
+          ]
   };
 }
 

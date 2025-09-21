@@ -5,7 +5,12 @@
  * ensuring proper serialization of nested attributes for API requests.
  */
 
-import type { OfficeFormData, PartnerFormData, UserOfficeAttributes } from '../schemas/office-form';
+import type {
+  OfficeFormData,
+  PartnerFormData,
+  UserOfficeAttributes,
+  CompensationAttributes
+} from '../schemas/office-form';
 import api from '../api';
 
 export interface ProcessedOfficeData {
@@ -49,8 +54,9 @@ export function processOfficeFormData(
     quote_value: formData.quote_value ? parseFloat(formData.quote_value) : undefined,
     number_of_quotes: formData.number_of_quotes ? parseInt(formData.number_of_quotes) : undefined,
 
-    // Partnership metadata (only profit_distribution, others handled via user_offices_attributes)
-    profit_distribution: profitDistribution
+    // Partnership metadata
+    profit_distribution: profitDistribution,
+    create_social_contract: createSocialContract
   };
 
   // Process nested attributes - filter out empty entries
@@ -98,14 +104,28 @@ export function processOfficeFormData(
   // Process partners to user_offices_attributes
   const processedUserOffices: UserOfficeAttributes[] = partners
     .filter((p) => p.lawyer_id && p.partnership_type)
-    .map((p) => ({
-      user_id: typeof p.lawyer_id === 'string' ? parseInt(p.lawyer_id) : p.lawyer_id,
-      partnership_type: p.partnership_type,
-      partnership_percentage: p.ownership_percentage.toString(),
-      pro_labore_amount: p.pro_labore_amount,
-      is_managing_partner: p.is_managing_partner,
-      _destroy: false
-    }));
+    .map((p) => {
+      const userOffice: UserOfficeAttributes = {
+        user_id: typeof p.lawyer_id === 'string' ? parseInt(p.lawyer_id) : p.lawyer_id,
+        partnership_type: p.partnership_type,
+        partnership_percentage: p.ownership_percentage.toString(),
+        is_administrator: p.is_managing_partner,
+        _destroy: false
+      };
+
+      // Add compensations_attributes if pro_labore_amount is set
+      if (p.pro_labore_amount && p.pro_labore_amount > 0) {
+        const compensation: CompensationAttributes = {
+          compensation_type: 'pro_labore',
+          amount: p.pro_labore_amount,
+          effective_date: new Date().toISOString().split('T')[0], // Current date in YYYY-MM-DD format
+          payment_frequency: 'monthly'
+        };
+        userOffice.compensations_attributes = [compensation];
+      }
+
+      return userOffice;
+    });
 
   // If we have files, create FormData
   if (hasFiles) {
