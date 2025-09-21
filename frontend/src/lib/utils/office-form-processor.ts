@@ -49,10 +49,8 @@ export function processOfficeFormData(
     quote_value: formData.quote_value ? parseFloat(formData.quote_value) : undefined,
     number_of_quotes: formData.number_of_quotes ? parseInt(formData.number_of_quotes) : undefined,
 
-    // Partnership metadata
-    profit_distribution: profitDistribution,
-    create_social_contract: createSocialContract,
-    partners_with_pro_labore: partnersWithProLabore
+    // Partnership metadata (only profit_distribution, others handled via user_offices_attributes)
+    profit_distribution: profitDistribution
   };
 
   // Process nested attributes - filter out empty entries
@@ -148,10 +146,7 @@ export function processOfficeFormData(
       );
     }
 
-    // Add CEP separately if present
-    if (formData.zip_code?.trim()) {
-      formDataPayload.append('office[zip_code]', formData.zip_code.trim());
-    }
+    // Note: zip_code is included in addresses_attributes, no need to send separately
 
     return {
       formData: formDataPayload,
@@ -159,10 +154,9 @@ export function processOfficeFormData(
     };
   }
 
-  // Return JSON payload
+  // Return JSON payload (zip_code is included in addresses_attributes)
   const jsonPayload = {
     ...cleanedData,
-    ...(formData.zip_code?.trim() && { zip_code: formData.zip_code.trim() }),
     ...(processedPhones.length > 0 && { phones_attributes: processedPhones }),
     ...(processedEmails.length > 0 && { emails_attributes: processedEmails }),
     ...(processedAddresses.length > 0 && { addresses_attributes: processedAddresses }),
@@ -199,21 +193,6 @@ export async function submitOfficeForm(
     logoFile,
     contractFiles
   );
-
-  // Debug logging to help verify the fix
-  console.log('=== OFFICE FORM DEBUG ===');
-  console.log('Is multipart:', processed.isMultipart);
-  console.log('Data type:', processed.formData instanceof FormData ? 'FormData' : 'JSON Object');
-  if (processed.formData instanceof FormData) {
-    console.log('FormData entries:');
-    for (const [key, value] of processed.formData.entries()) {
-      console.log(`  ${key}:`, value instanceof File ? `[File: ${value.name}]` : value);
-    }
-  } else {
-    console.log('JSON payload keys:', Object.keys(processed.formData));
-    console.log('Sample data:', processed.formData);
-  }
-  console.log('=== END DEBUG ===');
 
   let response;
 
