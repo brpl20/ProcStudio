@@ -38,7 +38,7 @@
     class="select select-bordered w-full"
     bind:value
     {disabled}
-    {onchange}
+    onchange={handleChange}
   >
     <option value="">Selecione a Função</option>
     {#each PARTNERSHIP_TYPES as type}

@@ -71,7 +71,8 @@
     if (isSingleLawyer && singleLawyer && partners.length === 0) {
       const newPartner: Partner = {
         lawyer_id: singleLawyer.id,
-        lawyer_name: `${singleLawyer.attributes.name} ${singleLawyer.attributes.last_name || ''}`.trim(),
+        lawyer_name:
+          `${singleLawyer.attributes.name} ${singleLawyer.attributes.last_name || ''}`.trim(),
         partnership_type: 'socio',
         ownership_percentage: 100,
         is_managing_partner: true,
@@ -98,9 +99,7 @@
       .map((p) => p.lawyer_id)
       .filter(Boolean);
 
-    return lawyerStore.availableLawyers.filter(
-      (lawyer) => !selectedIds.includes(lawyer.id)
-    );
+    return lawyerStore.availableLawyers.filter((lawyer) => !selectedIds.includes(lawyer.id));
   }
 
   // Handle partner field changes
@@ -155,7 +154,8 @@
 
   // Check if can add more partners (based on available lawyers)
   const canAddMorePartners = $derived(
-    !isSingleLawyer && lawyerStore.availableLawyers.length > partners.filter((p) => p.lawyer_id).length
+    !isSingleLawyer &&
+      lawyerStore.availableLawyers.length > partners.filter((p) => p.lawyer_id).length
   );
 
   // Helper to get full name
@@ -195,57 +195,59 @@
       {/if}
 
       {#if !isSingleLawyer && partners.length > 0}
-      {#each partners as partner, index}
-        <div class="bg-base-200 rounded-lg p-4 mb-4">
-          <div class="flex justify-between items-center mb-4">
-            <h4 class="font-semibold">Sócio {index + 1}</h4>
-            {#if partners.length > 1}
-              <button
-                class="btn btn-sm btn-error"
-                onclick={() => removePartner(index)}
-                type="button"
-              >
-                Remover
-              </button>
-            {/if}
-          </div>
+        {#each partners as partner, index}
+          <div class="bg-base-200 rounded-lg p-4 mb-4">
+            <div class="flex justify-between items-center mb-4">
+              <h4 class="font-semibold">Sócio {index + 1}</h4>
+              {#if partners.length > 1}
+                <button
+                  class="btn btn-sm btn-error"
+                  onclick={() => removePartner(index)}
+                  type="button"
+                >
+                  Remover
+                </button>
+              {/if}
+            </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <PartnerLawyerSelect
-              bind:value={partner.lawyer_id}
-              availableLawyers={getAvailableLawyersForPartner(index)}
-              id="partner-lawyer-{index}"
-              onchange={(lawyer) => handlePartnerFieldChange(index, 'lawyer_id', lawyer)}
-              required
-            />
-
-            <PartnershipType
-              bind:value={partner.partnership_type}
-              id="partner-type-{index}"
-              onchange={(value) => handlePartnerFieldChange(index, 'partnership_type', value)}
-            />
-
-            {#if partners.length > 1}
-              <OwnershipPercentage
-                bind:value={partner.ownership_percentage}
-                id="partner-percentage-{index}"
-                showRangeSlider={partners.length === 2}
-                onchange={(value) => handlePartnerFieldChange(index, 'ownership_percentage', value)}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <PartnerLawyerSelect
+                bind:value={partner.lawyer_id}
+                availableLawyers={getAvailableLawyersForPartner(index)}
+                id="partner-lawyer-{index}"
+                onchange={(lawyer) => handlePartnerFieldChange(index, 'lawyer_id', lawyer)}
+                required
               />
-            {:else}
-              <div></div>
+
+              <PartnershipType
+                bind:value={partner.partnership_type}
+                id="partner-type-{index}"
+                onchange={(value) => handlePartnerFieldChange(index, 'partnership_type', value)}
+              />
+
+              {#if partners.length > 1}
+                <OwnershipPercentage
+                  bind:value={partner.ownership_percentage}
+                  id="partner-percentage-{index}"
+                  showRangeSlider={partners.length === 2}
+                  onchange={(value) =>
+                    handlePartnerFieldChange(index, 'ownership_percentage', value)}
+                />
+              {:else}
+                <div></div>
+              {/if}
+            </div>
+
+            {#if partner.partnership_type === 'socio'}
+              <ManagingPartnerCheckbox
+                bind:checked={partner.is_managing_partner}
+                id="managing-partner-{index}"
+                onchange={(checked) =>
+                  handlePartnerFieldChange(index, 'is_managing_partner', checked)}
+              />
             {/if}
           </div>
-
-          {#if partner.partnership_type === 'socio'}
-            <ManagingPartnerCheckbox
-              bind:checked={partner.is_managing_partner}
-              id="managing-partner-{index}"
-              onchange={(checked) => handlePartnerFieldChange(index, 'is_managing_partner', checked)}
-            />
-          {/if}
-        </div>
-      {/each}
+        {/each}
       {/if}
 
       {#if !isSingleLawyer}
@@ -264,7 +266,7 @@
           onclick={addPartner}
           type="button"
         >
-          ➕ Adicionar Sócio
+          Adicionar Sócio
         </button>
 
         {#if !canAddMorePartners}
@@ -291,15 +293,9 @@
 <FormSection title="Distribuição de Lucros">
   {#snippet children()}
     {#if !isSingleLawyer}
-      <ProfitDistribution
-        bind:value={profitDistribution}
-        id="profit-distribution"
-      />
+      <ProfitDistribution bind:value={profitDistribution} id="profit-distribution" />
 
-      <ProfitDistributionInfo
-        distributionType={profitDistribution}
-        {partners}
-      />
+      <ProfitDistributionInfo distributionType={profitDistribution} {partners} />
     {:else}
       <div class="alert alert-info">
         <svg
@@ -315,9 +311,7 @@
             d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-        <span>
-          Os lucros da sociedade serão todos destinados ao único sócio.
-        </span>
+        <span> Os lucros da sociedade serão todos destinados ao único sócio. </span>
       </div>
     {/if}
   {/snippet}
@@ -326,9 +320,7 @@
 <!-- Pro-Labore Section -->
 <FormSection title="Pro-Labore">
   {#snippet children()}
-    <ProLaboreCheckbox
-      bind:checked={partnersWithProLabore}
-    />
+    <ProLaboreCheckbox bind:checked={partnersWithProLabore} />
 
     {#if partnersWithProLabore}
       {#if !isSingleLawyer}
@@ -345,6 +337,7 @@
                 bind:value={partner.pro_labore_amount}
                 error={proLaboreErrors[index]}
                 id="pro-labore-{index}"
+                tip="valor mensal pela prestação dos serviços"
                 onchange={(value) => {
                   handlePartnerFieldChange(index, 'pro_labore_amount', value);
                   validateProLabore(index, value);

@@ -85,7 +85,7 @@
         <input
           type="range"
           class="range range-primary"
-          min="0"
+          min={minimumWage}
           max={inssCeiling}
           step="100"
           bind:value
@@ -93,7 +93,6 @@
           {disabled}
         />
         <div class="flex justify-between text-xs text-gray-500">
-          <span>R$ 0</span>
           <span>R$ {minimumWage.toLocaleString('pt-BR')}</span>
           <span>R$ {inssCeiling.toLocaleString('pt-BR')}</span>
         </div>
