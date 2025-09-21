@@ -1,4 +1,6 @@
 <script lang="ts">
+  /* Move to: forms_office_wrappers
+   */
   import FormSection from '../ui/FormSection.svelte';
   import OfficeName from '../forms_commons/OfficeName.svelte';
   import Cnpj from '../forms_commons/Cnpj.svelte';
@@ -48,7 +50,8 @@
         bind:value={formData.cnpj}
         id="office-cnpj"
         labelText="CNPJ"
-        required
+        required={false}
+        validate={true}
       />
 
       <SocietyType

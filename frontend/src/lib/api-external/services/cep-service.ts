@@ -9,6 +9,22 @@ class CEPService {
   private cache = new Map<string, CEPValidationResult>();
 
   /**
+   * Translate API error messages to Portuguese
+   */
+  private translateErrorMessage(message: string): string {
+    const translations: Record<string, string> = {
+      'Invalid CEP': 'CEP inválido',
+      'CEP not found': 'CEP não encontrado',
+      'Invalid format': 'Formato inválido',
+      'Network error': 'Erro de conexão',
+      'Timeout': 'Tempo limite excedido',
+      'Server error': 'Erro do servidor'
+    };
+
+    return translations[message] || message;
+  }
+
+  /**
    * Validate CEP with debouncing
    */
   validateWithDebounce(cep: string, callback: (result: CEPValidationResult) => void): void {
@@ -61,6 +77,11 @@ class CEPService {
       }
 
       const result: CEPValidationResult = await response.json();
+
+      // Translate error message if present
+      if (!result.isValid && result.message) {
+        result.message = this.translateErrorMessage(result.message);
+      }
 
       // Cache successful results
       if (result.isValid) {

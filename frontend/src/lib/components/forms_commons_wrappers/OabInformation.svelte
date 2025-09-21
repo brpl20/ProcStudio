@@ -1,4 +1,6 @@
 <script lang="ts">
+  /* Move to: forms_office_wrappers
+   */
   import FormSection from '../ui/FormSection.svelte';
   import OabOfficeId from '../forms_commons/OabOfficeId.svelte';
   import OabStatus from '../forms_commons/OabStatus.svelte';
