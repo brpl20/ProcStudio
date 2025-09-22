@@ -99,24 +99,24 @@ class Office < ApplicationRecord
                                 allow_destroy: true,
                                 reject_if: proc { |attrs| attrs['street'].blank? || attrs['city'].blank? }
 
-  accepts_nested_attributes_for :office_emails, :bank_accounts, :user_offices, 
+  accepts_nested_attributes_for :office_emails, :bank_accounts, :user_offices,
                                 allow_destroy: true,
                                 reject_if: :all_blank
-  
+
   # Store email attributes for processing after save
   attr_accessor :pending_emails
-  
+
   # Virtual attribute for triggering social contract upload (not persisted to database)
   attr_accessor :create_social_contract
-  
+
   # Custom method to handle emails nested attributes
   def emails_attributes=(attributes)
     return if attributes.blank?
-    
+
     # Store for processing after save
     @pending_emails = attributes
   end
-  
+
   # Callback to process emails after the office is saved
   after_create :process_pending_emails
   after_update :process_pending_emails
@@ -142,7 +142,7 @@ class Office < ApplicationRecord
   # Get logo URL from S3
   def logo_url
     return nil if logo_s3_key.blank?
-    
+
     # If it's a local file reference (development without S3)
     if logo_s3_key.start_with?('local/')
       # Return a placeholder URL or path
@@ -153,12 +153,10 @@ class Office < ApplicationRecord
     if ENV['AWS_ACCESS_KEY_ID'].present? && ENV['S3_BUCKET'].present?
       s3_presigner.presigned_url(
         :get_object,
-        bucket: ENV['S3_BUCKET'],
+        bucket: ENV.fetch('S3_BUCKET', nil),
         key: logo_s3_key,
         expires_in: 3600 # 1 hour
       )
-    else
-      nil
     end
   rescue StandardError => e
     Rails.logger.error "Error generating logo URL: #{e.message}"
@@ -180,9 +178,9 @@ class Office < ApplicationRecord
       # Upload to S3
       file_content = file.respond_to?(:tempfile) ? file.tempfile.read : file.read
       file_content = file_content.force_encoding('BINARY') if file_content.respond_to?(:force_encoding)
-      
+
       s3_client.put_object(
-        bucket: ENV['S3_BUCKET'],
+        bucket: ENV.fetch('S3_BUCKET', nil),
         key: s3_key,
         body: file_content,
         content_type: file.content_type,
@@ -193,7 +191,7 @@ class Office < ApplicationRecord
         }
       )
     else
-      Rails.logger.warn "S3 not configured, storing file path reference only"
+      Rails.logger.warn 'S3 not configured, storing file path reference only'
       # For development without S3, just store the filename
       s3_key = "local/#{s3_key}"
     end
@@ -201,10 +199,10 @@ class Office < ApplicationRecord
     # Store the S3 key in database - skip validations to avoid partnership percentage issues
     Rails.logger.info "Updating logo_s3_key to: #{s3_key}"
     if update_attribute(:logo_s3_key, s3_key)
-      Rails.logger.info "Logo S3 key updated successfully"
+      Rails.logger.info 'Logo S3 key updated successfully'
     else
       Rails.logger.error "Failed to update logo S3 key: #{errors.full_messages}"
-      errors.add(:logo, "Failed to save logo reference")
+      errors.add(:logo, 'Failed to save logo reference')
       return false
     end
 
@@ -267,9 +265,9 @@ class Office < ApplicationRecord
       # Upload to S3
       file_content = file.respond_to?(:tempfile) ? file.tempfile.read : file.read
       file_content = file_content.force_encoding('BINARY') if file_content.respond_to?(:force_encoding)
-      
+
       s3_client.put_object(
-        bucket: ENV['S3_BUCKET'],
+        bucket: ENV.fetch('S3_BUCKET', nil),
         key: s3_key,
         body: file_content,
         content_type: file.content_type,
@@ -281,7 +279,7 @@ class Office < ApplicationRecord
         }
       )
     else
-      Rails.logger.warn "S3 not configured for contracts, storing file path reference only"
+      Rails.logger.warn 'S3 not configured for contracts, storing file path reference only'
       # For development without S3, just store the filename
       s3_key = "local/#{s3_key}"
     end
@@ -374,26 +372,26 @@ class Office < ApplicationRecord
   def team_must_exist
     errors.add(:team_id, 'deve existir') unless Team.exists?(team_id)
   end
-  
+
   def process_pending_emails
     return if @pending_emails.blank?
-    
+
     # Handle both array and hash format
     attrs_array = @pending_emails.is_a?(Array) ? @pending_emails : @pending_emails.values
-    
+
     attrs_array.each do |attrs|
       # Handle both string and symbol keys
       attrs = attrs.with_indifferent_access if attrs.respond_to?(:with_indifferent_access)
-      
+
       next if attrs['_destroy'] == '1' || attrs[:_destroy] == '1'
-      
+
       email_value = attrs['email'] || attrs[:email]
       next if email_value.blank?
-      
+
       email = Email.find_or_create_by(email: email_value)
       office_emails.find_or_create_by(email: email) unless office_emails.exists?(email: email)
     end
-    
+
     @pending_emails = nil
   end
 end
