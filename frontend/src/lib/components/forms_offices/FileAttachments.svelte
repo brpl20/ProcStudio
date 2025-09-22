@@ -6,7 +6,7 @@
     onContractsChange?: (event: Event) => void;
   };
 
-  let {
+  const {
     logoPreview = null,
     contractFiles = [],
     onLogoChange,
@@ -41,11 +41,7 @@
     />
     {#if logoPreview}
       <div class="mt-2">
-        <img
-          src={logoPreview}
-          alt="Preview do logo"
-          class="w-24 h-24 object-cover rounded"
-        />
+        <img src={logoPreview} alt="Preview do logo" class="w-24 h-24 object-cover rounded" />
       </div>
     {/if}
     <div class="label">

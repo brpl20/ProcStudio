@@ -162,14 +162,23 @@ export class OfficeService {
   /**
    * Create a new office
    */
-  async createOffice(officeData: CreateOfficeRequest): Promise<CreateOfficeResponse> {
+  async createOffice(officeData: CreateOfficeRequest | FormData): Promise<CreateOfficeResponse> {
     try {
-      // Handle file upload for logo if needed
-      const payload: { office: CreateOfficeRequest } = {
-        office: officeData
-      };
+      // Handle FormData (when files are present) or direct data from processor
+      if (officeData instanceof FormData) {
+        // FormData is already properly formatted by the processor
+        const response = await this.httpClient.post('/offices', officeData, {
+          headers: {} // Override default Content-Type
+        });
 
-      // If logo is a File object, we need to use FormData
+        return {
+          success: response.success,
+          message: response.message,
+          data: this.transformJsonApiOffice(response.data)
+        };
+      }
+
+      // Handle legacy File object check for backwards compatibility
       if (officeData.logo instanceof File) {
         const formData = new FormData();
         formData.append('office[logo]', officeData.logo);
@@ -201,7 +210,11 @@ export class OfficeService {
         };
       }
 
-      // Regular JSON request without file upload
+      // Regular JSON request - wrap in office key as expected by Rails API
+      const payload: { office: CreateOfficeRequest } = {
+        office: officeData
+      };
+
       const response: JsonApiOfficeResponse = await this.httpClient.post('/offices', payload);
 
       // Transform JSON:API data to our Office type
@@ -239,9 +252,26 @@ export class OfficeService {
   /**
    * Update an existing office
    */
-  async updateOffice(id: number, officeData: UpdateOfficeRequest): Promise<UpdateOfficeResponse> {
+  async updateOffice(
+    id: number,
+    officeData: UpdateOfficeRequest | FormData
+  ): Promise<UpdateOfficeResponse> {
     try {
-      // Handle file upload for logo if needed
+      // Handle FormData (when files are present) or direct data from processor
+      if (officeData instanceof FormData) {
+        // FormData is already properly formatted by the processor
+        const response = await this.httpClient.patch(`/offices/${id}`, officeData, {
+          headers: {} // Override default Content-Type
+        });
+
+        return {
+          success: response.success,
+          message: response.message,
+          data: this.transformJsonApiOffice(response.data)
+        };
+      }
+
+      // Handle legacy File object check for backwards compatibility
       if (officeData.logo instanceof File) {
         const formData = new FormData();
         formData.append('office[logo]', officeData.logo);
@@ -271,7 +301,7 @@ export class OfficeService {
         };
       }
 
-      // Regular JSON request without file upload
+      // Regular JSON request - wrap in office key as expected by Rails API
       const response: JsonApiOfficeResponse = await this.httpClient.patch(`/offices/${id}`, {
         office: officeData
       });
