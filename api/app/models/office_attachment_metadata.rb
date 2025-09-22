@@ -35,38 +35,30 @@ class OfficeAttachmentMetadata < ApplicationRecord
   belongs_to :office
   belongs_to :uploaded_by, class_name: 'User', optional: true
 
-  # Link to ActiveStorage blob
-  belongs_to :blob, class_name: 'ActiveStorage::Blob'
-
   # Scopes
   scope :social_contracts, -> { where(document_type: 'social_contract') }
   scope :logos, -> { where(document_type: 'logo') }
 
   # Validations
   validates :document_type, presence: true
-  validates :blob_id, uniqueness: true
+  validates :s3_key, uniqueness: true
 
   # Document types
   DOCUMENT_TYPES = ['logo', 'social_contract'].freeze
 
   validates :document_type, inclusion: { in: DOCUMENT_TYPES }
 
-  # Get the attachment
-  def attachment
-    ActiveStorage::Attachment.find_by(blob_id: blob_id)
-  end
-
-  # Get URL for the attachment
+  # Get URL for the attachment from S3
   def url
-    return nil unless blob
+    return nil unless s3_key
 
-    Rails.application.routes.url_helpers.rails_blob_url(blob, only_path: true)
+    office.generate_s3_url(s3_key)
   end
 
-  # Get download URL
+  # Get download URL from S3
   def download_url
-    return nil unless blob
+    return nil unless s3_key && filename
 
-    Rails.application.routes.url_helpers.rails_blob_url(blob, disposition: 'attachment', only_path: true)
+    office.generate_s3_download_url(s3_key, filename)
   end
 end
