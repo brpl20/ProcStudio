@@ -13,7 +13,11 @@ module S3Attachable
 
     # Delete old logo if exists
     if logo_s3_key.present?
-      S3Service.delete(logo_s3_key) rescue nil
+      begin
+        S3Service.delete(logo_s3_key)
+      rescue StandardError
+        nil
+      end
     end
 
     # Upload new logo
@@ -67,7 +71,11 @@ module S3Attachable
 
     # Delete old avatar if exists
     if avatar_s3_key.present?
-      S3Service.delete(avatar_s3_key) rescue nil
+      begin
+        S3Service.delete(avatar_s3_key)
+      rescue StandardError
+        nil
+      end
     end
 
     # Upload new avatar
@@ -88,6 +96,7 @@ module S3Attachable
   def logo_url(expires_in: 3600, only_path: nil)
     # only_path parameter is for backwards compatibility with ActiveStorage
     return nil unless respond_to?(:logo_s3_key) && logo_s3_key.present?
+
     generate_presigned_url(logo_s3_key, expires_in: expires_in)
   end
 
@@ -95,13 +104,14 @@ module S3Attachable
   def avatar_url(expires_in: 3600, only_path: nil)
     # only_path parameter is for backwards compatibility with ActiveStorage
     return nil unless respond_to?(:avatar_s3_key) && avatar_s3_key.present?
+
     generate_presigned_url(avatar_s3_key, expires_in: expires_in)
   end
 
   # Get social contracts with presigned URLs
   def social_contracts_with_urls(expires_in: 3600)
     return [] unless respond_to?(:attachment_metadata)
-    
+
     attachment_metadata.where(document_type: 'social_contract').map do |metadata|
       {
         id: metadata.id,
@@ -123,7 +133,7 @@ module S3Attachable
   # Alias for backwards compatibility with serializers
   def social_contracts_with_metadata(expires_in: 3600)
     return [] unless respond_to?(:attachment_metadata)
-    
+
     attachment_metadata.where(document_type: 'social_contract').map do |metadata|
       {
         id: metadata.id,
@@ -201,7 +211,7 @@ module S3Attachable
       model_id: id.to_s,
       team_id: team_id.to_s
     }
-    
+
     base_metadata[:uploaded_by_id] = custom_metadata.delete(:uploaded_by_id).to_s if custom_metadata[:uploaded_by_id]
     base_metadata.merge(custom_metadata.transform_values(&:to_s))
   end

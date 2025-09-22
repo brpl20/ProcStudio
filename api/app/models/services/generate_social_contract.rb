@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # update to -> SocialContract
 class GenerateDocs
   class << self

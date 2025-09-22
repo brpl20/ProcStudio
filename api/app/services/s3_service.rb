@@ -9,7 +9,7 @@ class S3Service
 
       # Read file content
       file_content = extract_file_content(file)
-      
+
       # Upload to S3
       client.put_object(
         bucket: bucket_name,
@@ -224,7 +224,7 @@ class S3Service
 
     def extract_content_type(file)
       return file.content_type if file.respond_to?(:content_type)
-      
+
       # Fallback to MIME type detection
       filename = extract_filename(file)
       MIME::Types.type_for(filename).first&.to_s || 'application/octet-stream'
@@ -233,6 +233,7 @@ class S3Service
     def extract_filename(file)
       return file.original_filename if file.respond_to?(:original_filename)
       return file.path if file.respond_to?(:path)
+
       'unknown'
     end
 
