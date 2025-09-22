@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Improved S3 upload handling for Office model
 module OfficeS3Uploads
   extend ActiveSupport::Concern
@@ -8,15 +10,15 @@ module OfficeS3Uploads
     return false if file.blank?
 
     Rails.logger.info "File details - filename: #{file.original_filename}, content_type: #{file.content_type}, size: #{file.size}"
-    
+
     extension = File.extname(file.original_filename).delete('.')
     s3_key = build_logo_s3_key(extension)
     Rails.logger.info "Generated S3 key: #{s3_key}"
-    
+
     # Read file content before any database operations
     file_content = file.respond_to?(:tempfile) ? file.tempfile.read : file.read
     file_content = file_content.force_encoding('BINARY') if file_content.respond_to?(:force_encoding)
-    
+
     # First, try to update the database (this will validate)
     # Use update_column to skip validations if needed
     success = if skip_validations_for_logo_upload?
@@ -24,15 +26,15 @@ module OfficeS3Uploads
               else
                 update(logo_s3_key: s3_key)
               end
-    
+
     if success
-      Rails.logger.info "Logo S3 key updated successfully in database"
-      
+      Rails.logger.info 'Logo S3 key updated successfully in database'
+
       # Only upload to S3 after successful database update
       if ENV['AWS_ACCESS_KEY_ID'].present? && ENV['AWS_SECRET_ACCESS_KEY'].present? && ENV['S3_BUCKET'].present?
         begin
           s3_client.put_object(
-            bucket: ENV['S3_BUCKET'],
+            bucket: ENV.fetch('S3_BUCKET', nil),
             key: s3_key,
             body: file_content,
             content_type: file.content_type,
@@ -51,9 +53,9 @@ module OfficeS3Uploads
           return false
         end
       else
-        Rails.logger.warn "S3 not configured, storing file path reference only"
+        Rails.logger.warn 'S3 not configured, storing file path reference only'
       end
-      
+
       # Create metadata record if needed
       if metadata_params.present?
         begin
@@ -73,7 +75,7 @@ module OfficeS3Uploads
           # Don't fail the upload if metadata creation fails
         end
       end
-      
+
       true
     else
       Rails.logger.error "Failed to update logo S3 key in database: #{errors.full_messages}"
@@ -85,32 +87,32 @@ module OfficeS3Uploads
     errors.add(:logo, "Upload failed: #{e.message}")
     false
   end
-  
+
   # Alternative: Upload logo in a separate transaction
   def upload_logo_isolated(file, metadata_params = {})
-    Rails.logger.info "upload_logo_isolated called"
+    Rails.logger.info 'upload_logo_isolated called'
     return false if file.blank?
-    
+
     extension = File.extname(file.original_filename).delete('.')
     s3_key = build_logo_s3_key(extension)
-    
+
     # Read file content
     file_content = file.respond_to?(:tempfile) ? file.tempfile.read : file.read
     file_content = file_content.force_encoding('BINARY') if file_content.respond_to?(:force_encoding)
-    
+
     # Run in isolated transaction to avoid validation conflicts
     Office.transaction do
       # Reload to get fresh state
       reload
-      
+
       # Update only the logo field, skipping validations
       self.logo_s3_key = s3_key
       save!(validate: false)
-      
+
       # Upload to S3
       if ENV['AWS_ACCESS_KEY_ID'].present? && ENV['S3_BUCKET'].present?
         s3_client.put_object(
-          bucket: ENV['S3_BUCKET'],
+          bucket: ENV.fetch('S3_BUCKET', nil),
           key: s3_key,
           body: file_content,
           content_type: file.content_type,
@@ -121,7 +123,7 @@ module OfficeS3Uploads
           }
         )
       end
-      
+
       true
     end
   rescue StandardError => e
@@ -135,7 +137,7 @@ module OfficeS3Uploads
   def skip_validations_for_logo_upload?
     # Skip validations if office has incomplete partner setup
     # This allows logo upload even when partnerships aren't finalized
-    user_offices.where(partnership_type: 'socio').any? && 
+    user_offices.where(partnership_type: 'socio').any? &&
       user_offices.where(partnership_type: 'socio').sum(:partnership_percentage) != 100.0
   end
 end
