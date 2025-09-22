@@ -81,13 +81,13 @@ class FullUserSerializer
   # Phones
   attribute :phones do |object|
     profile = object.user_profile
-    if profile && profile.respond_to?(:phones)
+    if profile.respond_to?(:phones)
       profile.phones.map do |phone|
-      {
-        id: phone.id,
-        phone_number: phone.phone_number,
-        phone_type: phone.try(:phone_type)
-      }
+        {
+          id: phone.id,
+          phone_number: phone.phone_number,
+          phone_type: phone.try(:phone_type)
+        }
       end
     else
       []
@@ -97,19 +97,19 @@ class FullUserSerializer
   # Addresses
   attribute :addresses do |object|
     profile = object.user_profile
-    if profile && profile.respond_to?(:addresses)
+    if profile.respond_to?(:addresses)
       profile.addresses.map do |address|
-      {
-        id: address.id,
-        street: address.street,
-        number: address.number,
-        complement: address.complement,
-        neighborhood: address.neighborhood,
-        city: address.city,
-        state: address.state,
-        zip_code: address.zip_code,
-        address_type: address.try(:address_type)
-      }
+        {
+          id: address.id,
+          street: address.street,
+          number: address.number,
+          complement: address.complement,
+          neighborhood: address.neighborhood,
+          city: address.city,
+          state: address.state,
+          zip_code: address.zip_code,
+          address_type: address.try(:address_type)
+        }
       end
     else
       []
@@ -119,17 +119,17 @@ class FullUserSerializer
   # Bank accounts
   attribute :bank_accounts do |object|
     profile = object.user_profile
-    if profile && profile.respond_to?(:bank_accounts)
+    if profile.respond_to?(:bank_accounts)
       profile.bank_accounts.map do |account|
-      {
-        id: account.id,
-        bank_name: account.bank_name,
-        type_account: account.type_account,
-        agency: account.agency,
-        account: account.account,
-        operation: account.operation,
-        pix: account.pix
-      }
+        {
+          id: account.id,
+          bank_name: account.bank_name,
+          type_account: account.type_account,
+          agency: account.agency,
+          account: account.account,
+          operation: account.operation,
+          pix: account.pix
+        }
       end
     else
       []
@@ -139,7 +139,7 @@ class FullUserSerializer
   # Works associated (count only for performance)
   attribute :works_count do |object|
     profile = object.user_profile
-    if profile && profile.respond_to?(:works)
+    if profile.respond_to?(:works)
       profile.works.count
     else
       0
@@ -149,7 +149,7 @@ class FullUserSerializer
   # Jobs associated (count only for performance)
   attribute :jobs_count do |object|
     profile = object.user_profile
-    if profile && profile.respond_to?(:jobs)
+    if profile.respond_to?(:jobs)
       profile.jobs.count
     else
       0

@@ -38,9 +38,9 @@ module Compliance
       return unless team # Skip if no team associated
 
       # Notify team admins about compliance change
-      team.users.joins(:user_profile).where(user_profiles: { role: 'lawyer' }).each do |user|
+      team.users.joins(:user_profile).where(user_profiles: { role: 'lawyer' }).find_each do |user|
         next unless user.user_profile
-        
+
         Notification.create!(
           user_profile: user.user_profile,
           notification_type: 'compliance',

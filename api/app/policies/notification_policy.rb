@@ -20,7 +20,7 @@ class NotificationPolicy < ApplicationPolicy
   end
 
   def destroy?
-    owner? || (user.user_profile&.lawyer?)
+    owner? || user.user_profile&.lawyer?
   end
 
   def mark_as_read?

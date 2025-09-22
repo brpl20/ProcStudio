@@ -121,11 +121,11 @@ class Represent < ApplicationRecord
 
     title = notification_title(compliance_type)
     description = notification_description(compliance_type)
-    
+
     # Notify team admins about representation changes
-    team.users.joins(:user_profile).where(user_profiles: { role: 'lawyer' }).each do |user|
+    team.users.joins(:user_profile).where(user_profiles: { role: 'lawyer' }).find_each do |user|
       next unless user.user_profile
-      
+
       Notification.create!(
         user_profile: user.user_profile,
         notification_type: 'compliance',

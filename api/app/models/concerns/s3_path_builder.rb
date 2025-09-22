@@ -38,14 +38,11 @@ module S3PathBuilder
     # Pattern: /env/team-{id}/users/{user-id}/avatar/avatar-{timestamp}.{ext}
     def build_avatar_s3_key(extension)
       timestamp = generate_timestamp
-      user_id = case self
-                when User
-                  id
-                when UserProfile
-                  id
-                else
-                  id
-                end
+      case self
+      when User
+      when UserProfile
+      end
+      user_id = id
       "#{s3_prefix}/users/#{user_id}/avatar/avatar-#{timestamp}.#{extension}"
     end
 

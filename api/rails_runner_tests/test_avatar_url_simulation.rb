@@ -5,13 +5,13 @@
 # Usage: rails runner rails_runner_tests/test_avatar_url_simulation.rb
 
 puts "\n=== Testing Avatar URL Generation (Simulation) ==="
-puts "=" * 50
+puts '=' * 50
 
 # Get first user profile
 user_profile = UserProfile.first
 
 if user_profile.nil?
-  puts "No user profiles found in the database."
+  puts 'No user profiles found in the database.'
   exit 1
 end
 
@@ -33,10 +33,10 @@ puts "\n Testing avatar_url method:"
 avatar_url = user_profile.avatar_url
 
 if avatar_url.nil?
-  puts "  ❌ No avatar URL generated"
+  puts '  ❌ No avatar URL generated'
 else
-  puts "  ✅ Avatar URL generated successfully"
-  
+  puts '  ✅ Avatar URL generated successfully'
+
   # Parse URL to show components
   begin
     uri = URI.parse(avatar_url)
@@ -44,7 +44,7 @@ else
     puts "    Protocol: #{uri.scheme}"
     puts "    Host: #{uri.host}"
     puts "    Path: #{uri.path}"
-    
+
     # Parse query parameters
     if uri.query
       params = CGI.parse(uri.query)
@@ -57,7 +57,7 @@ else
         end
       end
     end
-  rescue => e
+  rescue StandardError => e
     puts "  Error parsing URL: #{e.message}"
   end
 end
@@ -67,17 +67,17 @@ puts "\n Testing UserProfileSerializer output:"
 begin
   serialized = UserProfileSerializer.new(user_profile).serializable_hash
   avatar_from_serializer = serialized.dig(:data, :attributes, :avatar_url)
-  
+
   if avatar_from_serializer.present?
-    puts "  ✅ Serializer includes avatar_url in attributes"
+    puts '  ✅ Serializer includes avatar_url in attributes'
     puts "  URL matches model method: #{avatar_from_serializer == avatar_url ? '✅ Yes' : '❌ No'}"
   else
     puts "  ❌ Serializer doesn't include avatar_url"
   end
-  
+
   # Show full serialized attributes for debugging
   puts "\n  Serialized attributes keys:"
-  serialized[:data][:attributes].keys.each do |key|
+  serialized[:data][:attributes].each_key do |key|
     value = serialized[:data][:attributes][key]
     if key == :avatar_url
       puts "    - #{key}: #{value.present? ? '[URL Present]' : 'nil'}"
@@ -85,7 +85,7 @@ begin
       puts "    - #{key}: #{value.class.name}"
     end
   end
-rescue => e
+rescue StandardError => e
   puts "  ❌ Error testing serializer: #{e.message}"
   puts e.backtrace[0..5]
 end
@@ -95,10 +95,10 @@ puts "\n Restoring original S3 key..."
 user_profile.update_column(:avatar_s3_key, original_s3_key)
 puts "  Restored to: #{original_s3_key || 'nil'}"
 
-puts "\n" + "=" * 50
-puts "Test completed!"
+puts "\n#{'=' * 50}"
+puts 'Test completed!'
 puts "\nNOTE: The avatar_url method will return nil if:"
-puts "  1. avatar_s3_key is blank"
-puts "  2. S3 credentials are not configured"
-puts "  3. S3Service.presigned_url fails"
+puts '  1. avatar_s3_key is blank'
+puts '  2. S3 credentials are not configured'
+puts '  3. S3Service.presigned_url fails'
 puts "\nMake sure AWS credentials and S3_BUCKET are properly configured."

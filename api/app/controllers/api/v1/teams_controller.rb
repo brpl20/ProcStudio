@@ -123,9 +123,7 @@ module Api
         params.expect(team: [:name, { settings: {} }])
       end
 
-
       def check_team_access!
-
         # Para update, verificar se é o próprio team e se tem role lawyer
         if action_name == 'update'
           # Permitir update apenas se for o próprio team e tiver role lawyer
