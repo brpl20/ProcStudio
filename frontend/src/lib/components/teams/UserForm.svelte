@@ -122,7 +122,6 @@
             name: formData.name,
             last_name: formData.last_name,
             role: formData.role,
-            status: formData.status,
             gender: formData.gender,
             oab: formData.oab,
             rg: formData.rg,
@@ -134,7 +133,8 @@
             user_attributes: {
               email: formData.email,
               password: formData.password,
-              password_confirmation: formData.password_confirmation
+              password_confirmation: formData.password_confirmation,
+              status: formData.status
             },
             phones_attributes: formData.phone_number
               ? [{ phone_number: formData.phone_number }]

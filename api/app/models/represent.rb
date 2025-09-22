@@ -123,7 +123,7 @@ class Represent < ApplicationRecord
     description = notification_description(compliance_type)
     
     # Notify team admins about representation changes
-    team.users.joins(:user_profile).where(user_profiles: { role: ['lawyer', 'super_admin'] }).each do |user|
+    team.users.joins(:user_profile).where(user_profiles: { role: 'lawyer' }).each do |user|
       next unless user.user_profile
       
       Notification.create!(

@@ -150,6 +150,7 @@ class LawyerStore {
         } else {
           this.state.error = err instanceof Error ? err.message : 'Failed to fetch lawyers';
           this.state.status = 'error';
+          this.state.initialized = true; // Mark as initialized even on error so UI can react properly
         }
       }
     } finally {

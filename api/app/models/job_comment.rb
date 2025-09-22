@@ -45,6 +45,6 @@ class JobComment < ApplicationRecord
   end
 
   def author_avatar_url
-    user_profile.avatar_url(only_path: false)
+    user_profile.avatar_url
   end
 end

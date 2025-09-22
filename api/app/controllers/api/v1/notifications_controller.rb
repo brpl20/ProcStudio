@@ -245,8 +245,8 @@ module Api
 
       def authorize_recipient(user_profile)
         # Check if current user can send notifications to this profile
-        # Allow if: same team, or current user is super_admin
-        unless same_team?(user_profile) || @current_user.user_profile&.super_admin?
+        # Allow if: same team, or current user is lawyer
+        unless same_team?(user_profile) || @current_user.user_profile&.lawyer?
           raise Pundit::NotAuthorizedError, 'Você não pode enviar notificações para este usuário'
         end
       end

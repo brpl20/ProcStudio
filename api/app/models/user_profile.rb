@@ -50,7 +50,8 @@ class UserProfile < ApplicationRecord
   belongs_to :user, inverse_of: :user_profile
   belongs_to :office, optional: true
 
-  has_one_attached :avatar
+  # Avatar is now handled via S3 directly using avatar_s3_key field
+  # has_one_attached :avatar # Deprecated - using S3Attachable concern instead
   has_many :notifications, dependent: :destroy
 
   delegate :team, to: :user
@@ -65,8 +66,7 @@ class UserProfile < ApplicationRecord
     secretary: 'secretary',
     counter: 'counter',
     excounter: 'excounter',
-    representant: 'representant',
-    super_admin: 'super_admin'
+    representant: 'representant'
   }
 
   enum :civil_status, {

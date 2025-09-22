@@ -182,8 +182,8 @@ module Api
         # Users can always view their own information
         return true if user.id == @current_user.id
 
-        # Check if current user is admin or super_admin
-        return true if @current_user.user_profile&.role&.in?(%w[super_admin])
+        # Check if current user is lawyer
+        return true if @current_user.user_profile&.role&.in?(%w[lawyer])
 
         # Check if users are in the same team
         user.team_id == @current_user.team_id

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LawyerStore Debug Tool</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #f5f5f5; }
+        .debug-container { background: white; padding: 20px; border-radius: 8px; margin: 10px 0; }
+        .error { color: red; }
+        .success { color: green; }
+        .loading { color: orange; }
+        .method-button { margin: 5px; padding: 8px 16px; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .method-button:hover { background: #005a9e; }
+        .state-display { background: #f8f8f8; padding: 10px; border-radius: 4px; margin: 10px 0; }
+        pre { background: #f0f0f0; padding: 10px; border-radius: 4px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>LawyerStore Debug Tool</h1>
+    
+    <div class="debug-container">
+        <h2>Store State</h2>
+        <div id="state-display" class="state-display">Loading state...</div>
+        <button class="method-button" onclick="refreshState()">Refresh State</button>
+    </div>
+
+    <div class="debug-container">
+        <h2>Store Actions</h2>
+        <button class="method-button" onclick="testFetchLawyers()">Fetch Lawyers</button>
+        <button class="method-button" onclick="testRefresh()">Refresh Store</button>
+        <button class="method-button" onclick="testInit()">Initialize Store</button>
+        <button class="method-button" onclick="testCancel()">Cancel Requests</button>
+        <button class="method-button" onclick="testDispose()">Dispose Store</button>
+    </div>
+
+    <div class="debug-container">
+        <h2>Selection Actions</h2>
+        <button class="method-button" onclick="selectFirstLawyer()">Select First Lawyer</button>
+        <button class="method-button" onclick="clearSelection()">Clear Selection</button>
+    </div>
+
+    <div class="debug-container">
+        <h2>Logs</h2>
+        <div id="logs" style="max-height: 300px; overflow-y: auto; background: #f8f8f8; padding: 10px; border-radius: 4px;"></div>
+        <button class="method-button" onclick="clearLogs()">Clear Logs</button>
+    </div>
+
+    <script type="module">
+        let store;
+        
+        async function loadStore() {
+            try {
+                // Import the store (adjust path as needed)
+                const module = await import('./lawyerStore.svelte.ts');
+                store = module.lawyerStore;
+                log('Store loaded successfully', 'success');
+                refreshState();
+            } catch (error) {
+                log(`Failed to load store: ${error.message}`, 'error');
+                console.error('Store load error:', error);
+            }
+        }
+
+        function log(message, type = 'info') {
+            const logs = document.getElementById('logs');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'loading' ? 'loading' : '';
+            logs.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        function refreshState() {
+            if (!store) {
+                log('Store not loaded', 'error');
+                return;
+            }
+
+            const state = {
+                lawyers: store.lawyers,
+                selectedLawyers: store.selectedLawyers,
+                activeLawyers: store.activeLawyers,
+                availableLawyers: store.availableLawyers,
+                loading: store.loading,
+                error: store.error,
+                initialized: store.initialized,
+                status: store.status,
+                lawyersCount: store.lawyersCount,
+                activeLawyersCount: store.activeLawyers.length,
+                selectedLawyersCount: store.selectedLawyersCount,
+                availableLawyersCount: store.availableLawyers.length,
+                remainingLawyersCount: store.remainingLawyersCount,
+                isDisposed: store.isDisposed
+            };
+
+            document.getElementById('state-display').innerHTML = `<pre>${JSON.stringify(state, null, 2)}</pre>`;
+        }
+
+        async function testFetchLawyers() {
+            if (!store) return;
+            log('Testing fetchLawyers()...', 'loading');
+            try {
+                await store.fetchLawyers();
+                log('fetchLawyers() completed', 'success');
+                refreshState();
+            } catch (error) {
+                log(`fetchLawyers() error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testRefresh() {
+            if (!store) return;
+            log('Testing refresh()...', 'loading');
+            try {
+                await store.refresh();
+                log('refresh() completed', 'success');
+                refreshState();
+            } catch (error) {
+                log(`refresh() error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testInit() {
+            if (!store) return;
+            log('Testing init()...', 'loading');
+            try {
+                await store.init();
+                log('init() completed', 'success');
+                refreshState();
+            } catch (error) {
+                log(`init() error: ${error.message}`, 'error');
+            }
+        }
+
+        function testCancel() {
+            if (!store) return;
+            log('Testing cancel()...');
+            store.cancel();
+            log('cancel() completed', 'success');
+            refreshState();
+        }
+
+        function testDispose() {
+            if (!store) return;
+            log('Testing dispose()...');
+            store.dispose();
+            log('dispose() completed', 'success');
+            refreshState();
+        }
+
+        function selectFirstLawyer() {
+            if (!store || store.lawyers.length === 0) {
+                log('No lawyers available to select', 'error');
+                return;
+            }
+            const firstLawyer = store.lawyers[0];
+            store.selectLawyer(firstLawyer);
+            log(`Selected lawyer: ${firstLawyer.attributes.name}`, 'success');
+            refreshState();
+        }
+
+        function clearSelection() {
+            if (!store) return;
+            store.clearSelectedLawyers();
+            log('Selection cleared', 'success');
+            refreshState();
+        }
+
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = '';
+        }
+
+        // Make functions global
+        window.refreshState = refreshState;
+        window.testFetchLawyers = testFetchLawyers;
+        window.testRefresh = testRefresh;
+        window.testInit = testInit;
+        window.testCancel = testCancel;
+        window.testDispose = testDispose;
+        window.selectFirstLawyer = selectFirstLawyer;
+        window.clearSelection = clearSelection;
+        window.clearLogs = clearLogs;
+
+        // Load store on page load
+        loadStore();
+    </script>
+</body>
+</html>

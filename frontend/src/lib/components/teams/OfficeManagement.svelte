@@ -12,10 +12,14 @@
   let editingOffice = null;
   let showDeleted = false;
 
-  // Check for active lawyers
-  $: hasActiveLawyers = lawyerStore.activeLawyers.length > 0;
-  $: canCreateOffice = hasActiveLawyers;
-  $: tooltipMessage = !hasActiveLawyers
+  // Check for active lawyers - consider loading, initialization and error state
+  $: hasActiveLawyers = lawyerStore.initialized && !lawyerStore.loading && lawyerStore.status === 'success' && lawyerStore.activeLawyers.length > 0;
+  $: canCreateOffice = lawyerStore.initialized && !lawyerStore.loading && lawyerStore.status === 'success' && hasActiveLawyers;
+  $: tooltipMessage = !lawyerStore.initialized || lawyerStore.loading
+    ? 'Carregando informações dos advogados...'
+    : lawyerStore.status === 'error'
+    ? `Erro ao carregar advogados: ${lawyerStore.error}`
+    : !hasActiveLawyers
     ? 'É necessário ter pelo menos um advogado ativo no sistema para criar um escritório'
     : '';
 
@@ -27,10 +31,17 @@
       hasActiveLawyers,
       canCreateOffice,
       loading: lawyerStore.loading,
-      initialized: lawyerStore.initialized
+      initialized: lawyerStore.initialized,
+      status: lawyerStore.status,
+      tooltipMessage
     });
     if (lawyerStore.lawyers.length > 0) {
       console.log('First lawyer:', lawyerStore.lawyers[0]);
+      console.log('Active lawyers details:', lawyerStore.activeLawyers.map(l => ({
+        name: l.attributes.name,
+        status: l.attributes.status,
+        deleted: l.attributes.deleted
+      })));
     }
   }
 
@@ -110,9 +121,13 @@
     loadOffices();
   }
 
-  onMount(() => {
+  onMount(async () => {
     // Initialize lawyer store to check for active lawyers
-    lawyerStore.init();
+    try {
+      await lawyerStore.init();
+    } catch (err) {
+      console.error('Failed to initialize lawyer store:', err);
+    }
     loadOffices();
   });
 </script>
@@ -151,7 +166,32 @@
         </div>
       </div>
 
-      {#if !hasActiveLawyers}
+      {#if lawyerStore.initialized && !lawyerStore.loading && lawyerStore.status === 'error'}
+        <div class="alert alert-error">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="stroke-current shrink-0 h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <div>
+            <h3 class="font-bold">Erro ao carregar advogados</h3>
+            <div class="text-sm">
+              {lawyerStore.error}
+              <button class="btn btn-xs btn-outline ml-2" on:click={() => lawyerStore.refresh()}>
+                Tentar novamente
+              </button>
+            </div>
+          </div>
+        </div>
+      {:else if lawyerStore.initialized && !lawyerStore.loading && lawyerStore.status === 'success' && !hasActiveLawyers}
         <div class="alert alert-warning">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -171,6 +211,28 @@
             <div class="text-sm">
               Não é possível criar um escritório sem advogados ativos no sistema. Por favor,
               cadastre e ative pelo menos um advogado antes de criar um escritório.
+            </div>
+          </div>
+        </div>
+      {:else if lawyerStore.loading || !lawyerStore.initialized}
+        <div class="alert alert-info">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="stroke-current shrink-0 h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <div>
+            <h3 class="font-bold">Verificando disponibilidade</h3>
+            <div class="text-sm">
+              Verificando se existem advogados ativos no sistema...
             </div>
           </div>
         </div>

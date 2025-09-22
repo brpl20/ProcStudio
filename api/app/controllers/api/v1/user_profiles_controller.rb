@@ -10,12 +10,8 @@ module Api
       after_action :verify_authorized
 
       def index
-        # Super admin vê todos os perfis, outros usuários veem apenas do seu team
-        user_profiles = if super_admin_access?
-                          UserProfile.includes(:user)
-                        else
-                          UserProfile.joins(:user).where(users: { team: current_team }).includes(:user)
-                        end
+        # Todos os usuários veem apenas perfis do seu team
+        user_profiles = UserProfile.joins(:user).where(users: { team: current_team }).includes(:user)
 
         filter_by_deleted_params.each do |key, value|
           next if value.blank?
@@ -64,7 +60,9 @@ module Api
       end
 
       def create
-        profile_params = user_profiles_params
+        # Handle avatar separately if present
+        avatar_file = params.dig(:user_profile, :avatar)
+        profile_params = user_profiles_params.except(:avatar)
 
         # If user_attributes are present but user_id is not, we're creating a new user
         if profile_params[:user_attributes].present? && !profile_params[:user_id]
@@ -89,6 +87,15 @@ module Api
         end
 
         if user_profile.save
+          # Handle avatar upload if provided
+          if avatar_file.present?
+            if user_profile.upload_avatar(avatar_file, uploaded_by_id: current_user.id)
+              Rails.logger.info "Avatar uploaded successfully for new user profile ##{user_profile.id}"
+            else
+              Rails.logger.error "Avatar upload failed for new user profile ##{user_profile.id}"
+            end
+          end
+
           # Reload to ensure all associations are loaded
           user_profile.reload
 
@@ -120,9 +127,24 @@ module Api
       end
 
       def update
-        if @user_profile.update(user_profiles_params)
+        # Handle avatar upload separately if present
+        avatar_file = params.dig(:user_profile, :avatar)
+        profile_params = user_profiles_params.except(:avatar)
+
+        # Update profile attributes
+        if @user_profile.update(profile_params)
+          # Handle avatar upload if provided
+          if avatar_file.present?
+            if @user_profile.upload_avatar(avatar_file, uploaded_by_id: current_user.id)
+              Rails.logger.info "Avatar uploaded successfully for user profile ##{@user_profile.id}"
+            else
+              Rails.logger.error "Avatar upload failed for user profile ##{@user_profile.id}"
+              # Continue even if avatar upload fails - profile was already updated
+            end
+          end
+
           serialized_data = UserProfileSerializer.new(
-            @user_profile,
+            @user_profile.reload,
             params: { action: 'show' }
           ).serializable_hash
 
@@ -295,21 +317,13 @@ module Api
       end
 
       def retrieve_user_profile
-        # Super admin pode acessar qualquer perfil
-        @user_profile = if super_admin_access?
-                          UserProfile.find(params[:id])
-                        else
-                          UserProfile.joins(:user).where(users: { team: current_team }).find(params[:id])
-                        end
+        # Usuários só podem acessar perfis do seu team
+        @user_profile = UserProfile.joins(:user).where(users: { team: current_team }).find(params[:id])
       end
 
       def retrieve_deleted_user_profile
-        # Super admin pode acessar qualquer perfil deletado
-        @user_profile = if super_admin_access?
-                          UserProfile.with_deleted.find(params[:id])
-                        else
-                          UserProfile.with_deleted.joins(:user).where(users: { team: current_team }).find(params[:id])
-                        end
+        # Usuários só podem acessar perfis deletados do seu team
+        @user_profile = UserProfile.with_deleted.joins(:user).where(users: { team: current_team }).find(params[:id])
       end
 
       def profile_completion_params
@@ -342,7 +356,7 @@ module Api
         # Skip authorization for complete_profile since it has explicit authorization
         return if action_name == 'complete_profile'
 
-        authorize [:admin, :work], :"#{action_name}?"
+        authorize @user_profile || UserProfile, :"#{action_name}?"
       end
     end
   end

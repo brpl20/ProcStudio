@@ -37,7 +37,7 @@ class FullUserSerializer
         civil_status: profile.civil_status,
         birth: profile.birth,
         mother_name: profile.mother_name,
-        avatar_url: profile.try(:avatar_url, only_path: false),
+        avatar_url: profile.avatar_url,
         created_at: profile.created_at,
         updated_at: profile.updated_at
       }

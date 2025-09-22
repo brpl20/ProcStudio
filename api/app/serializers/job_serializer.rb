@@ -58,9 +58,7 @@ class JobSerializer
         id: assignee.id,
         name: assignee.name,
         last_name: assignee.last_name,
-        avatar_url: if assignee.avatar.attached?
-                      Rails.application.routes.url_helpers.rails_blob_url(assignee.avatar, only_path: true)
-                    end
+        avatar_url: assignee.avatar_url
       }
     end
   end
@@ -83,9 +81,7 @@ class JobSerializer
         name: assignee.name,
         last_name: assignee.last_name,
         role: 'assignee',
-        avatar_url: if assignee.avatar.attached?
-                      Rails.application.routes.url_helpers.rails_blob_url(assignee.avatar, only_path: true)
-                    end
+        avatar_url: assignee.avatar_url
       }
     end
   end
@@ -97,9 +93,7 @@ class JobSerializer
         name: supervisor.name,
         last_name: supervisor.last_name,
         role: 'supervisor',
-        avatar_url: if supervisor.avatar.attached?
-                      Rails.application.routes.url_helpers.rails_blob_url(supervisor.avatar, only_path: true)
-                    end
+        avatar_url: supervisor.avatar_url
       }
     end
   end
@@ -113,9 +107,7 @@ class JobSerializer
         name: collaborator.name,
         last_name: collaborator.last_name,
         role: 'collaborator',
-        avatar_url: if collaborator.avatar.attached?
-                      Rails.application.routes.url_helpers.rails_blob_url(collaborator.avatar, only_path: true)
-                    end
+        avatar_url: collaborator.avatar_url
       }
     end
   end
@@ -195,9 +187,7 @@ class JobSerializer
       author: {
         id: latest.user_profile.id,
         name: latest.user_profile.full_name,
-        avatar_url: if latest.user_profile.avatar.attached?
-                      Rails.application.routes.url_helpers.rails_blob_url(latest.user_profile.avatar, only_path: true)
-                    end
+        avatar_url: latest.user_profile.avatar_url
       }
     }
   end
@@ -213,9 +203,7 @@ class JobSerializer
         author: {
           id: comment.user_profile.id,
           name: comment.user_profile.full_name,
-          avatar_url: if comment.user_profile.avatar.attached?
-                        Rails.application.routes.url_helpers.rails_blob_url(comment.user_profile.avatar, only_path: true)
-                      end
+          avatar_url: comment.user_profile.avatar_url
         }
       }
     end
