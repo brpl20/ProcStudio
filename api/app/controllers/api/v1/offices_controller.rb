@@ -50,15 +50,15 @@ module Api
         # Extract non-model attributes before creating office
         logo = params[:office].delete(:logo)
         social_contracts = params[:office].delete(:social_contracts)
-        profit_distribution = params[:office].delete(:profit_distribution)
-        partners_with_pro_labore = params[:office].delete(:partners_with_pro_labore)
-        
+        params[:office].delete(:profit_distribution)
+        params[:office].delete(:partners_with_pro_labore)
+
         Rails.logger.info "Current team: #{current_team.inspect}"
         Rails.logger.info "Current team ID: #{current_team&.id}"
-        
+
         @office = current_team.offices.build(offices_params)
         @office.created_by = current_user if current_user
-        
+
         Rails.logger.info "Office team_id after build: #{@office.team_id}"
 
         if @office.save
@@ -70,25 +70,25 @@ module Api
               description: "Logo for #{@office.name}"
             }
             if @office.upload_logo(logo, metadata_params)
-              Rails.logger.info "Logo uploaded successfully"
+              Rails.logger.info 'Logo uploaded successfully'
             else
               Rails.logger.error "Logo upload failed: #{@office.errors.full_messages}"
             end
           end
-          
+
           # Handle social contracts upload if present
           if social_contracts.present? && @office.create_social_contract == 'true'
             Rails.logger.info "Uploading social contracts for office #{@office.id}"
             Array(social_contracts).each do |contract|
-              next unless contract.present?
-              
+              next if contract.blank?
+
               metadata_params = {
                 uploaded_by_id: current_user.id,
                 document_date: Date.current,
                 description: "Social contract for #{@office.name}"
               }
               if @office.upload_social_contract(contract, metadata_params)
-                Rails.logger.info "Social contract uploaded successfully"
+                Rails.logger.info 'Social contract uploaded successfully'
               else
                 Rails.logger.error "Social contract upload failed: #{@office.errors.full_messages}"
               end
@@ -96,7 +96,7 @@ module Api
           else
             Rails.logger.info "No social contracts to upload (present: #{social_contracts.present?}, create: #{@office.create_social_contract})"
           end
-          
+
           serialized = OfficeSerializer.new(
             @office,
             { params: { action: 'show' } }
@@ -125,13 +125,13 @@ module Api
         # Extract non-model attributes before updating office
         logo = params[:office].delete(:logo)
         social_contracts = params[:office].delete(:social_contracts)
-        profit_distribution = params[:office].delete(:profit_distribution)
-        partners_with_pro_labore = params[:office].delete(:partners_with_pro_labore)
-        
+        params[:office].delete(:profit_distribution)
+        params[:office].delete(:partners_with_pro_labore)
+
         # Check if only file uploads were sent (no other office attributes)
         # In this case, skip the update and just process the files
         should_update_office = params[:office].present? && !params[:office].empty?
-        
+
         if !should_update_office || @office.update(offices_params)
           # Handle logo upload if present
           if logo.present?
@@ -141,20 +141,20 @@ module Api
             }
             @office.upload_logo(logo, metadata_params)
           end
-          
+
           # Handle social contracts upload if present
           if social_contracts.present? && @office.create_social_contract == 'true'
             Rails.logger.info "Uploading social contracts for office #{@office.id}"
             Array(social_contracts).each do |contract|
-              next unless contract.present?
-              
+              next if contract.blank?
+
               metadata_params = {
                 uploaded_by_id: current_user.id,
                 document_date: Date.current,
                 description: "Social contract for #{@office.name}"
               }
               if @office.upload_social_contract(contract, metadata_params)
-                Rails.logger.info "Social contract uploaded successfully"
+                Rails.logger.info 'Social contract uploaded successfully'
               else
                 Rails.logger.error "Social contract upload failed: #{@office.errors.full_messages}"
               end
@@ -162,7 +162,7 @@ module Api
           else
             Rails.logger.info "No social contracts to upload (present: #{social_contracts.present?}, create: #{@office.create_social_contract})"
           end
-          
+
           serialized = OfficeSerializer.new(
             @office,
             { params: { action: 'show' } }
@@ -419,12 +419,12 @@ module Api
       def offices_params
         # Parse JSON strings for nested attributes if they come as strings
         parse_nested_json_attributes if params[:office]
-        
+
         params.require(:office).permit(
           :name, :cnpj, :oab_id, :oab_status, :oab_inscricao, :oab_link,
           :society, :foundation, :site, :accounting_type,
           :quote_value, :number_of_quotes,
-          :create_social_contract,  # Virtual attribute - just a trigger, not saved
+          :create_social_contract, # Virtual attribute - just a trigger, not saved
           phones_attributes: [:id, :phone_number, :_destroy],
           addresses_attributes: [:id, :street, :number, :complement, :neighborhood,
                                  :city, :state, :zip_code, :address_type, :_destroy],
@@ -435,23 +435,22 @@ module Api
           user_offices_attributes: [:id, :user_id, :partnership_type,
                                     :partnership_percentage, :is_administrator,
                                     :cna_link, :entry_date, :_destroy,
-                                    compensations_attributes: [:id, :compensation_type,
-                                                              :amount, :effective_date,
-                                                              :end_date, :payment_frequency,
-                                                              :notes, :_destroy]]
+                                    { compensations_attributes: [:id, :compensation_type,
+                                                                 :amount, :effective_date,
+                                                                 :end_date, :payment_frequency,
+                                                                 :notes, :_destroy] }]
         )
         # rubocop:enable Rails/StrongParametersExpect
       end
-      
+
       def parse_nested_json_attributes
-        %w[phones_attributes addresses_attributes emails_attributes 
-           office_emails_attributes bank_accounts_attributes user_offices_attributes].each do |attr|
-          if params[:office][attr].is_a?(String)
-            begin
-              params[:office][attr] = JSON.parse(params[:office][attr])
-            rescue JSON::ParserError => e
-              Rails.logger.error "Error parsing #{attr}: #{e.message}"
-            end
+        ['phones_attributes', 'addresses_attributes', 'emails_attributes', 'office_emails_attributes', 'bank_accounts_attributes', 'user_offices_attributes'].each do |attr|
+          next unless params[:office][attr].is_a?(String)
+
+          begin
+            params[:office][attr] = JSON.parse(params[:office][attr])
+          rescue JSON::ParserError => e
+            Rails.logger.error "Error parsing #{attr}: #{e.message}"
           end
         end
       end
