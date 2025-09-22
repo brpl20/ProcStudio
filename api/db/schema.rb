@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_20_213159) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_22_122949) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -757,6 +757,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_20_213159) do
     t.bigint "office_id"
     t.string "origin"
     t.datetime "deleted_at"
+    t.string "avatar_s3_key"
+    t.index ["avatar_s3_key"], name: "index_user_profiles_on_avatar_s3_key"
     t.index ["deleted_at"], name: "index_user_profiles_on_deleted_at"
     t.index ["office_id"], name: "index_user_profiles_on_office_id"
     t.index ["user_id"], name: "index_user_profiles_on_user_id"

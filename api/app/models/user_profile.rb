@@ -4,30 +4,32 @@
 #
 # Table name: user_profiles
 #
-#  id           :bigint           not null, primary key
-#  birth        :date
-#  civil_status :string
-#  cpf          :string
-#  deleted_at   :datetime
-#  gender       :string
-#  last_name    :string
-#  mother_name  :string
-#  name         :string
-#  nationality  :string
-#  oab          :string
-#  origin       :string
-#  rg           :string
-#  role         :string
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  office_id    :bigint
-#  user_id      :bigint           not null
+#  id            :bigint           not null, primary key
+#  avatar_s3_key :string
+#  birth         :date
+#  civil_status  :string
+#  cpf           :string
+#  deleted_at    :datetime
+#  gender        :string
+#  last_name     :string
+#  mother_name   :string
+#  name          :string
+#  nationality   :string
+#  oab           :string
+#  origin        :string
+#  rg            :string
+#  role          :string
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  office_id     :bigint
+#  user_id       :bigint           not null
 #
 # Indexes
 #
-#  index_user_profiles_on_deleted_at  (deleted_at)
-#  index_user_profiles_on_office_id   (office_id)
-#  index_user_profiles_on_user_id     (user_id)
+#  index_user_profiles_on_avatar_s3_key  (avatar_s3_key)
+#  index_user_profiles_on_deleted_at     (deleted_at)
+#  index_user_profiles_on_office_id      (office_id)
+#  index_user_profiles_on_user_id        (user_id)
 #
 # Foreign Keys
 #
@@ -37,7 +39,7 @@
 
 class UserProfile < ApplicationRecord
   include DeletedFilterConcern
-  include AvatarUrlConcern
+  include S3Attachable
   include Draftable
 
   acts_as_paranoid
