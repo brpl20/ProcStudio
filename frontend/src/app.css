@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 
 @plugin '@tailwindcss/typography';
+
 @plugin "daisyui" {
   /* Disable all other themes which forces the default theme created below. You can add a dark mode theme using daisyui if you like, and it will automatically use it when the user's system is in dark mode. Docs: https://daisyui.com/docs/themes/ */
   themes: false;
@@ -8,9 +9,12 @@
 
 @plugin "daisyui/theme" {
   name: 'saasstartertheme';
-  default: true; /* set as default */
-  prefersdark: false; /* set as default dark mode (prefers-color-scheme:dark) */
-  color-scheme: light; /* color of browser-provided UI */
+  default: true;
+  /* set as default */
+  prefersdark: false;
+  /* set as default dark mode (prefers-color-scheme:dark) */
+  color-scheme: light;
+  /* color of browser-provided UI */
 
   --color-primary: #0277ee;
   --color-primary-content: #fefefa;
@@ -32,6 +36,16 @@
   --color-warning-content: #fdf4dd;
   --color-error: #fc3c32;
   --color-error-content: #fefefa;
+  --color-low: #84CC16;
+  --color-medium: #EAB308;
+  --color-high: #F97316;
+  --color-urgent: #EF4444;
+
+  --color-pending: #6B7280;
+  --color-progress: #3B82F6;
+  --color-completed: #10B981;
+  --color-cancelled: #EF4444;
+  --color-delayed: #EA991F;
 
   /* border radius */
   --radius-selector: 1rem;
@@ -60,6 +74,7 @@
   color utility to any element that depends on these defaults.
 */
 @layer base {
+
   *,
   ::after,
   ::before,
@@ -77,10 +92,12 @@ a {
 .authBtn {
   @apply btn;
 }
+
 button[disabled].authBtn {
   font-size: 0.001px;
   filter: brightness(65%);
 }
+
 button[disabled].authBtn::before {
   font-size: 14px;
   content: 'Loading...';
@@ -98,4 +115,76 @@ button[disabled].authBtn::before {
 
 .menu li a.active svg {
   color: var(--color-primary-content) !important;
+}
+
+.dot {
+  width: 18px; /* tamanho da bolinha */
+  height: 18px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot-low {
+  background-color: var(--color-low);
+}
+
+.dot-medium {
+  background-color: var(--color-medium);
+}
+
+.dot-high {
+  background-color: var(--color-high);
+}
+
+.dot-urgent {
+  background-color: var(--color-urgent);
+}
+.dot-urgent::after {
+  content: "!";
+  color: var(--color-primary-content);
+}
+
+.badge-low {
+  background-color: var(--color-low);
+  color: white;
+}
+
+.badge-medium {
+  background-color: var(--color-medium);
+  color: white;
+}
+
+.badge-high {
+  background-color: var(--color-high);
+  color: white;
+}
+
+.badge-urgent {
+  background-color: var(--color-urgent);
+  color: white;
+}
+
+.badge-pending {
+  background-color: var(--color-pending);
+  color: var(--color-primary-content);
+}
+
+.badge-in_progress {
+  background-color: var(--color-progress);
+  color: var(--color-primary-content);
+}
+
+.badge-completed {
+  background-color: var(--color-completed);
+  color: var(--color-primary-content);
+}
+
+.badge-cancelled {
+  background-color: var(--color-cancelled);
+  color: var(--color-primary-content);
+}
+
+.badge-delayed {
+  background-color: var(--color-delayed);
+  color: var(--color-primary-content);
 }

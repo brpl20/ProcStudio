@@ -16,12 +16,17 @@
     onRetry?: () => void;
   }
 
-  const {
-    jobs = [],
-    loading = false,
-    error = null,
-    onRetry = () => {}
-  }: Props = $props();
+  const usersAvatar = [
+    { name: 'Maria', last_name: 'Silva', avatar: 'https://i.pravatar.cc/150?img=5' },
+    { name: 'João', last_name: 'Souza', avatar: null },
+    { name: 'Carlos', last_name: 'Almeida', avatar: null },
+    { name: 'Fernanda', last_name: 'Rocha', avatar: 'https://i.pravatar.cc/150?img=15' },
+    { name: 'Leticia', last_name: 'Campos', avatar: 'https://i.pravatar.cc/150?img=6' },
+    { name: 'Lucas', last_name: 'Ferreira', avatar: null },
+    { name: 'Marcos', last_name: 'Lopes', avatar: null }
+  ];
+
+  const { jobs = [], loading = false, error = null, onRetry = () => {} }: Props = $props();
 
   let searchTerm = $state('');
   let priorityFilter = $state<string>('all');
@@ -92,14 +97,11 @@
   </div>
 {:else}
   <div class="mb-4 flex gap-2">
-    <SearchInput
-      bind:value={searchTerm}
-      placeholder="Pesquisar por descrição, comentário, trabalho, status..."
-    />
+    <SearchInput bind:value={searchTerm} placeholder="Insira palavras chaves..." />
     <FilterButton
       bind:value={priorityFilter}
       options={priorityOptions}
-      placeholder="Prioridade"
+      placeholder="Filtros"
       allOptionLabel="Todas"
     />
   </div>
@@ -116,23 +118,23 @@
   {/if}
 
   <div class="overflow-x-auto">
-    <table class="table table-zebra table-xs sm:table-sm">
+    <table class="table table-zebra table-xs text-center">
       <thead>
         <tr>
-          <th class="hidden sm:table-cell">#</th>
-          <th>Descrição</th>
-          <th class="hidden lg:table-cell">Comentários</th>
+          <th>#</th>
+          <th>Tarefas</th>
+          <th></th>
           <th>Status</th>
-          <th class="hidden md:table-cell">Prioridade</th>
-          <th class="hidden md:table-cell">Equipe</th>
-          <th class="hidden lg:table-cell">Trabalho</th>
-          <th class="hidden xl:table-cell">Cliente</th>
+          <th>Prioridade</th>
+          <th>Equipe</th>
+          <th>Trabalho</th>
+          <th>Cliente</th>
         </tr>
       </thead>
       <tbody>
         {#each filteredJobs as job}
           <tr class="hover">
-            <td class="font-mono text-sm hidden sm:table-cell">
+            <td class="font-mono text-sm">
               {job.id}
             </td>
             <td>
@@ -144,13 +146,13 @@
                 <div class="font-medium text-base-content/60">Sem descrição</div>
               {/if}
             </td>
-            <td class="w-12 text-center hidden lg:table-cell">
+            <td class="w-12 text-center">
               {#if job.latest_comment}
                 <div class="tooltip tooltip-left" data-tip={job.latest_comment.content}>
                   <div class="flex items-center gap-1">
                     <Icon
                       name="comment"
-                      className="h-4 w-4 text-primary hover:text-primary-focus cursor-help"
+                      className="h-6 w-6 text-primary hover:text-primary-focus cursor-help"
                     />
                     {#if job.comments_count && job.comments_count > 1}
                       <span class="badge badge-xs badge-primary">{job.comments_count}</span>
@@ -158,7 +160,10 @@
                   </div>
                 </div>
               {:else}
-                <span class="text-base-content/30">-</span>
+                <Icon
+                  name="comment"
+                  className="h-6 w-6 text-primary hover:text-primary-focus cursor-help"
+                />
               {/if}
             </td>
             <td>
@@ -168,7 +173,7 @@
                     {getJobStatusInfo(job.status).label}
                   </span>
                 </div>
-                <div class="text-xs text-base-content/60 hidden sm:block">
+                <div class="text-xs text-base-content/60">
                   {#if job.deadline}
                     {new Date(job.deadline).toLocaleDateString('pt-BR')}
                   {:else}
@@ -177,22 +182,27 @@
                 </div>
               </div>
             </td>
-            <td class="hidden md:table-cell">
-              <span class="{getJobPriorityInfo(job.priority).badgeClass} badge-sm">
-                {getJobPriorityInfo(job.priority).label}
-              </span>
+            <td>
+              <div class="tooltip md:hidden" data-tip={getJobPriorityInfo(job.priority).label}>
+                <span class={getJobPriorityInfo(job.priority).dotClass}></span>
+              </div>
+              <div class="hidden md:inline-block">
+                <span class={getJobPriorityInfo(job.priority).badgeClass}>
+                  {getJobPriorityInfo(job.priority).label}
+                </span>
+              </div>
             </td>
-            <td class="hidden md:table-cell">
-              <AvatarGroup users={job.assignees_summary || []} size="sm" />
+            <td>
+              <AvatarGroup users={usersAvatar} size="responsive" />
             </td>
-            <td class="hidden lg:table-cell">
+            <td>
               {#if job.work_number}
                 <div class="font-medium">{job.work_number}</div>
               {:else}
                 <div class="font-medium text-base-content/60">Sem trabalho</div>
               {/if}
             </td>
-            <td class="hidden xl:table-cell">
+            <td>
               {#if job.customer_id}
                 <div class="font-medium">ID: {job.customer_id}</div>
               {:else}

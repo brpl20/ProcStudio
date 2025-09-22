@@ -8,7 +8,9 @@ export interface FormOption {
 
 export interface BadgeFormOption extends FormOption {
   badgeClass: string;
+  dotClass?: string;
 }
+
 
 export const SOCIETY_OPTIONS: FormOption[] = [
   { value: 'individual', label: 'Individual' },
@@ -28,18 +30,18 @@ export const PARTNERSHIP_TYPES: FormOption[] = [
 ];
 
 export const JOBSTATUS: BadgeFormOption[] = [
-  { value: 'pending', label: 'Pendente', badgeClass: 'badge badge-warning' },
-  { value: 'in_progress', label: 'Em Progresso', badgeClass: 'badge badge-neutral' },
-  { value: 'completed', label: 'Concluído', badgeClass: 'badge badge-success' },
-  { value: 'cancelled', label: 'Cancelado', badgeClass: 'badge badge-error' },
-  { value: 'delayed', label: 'Atrasado', badgeClass: 'badge badge-warning' }
+  { value: 'pending', label: 'Pendente', badgeClass: 'badge badge-pending' },
+  { value: 'in_progress', label: 'Em Progresso', badgeClass: 'badge badge-in_progress' },
+  { value: 'completed', label: 'Concluído', badgeClass: 'badge badge-completed' },
+  { value: 'cancelled', label: 'Cancelado', badgeClass: 'badge badge-cancelled' },
+  { value: 'delayed', label: 'Atrasado', badgeClass: 'badge badge-delayed' }
 ];
 
 export const JOBPRIORITY: BadgeFormOption[] = [
-  { value: 'low', label: 'Baixa', badgeClass: 'badge badge-outline badge-primary' },
-  { value: 'medium', label: 'Média', badgeClass: 'badge badge-outline badge-accent' },
-  { value: 'high', label: 'Alta', badgeClass: 'badge badge-outline badge-warning' },
-  { value: 'urgent', label: 'Urgente', badgeClass: 'badge badge-outline badge-secondary' }
+  { value: 'low', label: 'Baixa', dotClass: 'dot dot-low badge-low', badgeClass: 'badge badge-low' },
+  { value: 'medium', label: 'Média', dotClass: 'dot dot-medium badge-medium', badgeClass: 'badge badge-medium' },
+  { value: 'high', label: 'Alta', dotClass: 'dot dot-high badge-high', badgeClass: 'badge badge-high' },
+  { value: 'urgent', label: 'Urgente', dotClass: 'dot dot-urgent badge-urgent', badgeClass: 'badge badge-urgent' }
 ];
 
 // Helper functions that return both label and badge class
