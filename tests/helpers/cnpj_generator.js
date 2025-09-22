@@ -221,9 +221,49 @@ class CNPJGenerator {
   }
 }
 
+const { spawn } = require('child_process');
+
+function copyToClipboard(text) {
+  return new Promise((resolve, reject) => {
+    let cp;
+    if (process.platform === 'darwin') {
+      cp = spawn('pbcopy');
+    } else if (process.platform === 'win32') {
+      cp = spawn('clip');
+    } else {
+      // Linux/other: try xclip then xsel; ignore if not available
+      cp = spawn('xclip', ['-selection', 'clipboard']);
+      cp.on('error', () => {
+        const cp2 = spawn('xsel', ['--clipboard', '--input']);
+        cp2.on('error', reject);
+        cp2.stdin.end(text);
+        cp2.on('close', code => (code === 0 ? resolve() : reject(new Error('xsel failed'))));
+      });
+      cp.stdin.end(text);
+      cp.on('close', code => (code === 0 ? resolve() : reject(new Error('xclip failed'))));
+      return;
+    }
+
+    cp.on('error', reject);
+    cp.stdin.end(text);
+    cp.on('close', code => (code === 0 ? resolve() : reject(new Error('clipboard command failed'))));
+  });
+}
+
 // Run when script is executed directly (not required as module)
 if (require.main === module) {
-  console.log("Generated CNPJ:", CNPJGenerator.generate());
+  (async function main() {
+    const cnpj = CNPJGenerator.generate();
+    const useConsole = process.argv.includes('--console');
+    
+    console.log(cnpj);
+    
+    if (!useConsole) {
+      try {
+        await copyToClipboard(cnpj);
+      } catch {}
+    }
+  })();
 }
 
 module.exports = CNPJGenerator;
