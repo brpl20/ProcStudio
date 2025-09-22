@@ -94,7 +94,7 @@ module Api
               end
             end
           end
-          
+
           # Handle social contract generation if requested (separate from upload)
           if @office.create_social_contract == 'true'
             Rails.logger.info "Social contract generation requested for office #{@office.id}"
@@ -164,7 +164,7 @@ module Api
               end
             end
           end
-          
+
           # Handle social contract generation if requested (separate from upload)
           if @office.create_social_contract == 'true'
             Rails.logger.info "Social contract generation requested for office #{@office.id}"

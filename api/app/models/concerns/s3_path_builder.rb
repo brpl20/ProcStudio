@@ -38,7 +38,7 @@ module S3PathBuilder
     # Pattern: /env/team-{id}/users/{user-id}/avatar/avatar-{timestamp}.{ext}
     def build_avatar_s3_key(extension)
       timestamp = generate_timestamp
-      user_id = self.is_a?(User) ? id : user_id
+      user_id = id if is_a?(User)
       "#{s3_prefix}/users/#{user_id}/avatar/avatar-#{timestamp}.#{extension}"
     end
 
@@ -60,14 +60,14 @@ module S3PathBuilder
     # Generate a presigned URL for an S3 key
     def generate_presigned_url(s3_key, expires_in: 3600)
       return nil if s3_key.blank?
-      
+
       S3Service.presigned_url(s3_key, expires_in: expires_in)
     end
 
     # Generate a presigned download URL with content disposition
     def generate_presigned_download_url(s3_key, filename, expires_in: 3600)
       return nil if s3_key.blank?
-      
+
       S3Service.presigned_download_url(s3_key, filename, expires_in: expires_in)
     end
   end

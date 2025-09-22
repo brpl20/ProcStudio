@@ -139,7 +139,6 @@ class Office < ApplicationRecord
     "R$ #{format('%.2f', total_quotes_value).tr('.', ',')}"
   end
 
-
   private
 
   def unipessoal_must_have_only_one_partner

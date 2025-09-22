@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe S3Attachable do
   let(:office) { create(:office) }
   let(:user_profile) { create(:user_profile) }
-  
+
   describe 'Office logo upload' do
     let(:file) do
       double('file',
@@ -41,7 +41,7 @@ RSpec.describe S3Attachable do
       it 'returns presigned URL when logo exists' do
         office.update_column(:logo_s3_key, 'test/logo.png')
         allow(S3Service).to receive(:presigned_url).and_return('https://s3.amazonaws.com/signed-url')
-        
+
         expect(office.logo_url).to eq('https://s3.amazonaws.com/signed-url')
       end
 
@@ -54,7 +54,7 @@ RSpec.describe S3Attachable do
       it 'deletes logo from S3 and clears key' do
         office.update_column(:logo_s3_key, 'test/logo.png')
         expect(S3Service).to receive(:delete).with('test/logo.png').and_return(true)
-        
+
         expect(office.delete_logo!).to be true
         expect(office.reload.logo_s3_key).to be_nil
       end
@@ -96,7 +96,7 @@ RSpec.describe S3Attachable do
       it 'returns presigned URL when avatar exists' do
         user_profile.update_column(:avatar_s3_key, 'test/avatar.jpg')
         allow(S3Service).to receive(:presigned_url).and_return('https://s3.amazonaws.com/signed-url')
-        
+
         expect(user_profile.avatar_url).to eq('https://s3.amazonaws.com/signed-url')
       end
 
@@ -109,7 +109,7 @@ RSpec.describe S3Attachable do
       it 'deletes avatar from S3 and clears key' do
         user_profile.update_column(:avatar_s3_key, 'test/avatar.jpg')
         expect(S3Service).to receive(:delete).with('test/avatar.jpg').and_return(true)
-        
+
         expect(user_profile.delete_avatar!).to be true
         expect(user_profile.reload.avatar_s3_key).to be_nil
       end
@@ -142,7 +142,7 @@ RSpec.describe S3Attachable do
 
       it 'creates attachment metadata record' do
         office.upload_social_contract(file, uploaded_by_id: 1)
-        
+
         metadata = office.attachment_metadata.last
         expect(metadata.document_type).to eq('social_contract')
         expect(metadata.filename).to eq('contract.pdf')
@@ -170,7 +170,7 @@ RSpec.describe S3Attachable do
 
       it 'returns contracts with presigned URLs' do
         contracts = office.social_contracts_with_urls
-        
+
         expect(contracts.count).to eq(1)
         expect(contracts.first[:filename]).to eq('contract.pdf')
         expect(contracts.first[:url]).to eq('https://s3.amazonaws.com/view-url')
@@ -191,13 +191,13 @@ RSpec.describe S3Attachable do
 
       it 'deletes social contract from S3 and removes metadata' do
         expect(S3Service).to receive(:delete).with('test/contract.pdf').and_return(true)
-        
+
         expect(office.delete_social_contract!(contract_metadata.id)).to be true
         expect(office.attachment_metadata.find_by(id: contract_metadata.id)).to be_nil
       end
 
       it 'returns false for non-existent contract' do
-        expect(office.delete_social_contract!(999999)).to be false
+        expect(office.delete_social_contract!(999_999)).to be false
       end
     end
   end
