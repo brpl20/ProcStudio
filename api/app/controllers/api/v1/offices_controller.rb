@@ -77,7 +77,7 @@ module Api
           end
 
           # Handle social contracts upload if present
-          if social_contracts.present? && @office.create_social_contract == 'true'
+          if social_contracts.present?
             Rails.logger.info "Uploading social contracts for office #{@office.id}"
             Array(social_contracts).each do |contract|
               next if contract.blank?
@@ -93,8 +93,12 @@ module Api
                 Rails.logger.error "Social contract upload failed: #{@office.errors.full_messages}"
               end
             end
-          else
-            Rails.logger.info "No social contracts to upload (present: #{social_contracts.present?}, create: #{@office.create_social_contract})"
+          end
+          
+          # Handle social contract generation if requested (separate from upload)
+          if @office.create_social_contract == 'true'
+            Rails.logger.info "Social contract generation requested for office #{@office.id}"
+            # TODO: Call generate_social_contract service when implemented
           end
 
           serialized = OfficeSerializer.new(
@@ -143,7 +147,7 @@ module Api
           end
 
           # Handle social contracts upload if present
-          if social_contracts.present? && @office.create_social_contract == 'true'
+          if social_contracts.present?
             Rails.logger.info "Uploading social contracts for office #{@office.id}"
             Array(social_contracts).each do |contract|
               next if contract.blank?
@@ -159,8 +163,12 @@ module Api
                 Rails.logger.error "Social contract upload failed: #{@office.errors.full_messages}"
               end
             end
-          else
-            Rails.logger.info "No social contracts to upload (present: #{social_contracts.present?}, create: #{@office.create_social_contract})"
+          end
+          
+          # Handle social contract generation if requested (separate from upload)
+          if @office.create_social_contract == 'true'
+            Rails.logger.info "Social contract generation requested for office #{@office.id}"
+            # TODO: Call generate_social_contract service when implemented
           end
 
           serialized = OfficeSerializer.new(

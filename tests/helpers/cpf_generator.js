@@ -137,105 +137,51 @@ class CPFGenerator {
       formatted ? this.generate() : this.generateUnformatted(),
     );
   }
+}
 
-  /**
-   * Gets a list of known valid CPFs for testing
-   * @returns {string[]} Array of valid test CPFs
-   */
-  static getTestCPFs() {
-    return [
-      "058.802.539-96",
-      "111.444.777-35",
-      "123.456.789-09",
-      "987.654.321-00",
-      "147.258.369-27",
-    ];
-  }
+const { spawn } = require('child_process');
 
-  /**
-   * Gets a random valid test CPF
-   * @returns {string} A valid test CPF
-   */
-  static getRandomTestCPF() {
-    const testCPFs = this.getTestCPFs();
-    return testCPFs[Math.floor(Math.random() * testCPFs.length)];
-  }
-
-  /**
-   * Creates test user objects with valid CPFs for E2E testing
-   * @param {number} count - Number of test users to create
-   * @returns {Object[]} Array of test user objects with valid CPFs
-   */
-  static createTestUsers(count = 3) {
-    const roles = ["admin", "user", "lawyer"];
-    const users = [];
-
-    for (let i = 0; i < count; i++) {
-      const role = roles[i % roles.length];
-      users.push({
-        email: `${role}${i > 0 ? i + 1 : ""}@e2etest.procstudio.com`,
-        password: "E2ETestPass123!",
-        role: role,
-        cpf: this.generateUnformatted(),
-        firstName: `Test${role.charAt(0).toUpperCase() + role.slice(1)}`,
-        lastName: `User${i > 0 ? i + 1 : ""}`,
-        phone: `(555) ${String(123 + i).padStart(3, "0")}-${String(4567 + i).padStart(4, "0")}`,
+function copyToClipboard(text) {
+  return new Promise((resolve, reject) => {
+    let cp;
+    if (process.platform === 'darwin') {
+      cp = spawn('pbcopy');
+    } else if (process.platform === 'win32') {
+      cp = spawn('clip');
+    } else {
+      // Linux/other: try xclip then xsel; ignore if not available
+      cp = spawn('xclip', ['-selection', 'clipboard']);
+      cp.on('error', () => {
+        const cp2 = spawn('xsel', ['--clipboard', '--input']);
+        cp2.on('error', reject);
+        cp2.stdin.end(text);
+        cp2.on('close', code => (code === 0 ? resolve() : reject(new Error('xsel failed'))));
       });
+      cp.stdin.end(text);
+      cp.on('close', code => (code === 0 ? resolve() : reject(new Error('xclip failed'))));
+      return;
     }
 
-    return users;
-  }
+    cp.on('error', reject);
+    cp.stdin.end(text);
+    cp.on('close', code => (code === 0 ? resolve() : reject(new Error('clipboard command failed'))));
+  });
+}
 
-  /**
-   * Creates test client objects with valid CPFs for E2E testing
-   * @param {number} count - Number of test clients to create
-   * @returns {Object[]} Array of test client objects with valid CPFs
-   */
-  static createTestClients(count = 2) {
-    const clients = [];
-
-    for (let i = 0; i < count; i++) {
-      clients.push({
-        name: `E2E Test Client ${i + 1}`,
-        email: `client${i + 1}@e2etest.com`,
-        phone: `(555) ${String(123 + i).padStart(3, "0")}-${String(4567 + i).padStart(4, "0")}`,
-        cpf: this.generate(), // Use formatted CPF for display
-        address: `${123 + i * 100} Test Street`,
-        city: "São Paulo",
-        state: "SP",
-        zipCode: `${String(12345 + i).padStart(5, "0")}-${String(678 + i).padStart(3, "0")}`,
-      });
+// Run when script is executed directly (not required as module)
+if (require.main === module) {
+  (async function main() {
+    const cpf = CPFGenerator.generate();
+    const useConsole = process.argv.includes('--console');
+    
+    console.log(cpf);
+    
+    if (!useConsole) {
+      try {
+        await copyToClipboard(cpf);
+      } catch {}
     }
-
-    return clients;
-  }
-
-  /**
-   * Validates multiple CPFs at once
-   * @param {string[]} cpfs - Array of CPFs to validate
-   * @returns {Object} Validation results with valid/invalid counts
-   */
-  static validateMultiple(cpfs) {
-    const results = {
-      total: cpfs.length,
-      valid: 0,
-      invalid: 0,
-      validCPFs: [],
-      invalidCPFs: [],
-    };
-
-    cpfs.forEach((cpf) => {
-      if (this.isValid(cpf)) {
-        results.valid++;
-        results.validCPFs.push(cpf);
-      } else {
-        results.invalid++;
-        results.invalidCPFs.push(cpf);
-      }
-    });
-
-    return results;
-  }
+  })();
 }
 
 module.exports = CPFGenerator;
