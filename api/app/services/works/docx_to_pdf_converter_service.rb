@@ -47,7 +47,17 @@ module Works
     def attach_pdf(pdf_path)
       pdf_file = File.open(pdf_path)
       file_name = @document.document_name_parsed
-      S3UploadManager.upload_file(pdf_file, @document, :original, file_name, 'application/pdf')
+      
+      # Generate S3 key for PDF
+      s3_key = @document.build_work_document_s3_key(@document.document_type, 'pdf')
+      
+      # Upload to S3
+      if S3Service.upload(pdf_file, s3_key, { content_type: 'application/pdf' })
+        Rails.logger.info "PDF uploaded to S3: #{s3_key}"
+        @document.update_column(:original_s3_key, s3_key) if @document.respond_to?(:original_s3_key)
+      else
+        Rails.logger.error "Failed to upload PDF to S3"
+      end
 
       pdf_file.close
     end

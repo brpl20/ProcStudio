@@ -35,10 +35,24 @@ module ProfileCustomers
       content_type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
 
       doc.save(file_path)
-
+      
+      # Generate S3 key following the pattern
+      s3_key = @document.build_customer_document_s3_key('procuracao_simples', 'docx')
+      
+      # Upload to S3
       file = File.open(file_path)
-      S3UploadManager.upload_file(file, @document, :file, file_name, content_type)
-      FileUtils.remove_file(file_path, true)
+      begin
+        if S3Service.upload(file, s3_key, { content_type: content_type })
+          Rails.logger.info "Document uploaded to S3: #{s3_key}"
+          # Update the document record with S3 key if needed
+          @document.update_column(:file_s3_key, s3_key) if @document.respond_to?(:file_s3_key)
+        else
+          Rails.logger.error "Failed to upload document to S3"
+        end
+      ensure
+        file.close if file && !file.closed?
+        FileUtils.remove_file(file_path, true)
+      end
     end
 
     # main function

@@ -33,14 +33,30 @@ module Works
     attr_reader :document, :work, :office, :lawyers, :lawyer_address, :customer, :address
 
     def save
-      file = File.open(file_path)
       content_type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-
-      S3UploadManager.upload_file(file, document, :original, file_name, content_type)
-      FileUtils.remove_file(file_path, true)
-    rescue StandardError => e
-      Rails.logger.error("[Document Error]: #{e.message}")
-      false
+      
+      # Generate S3 key following the pattern
+      s3_key = document.build_work_document_s3_key(document.document_type, 'docx')
+      
+      # Upload to S3
+      file = File.open(file_path)
+      begin
+        if S3Service.upload(file, s3_key, { content_type: content_type })
+          Rails.logger.info "Document uploaded to S3: #{s3_key}"
+          # Update the document record with S3 key if needed
+          document.update_column(:original_s3_key, s3_key) if document.respond_to?(:original_s3_key)
+          true
+        else
+          Rails.logger.error "Failed to upload document to S3"
+          false
+        end
+      rescue StandardError => e
+        Rails.logger.error("[Document Error]: #{e.message}")
+        false
+      ensure
+        file.close if file && !file.closed?
+        FileUtils.remove_file(file_path, true)
+      end
     end
 
     def representor
