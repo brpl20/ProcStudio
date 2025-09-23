@@ -8,7 +8,9 @@
 #  deleted_at          :datetime
 #  document_type       :string
 #  format              :integer          default("docx"), not null
+#  original_s3_key     :string
 #  sign_source         :integer          default("no_signature"), not null
+#  signed_s3_key       :string
 #  status              :integer          default("pending_review"), not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null

@@ -70,6 +70,67 @@ module S3PathBuilder
 
       S3Service.presigned_download_url(s3_key, filename, expires_in: expires_in)
     end
+
+    # Build S3 key for work documents
+    # Pattern: /env/team-{id}/works/{work-id}/documents/{doc-type}/{filename}-{timestamp}.{ext}
+    def build_work_document_s3_key(document_type, extension)
+      timestamp = generate_timestamp
+      filename = document_type_to_filename(document_type)
+      work_team_id = if respond_to?(:work)
+                       work.team_id
+                     elsif is_a?(Work)
+                       team_id
+                     else
+                       raise "Cannot determine team_id for work document"
+                     end
+      work_id_value = respond_to?(:work_id) ? work_id : (respond_to?(:work) ? work.id : id)
+      
+      "#{Rails.env}/team-#{work_team_id}/works/#{work_id_value}/documents/#{document_type}/#{filename}-#{timestamp}.#{extension}"
+    end
+
+    # Build S3 key for profile customer documents  
+    # Pattern: /env/team-{id}/profile-customers/{customer-id}/documents/{filename}-{timestamp}.{ext}
+    def build_customer_document_s3_key(filename, extension)
+      timestamp = generate_timestamp
+      
+      # Get team_id from the customer's relationship
+      customer_team_id = if respond_to?(:profile_customer)
+                          profile_customer.customer&.team_id || profile_customer.works.first&.team_id
+                        elsif self.is_a?(ProfileCustomer)
+                          customer&.team_id || works.first&.team_id
+                        else
+                          raise "Cannot determine team_id for customer document"
+                        end
+      
+      customer_id = if respond_to?(:profile_customer_id)
+                      profile_customer_id
+                    elsif respond_to?(:profile_customer)
+                      profile_customer.id
+                    elsif is_a?(ProfileCustomer)
+                      id
+                    else
+                      raise "Cannot determine customer_id for #{self.class.name}"
+                    end
+      
+      "#{Rails.env}/team-#{customer_team_id}/profile-customers/#{customer_id}/documents/#{filename}-#{timestamp}.#{extension}"
+    end
+
+    private
+
+    def document_type_to_filename(document_type)
+      case document_type.to_s
+      when 'procuration'
+        'procuracao'
+      when 'waiver'
+        'renuncia'
+      when 'deficiency_statement', 'deficiency statement'
+        'declaracao_carencia'
+      when 'honorary'
+        'contrato_honorario'
+      else
+        document_type.to_s.parameterize
+      end
+    end
   end
 
   class_methods do
