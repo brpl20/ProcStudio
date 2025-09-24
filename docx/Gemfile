@@ -1,7 +1,0 @@
-# frozen_string_literal: true
-
-source 'https://rubygems.org'
-
-# Using forked gem with universal field replacement fix
-gem 'docx', path: '/Users/brpl/code/ruby-docx'
-gem 'extensobr' # For converting numbers to Portuguese words

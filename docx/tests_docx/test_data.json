@@ -1,0 +1,130 @@
+{
+  "office": {
+    "name": "Aline Armstrong",
+    "cnpj": "73412744054106",
+    "society": "company",
+    "foundation": "1993-12-01",
+    "site": "https://www.lyjin.biz",
+    "accounting_type": "real_profit",
+    "oab_id": "Est do consequatur ",
+    "oab_status": "Cupidatat dolor moll",
+    "oab_inscricao": "Autem quam itaque re",
+    "oab_link": "https://www.kire.co",
+    "quote_value": 1,
+    "number_of_quotes": 10000,
+    "profit_distribution": "proportional",
+    "create_social_contract": true,
+    "phones_attributes": [
+      {
+        "phone_number": "(17) 67741-3384"
+      }
+    ],
+    "emails_attributes": [
+      {
+        "email": "byfol@mailinator.com"
+      }
+    ],
+    "addresses_attributes": [
+      {
+        "street": "Rua Alexandre de Gusmão",
+        "number": "999",
+        "complement": "",
+        "neighborhood": "Maria Luiza",
+        "city": "Cascavel",
+        "state": "PR",
+        "zip_code": "85819-530",
+        "address_type": "main"
+      }
+    ],
+    "user_offices_attributes": [
+      {
+        "user_id": 142,
+        "partnership_type": "socio",
+        "partnership_percentage": "71",
+        "is_administrator": true,
+        "_destroy": false,
+        "compensations_attributes": [
+          {
+            "compensation_type": "pro_labore",
+            "amount": 1600,
+            "effective_date": "2025-09-22",
+            "payment_frequency": "monthly"
+          }
+        ]
+      },
+      {
+        "user_id": 141,
+        "partnership_type": "associado",
+        "partnership_percentage": "29",
+        "is_administrator": false,
+        "_destroy": false,
+        "compensations_attributes": [
+          {
+            "compensation_type": "pro_labore",
+            "amount": 1600,
+            "effective_date": "2025-09-22",
+            "payment_frequency": "monthly"
+          }
+        ]
+      }
+    ]
+  },
+  "user_profiles": [
+    {
+      "id": 115,
+      "role": "lawyer",
+      "name": "KLABUNCIO",
+      "last_name": "Doe",
+      "gender": "other",
+      "oab": "151515 OAB/MS",
+      "rg": "50.871.886-7",
+      "cpf": "688.481.730-55",
+      "nationality": "foreigner",
+      "civil_status": "single",
+      "birth": "1980-03-30",
+      "mother_name": "Lara Doe",
+      "user_id": 142,
+      "addresses": [
+        {
+          "id": 500,
+          "zip_code": "91582101",
+          "street": "Rua Jambaláia",
+          "number": "531",
+          "complement": "Apt 4, prédio localizado próximo a Padaria",
+          "neighborhood": "Zona norte",
+          "city": "Caiuá",
+          "state": "SP",
+          "address_type": "main"
+        }
+      ]
+    },
+    {
+      "id": 114,
+      "role": "lawyer",
+      "name": "Alexandra Harmon",
+      "last_name": "Chapman",
+      "gender": "male",
+      "oab": "PR_54159",
+      "rg": "Optio provident el",
+      "cpf": "05880253996",
+      "nationality": "brazilian",
+      "civil_status": "divorced",
+      "birth": "1996-07-09",
+      "mother_name": null,
+      "user_id": 141,
+      "addresses": [
+        {
+          "id": 499,
+          "zip_code": "95620000",
+          "street": "Cillum possimus exc",
+          "number": "855",
+          "complement": "Principal",
+          "neighborhood": "Eum magnam esse eli",
+          "city": "Et similique eu itaq",
+          "state": "DF",
+          "address_type": "main"
+        }
+      ]
+    }
+  ]
+}

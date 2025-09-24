@@ -7,6 +7,7 @@
 #  id                  :bigint           not null, primary key
 #  deleted_at          :datetime
 #  file_description    :string
+#  file_s3_key         :string
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
 #  profile_customer_id :bigint           not null
@@ -22,6 +23,8 @@
 #
 
 class CustomerFile < ApplicationRecord
+  include S3PathBuilder
+  
   acts_as_paranoid
 
   belongs_to :profile_customer
