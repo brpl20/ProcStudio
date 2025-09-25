@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import AuthSidebar from '../components/AuthSidebar.svelte';
-  import CepTestForm from '../components/test/CepTestForm.svelte';
+  // import CepTestForm from '../components/test/CepTestForm.svelte';
   import { authStore } from '../stores/authStore';
   import { usersCacheStore, cacheStatus, allUserProfiles } from '../stores/usersCacheStore';
   import { notificationStore, unreadCount, isConnected, recentNotifications } from '../stores/notificationStore';

@@ -1,7 +1,7 @@
 <!-- components/ui/SearchInput.svelte -->
 <script lang="ts">
-  import Search from '../../icons/Search.svelte';
-  import Clear from '../../icons/Clear.svelte';
+  import Icon from '../../icons/icons.svelte'
+
 
   interface Props {
     value?: string;
@@ -51,10 +51,11 @@
 </script>
 
 <div class="relative {width} {className}">
-  <div class="relative">
+
     <!-- Search Icon -->
-    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-      <Search
+    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none z-10">
+      <Icon
+        name="search"
         className="h-4 w-4 transition-colors duration-200 {isFocused
           ? 'text-primary'
           : 'text-base-300'}"
@@ -77,12 +78,11 @@
     {#if localValue.trim()}
       <button
         onclick={clearSearch}
-        class="absolute inset-y-0 right-0 flex items-center pr-3 hover:text-primary transition-colors duration-200"
+        class="absolute inset-y-0 right-0 flex items-center pr-3 hover:text-primary transition-colors duration-200 z-10"
         aria-label="Limpar pesquisa"
         tabindex="-1"
       >
-        <Clear className="h-4 w-4 text-base-300 hover:text-base-content" />
+        <Icon name="clear" className="h-4 w-4 text-base-300 hover:text-base-content" />
       </button>
     {/if}
-  </div>
 </div>
