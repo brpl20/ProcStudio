@@ -1,10 +1,10 @@
 GIT
-  remote: https://github.com/brpl20/ruby-docx.git
-  revision: 915a2a33caeb061d60f257ad6a2bfa6e6c3935d6
+  remote: https://github.com/brpl20/docx.git
+  revision: d784ce0e5c01713842e86c84b5d8d543ad13fc0e
   specs:
-    docx (0.9.1)
+    docx-br (0.10.0)
       nokogiri (~> 1.13, >= 1.13.0)
-      rubyzip (~> 2.0)
+      rubyzip (>= 2.0, < 4)
 
 GEM
   remote: https://rubygems.org/
@@ -499,7 +499,7 @@ GEM
       faraday (>= 1)
       faraday-multipart (>= 1)
     ruby-progressbar (1.13.0)
-    rubyzip (2.4.1)
+    rubyzip (3.1.0)
     securerandom (0.4.1)
     shoulda-matchers (6.5.0)
       activesupport (>= 5.2.0)
@@ -572,7 +572,7 @@ DEPENDENCIES
   database_cleaner
   debug
   devise
-  docx!
+  docx-br!
   dotenv-rails
   extensobr
   factory_bot_rails
