@@ -11,6 +11,13 @@ module DocxServices
       @office_formatter = FormatterOffices.for_office(office, lawyers)
     end
 
+    def fields; end
+
+    def formatters
+      # QUALIFICATOR
+      # OFFICE
+    end
+
     def process_document
       @doc = ::Docx::Document.open(template_path)
       @file_path = Rails.root.join('tmp', file_name)
