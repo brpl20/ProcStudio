@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
+require_relative 'formatter_constants'
+
 module DocxServices
   class FormatterOffices
+    include FormatterConstants
+    
     attr_reader :office, :lawyers
 
     def initialize(office, lawyers = nil)
@@ -22,8 +26,11 @@ module DocxServices
         value = quote_value.to_i
         total = format_currency(lawyer_capital_value(lawyer))
 
-        "O Sócio #{lawyer_full_name(lawyer)}, subscreve e integraliza neste ato #{quotes} quotas " \
-          "no valor de R$ #{value},00 cada uma, perfazendo o total de R$ #{total}"
+        format(SUBSCRIPTION_TEXT[:single],
+               name: lawyer_full_name(lawyer),
+               quotes: quotes,
+               value: value,
+               total: total)
       else
         lines = []
         lawyers.each do |lawyer|
@@ -31,11 +38,14 @@ module DocxServices
           value = quote_value.to_i
           total = format_currency(lawyer_capital_value(lawyer))
 
-          line = "O Sócio #{lawyer_full_name(lawyer)}, subscreve e integraliza neste ato #{quotes} quotas " \
-                 "no valor de R$ #{value},00 cada uma, perfazendo o total de R$ #{total};"
+          line = format(SUBSCRIPTION_TEXT[:multiple],
+                       name: lawyer_full_name(lawyer),
+                       quotes: quotes,
+                       value: value,
+                       total: total)
           lines << line
         end
-        lines.join("\n\n")
+        lines.join(SEPARATORS[:partner_lines])
       end
     end
 
@@ -59,10 +69,10 @@ module DocxServices
 
     def percentage_text
       if lawyers.size == 1
-        '100%'
+        OFFICE_DEFAULTS[:full_percentage]
       else
         admin_lawyer = find_administrator_lawyer || lawyers.first
-        "#{lawyer_percentage(admin_lawyer)}%"
+        format(OFFICE_DEFAULTS[:percentage_format], value: lawyer_percentage(admin_lawyer))
       end
     end
 
@@ -129,15 +139,15 @@ module DocxServices
       return user_office.role if user_office.respond_to?(:role) && user_office.role.present?
 
       # Check if administrator
-      return 'Sócio Administrador' if is_administrator?(lawyer)
+      return PARTNER_ROLES[:administrator] if is_administrator?(lawyer)
 
-      'Sócio'
+      PARTNER_ROLES[:partner]
     end
 
     def find_administrator_lawyer
       # Look for administrator in user_offices
       if office.respond_to?(:user_offices)
-        admin_office = office.user_offices.find_by(role: 'administrator') ||
+        admin_office = office.user_offices.find_by(role: ROLE_IDENTIFIERS[:administrator]) ||
                        office.user_offices.find_by(is_admin: true)
         return admin_office.users_profile if admin_office
       end
@@ -151,7 +161,7 @@ module DocxServices
 
       # Check user_office association for admin status
       return true if user_office.respond_to?(:is_admin) && user_office.is_admin
-      return true if user_office.respond_to?(:role) && user_office.role == 'administrator'
+      return true if user_office.respond_to?(:role) && user_office.role == ROLE_IDENTIFIERS[:administrator]
 
       # Check if lawyer is the default administrator
       find_administrator_lawyer == lawyer
@@ -161,30 +171,28 @@ module DocxServices
       # Check if pro labore is enabled in office
       return office.pro_labore_enabled if office.respond_to?(:pro_labore_enabled)
 
-      true # Default to enabled
+      PRO_LABORE[:enabled_by_default]
     end
 
     def pro_labore_text
       # Check for custom text in office
       return office.pro_labore_text if office.respond_to?(:pro_labore_text) && office.pro_labore_text.present?
 
-      'Pelo exercício da administração terão os sócios administradores direito a uma retirada mensal ' \
-        'a título de "pró-labore", cujo valor será fixado em comum acordo entre os sócios e levado à ' \
-        'conta de Despesas Gerais da Sociedade.'
+      PRO_LABORE[:default_text]
     end
 
     def dividends_enabled?
       # Check if dividends clause is enabled in office
       return office.dividends_enabled if office.respond_to?(:dividends_enabled)
 
-      true # Default to enabled
+      DIVIDENDS[:enabled_by_default]
     end
 
     def dividends_text
       # Check for custom text in office
       return office.dividends_text if office.respond_to?(:dividends_text) && office.dividends_text.present?
 
-      'Os sócios receberão dividendos proporcionais às suas respectivas participações no capital social.'
+      DIVIDENDS[:default_text]
     end
 
     def office_name
@@ -197,6 +205,7 @@ module DocxServices
 
     def office_state
       office_address&.state || office&.state || ''
+    end
 
     def office_street
       if office_address
@@ -240,26 +249,27 @@ module DocxServices
 
     def calculate_total_quotes
       if office.respond_to?(:user_offices) && office.user_offices.any?
-        office.user_offices.sum(:quotes) || 10_000
+        office.user_offices.sum(:quotes) || OFFICE_DEFAULTS[:total_quotes]
       else
-        10_000 # Default value
+        OFFICE_DEFAULTS[:total_quotes]
       end
     end
 
     def calculate_total_capital_value
       if office.respond_to?(:user_offices) && office.user_offices.any?
-        office.user_offices.sum(:capital_value) || 10_000
+        office.user_offices.sum(:capital_value) || OFFICE_DEFAULTS[:total_capital_value]
       else
-        10_000 # Default value
+        OFFICE_DEFAULTS[:total_capital_value]
       end
     end
 
     def format_currency(value)
-      "#{value.to_i.to_s.gsub(/\B(?=(\d{3})+(?!\d))/, '.')},00"
+      formatted = value.to_i.to_s.gsub(/\B(?=(\d{3})+(?!\d))/, FORMATTING[:currency_separator])
+      "#{formatted}#{FORMATTING[:currency_decimal]}"
     end
 
     def format_number(value)
-      value.to_s.gsub(/\B(?=(\d{3})+(?!\d))/, '.')
+      value.to_s.gsub(/\B(?=(\d{3})+(?!\d))/, FORMATTING[:thousands_separator])
     end
   end
 end
