@@ -23,7 +23,7 @@ module DocxServices
         total = format_currency(lawyer_capital_value(lawyer))
 
         "O Sócio #{lawyer_full_name(lawyer)}, subscreve e integraliza neste ato #{quotes} quotas " \
-          "no valor de R$ #{value},00 cada uma, perfazendo o total de R$ #{total},00"
+          "no valor de R$ #{value},00 cada uma, perfazendo o total de R$ #{total}"
       else
         lines = []
         lawyers.each do |lawyer|
@@ -32,7 +32,7 @@ module DocxServices
           total = format_currency(lawyer_capital_value(lawyer))
 
           line = "O Sócio #{lawyer_full_name(lawyer)}, subscreve e integraliza neste ato #{quotes} quotas " \
-                 "no valor de R$ #{value},00 cada uma, perfazendo o total de R$ #{total},00;"
+                 "no valor de R$ #{value},00 cada uma, perfazendo o total de R$ #{total};"
           lines << line
         end
         lines.join("\n\n")
@@ -119,7 +119,7 @@ module DocxServices
     end
 
     def lawyer_full_name(lawyer)
-      Formatter.build(lawyer).full_name
+      FormatterQualification.for(lawyer).full_name(upcase: true)
     end
 
     def lawyer_association(lawyer)
@@ -192,28 +192,41 @@ module DocxServices
     end
 
     def office_city
-      office&.city || office_address&.city
+      office_address&.city || office&.city || ''
     end
 
     def office_state
-      office&.state || office_address&.state
-    end
+      office_address&.state || office&.state || ''
 
     def office_street
-      street = office&.street || office_address&.street
-      street&.to_s&.downcase&.titleize || ''
+      if office_address
+        formatter = FormatterQualification.for(office_address)
+        formatter.street
+      elsif office&.street
+        office.street.to_s.downcase.titleize
+      else
+        ''
+      end
     end
 
     def office_zip_code
-      office&.zip || office&.zip_code || office_address&.zip_code || ''
+      zip = office_address&.zip_code || office&.zip_code || office&.zip || ''
+      return '' if zip.blank?
+      FormatterQualification.new({zip_code: zip}).zip_code || zip
     end
 
     def office_address
       # Get address from office association if available
       return office.address if office.respond_to?(:address) && office.address
       return office.addresses.first if office.respond_to?(:addresses) && office.addresses.any?
-
+      
       nil
+    end
+
+    def office_full_address
+      # Use FormatterQualification to format the office address
+      formatter = FormatterQualification.for(office, entity_type: :company)
+      formatter.address(with_prefix: true)
     end
 
     private
