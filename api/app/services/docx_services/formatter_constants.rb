@@ -11,24 +11,28 @@ module DocxServices
         company: 'inscrita no CNPJ sob o nº'
       },
       rg: {
-        male: 'portador da cédula de identidade RG nº',
-        female: 'portadora da cédula de identidade RG nº'
+        male: 'RG nº',
+        female: 'RG nº'
       },
       oab: {
         male: 'inscrito na OAB sob o nº',
         female: 'inscrita na OAB sob o nº'
       },
       nb: {
-        default: 'número do benefício'
+        default: 'NB: '
       },
       nit: {
-        default: 'número de inscrição do trabalhador'
+        default: 'NIT:'
       },
       email: {
         default: 'com endereço eletrônico:'
       },
       phone: {
         default: 'com telefone:'
+      },
+      mother_name: {
+        male: 'filho de',
+        female: 'filha de'
       }
     }.freeze
 
@@ -42,12 +46,55 @@ module DocxServices
       }
     }.freeze
 
+    CIVIL_STATUS = {
+      male: {
+        single: 'solteiro',
+        married: 'casado',
+        divorced: 'divorciado',
+        widower: 'viúvo',
+        union: 'união estável'
+      },
+      female: {
+        single: 'solteira',
+        married: 'casada',
+        divorced: 'divorciada',
+        widower: 'viúva',
+        union: 'união estável'
+      }
+    }.freeze
+
+    NATIONALITY = {
+      male: {
+        brazilian: 'brasileiro',
+        foreigner: 'estrangeiro'
+      },
+      female: {
+        brazilian: 'brasileira',
+        foreigner: 'estrangeira'
+      }
+    }.freeze
+
+    ROLE_TO_PROFESSION = {
+      male: {
+        lawyer: 'advogado',
+        secretary: 'secretário',
+        paralegal: 'paralegal',
+        intern: 'estagiário'
+      },
+      female: {
+        lawyer: 'advogada',
+        secretary: 'secretária',
+        paralegal: 'paralegal',
+        intern: 'estagiária'
+      }
+    }.freeze
+
     # Office and Partnership constants
     SUBSCRIPTION_TEXT = {
-      single: 'O Sócio %{name}, subscreve e integraliza neste ato %{quotes} quotas ' \
-              'no valor de R$ %{value},00 cada uma, perfazendo o total de R$ %{total}',
-      multiple: 'O Sócio %{name}, subscreve e integraliza neste ato %{quotes} quotas ' \
-                'no valor de R$ %{value},00 cada uma, perfazendo o total de R$ %{total};'
+      single: 'O Sócio %<name>s, subscreve e integraliza neste ato %<quotes>s quotas ' \
+              'no valor de R$ %<value>s,00 cada uma, perfazendo o total de R$ %<total>s',
+      multiple: 'O Sócio %<name>s, subscreve e integraliza neste ato %<quotes>s quotas ' \
+                'no valor de R$ %<value>s,00 cada uma, perfazendo o total de R$ %<total>s;'
     }.freeze
 
     PARTNER_ROLES = {
@@ -75,7 +122,7 @@ module DocxServices
     OFFICE_DEFAULTS = {
       total_quotes: 10_000,
       total_capital_value: 10_000,
-      percentage_format: '%{value}%',
+      percentage_format: '%<value>s%',
       full_percentage: '100%'
     }.freeze
 

@@ -48,6 +48,7 @@
 class ProfileCustomer < ApplicationRecord
   include DeletedFilterConcern
   include Draftable
+  include CnpjValidatable
 
   acts_as_paranoid
 
@@ -103,9 +104,11 @@ class ProfileCustomer < ApplicationRecord
 
   has_many_attached :files
 
-  # Polymorphic associations for addresses and phones
+  # Polymorphic associations for addresses, phones, emails, and bank accounts
   has_many :addresses, as: :addressable, dependent: :destroy
   has_many :phones, as: :phoneable, dependent: :destroy
+  has_many :emails, as: :emailable, dependent: :destroy
+  has_many :bank_accounts, as: :bankable, dependent: :destroy
 
   # Nested attributes for API
   accepts_nested_attributes_for :phones,
@@ -116,11 +119,13 @@ class ProfileCustomer < ApplicationRecord
                                 allow_destroy: true,
                                 reject_if: proc { |attrs| attrs['street'].blank? || attrs['city'].blank? }
 
-  has_many :customer_emails, dependent: :destroy
-  has_many :emails, through: :customer_emails
+  accepts_nested_attributes_for :emails,
+                                allow_destroy: true,
+                                reject_if: proc { |attrs| attrs['email'].blank? }
 
-  has_many :customer_bank_accounts, dependent: :destroy
-  has_many :bank_accounts, through: :customer_bank_accounts
+  accepts_nested_attributes_for :bank_accounts,
+                                allow_destroy: true,
+                                reject_if: proc { |attrs| attrs['bank_name'].blank? || attrs['account'].blank? }
 
   has_many :customer_works, dependent: :destroy
   has_many :works, through: :customer_works
@@ -141,25 +146,28 @@ class ProfileCustomer < ApplicationRecord
   has_many :active_representors, through: :active_represents, source: :representor
 
   accepts_nested_attributes_for :customer_files, :customer, :represents,
-                                :addresses, :phones, :emails, :bank_accounts,
                                 reject_if: :all_blank
 
-  accepts_nested_attributes_for :customer_emails, allow_destroy: true
+  # Common validations for all customer types
+  validates :name, presence: true
 
-  with_options presence: true do
+  # Physical person validations
+  with_options presence: true, if: :physical_person? do
     validates :capacity
     validates :civil_status
     validates :cpf
     validates :gender
-    validates :name
     validates :nationality
     validates :rg
   end
 
-  # Profession is required only for able and relatively incapable persons
-  validates :profession, presence: true, unless: :unable?
+  # Legal person validations
+  validates :cnpj, presence: true, if: :legal_person?
 
-  validates :cpf, cpf: true
+  # Profession is required only for able and relatively incapable physical persons
+  validates :profession, presence: true, if: -> { physical_person? && capacity.present? && !unable? }
+
+  validates :cpf, cpf: true, if: :physical_person?
   validates :birth, birth_date: { set_capacity: true }, allow_blank: true
 
   validates_with PhoneNumberValidator

@@ -5,12 +5,12 @@ require_relative 'formatter_constants'
 module DocxServices
   class FormatterOffices
     include FormatterConstants
-    
+
     attr_reader :office, :lawyers
 
-    def initialize(office, lawyers = nil)
+    def initialize(office, _lawyers = nil)
       @office = office
-      @lawyers = lawyers || office.users_profiles
+      @lawyers = office.users_profiles
     end
 
     class << self
@@ -39,10 +39,10 @@ module DocxServices
           total = format_currency(lawyer_capital_value(lawyer))
 
           line = format(SUBSCRIPTION_TEXT[:multiple],
-                       name: lawyer_full_name(lawyer),
-                       quotes: quotes,
-                       value: value,
-                       total: total)
+                        name: lawyer_full_name(lawyer),
+                        quotes: quotes,
+                        value: value,
+                        total: total)
           lines << line
         end
         lines.join(SEPARATORS[:partner_lines])
@@ -221,14 +221,15 @@ module DocxServices
     def office_zip_code
       zip = office_address&.zip_code || office&.zip_code || office&.zip || ''
       return '' if zip.blank?
-      FormatterQualification.new({zip_code: zip}).zip_code || zip
+
+      FormatterQualification.new({ zip_code: zip }).zip_code || zip
     end
 
     def office_address
       # Get address from office association if available
       return office.address if office.respond_to?(:address) && office.address
       return office.addresses.first if office.respond_to?(:addresses) && office.addresses.any?
-      
+
       nil
     end
 

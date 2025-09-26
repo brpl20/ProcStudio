@@ -4,10 +4,19 @@
 #
 # Table name: emails
 #
-#  id         :bigint           not null, primary key
-#  email      :string
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id             :bigint           not null, primary key
+#  deleted_at     :datetime
+#  email          :string
+#  email_type     :string           default("main")
+#  emailable_type :string
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  emailable_id   :bigint
+#
+# Indexes
+#
+#  index_emails_on_deleted_at  (deleted_at)
+#  index_emails_on_emailable   (emailable_type,emailable_id)
 #
 FactoryBot.define do
   factory :email do

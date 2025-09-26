@@ -88,12 +88,11 @@ class UserProfile < ApplicationRecord
     foreigner: 'foreigner'
   }
 
-  # Polymorphic associations for addresses and phones
+  # Polymorphic associations for addresses, phones, emails, and bank accounts
   has_many :addresses, as: :addressable, dependent: :destroy
   has_many :phones, as: :phoneable, dependent: :destroy
-
-  has_many :user_bank_accounts, dependent: :destroy
-  has_many :bank_accounts, through: :user_bank_accounts
+  has_many :emails, as: :emailable, dependent: :destroy
+  has_many :bank_accounts, as: :bankable, dependent: :destroy
 
   has_many :user_profile_works, dependent: :destroy
   has_many :works, through: :user_profile_works
@@ -110,9 +109,13 @@ class UserProfile < ApplicationRecord
                                 allow_destroy: true,
                                 reject_if: proc { |attrs| attrs['street'].blank? || attrs['city'].blank? }
 
+  accepts_nested_attributes_for :emails,
+                                allow_destroy: true,
+                                reject_if: proc { |attrs| attrs['email'].blank? }
+
   accepts_nested_attributes_for :bank_accounts,
                                 allow_destroy: true,
-                                reject_if: :all_blank
+                                reject_if: proc { |attrs| attrs['bank_name'].blank? || attrs['account'].blank? }
 
   accepts_nested_attributes_for :user,
                                 reject_if: :all_blank
@@ -138,6 +141,12 @@ class UserProfile < ApplicationRecord
     return I18n.t('general.without_phone') if phones.blank?
 
     phones.last.phone_number
+  end
+
+  def last_email
+    return I18n.t('general.without_email') if emails.blank?
+
+    emails.last.email
   end
 
   private

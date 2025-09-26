@@ -4,21 +4,162 @@
 #
 # Table name: bank_accounts
 #
-#  id           :bigint           not null, primary key
-#  account      :string
-#  agency       :string
-#  bank_name    :string
-#  operation    :string
-#  pix          :string
-#  type_account :string
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
+#  id            :bigint           not null, primary key
+#  account       :string
+#  account_type  :string           default("main")
+#  agency        :string
+#  bank_name     :string
+#  bankable_type :string
+#  deleted_at    :datetime
+#  operation     :string
+#  pix           :string
+#  type_account  :string
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  bankable_id   :bigint
+#
+# Indexes
+#
+#  index_bank_accounts_on_bankable    (bankable_type,bankable_id)
+#  index_bank_accounts_on_deleted_at  (deleted_at)
 #
 
 class BankAccount < ApplicationRecord
-  has_many :admin_bank_accounts, dependent: :destroy
-  has_many :profile_admins, through: :admin_bank_accounts
+  # Soft delete support (if you're using paranoia gem)
+  acts_as_paranoid if defined?(Paranoia)
 
-  has_many :office_bank_accounts, dependent: :destroy
-  has_many :offices, through: :office_bank_accounts
+  # Polymorphic association
+  belongs_to :bankable, polymorphic: true
+
+  # Enums for account categories
+  enum :account_type, {
+    main: 'main',
+    secondary: 'secondary',
+    savings: 'savings',
+    business: 'business'
+  }, default: 'main'
+
+  # Enums for account types (Brazilian banking)
+  enum :type_account, {
+    checking: 'checking',        # Conta Corrente
+    savings_account: 'savings',  # Conta Poupança
+    payment: 'payment',          # Conta Pagamento
+    salary: 'salary'             # Conta Salário
+  }
+
+  # Validations
+  validates :bank_name, :agency, :account, presence: true
+  validates :agency, format: {
+    with: /\A\d{1,6}(-?\d)?\z/,
+    message: 'Invalid agency format'
+  }
+  validates :account, format: {
+    with: /\A\d{1,15}(-?\d)?\z/,
+    message: 'Invalid account format'
+  }
+  validates :pix, uniqueness: true, allow_blank: true
+
+  # Normalize data before saving
+  before_save :normalize_bank_data
+
+  # Scopes for querying
+  scope :for_offices, -> { where(bankable_type: 'Office') }
+  scope :for_customers, -> { where(bankable_type: 'ProfileCustomer') }
+  scope :for_users, -> { where(bankable_type: 'UserProfile') }
+  scope :main_accounts, -> { where(account_type: 'main') }
+  scope :with_pix, -> { where.not(pix: [nil, '']) }
+
+  # Instance methods
+  def formatted_agency
+    return agency if agency.blank?
+
+    clean = agency.gsub(/\D/, '')
+    if clean.length > 4
+      "#{clean[0..-2]}-#{clean[-1]}"
+    else
+      clean
+    end
+  end
+
+  def formatted_account
+    return account if account.blank?
+
+    clean = account.gsub(/\D/, '')
+    if clean.length > 1
+      "#{clean[0..-2]}-#{clean[-1]}"
+    else
+      clean
+    end
+  end
+
+  def full_account_info
+    parts = []
+    parts << bank_name.to_s if bank_name.present?
+    parts << "Ag: #{formatted_agency}" if agency.present?
+    parts << "Conta: #{formatted_account}" if account.present?
+    parts << "Op: #{operation}" if operation.present?
+
+    parts.join(' | ')
+  end
+
+  def pix_type
+    return nil if pix.blank?
+
+    case pix
+    when /\A\d{11}\z/
+      :cpf
+    when /\A\d{14}\z/
+      :cnpj
+    when /\A[\w._%+-]+@[\w.-]+\.[A-Z]{2,}\z/i
+      :email
+    when /\A\+?[\d\s\-\(\)]+\z/
+      :phone
+    when /\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i
+      :random_key
+    else
+      :unknown
+    end
+  end
+
+  def formatted_pix
+    return pix if pix.blank?
+
+    case pix_type
+    when :cpf
+      pix.gsub(/(\d{3})(\d{3})(\d{3})(\d{2})/, '\1.\2.\3-\4')
+    when :cnpj
+      pix.gsub(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '\1.\2.\3/\4-\5')
+    when :phone
+      clean = pix.gsub(/\D/, '')
+      if clean.length == 11
+        "(#{clean[0..1]}) #{clean[2..6]}-#{clean[7..10]}"
+      else
+        pix
+      end
+    else
+      pix
+    end
+  end
+
+  private
+
+  def normalize_bank_data
+    # Remove non-numeric characters from agency and account
+    self.agency = agency.gsub(/\D/, '') if agency.present?
+    self.account = account.gsub(/\D/, '') if account.present?
+
+    # Clean PIX key formatting
+    return if pix.blank?
+
+    # Remove spaces and normalize
+    self.pix = pix.strip
+
+    # If it looks like a CPF/CNPJ, remove formatting
+    self.pix = pix.gsub(/\D/, '') if %r{^[\d\.\-/]+$}.match?(pix)
+
+    # Downcase email PIX keys
+    return unless pix.include?('@')
+
+    self.pix = pix.downcase
+  end
 end

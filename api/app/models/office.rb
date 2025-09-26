@@ -75,12 +75,11 @@ class Office < ApplicationRecord
     presumed_profit: 'presumed_profit' # lucro presumido
   }
 
+  # Polymorphic associations for addresses, phones, emails, and bank accounts
   has_many :phones, as: :phoneable, dependent: :destroy
   has_many :addresses, as: :addressable, dependent: :destroy
-  has_many :office_emails, dependent: :destroy
-  has_many :emails, through: :office_emails
-  has_many :office_bank_accounts, dependent: :destroy
-  has_many :bank_accounts, through: :office_bank_accounts
+  has_many :emails, as: :emailable, dependent: :destroy
+  has_many :bank_accounts, as: :bankable, dependent: :destroy
   has_many :office_works, dependent: :destroy
   has_many :works, through: :office_works
 
@@ -99,27 +98,20 @@ class Office < ApplicationRecord
                                 allow_destroy: true,
                                 reject_if: proc { |attrs| attrs['street'].blank? || attrs['city'].blank? }
 
-  accepts_nested_attributes_for :office_emails, :bank_accounts, :user_offices,
+  accepts_nested_attributes_for :emails,
+                                allow_destroy: true,
+                                reject_if: proc { |attrs| attrs['email'].blank? }
+
+  accepts_nested_attributes_for :bank_accounts,
+                                allow_destroy: true,
+                                reject_if: proc { |attrs| attrs['bank_name'].blank? || attrs['account'].blank? }
+
+  accepts_nested_attributes_for :user_offices,
                                 allow_destroy: true,
                                 reject_if: :all_blank
 
-  # Store email attributes for processing after save
-  attr_accessor :pending_emails
-
   # Virtual attribute for triggering social contract upload (not persisted to database)
   attr_accessor :create_social_contract
-
-  # Custom method to handle emails nested attributes
-  def emails_attributes=(attributes)
-    return if attributes.blank?
-
-    # Store for processing after save
-    @pending_emails = attributes
-  end
-
-  # Callback to process emails after the office is saved
-  after_create :process_pending_emails
-  after_update :process_pending_emails
 
   with_options presence: true do
     validates :name
@@ -161,27 +153,5 @@ class Office < ApplicationRecord
 
   def team_must_exist
     errors.add(:team_id, 'deve existir') unless Team.exists?(team_id)
-  end
-
-  def process_pending_emails
-    return if @pending_emails.blank?
-
-    # Handle both array and hash format
-    attrs_array = @pending_emails.is_a?(Array) ? @pending_emails : @pending_emails.values
-
-    attrs_array.each do |attrs|
-      # Handle both string and symbol keys
-      attrs = attrs.with_indifferent_access if attrs.respond_to?(:with_indifferent_access)
-
-      next if attrs['_destroy'] == '1' || attrs[:_destroy] == '1'
-
-      email_value = attrs['email'] || attrs[:email]
-      next if email_value.blank?
-
-      email = Email.find_or_create_by(email: email_value)
-      office_emails.find_or_create_by(email: email) unless office_emails.exists?(email: email)
-    end
-
-    @pending_emails = nil
   end
 end
