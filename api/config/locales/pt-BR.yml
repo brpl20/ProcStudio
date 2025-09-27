@@ -1,4 +1,15 @@
 "pt-BR":
+  notifications:
+    representation:
+      new_representation:
+        title: "Nova Representação - %{relationship_type}"
+        body: "%{representor_name} (%{relationship_type}) agora representa %{customer_name}"
+      representation_ended:
+        title: "Representação Encerrada - %{relationship_type}"
+        body: "%{representor_name} (%{relationship_type}) não representa mais %{customer_name}"
+      default:
+        title: "Mudança de Representação"
+        body: "Alteração na representação de %{customer_name}"
   general:
     without_email: sem e-mail cadastrado
     without_phone: sem telefone cadastrado

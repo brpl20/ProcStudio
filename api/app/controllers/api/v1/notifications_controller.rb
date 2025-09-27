@@ -2,13 +2,14 @@
 
 module Api
   module V1
+    # rubocop:disable Metrics/ClassLength
     class NotificationsController < BackofficeController
       before_action :set_notification, only: [:show, :update, :destroy, :mark_as_read, :mark_as_unread]
 
       def index
         notifications = @current_user.user_profile.notifications
                           .includes(:sender)
-                          .by_priority
+                          .recent
 
         notifications = apply_filters(notifications)
 
@@ -191,7 +192,7 @@ module Api
       def mark_all_as_read
         authorize Notification
 
-        @current_user.user_profile.notifications.unread.update_all(read: true)
+        @current_user.user_profile.notifications.unread.update_all(read: true) # rubocop:disable Rails/SkipsModelValidations
 
         render json: {
           success: true,
@@ -234,7 +235,6 @@ module Api
           :title,
           :body,
           :notification_type,
-          :priority,
           :action_url,
           :sender_type,
           :sender_id,
@@ -264,15 +264,7 @@ module Api
           notifications = notifications.where(notification_type: params[:notification_type])
         end
 
-        if params[:priority].present?
-          # Support both string names and integer values
-          priority_value = if params[:priority].match?(/^\d+$/)
-                             params[:priority].to_i
-                           else
-                             Notification.priorities[params[:priority]]
-                           end
-          notifications = notifications.where(priority: priority_value) if priority_value
-        end
+        # Priority filter removed as priority field no longer exists
 
         notifications = notifications.where(created_at: (params[:from_date])..) if params[:from_date].present?
 
@@ -281,5 +273,6 @@ module Api
         notifications
       end
     end
+    # rubocop:enable Metrics/ClassLength
   end
 end

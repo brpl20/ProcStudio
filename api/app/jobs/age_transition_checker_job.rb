@@ -70,53 +70,14 @@ class AgeTransitionCheckerJob < ApplicationJob
       profile.update!(capacity: new_capacity)
     end
 
-    # Create compliance notification
-    create_compliance_notification(profile, old_capacity, new_capacity, age)
+    # Use NotificationService for compliance notification
+    NotificationService.notify_capacity_change(
+      profile_customer: profile,
+      old_capacity: old_capacity,
+      new_capacity: new_capacity,
+      reason: 'age_transition'
+    )
 
     Rails.logger.info "Age transition: ProfileCustomer ##{profile.id} changed from #{old_capacity} to #{new_capacity} (age: #{age})"
-  end
-
-  def create_compliance_notification(profile, old_capacity, new_capacity, age)
-    title = case new_capacity
-            when 'relatively'
-              'Minor transitioned to relatively incapable'
-            when 'able'
-              'Minor became an adult'
-            else
-              'Capacity change due to age'
-            end
-
-    description = "#{profile.full_name} (CPF: #{profile.cpf}) has turned #{age} years old today. " \
-                  "Their capacity has automatically changed from '#{old_capacity}' to '#{new_capacity}'. " \
-                  'Please review and update any necessary documents.'
-
-    # Get team from customer's teams (using first team if multiple)
-    team = profile.customer&.teams&.first
-    return unless team # Skip if no team associated
-
-    # Notify team lawyers about age transition compliance
-    team.users.joins(:user_profile).where(user_profiles: { role: 'lawyer' }).find_each do |user|
-      next unless user.user_profile
-
-      Notification.create!(
-        user_profile: user.user_profile,
-        notification_type: 'compliance',
-        title: title,
-        body: description,
-        priority: :urgent, # Urgent priority for age transitions
-        sender_type: 'System',
-        sender_id: nil,
-        action_url: "/customers/#{profile.id}/compliance",
-        data: {
-          compliance_type: 'age_transition',
-          old_capacity: old_capacity,
-          new_capacity: new_capacity,
-          age: age,
-          transition_date: Date.current.to_s,
-          profile_customer_id: profile.id,
-          profile_customer_name: profile.name
-        }
-      )
-    end
   end
 end

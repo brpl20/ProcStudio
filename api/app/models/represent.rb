@@ -104,12 +104,18 @@ class Represent < ApplicationRecord
   end
 
   def notify_compliance_if_needed
-    Compliance::RepresentationNotificationService.new(self, 'new_representation').call
+    NotificationService.notify_representation_change(
+      represent: self,
+      notification_type: 'new_representation'
+    )
   end
 
   def notify_compliance_on_changes
     return unless saved_change_to_active? && !active
 
-    Compliance::RepresentationNotificationService.new(self, 'representation_ended').call
+    NotificationService.notify_representation_change(
+      represent: self,
+      notification_type: 'representation_ended'
+    )
   end
 end

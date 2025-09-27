@@ -195,6 +195,20 @@ class ProfileCustomer < ApplicationRecord
   def check_compliance_for_capacity_change
     # Only create compliance notification for manual changes
     # Automatic age-based changes are handled by AgeTransitionCheckerJob
-    Compliance::CapacityChangeService.new(self).handle_manual_change
+    # Check if there's a PaperTrail version for this change
+    return unless versions.any?
+
+    last_version = versions.last
+    return if last_version.changeset['capacity'].blank?
+
+    previous_capacity = last_version.changeset['capacity'][0]
+    new_capacity = last_version.changeset['capacity'][1]
+
+    NotificationService.notify_capacity_change(
+      profile_customer: self,
+      old_capacity: previous_capacity,
+      new_capacity: new_capacity,
+      reason: 'manual_change'
+    )
   end
 end

@@ -45,7 +45,12 @@ class Notification < ApplicationRecord
     'user_action',
     'process_update',
     'task_assignment',
-    'compliance'
+    'compliance',
+    'capacity_change',
+    'age_transition',
+    'representation_change',
+    'document_update',
+    'deadline_reminder'
   ].freeze
 
   validates :title, presence: true
