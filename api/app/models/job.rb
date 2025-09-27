@@ -197,40 +197,6 @@ class Job < ApplicationRecord
   end
 
   def notify_assigned_users
-    # Filter out the creator from assignees
-    recipients_to_notify = assignees.reject { |a| a == created_by.user_profile }
-
-    # Notify assignees using NotificationService
-    if recipients_to_notify.any?
-      NotificationService.notify_task_assignment(
-        job: self,
-        assignees: recipients_to_notify,
-        data: {
-          job_deadline: deadline.to_s,
-          job_priority: priority,
-          work_id: work_id,
-          customer_id: profile_customer_id,
-          customer_name: profile_customer&.name
-        }
-      )
-    end
-
-    # Notify supervisors using NotificationService
-    return unless supervisors.any?
-
-    NotificationService.notify_task_assignment(
-      job: self,
-      assignees: supervisors,
-      title: 'Nova tarefa para supervisão',
-      body: "Você foi designado como supervisor da tarefa ##{id}: #{description || 'Sem descrição'}",
-      data: {
-        job_deadline: deadline.to_s,
-        job_priority: priority,
-        role: 'supervisor',
-        work_id: work_id,
-        customer_id: profile_customer_id,
-        customer_name: profile_customer&.name
-      }
-    )
+    NotificationService.notify_job_creation(job: self)
   end
 end

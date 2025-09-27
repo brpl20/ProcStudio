@@ -90,6 +90,37 @@ class NotificationService
       )
     end
 
+    def notify_job_creation(job:)
+      job_data = {
+        job_deadline: job.deadline.to_s,
+        job_priority: job.priority,
+        work_id: job.work_id,
+        customer_id: job.profile_customer_id,
+        customer_name: job.profile_customer&.name
+      }
+
+      # Notify assignees (excluding creator)
+      assignees_to_notify = job.assignees.reject { |a| a == job.created_by.user_profile }
+      if assignees_to_notify.any?
+        notify_task_assignment(
+          job: job,
+          assignees: assignees_to_notify,
+          data: job_data
+        )
+      end
+
+      # Notify supervisors
+      return unless job.supervisors.any?
+
+      notify_task_assignment(
+        job: job,
+        assignees: job.supervisors,
+        title: 'Nova tarefa para supervisão',
+        body: "Você foi designado como supervisor da tarefa ##{job.id}: #{job.description || 'Sem descrição'}",
+        data: job_data.merge(role: 'supervisor')
+      )
+    end
+
     def notify_capacity_change(profile_customer:, old_capacity:, new_capacity:, reason: nil)
       team = profile_customer.customer&.teams&.first
       return unless team
