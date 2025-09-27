@@ -115,6 +115,7 @@ Svelte 5.0
 
 ## Instalação e Início
 - [Instalacão](./docs/Instalação.md)
+- [Seeds](./docs/Seeds.md)
 
 ### Desenvolvimento
 - [Padrão de Desenvolvimento](./docs/code-padrao.md)
