@@ -15,6 +15,7 @@
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #  sender_id         :bigint
+#  team_id           :bigint           not null
 #  user_profile_id   :bigint
 #
 # Indexes
@@ -23,10 +24,12 @@
 #  index_notifications_on_notification_type          (notification_type)
 #  index_notifications_on_read                       (read)
 #  index_notifications_on_sender_type_and_sender_id  (sender_type,sender_id)
+#  index_notifications_on_team_id                    (team_id)
 #  index_notifications_on_user_profile_id            (user_profile_id)
 #
 # Foreign Keys
 #
+#  fk_rails_...  (team_id => teams.id)
 #  fk_rails_...  (user_profile_id => user_profiles.id)
 #
 # Please update related docs when updating model
