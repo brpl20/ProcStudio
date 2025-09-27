@@ -34,6 +34,7 @@
 
 class Notification < ApplicationRecord
   belongs_to :user_profile
+  belongs_to :team
   belongs_to :sender, polymorphic: true, optional: true
 
   TYPES = [
@@ -59,6 +60,7 @@ class Notification < ApplicationRecord
   scope :unread, -> { where(read: false) }
   scope :recent, -> { order(created_at: :desc) }
   scope :for_user_profile, ->(user_profile) { where(user_profile: user_profile) }
+  scope :for_team, ->(team) { where(team: team) }
 
   after_create_commit :broadcast_notification
 

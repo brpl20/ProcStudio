@@ -207,8 +207,13 @@ class NotificationService
     def create_notification(user_profile:, title:, body:, notification_type:, sender:, action_url:, data:)
       return nil unless user_profile
 
+      # Get team from user_profile's user
+      team = user_profile.user.team
+      return nil unless team
+
       Notification.create!(
         user_profile: user_profile,
+        team: team,
         title: title,
         body: body,
         notification_type: notification_type,

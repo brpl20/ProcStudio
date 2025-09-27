@@ -8,6 +8,7 @@ module Api
 
       def index
         notifications = @current_user.user_profile.notifications
+                          .for_team(current_team)
                           .includes(:sender)
                           .recent
 
@@ -27,7 +28,7 @@ module Api
             total_count: total_count,
             total_pages: (total_count.to_f / per_page).ceil,
             current_page: page,
-            unread_count: @current_user.user_profile.notifications.unread.count
+            unread_count: @current_user.user_profile.notifications.for_team(current_team).unread.count
           }
         ).serializable_hash
 
@@ -76,7 +77,8 @@ module Api
           notification = @current_user.user_profile.notifications.build(notification_params)
         end
 
-        # Set sender as current user's profile if not specified
+        # Set team and sender
+        notification.team = current_team
         notification.sender ||= @current_user.user_profile
 
         if notification.save
@@ -192,7 +194,7 @@ module Api
       def mark_all_as_read
         authorize Notification
 
-        @current_user.user_profile.notifications.unread.update_all(read: true) # rubocop:disable Rails/SkipsModelValidations
+        @current_user.user_profile.notifications.for_team(current_team).unread.update_all(read: true) # rubocop:disable Rails/SkipsModelValidations
 
         render json: {
           success: true,
@@ -209,7 +211,7 @@ module Api
       def unread_count
         authorize Notification, :index?
 
-        count = @current_user.user_profile.notifications.unread.count
+        count = @current_user.user_profile.notifications.for_team(current_team).unread.count
 
         render json: {
           success: true,
@@ -227,7 +229,7 @@ module Api
       private
 
       def set_notification
-        @notification = @current_user.user_profile.notifications.find(params[:id])
+        @notification = @current_user.user_profile.notifications.for_team(current_team).find(params[:id])
       end
 
       def notification_params
