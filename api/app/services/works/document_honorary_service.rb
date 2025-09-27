@@ -39,7 +39,7 @@ module Works
       bank = resource.bank_accounts.first
       [
         "Banco: #{bank&.bank_name&.strip}",
-        "Tipo de Conta: #{bank&.type_account&.strip}",
+        "Tipo de Conta: #{bank&.account_type&.strip}",
         "Agência: #{bank&.agency&.strip}",
         "Conta: #{bank&.account&.strip}",
         "Operação: #{bank&.operation&.strip}",
@@ -110,10 +110,10 @@ module Works
 
     def save
       content_type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-      
+
       # Generate S3 key following the pattern
       s3_key = document.build_work_document_s3_key(document.document_type, 'docx')
-      
+
       # Upload to S3
       file = File.open(file_path)
       begin
@@ -123,7 +123,7 @@ module Works
           document.update_column(:original_s3_key, s3_key) if document.respond_to?(:original_s3_key)
           true
         else
-          Rails.logger.error "Failed to upload document to S3"
+          Rails.logger.error 'Failed to upload document to S3'
           false
         end
       rescue StandardError => e

@@ -8,21 +8,21 @@ Faker::Config.locale = 'pt-BR'
 # ==========================================
 # TEAMS
 # ==========================================
-puts '[TEAMS] Creating Teams...'
+Rails.logger.debug '[TEAMS] Creating Teams...'
 team = Team.find_or_create_by!(name: 'Escritório Principal') do |t|
   t.subdomain = 'principal'
-  puts "  [OK] Created team: #{t.name}"
+  Rails.logger.debug { "  [OK] Created team: #{t.name}" }
 end
 
 team2 = Team.find_or_create_by!(name: 'Escritório Filial') do |t|
   t.subdomain = 'filial'
-  puts "  [OK] Created team: #{t.name}"
+  Rails.logger.debug { "  [OK] Created team: #{t.name}" }
 end
 
 # ==========================================
 # OFFICES with Polymorphic Associations
 # ==========================================
-puts '[OFFICES] Creating Offices with nested attributes...'
+Rails.logger.debug '[OFFICES] Creating Offices with nested attributes...'
 
 office1 = Office.find_or_create_by!(cnpj: '49.609.519/0001-60') do |o|
   o.name = 'Escritório Advocacia Principal'
@@ -69,10 +69,10 @@ office1 = Office.find_or_create_by!(cnpj: '49.609.519/0001-60') do |o|
     }
   ]
 
-  puts "  [OK] Created office: #{o.name} with nested attributes"
+  Rails.logger.debug { "  [OK] Created office: #{o.name} with nested attributes" }
 end
 
-office2 = Office.find_or_create_by!(cnpj: '11.222.333/0001-81') do |o|
+Office.find_or_create_by!(cnpj: '11.222.333/0001-81') do |o|
   o.name = 'Escritório Advocacia Secundário'
   o.oab_id = '12.345 SP'
   o.society = 'company'
@@ -124,13 +124,13 @@ office2 = Office.find_or_create_by!(cnpj: '11.222.333/0001-81') do |o|
     }
   ]
 
-  puts "  [OK] Created office: #{o.name} with nested attributes"
+  Rails.logger.debug { "  [OK] Created office: #{o.name} with nested attributes" }
 end
 
 # ==========================================
 # USERS with Polymorphic Associations
 # ==========================================
-puts '[USERS] Creating Users and UserProfiles with nested attributes...'
+Rails.logger.debug '[USERS] Creating Users and UserProfiles with nested attributes...'
 
 # User 1 - Main Lawyer
 user1 = User.find_or_create_by!(email: 'u1@gmail.com') do |u|
@@ -138,10 +138,10 @@ user1 = User.find_or_create_by!(email: 'u1@gmail.com') do |u|
   u.password_confirmation = '123456'
   u.team = team
   u.status = 'active'
-  puts "  [OK] Created user: #{u.email}"
+  Rails.logger.debug { "  [OK] Created user: #{u.email}" }
 end
 
-profile1 = UserProfile.find_or_create_by!(user: user1) do |p|
+UserProfile.find_or_create_by!(user: user1) do |p|
   p.role = 'lawyer'
   p.name = 'João Augusto'
   p.last_name = 'Prado'
@@ -190,7 +190,7 @@ profile1 = UserProfile.find_or_create_by!(user: user1) do |p|
     }
   ]
 
-  puts "  [OK] Created profile: #{p.full_name} with nested attributes"
+  Rails.logger.debug { "  [OK] Created profile: #{p.full_name} with nested attributes" }
 end
 
 # User 2 - Associate Lawyer
@@ -199,10 +199,10 @@ user2 = User.find_or_create_by!(email: 'u2@gmail.com') do |u|
   u.password_confirmation = '123456'
   u.team = team
   u.status = 'active'
-  puts "  [OK] Created user: #{u.email}"
+  Rails.logger.debug { "  [OK] Created user: #{u.email}" }
 end
 
-profile2 = UserProfile.find_or_create_by!(user: user2) do |p|
+UserProfile.find_or_create_by!(user: user2) do |p|
   p.role = 'lawyer'
   p.name = 'Maria'
   p.last_name = 'Silva Santos'
@@ -247,7 +247,7 @@ profile2 = UserProfile.find_or_create_by!(user: user2) do |p|
     }
   ]
 
-  puts "  [OK] Created profile: #{p.full_name} with nested attributes"
+  Rails.logger.debug { "  [OK] Created profile: #{p.full_name} with nested attributes" }
 end
 
 # User 3 - Secretary
@@ -256,10 +256,10 @@ user3 = User.find_or_create_by!(email: 'ana.secretaria@advocacia.com.br') do |u|
   u.password_confirmation = '123456'
   u.team = team
   u.status = 'active'
-  puts "  [OK] Created user: #{u.email}"
+  Rails.logger.debug { "  [OK] Created user: #{u.email}" }
 end
 
-profile3 = UserProfile.find_or_create_by!(user: user3) do |p|
+UserProfile.find_or_create_by!(user: user3) do |p|
   p.role = 'secretary'
   p.name = 'Ana'
   p.last_name = 'Costa'
@@ -292,7 +292,7 @@ profile3 = UserProfile.find_or_create_by!(user: user3) do |p|
     }
   ]
 
-  puts "  [OK] Created profile: #{p.full_name} with nested attributes"
+  Rails.logger.debug { "  [OK] Created profile: #{p.full_name} with nested attributes" }
 end
 
-puts "  [OK] Teams, Offices, and Users created successfully with polymorphic associations!"
+Rails.logger.debug '  [OK] Teams, Offices, and Users created successfully with polymorphic associations!'
