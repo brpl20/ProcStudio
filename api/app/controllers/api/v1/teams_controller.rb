@@ -9,7 +9,8 @@ module Api
 
       # GET /api/v1/teams
       def index
-        teams = Team.all
+        # Only return the current user's team(s)
+        teams = Team.where(id: @current_user.team_id)
         render json: {
           success: true,
           message: 'Teams obtidos com sucesso',
