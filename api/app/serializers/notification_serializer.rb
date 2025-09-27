@@ -56,17 +56,9 @@ class NotificationSerializer
   attribute :time_ago do |notification|
     if notification.created_at > 7.days.ago
       I18n.with_locale(:'pt-BR') do
-        distance = Time.current - notification.created_at
-        case distance
-        when 0..59
-          "#{distance.to_i} segundos atrás"
-        when 60..3599
-          "#{(distance / 60).to_i} minutos atrás"
-        when 3600..86_399
-          "#{(distance / 3600).to_i} horas atrás"
-        else
-          "#{(distance / 86_400).to_i} dias atrás"
-        end
+        # Create a helper instance to use time_ago_in_words
+        helper = Object.new.extend(ActionView::Helpers::DateHelper)
+        "#{helper.time_ago_in_words(notification.created_at)} atrás"
       end
     else
       notification.created_at.strftime('%d/%m/%Y')
