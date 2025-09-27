@@ -23,15 +23,15 @@ class SeedsFacade
     def run!(except: [])
       puts '[SEED] Starting seed process with facade architecture...'
       puts '=' * 50
-      
+
       # Parse exceptions from environment variable or parameter
       exceptions = parse_exceptions(except)
-      
+
       if exceptions.any?
         puts "[INFO] Excluding modules: #{exceptions.join(', ')}"
         puts '=' * 50
       end
-      
+
       begin
         ActiveRecord::Base.transaction do
           # Order matters for dependencies
@@ -41,10 +41,10 @@ class SeedsFacade
           load_customers unless exceptions.include?('customers')
           load_works unless exceptions.include?('works')
           load_jobs unless exceptions.include?('jobs')
-          
+
           display_statistics(exceptions)
         end
-        
+
         display_credentials unless exceptions.include?('teams_offices_users')
       rescue StandardError => e
         puts "[ERROR] Error during seed process: #{e.message}"
@@ -52,68 +52,68 @@ class SeedsFacade
         raise
       end
     end
-    
+
     private
-    
+
     def parse_exceptions(except_param)
       # Support both environment variable and parameter
       env_exceptions = ENV['EXCEPT']&.split(',')&.map(&:strip) || []
       param_exceptions = Array(except_param).map(&:to_s)
-      
+
       # Combine and normalize
       all_exceptions = (env_exceptions + param_exceptions).uniq.map(&:downcase)
-      
+
       # Validate exceptions
       invalid = all_exceptions - SEED_MODULES.keys.map(&:to_s)
       if invalid.any?
         puts "[WARNING] Invalid modules to exclude: #{invalid.join(', ')}"
         puts "[INFO] Valid modules: #{SEED_MODULES.keys.join(', ')}"
       end
-      
+
       all_exceptions & SEED_MODULES.keys.map(&:to_s)
     end
-    
+
     def load_teams_offices_users
       puts "\n[TEAMS] Loading Teams, Offices, and Users..."
       load Rails.root.join('db/seeds_teams_offices_users.rb')
-      puts "  [OK] Teams, Offices, and Users loaded successfully"
+      puts '  [OK] Teams, Offices, and Users loaded successfully'
     end
-    
+
     def load_law_areas
       puts "\n[LAW] Loading Law Areas..."
       load Rails.root.join('db/seeds_law_areas.rb')
-      puts "  [OK] Law Areas loaded successfully"
+      puts '  [OK] Law Areas loaded successfully'
     end
-    
+
     def load_law_areas_powers
       puts "\n[POWERS] Loading Law Area Powers..."
       load Rails.root.join('db/seeds_law_areas_powers.rb')
-      puts "  [OK] Law Area Powers loaded successfully"
+      puts '  [OK] Law Area Powers loaded successfully'
     end
-    
+
     def load_customers
       puts "\n[CUSTOMERS] Loading Customers..."
       load Rails.root.join('db/seeds_customers.rb')
-      puts "  [OK] Customers loaded successfully"
+      puts '  [OK] Customers loaded successfully'
     end
-    
+
     def load_works
       puts "\n[WORKS] Loading Works..."
       # TODO: Fix seeds_works.rb - skipping for now
-      puts "  [SKIP] Works seeding skipped (not implemented yet)"
+      puts '  [SKIP] Works seeding skipped (not implemented yet)'
     end
-    
+
     def load_jobs
       puts "\n[JOBS] Loading Jobs..."
       load Rails.root.join('db/seeds_jobs.rb')
-      puts "  [OK] Jobs loaded successfully"
+      puts '  [OK] Jobs loaded successfully'
     end
-    
+
     def display_statistics(exceptions = [])
-      puts "\n" + '=' * 50
+      puts "\n#{'=' * 50}"
       puts '[OK] Seed completed successfully!'
       puts '[STATS] Database Statistics:'
-      
+
       unless exceptions.include?('teams_offices_users')
         puts "  - Teams: #{Team.count}"
         puts "  - Offices: #{Office.count}"
@@ -127,15 +127,11 @@ class SeedsFacade
         puts "  - User Emails: #{Email.where(emailable_type: 'UserProfile').count}"
         puts "  - User Bank Accounts: #{BankAccount.where(bankable_type: 'UserProfile').count}"
       end
-      
-      unless exceptions.include?('law_areas')
-        puts "  - Law Areas: #{LawArea.count}"
-      end
-      
-      unless exceptions.include?('law_areas_powers')
-        puts "  - Powers: #{Power.count}"
-      end
-      
+
+      puts "  - Law Areas: #{LawArea.count}" unless exceptions.include?('law_areas')
+
+      puts "  - Powers: #{Power.count}" unless exceptions.include?('law_areas_powers')
+
       unless exceptions.include?('customers')
         puts "  - Customers: #{Customer.count}"
         puts "  - Profile Customers: #{ProfileCustomer.count}"
@@ -144,18 +140,14 @@ class SeedsFacade
         puts "  - Customer Emails: #{Email.where(emailable_type: 'ProfileCustomer').count}"
         puts "  - Customer Bank Accounts: #{BankAccount.where(bankable_type: 'ProfileCustomer').count}"
       end
-      
-      unless exceptions.include?('works')
-        puts "  - Works: #{Work.count}"
-      end
-      
-      unless exceptions.include?('jobs')
-        puts "  - Jobs: #{Job.count}"
-      end
-      
+
+      puts "  - Works: #{Work.count}" unless exceptions.include?('works')
+
+      puts "  - Jobs: #{Job.count}" unless exceptions.include?('jobs')
+
       puts '=' * 50
     end
-    
+
     def display_credentials
       puts "\n[CREDENTIALS] Test Credentials:"
       puts 'Lawyers/Staff:'
@@ -179,14 +171,13 @@ end
 #   rails db:seed EXCEPT=works
 #   rails db:seed EXCEPT=works,jobs
 #   EXCEPT=works rails db:seed
-# 
+#
 # Or programmatically:
 #   SeedsFacade.run!(except: ['works'])
 #   SeedsFacade.run!(except: [:works, :jobs])
 
 if ENV['EXCEPT']
-  SeedsFacade.run!
 else
   # Default behavior - run all seeds
-  SeedsFacade.run!
 end
+SeedsFacade.run!
