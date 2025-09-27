@@ -11,7 +11,13 @@ module Compliance
     def handle_manual_change
       return unless capacity_changed_manually?
 
-      create_manual_change_notification
+      # Use NotificationService for capacity change notification
+      NotificationService.notify_capacity_change(
+        profile_customer: profile_customer,
+        old_capacity: previous_capacity,
+        new_capacity: new_capacity,
+        reason: 'manual_change'
+      )
     end
 
     private
@@ -27,86 +33,6 @@ module Compliance
       @new_capacity = last_version.changeset['capacity'][1]
 
       true
-    end
-
-    def create_manual_change_notification
-      team = find_associated_team
-      return unless team
-
-      eligible_users = find_eligible_users(team)
-      eligible_users.find_each { |user| create_notification_for_user(user) }
-    end
-
-    def determine_notification_title
-      case new_capacity
-      when 'able'
-        'Customer capacity changed to fully capable'
-      when 'relatively'
-        'Customer capacity changed to relatively incapable'
-      when 'unable'
-        'Customer capacity changed to unable'
-      else
-        'Customer capacity updated'
-      end
-    end
-
-    def build_notification_description
-      age_info = profile_customer.birth.present? ? " (Age: #{calculate_age})" : ''
-
-      "#{profile_customer.full_name} (CPF: #{profile_customer.cpf})#{age_info} " \
-        "has had their capacity manually changed from '#{previous_capacity}' to '#{new_capacity}'. " \
-        'This change may be due to medical or legal reasons. ' \
-        'Please review and update all related documents and legal procedures.'
-    end
-
-    def find_associated_team
-      profile_customer.customer&.teams&.first
-    end
-
-    def find_eligible_users(team)
-      team.users.joins(:user_profile)
-        .where(user_profiles: { role: 'lawyer' })
-        .where.not(user_profiles: { id: nil })
-    end
-
-    def create_notification_for_user(user)
-      notification_attributes = build_notification_attributes(user.user_profile)
-      Notification.create!(notification_attributes)
-    end
-
-    def build_notification_attributes(user_profile)
-      {
-        user_profile: user_profile,
-        notification_type: 'compliance',
-        title: determine_notification_title,
-        body: build_notification_description,
-        priority: :high,
-        sender_type: 'ProfileCustomer',
-        sender_id: profile_customer.id,
-        action_url: "/customers/#{profile_customer.id}/compliance",
-        data: build_notification_data
-      }
-    end
-
-    def build_notification_data
-      {
-        compliance_type: 'manual_capacity_update',
-        previous_capacity: previous_capacity,
-        new_capacity: new_capacity,
-        changed_at: Time.current.to_s,
-        age: calculate_age,
-        profile_customer_id: profile_customer.id,
-        profile_customer_name: profile_customer.name
-      }
-    end
-
-    def calculate_age
-      return nil if profile_customer.birth.blank?
-
-      today = Date.current
-      age = today.year - profile_customer.birth.year
-      age -= 1 if today < profile_customer.birth + age.years
-      age
     end
   end
 end

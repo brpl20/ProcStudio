@@ -15,6 +15,7 @@
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #  sender_id         :bigint
+#  team_id           :bigint           not null
 #  user_profile_id   :bigint
 #
 # Indexes
@@ -23,10 +24,12 @@
 #  index_notifications_on_notification_type          (notification_type)
 #  index_notifications_on_read                       (read)
 #  index_notifications_on_sender_type_and_sender_id  (sender_type,sender_id)
+#  index_notifications_on_team_id                    (team_id)
 #  index_notifications_on_user_profile_id            (user_profile_id)
 #
 # Foreign Keys
 #
+#  fk_rails_...  (team_id => teams.id)
 #  fk_rails_...  (user_profile_id => user_profiles.id)
 #
 class NotificationSerializer
@@ -56,7 +59,9 @@ class NotificationSerializer
   attribute :time_ago do |notification|
     if notification.created_at > 7.days.ago
       I18n.with_locale(:'pt-BR') do
-        "#{time_ago_in_words(notification.created_at)} atrás"
+        # Create a helper instance to use time_ago_in_words
+        helper = Object.new.extend(ActionView::Helpers::DateHelper)
+        "#{helper.time_ago_in_words(notification.created_at)} atrás"
       end
     else
       notification.created_at.strftime('%d/%m/%Y')

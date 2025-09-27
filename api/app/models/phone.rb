@@ -61,6 +61,10 @@ class Phone < ApplicationRecord
     clean.length == 11 && clean[2] == '9'
   end
 
+  def phone_type
+    mobile? ? 'mobile' : 'landline'
+  end
+
   def whatsapp_link
     clean = phone_number.gsub(/\D/, '')
     clean = "55#{clean}" unless clean.start_with?('55') # Add Brazil country code

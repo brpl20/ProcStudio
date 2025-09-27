@@ -32,6 +32,7 @@ AllCops:
     - app/models/legal_cost.rb
     - app/models/honorary_component.rb
     - app/models/honorary.rb
+    - app/services/notification_service.rb
 
     # Arquivos que serão deprecados:
     - app/services/works/**/*

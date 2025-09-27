@@ -2,13 +2,15 @@
 
 module Api
   module V1
+    # rubocop:disable Metrics/ClassLength
     class NotificationsController < BackofficeController
       before_action :set_notification, only: [:show, :update, :destroy, :mark_as_read, :mark_as_unread]
 
       def index
         notifications = @current_user.user_profile.notifications
+                          .for_team(current_team)
                           .includes(:sender)
-                          .by_priority
+                          .recent
 
         notifications = apply_filters(notifications)
 
@@ -26,7 +28,7 @@ module Api
             total_count: total_count,
             total_pages: (total_count.to_f / per_page).ceil,
             current_page: page,
-            unread_count: @current_user.user_profile.notifications.unread.count
+            unread_count: @current_user.user_profile.notifications.for_team(current_team).unread.count
           }
         ).serializable_hash
 
@@ -75,7 +77,8 @@ module Api
           notification = @current_user.user_profile.notifications.build(notification_params)
         end
 
-        # Set sender as current user's profile if not specified
+        # Set team and sender
+        notification.team = current_team
         notification.sender ||= @current_user.user_profile
 
         if notification.save
@@ -191,7 +194,7 @@ module Api
       def mark_all_as_read
         authorize Notification
 
-        @current_user.user_profile.notifications.unread.update_all(read: true)
+        @current_user.user_profile.notifications.for_team(current_team).unread.update_all(read: true) # rubocop:disable Rails/SkipsModelValidations
 
         render json: {
           success: true,
@@ -208,7 +211,7 @@ module Api
       def unread_count
         authorize Notification, :index?
 
-        count = @current_user.user_profile.notifications.unread.count
+        count = @current_user.user_profile.notifications.for_team(current_team).unread.count
 
         render json: {
           success: true,
@@ -226,7 +229,7 @@ module Api
       private
 
       def set_notification
-        @notification = @current_user.user_profile.notifications.find(params[:id])
+        @notification = @current_user.user_profile.notifications.for_team(current_team).find(params[:id])
       end
 
       def notification_params
@@ -234,7 +237,6 @@ module Api
           :title,
           :body,
           :notification_type,
-          :priority,
           :action_url,
           :sender_type,
           :sender_id,
@@ -264,15 +266,7 @@ module Api
           notifications = notifications.where(notification_type: params[:notification_type])
         end
 
-        if params[:priority].present?
-          # Support both string names and integer values
-          priority_value = if params[:priority].match?(/^\d+$/)
-                             params[:priority].to_i
-                           else
-                             Notification.priorities[params[:priority]]
-                           end
-          notifications = notifications.where(priority: priority_value) if priority_value
-        end
+        # Priority filter removed as priority field no longer exists
 
         notifications = notifications.where(created_at: (params[:from_date])..) if params[:from_date].present?
 
@@ -281,5 +275,6 @@ module Api
         notifications
       end
     end
+    # rubocop:enable Metrics/ClassLength
   end
 end

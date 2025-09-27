@@ -5,10 +5,11 @@ class NotificationChannel < ApplicationCable::Channel
     if current_user&.user_profile
       stream_for current_user
 
-      # Send initial unread count on subscription
+      # Send initial unread count on subscription (team-scoped)
+      team = current_user.team
       transmit({
                  type: 'connection_established',
-                 unread_count: current_user.user_profile.notifications.unread.count
+                 unread_count: current_user.user_profile.notifications.for_team(team).unread.count
                })
     else
       reject
@@ -20,7 +21,8 @@ class NotificationChannel < ApplicationCable::Channel
   end
 
   def mark_as_read(data)
-    notification = current_user.user_profile.notifications.find_by(id: data['notification_id'])
+    team = current_user.team
+    notification = current_user.user_profile.notifications.for_team(team).find_by(id: data['notification_id'])
 
     return unless notification
 
@@ -28,12 +30,13 @@ class NotificationChannel < ApplicationCable::Channel
     transmit({
                type: 'notification_marked_as_read',
                notification_id: notification.id,
-               unread_count: current_user.user_profile.notifications.unread.count
+               unread_count: current_user.user_profile.notifications.for_team(team).unread.count
              })
   end
 
   def mark_all_as_read
-    current_user.user_profile.notifications.unread.update_all(read: true)
+    team = current_user.team
+    current_user.user_profile.notifications.for_team(team).unread.update_all(read: true) # rubocop:disable Rails/SkipsModelValidations
 
     transmit({
                type: 'all_notifications_marked_as_read',
@@ -42,9 +45,10 @@ class NotificationChannel < ApplicationCable::Channel
   end
 
   def request_unread_count
+    team = current_user.team
     transmit({
                type: 'unread_count_update',
-               unread_count: current_user.user_profile.notifications.unread.count
+               unread_count: current_user.user_profile.notifications.for_team(team).unread.count
              })
   end
 end

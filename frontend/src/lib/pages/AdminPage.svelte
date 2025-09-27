@@ -4,7 +4,12 @@
   // import CepTestForm from '../components/test/CepTestForm.svelte';
   import { authStore } from '../stores/authStore';
   import { usersCacheStore, cacheStatus, allUserProfiles } from '../stores/usersCacheStore';
-  import { notificationStore, unreadCount, isConnected, recentNotifications } from '../stores/notificationStore';
+  import {
+    notificationStore,
+    unreadCount,
+    isConnected,
+    recentNotifications
+  } from '../stores/notificationStore';
   import api from '../api/index';
   import type { WhoAmIResponse } from '../api/types';
 
@@ -88,10 +93,7 @@
           >
             {cacheInfo.isLoading ? 'Loading...' : 'Refresh Cache'}
           </button>
-          <button
-            class="btn btn-sm btn-outline"
-            on:click={() => usersCacheStore.clearCache()}
-          >
+          <button class="btn btn-sm btn-outline" on:click={() => usersCacheStore.clearCache()}>
             Clear Cache
           </button>
         </div>
@@ -142,7 +144,9 @@
                       {#if userProfile.avatar_url}
                         <img src={userProfile.avatar_url} alt={userProfile.full_name} />
                       {:else}
-                        <div class="bg-neutral text-neutral-content rounded-full w-16 h-16 flex items-center justify-center">
+                        <div
+                          class="bg-neutral text-neutral-content rounded-full w-16 h-16 flex items-center justify-center"
+                        >
                           <span class="text-xl">{userProfile.name?.charAt(0) || '?'}</span>
                         </div>
                       {/if}
@@ -164,14 +168,23 @@
                     <div><strong>Nationality:</strong> {userProfile.nationality || 'N/A'}</div>
                     <div><strong>Civil Status:</strong> {userProfile.civil_status || 'N/A'}</div>
                     <div><strong>Birth:</strong> {userProfile.birth || 'N/A'}</div>
-                    <div><strong>Avatar URL:</strong> <a href={userProfile.avatar_url} target="_blank" rel="noopener" class="link link-primary">{userProfile.avatar_url ? 'View' : 'N/A'}</a></div>
+                    <div>
+                      <strong>Avatar URL:</strong>
+                      <a
+                        href={userProfile.avatar_url}
+                        target="_blank"
+                        rel="noopener"
+                        class="link link-primary">{userProfile.avatar_url ? 'View' : 'N/A'}</a
+                      >
+                    </div>
                   </div>
                 </div>
 
                 <!-- Team and Office Info -->
                 {#if whoAmIUser?.attributes?.team}
                   <div class="bg-base-300 p-2 rounded mt-2">
-                    <strong>Team:</strong> {whoAmIUser.attributes.team.name} (ID: {whoAmIUser.attributes.team.id})
+                    <strong>Team:</strong>
+                    {whoAmIUser.attributes.team.name} (ID: {whoAmIUser.attributes.team.id})
                   </div>
                 {/if}
 
@@ -179,7 +192,9 @@
                   <div class="bg-base-300 p-2 rounded mt-2">
                     <strong>Offices:</strong>
                     {#each whoAmIUser.attributes.offices as office}
-                      <div class="text-sm">{office.name} - {office.partnership_type} ({office.partnership_percentage}%)</div>
+                      <div class="text-sm">
+                        {office.name} - {office.partnership_type} ({office.partnership_percentage}%)
+                      </div>
                     {/each}
                   </div>
                 {/if}
@@ -284,15 +299,18 @@
         <!-- Debug Info -->
         <div class="alert alert-info mb-4">
           <div class="text-sm">
-            <strong>WebSocket Debug Info:</strong><br>
-            Connected: {$isConnected ? 'Yes' : 'No'}<br>
-            Has Token: {$authStore.user?.data?.token ? 'Yes' : 'No'}<br>
-            Token Preview: {$authStore.user?.data?.token ? `${$authStore.user.data.token.substring(0, 20)}...` : 'None'}<br>
-            Button Disabled: {$isConnected || !$authStore.user?.data?.token ? 'Yes' : 'No'}<br><br>
-            <strong>Auth Store Debug:</strong><br>
-            Is Authenticated: {$authStore.isAuthenticated ? 'Yes' : 'No'}<br>
-            User Object: {$authStore.user ? 'Present' : 'Null'}<br>
-            User Structure: {JSON.stringify(Object.keys($authStore.user || {}))}<br>
+            <strong>WebSocket Debug Info:</strong><br />
+            Connected: {$isConnected ? 'Yes' : 'No'}<br />
+            Has Token: {$authStore.user?.data?.token ? 'Yes' : 'No'}<br />
+            Token Preview: {$authStore.user?.data?.token
+              ? `${$authStore.user.data.token.substring(0, 20)}...`
+              : 'None'}<br />
+            Button Disabled: {$isConnected || !$authStore.user?.data?.token ? 'Yes' : 'No'}<br /><br
+            />
+            <strong>Auth Store Debug:</strong><br />
+            Is Authenticated: {$authStore.isAuthenticated ? 'Yes' : 'No'}<br />
+            User Object: {$authStore.user ? 'Present' : 'Null'}<br />
+            User Structure: {JSON.stringify(Object.keys($authStore.user || {}))}<br />
           </div>
         </div>
 
@@ -302,7 +320,10 @@
             class="btn btn-sm btn-primary"
             on:click={() => {
               const token = $authStore.user?.data?.token || '';
-              console.log('🔑 Using token for WebSocket:', token ? `${token.substring(0, 20)}...` : 'No token');
+              console.log(
+                '🔑 Using token for WebSocket:',
+                token ? `${token.substring(0, 20)}...` : 'No token'
+              );
               notificationStore.connect(token);
             }}
             disabled={$isConnected || !$authStore.user?.data?.token}
@@ -341,7 +362,9 @@
 
           {#if $recentNotifications.length === 0}
             <div class="alert alert-info">
-              <span>No notifications received yet. Create a Job in the backend to test notifications.</span>
+              <span
+                >No notifications received yet. Create a Job in the backend to test notifications.</span
+              >
             </div>
           {:else}
             <div class="space-y-2">
@@ -350,7 +373,11 @@
                   <div class="card-body">
                     <div class="flex justify-between items-start">
                       <div class="flex-1">
-                        <h5 class="font-medium {notification.read ? 'text-base-content/70' : 'text-base-content'}">
+                        <h5
+                          class="font-medium {notification.read
+                            ? 'text-base-content/70'
+                            : 'text-base-content'}"
+                        >
                           {notification.title}
                         </h5>
                         <p class="text-sm text-base-content/80 mt-1">
@@ -371,8 +398,11 @@
 
                         {#if notification.data}
                           <details class="mt-2">
-                            <summary class="text-xs cursor-pointer text-base-content/60">View data</summary>
-                            <pre class="text-xs mt-1 bg-base-300 p-2 rounded overflow-auto max-h-20">
+                            <summary class="text-xs cursor-pointer text-base-content/60"
+                              >View data</summary
+                            >
+                            <pre
+                              class="text-xs mt-1 bg-base-300 p-2 rounded overflow-auto max-h-20">
 {JSON.stringify(notification.data, null, 2)}
                             </pre>
                           </details>
@@ -412,8 +442,16 @@
             <h4 class="font-semibold">Testing Instructions:</h4>
             <ol class="list-decimal list-inside text-sm space-y-1 mt-2">
               <li>Make sure WebSocket is connected (green status above)</li>
-              <li>Use the authenticator tool to create a Job: <code>node ai-tools/authenticator.js create job</code></li>
-              <li>Or use the Rails console: <code>Job.create!(user: User.first, description: "Test job", ...)</code></li>
+              <li>
+                Use the authenticator tool to create a Job: <code
+                  >node ai-tools/authenticator.js create job</code
+                >
+              </li>
+              <li>
+                Or use the Rails console: <code
+                  >Job.create!(user: User.first, description: "Test job", ...)</code
+                >
+              </li>
               <li>Watch for real-time notifications to appear above</li>
               <li>Test marking notifications as read</li>
             </ol>
@@ -424,6 +462,5 @@
 
     <!-- CEP Test Section -->
     <div class="divider">CEP Validator Test</div>
-    <CepTestForm />
   </div>
 </AuthSidebar>
