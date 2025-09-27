@@ -69,11 +69,10 @@ profile_customer1 = ProfileCustomer.find_or_create_by!(customer: customer1) do |
   pc.bank_accounts_attributes = [
     {
       bank_name: 'Caixa Econômica Federal',
-      type_account: 'checking',
+      account_type: 'checking',
       agency: '2222',
       account: '333444',
-      pix: '123.456.789-09',
-      account_type: 'main'
+      pix: '123.456.789-09'
     }
   ]
 
@@ -155,19 +154,17 @@ ProfileCustomer.find_or_create_by!(customer: customer2) do |pc|
   pc.bank_accounts_attributes = [
     {
       bank_name: 'Banco do Brasil',
-      type_account: 'checking',
+      account_type: 'checking',
       agency: '1234',
       account: '98765',
-      pix: '11.444.777/0001-61',
-      account_type: 'main'
+      pix: '11.444.777/0001-61'
     },
     {
       bank_name: 'Santander',
-      type_account: 'savings_account',
+      account_type: 'savings',
       agency: '5678',
       account: '55555',
-      pix: 'empresa@pix.com.br',
-      account_type: 'savings'
+      pix: 'empresa@pix.com.br'
     }
   ]
 

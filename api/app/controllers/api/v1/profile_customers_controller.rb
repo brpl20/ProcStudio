@@ -17,7 +17,7 @@ module Api
       after_action :verify_authorized
 
       def index
-        profile_customers = ProfileCustomerFilter.retrieve_customers
+        profile_customers = ProfileCustomerFilter.retrieve_customers(current_team)
 
         filter_by_deleted_params.each do |key, value|
           next if value.blank?
@@ -277,7 +277,7 @@ module Api
 
       def profile_customer
         @profile_customer = ProfileCustomer.with_deleted.find(params[:id]) if truthy_param?(:include_deleted)
-        @profile_customer ||= ProfileCustomerFilter.retrieve_customer(params[:id])
+        @profile_customer ||= ProfileCustomerFilter.retrieve_customer(params[:id], current_team)
       end
 
       def profile_customers_params
@@ -292,7 +292,7 @@ module Api
           :inss_password,
           :accountant_id,
           addresses_attributes: [:id, :description, :zip_code, :street, :number, :neighborhood, :city, :state],
-          bank_accounts_attributes: [:id, :bank_name, :type_account, :agency, :account, :operation, :pix],
+          bank_accounts_attributes: [:id, :bank_name, :account_type, :agency, :account, :operation, :pix],
           customer_attributes: [:id, :email, :access_email, :password, :password_confirmation],
           phones_attributes: [:id, :phone_number],
           emails_attributes: [:id, :email],

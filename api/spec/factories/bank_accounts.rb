@@ -26,7 +26,7 @@
 FactoryBot.define do
   factory :bank_account do
     bank_name { Faker::Bank.name }
-    type_account { 'corrente' }
+    account_type { 'checking' }
     agency { Faker::Bank.account_number }
     account { Faker::Bank.routing_number }
     operation { Faker::Number.number(digits: 3) }

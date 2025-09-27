@@ -8,7 +8,7 @@ class FullUserSerializer
 
   # Team information
   attribute :team do |object|
-    return nil unless object.team
+    next nil unless object.team
 
     {
       id: object.team.id,
@@ -20,7 +20,7 @@ class FullUserSerializer
   # User Profile information (embedded)
   attribute :profile do |object|
     profile = object.user_profile
-    return nil unless profile
+    next nil unless profile
 
     {
       id: profile.id,
@@ -47,7 +47,7 @@ class FullUserSerializer
   # Office information
   attribute :office do |object|
     office = object.user_profile&.office
-    return nil unless office
+    next nil unless office
 
     {
       id: office.id,
@@ -61,7 +61,7 @@ class FullUserSerializer
 
   # User offices (for lawyers who belong to multiple offices)
   attribute :offices do |object|
-    return [] unless object.respond_to?(:offices)
+    next [] unless object.respond_to?(:offices)
 
     object.offices.map do |office|
       user_office = object.user_offices.find_by(office: office)
@@ -79,7 +79,7 @@ class FullUserSerializer
   # Phones
   attribute :phones do |object|
     profile = object.user_profile
-    return [] unless profile.respond_to?(:phones)
+    next [] unless profile.respond_to?(:phones)
 
     profile.phones.map do |phone|
       {
@@ -93,7 +93,7 @@ class FullUserSerializer
   # Addresses
   attribute :addresses do |object|
     profile = object.user_profile
-    return [] unless profile.respond_to?(:addresses)
+    next [] unless profile.respond_to?(:addresses)
 
     profile.addresses.map do |address|
       {
@@ -113,13 +113,13 @@ class FullUserSerializer
   # Bank accounts
   attribute :bank_accounts do |object|
     profile = object.user_profile
-    return [] unless profile.respond_to?(:bank_accounts)
+    next [] unless profile.respond_to?(:bank_accounts)
 
     profile.bank_accounts.map do |account|
       {
         id: account.id,
         bank_name: account.bank_name,
-        type_account: account.type_account,
+        account_type: account.account_type,
         agency: account.agency,
         account: account.account,
         operation: account.operation,
@@ -131,7 +131,7 @@ class FullUserSerializer
   # Works associated (count only for performance)
   attribute :works_count do |object|
     profile = object.user_profile
-    return 0 unless profile.respond_to?(:works)
+    next 0 unless profile.respond_to?(:works)
 
     profile.works.count
   end
@@ -139,7 +139,7 @@ class FullUserSerializer
   # Jobs associated (count only for performance)
   attribute :jobs_count do |object|
     profile = object.user_profile
-    return 0 unless profile.respond_to?(:jobs)
+    next 0 unless profile.respond_to?(:jobs)
 
     profile.jobs.count
   end

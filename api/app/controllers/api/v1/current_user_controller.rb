@@ -25,6 +25,9 @@ module Api
           data: serialized_data[:data]
         }, status: :ok
       rescue StandardError => e
+        Rails.logger.error "Whoami error: #{e.class} - #{e.message}"
+        Rails.logger.error e.backtrace.first(10).join("\n") if e.backtrace
+
         render json: {
           success: false,
           message: e.message,

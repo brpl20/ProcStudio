@@ -8,21 +8,21 @@ Faker::Config.locale = 'pt-BR'
 # ==========================================
 # TEAMS
 # ==========================================
-puts '[TEAMS] Creating Teams...'
+Rails.logger.debug '[TEAMS] Creating Teams...'
 team = Team.find_or_create_by!(name: 'Escritório Principal') do |t|
   t.subdomain = 'principal'
-  puts "  [OK] Created team: #{t.name}"
+  Rails.logger.debug { "  [OK] Created team: #{t.name}" }
 end
 
 team2 = Team.find_or_create_by!(name: 'Escritório Filial') do |t|
   t.subdomain = 'filial'
-  puts "  [OK] Created team: #{t.name}"
+  Rails.logger.debug { "  [OK] Created team: #{t.name}" }
 end
 
 # ==========================================
 # OFFICES with Polymorphic Associations
 # ==========================================
-puts '[OFFICES] Creating Offices with nested attributes...'
+Rails.logger.debug '[OFFICES] Creating Offices with nested attributes...'
 
 office1 = Office.find_or_create_by!(cnpj: '49.609.519/0001-60') do |o|
   o.name = 'Escritório Advocacia Principal'
@@ -31,7 +31,7 @@ office1 = Office.find_or_create_by!(cnpj: '49.609.519/0001-60') do |o|
   o.foundation = Date.parse('2023-09-25')
   o.site = 'advocacia.com.br'
   o.team = team
-  
+
   # Using nested attributes for polymorphic associations
   o.addresses_attributes = [
     {
@@ -44,43 +44,42 @@ office1 = Office.find_or_create_by!(cnpj: '49.609.519/0001-60') do |o|
       address_type: 'main'
     }
   ]
-  
+
   o.phones_attributes = [
     {
       phone_number: '4532259000'
     }
   ]
-  
+
   o.emails_attributes = [
     {
-      email: 'contato@advocacia.com.br',
+      email: 'u1@gmail.com',
       email_type: 'main'
     }
   ]
-  
+
   o.bank_accounts_attributes = [
     {
       bank_name: 'Banco do Brasil',
-      type_account: 'checking',
+      account_type: 'checking',
       agency: '1234',
       account: '567890',
       operation: '001',
-      pix: '49.609.519/0001-60',
-      account_type: 'main'
+      pix: '49.609.519/0001-60'
     }
   ]
-  
-  puts "  [OK] Created office: #{o.name} with nested attributes"
+
+  Rails.logger.debug { "  [OK] Created office: #{o.name} with nested attributes" }
 end
 
-office2 = Office.find_or_create_by!(cnpj: '11.222.333/0001-81') do |o|
+Office.find_or_create_by!(cnpj: '11.222.333/0001-81') do |o|
   o.name = 'Escritório Advocacia Secundário'
   o.oab_id = '12.345 SP'
   o.society = 'company'
   o.foundation = Date.parse('2020-01-15')
   o.site = 'advocacia2.com.br'
   o.team = team2
-  
+
   # Using nested attributes for polymorphic associations
   o.addresses_attributes = [
     {
@@ -94,7 +93,7 @@ office2 = Office.find_or_create_by!(cnpj: '11.222.333/0001-81') do |o|
       address_type: 'main'
     }
   ]
-  
+
   o.phones_attributes = [
     {
       phone_number: '1132847000'
@@ -103,47 +102,46 @@ office2 = Office.find_or_create_by!(cnpj: '11.222.333/0001-81') do |o|
       phone_number: '11987654321'
     }
   ]
-  
+
   o.emails_attributes = [
     {
-      email: 'contato@advocacia2.com.br',
+      email: 'o1@gmail.com',
       email_type: 'main'
     },
     {
-      email: 'financeiro@advocacia2.com.br',
+      email: 'o1.financeiro@gmail.com',
       email_type: 'secondary'
     }
   ]
-  
+
   o.bank_accounts_attributes = [
     {
       bank_name: 'Santander',
-      type_account: 'checking',
+      account_type: 'checking',
       agency: '0001',
       account: '123456',
-      pix: 'contato@advocacia2.com.br',
-      account_type: 'main'
+      pix: 'contato@advocacia2.com.br'
     }
   ]
-  
-  puts "  [OK] Created office: #{o.name} with nested attributes"
+
+  Rails.logger.debug { "  [OK] Created office: #{o.name} with nested attributes" }
 end
 
 # ==========================================
 # USERS with Polymorphic Associations
 # ==========================================
-puts '[USERS] Creating Users and UserProfiles with nested attributes...'
+Rails.logger.debug '[USERS] Creating Users and UserProfiles with nested attributes...'
 
 # User 1 - Main Lawyer
-user1 = User.find_or_create_by!(email: 'joao.prado@advocacia.com.br') do |u|
-  u.password = 'Password123!'
-  u.password_confirmation = 'Password123!'
+user1 = User.find_or_create_by!(email: 'u1@gmail.com') do |u|
+  u.password = '123456'
+  u.password_confirmation = '123456'
   u.team = team
   u.status = 'active'
-  puts "  [OK] Created user: #{u.email}"
+  Rails.logger.debug { "  [OK] Created user: #{u.email}" }
 end
 
-profile1 = UserProfile.find_or_create_by!(user: user1) do |p|
+UserProfile.find_or_create_by!(user: user1) do |p|
   p.role = 'lawyer'
   p.name = 'João Augusto'
   p.last_name = 'Prado'
@@ -156,7 +154,7 @@ profile1 = UserProfile.find_or_create_by!(user: user1) do |p|
   p.birth = Date.parse('1991-10-16')
   p.mother_name = 'Rosinha Mendes Prado'
   p.office = office1
-  
+
   # Using nested attributes for polymorphic associations
   p.addresses_attributes = [
     {
@@ -170,42 +168,41 @@ profile1 = UserProfile.find_or_create_by!(user: user1) do |p|
       address_type: 'main'
     }
   ]
-  
+
   p.emails_attributes = [
     {
-      email: 'joao.prado@advocacia.com.br',
+      email: 'u2@gmail.com',
       email_type: 'work'
     },
     {
-      email: 'joao.personal@gmail.com',
+      email: 'u2.personal@gmail.com',
       email_type: 'personal'
     }
   ]
-  
+
   p.bank_accounts_attributes = [
     {
       bank_name: 'Itaú',
-      type_account: 'checking',
+      account_type: 'checking',
       agency: '5678',
       account: '12345',
-      pix: '080.391.959-00',
-      account_type: 'main'
+      pix: '080.391.959-00'
     }
   ]
-  
-  puts "  [OK] Created profile: #{p.full_name} with nested attributes"
+
+  Rails.logger.debug { "  [OK] Created profile: #{p.full_name} with nested attributes" }
 end
 
 # User 2 - Associate Lawyer
-user2 = User.find_or_create_by!(email: 'maria.silva@advocacia.com.br') do |u|
-  u.password = 'Password123!'
-  u.password_confirmation = 'Password123!'
+user2 = User.find_or_create_by!(email: 'u2@gmail.com') do |u|
+  u.password = '123456'
+  u.password_confirmation = '123456'
   u.team = team
   u.status = 'active'
-  puts "  [OK] Created user: #{u.email}"
+  Rails.logger.debug { "  [OK] Created user: #{u.email}" }
 end
 
-profile2 = UserProfile.find_or_create_by!(user: user2) do |p|
+UserProfile.find_or_create_by!(user: user2) do |p|
   p.role = 'lawyer'
   p.name = 'Maria'
   p.last_name = 'Silva Santos'
@@ -218,7 +215,7 @@ profile2 = UserProfile.find_or_create_by!(user: user2) do |p|
   p.birth = Date.parse('1988-05-22')
   p.mother_name = 'Ana Silva'
   p.office = office1
-  
+
   # Using nested attributes for polymorphic associations
   p.addresses_attributes = [
     {
@@ -232,38 +229,37 @@ profile2 = UserProfile.find_or_create_by!(user: user2) do |p|
       address_type: 'main'
     }
   ]
-  
+
   p.emails_attributes = [
     {
       email: 'maria.silva@advocacia.com.br',
       email_type: 'work'
     }
   ]
-  
+
   p.bank_accounts_attributes = [
     {
       bank_name: 'Bradesco',
-      type_account: 'checking',
+      account_type: 'checking',
       agency: '3333',
       account: '999999',
-      pix: 'maria.silva@pix.com',
-      account_type: 'main'
+      pix: 'maria.silva@pix.com'
     }
   ]
-  
-  puts "  [OK] Created profile: #{p.full_name} with nested attributes"
+
+  Rails.logger.debug { "  [OK] Created profile: #{p.full_name} with nested attributes" }
 end
 
 # User 3 - Secretary
 user3 = User.find_or_create_by!(email: 'ana.secretaria@advocacia.com.br') do |u|
-  u.password = 'Password123!'
-  u.password_confirmation = 'Password123!'
+  u.password = '123456'
+  u.password_confirmation = '123456'
   u.team = team
   u.status = 'active'
-  puts "  [OK] Created user: #{u.email}"
+  Rails.logger.debug { "  [OK] Created user: #{u.email}" }
 end
 
-profile3 = UserProfile.find_or_create_by!(user: user3) do |p|
+UserProfile.find_or_create_by!(user: user3) do |p|
   p.role = 'secretary'
   p.name = 'Ana'
   p.last_name = 'Costa'
@@ -275,7 +271,7 @@ profile3 = UserProfile.find_or_create_by!(user: user3) do |p|
   p.birth = Date.parse('1995-03-10')
   p.mother_name = 'Maria Costa'
   p.office = office1
-  
+
   # Using nested attributes for polymorphic associations
   p.addresses_attributes = [
     {
@@ -288,15 +284,15 @@ profile3 = UserProfile.find_or_create_by!(user: user3) do |p|
       address_type: 'main'
     }
   ]
-  
+
   p.emails_attributes = [
     {
       email: 'ana.secretaria@advocacia.com.br',
       email_type: 'work'
     }
   ]
-  
-  puts "  [OK] Created profile: #{p.full_name} with nested attributes"
+
+  Rails.logger.debug { "  [OK] Created profile: #{p.full_name} with nested attributes" }
 end
 
-puts "  [OK] Teams, Offices, and Users created successfully with polymorphic associations!"
+Rails.logger.debug '  [OK] Teams, Offices, and Users created successfully with polymorphic associations!'

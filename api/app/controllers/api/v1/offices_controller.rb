@@ -438,7 +438,7 @@ module Api
                                  :city, :state, :zip_code, :address_type, :_destroy],
           office_emails_attributes: [:id, :email_id, :_destroy],
           emails_attributes: [:id, :email, :_destroy],
-          bank_accounts_attributes: [:id, :bank_name, :type_account, :agency,
+          bank_accounts_attributes: [:id, :bank_name, :account_type, :agency,
                                      :account, :operation, :pix, :_destroy],
           user_offices_attributes: [:id, :user_id, :partnership_type,
                                     :partnership_percentage, :is_administrator,
