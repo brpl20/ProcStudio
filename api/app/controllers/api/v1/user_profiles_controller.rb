@@ -284,7 +284,7 @@ module Api
           office_attributes: [:name, :cnpj],
           addresses_attributes: [:id, :description, :zip_code, :street, :number, :neighborhood, :city,
                                  :state, :complement, :address_type],
-          bank_accounts_attributes: [:id, :bank_name, :type_account, :agency, :account, :operation, :pix],
+          bank_accounts_attributes: [:id, :bank_name, :account_type, :agency, :account, :operation, :pix],
           phones_attributes: [:id, :phone_number]
         )
         # rubocop:enable Rails/StrongParametersExpect

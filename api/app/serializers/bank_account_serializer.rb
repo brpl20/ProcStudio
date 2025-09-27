@@ -26,5 +26,5 @@
 class BankAccountSerializer
   include JSONAPI::Serializer
 
-  attributes :id, :bank_name, :type_account, :agency, :account, :operation, :pix
+  attributes :id, :bank_name, :account_type, :agency, :account, :operation, :pix
 end

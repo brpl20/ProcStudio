@@ -77,7 +77,7 @@ class Api::V1::Customer::ProfileCustomersController < FrontofficeController
       :inss_password,
       :accountant_id,
       addresses_attributes: [:id, :description, :zip_code, :street, :number, :neighborhood, :city, :state],
-      bank_accounts_attributes: [:id, :bank_name, :type_account, :agency, :account, :operation, :pix],
+      bank_accounts_attributes: [:id, :bank_name, :account_type, :agency, :account, :operation, :pix],
       customer_attributes: [:id, :email, :password, :password_confirmation],
       phones_attributes: [:id, :phone_number],
       emails_attributes: [:id, :email],

@@ -31,37 +31,27 @@ class BankAccount < ApplicationRecord
   # Polymorphic association
   belongs_to :bankable, polymorphic: true
 
-  # Explicitly declare string attributes for enums (Rails 7.2+ requirement)
-  attribute :account_type, :string, default: 'main'
-  attribute :type_account, :string
+  # Explicitly declare string attribute for enum (Rails 7.2+ requirement)
+  attribute :account_type, :string, default: 'checking'
 
-  # Enums for account categories
+  # Enum for account type
   enum :account_type, {
-    main: 'main',
-    secondary: 'secondary',
-    savings: 'savings',
-    business: 'business'
-  }, default: 'main'
-
-  # Enums for account types (Brazilian banking)
-  enum :type_account, {
-    checking: 'checking',        # Conta Corrente
-    savings_account: 'savings',  # Conta Poupança
-    payment: 'payment',          # Conta Pagamento
-    salary: 'salary'             # Conta Salário
-  }
+    checking: 'checking',      # Conta Corrente
+    savings: 'savings',        # Conta Poupança
+    salary: 'salary',          # Conta Salário
+    investment: 'investment'   # Conta Investimento
+  }, default: 'checking'
 
   # Validations
   validates :bank_name, :agency, :account, presence: true
   validates :agency, format: {
     with: /\A\d{1,6}(-?\d)?\z/,
-    message: 'Invalid agency format'
+    message: I18n.t('errors.messages.invalid_agency_format')
   }
   validates :account, format: {
     with: /\A\d{1,15}(-?\d)?\z/,
-    message: 'Invalid account format'
+    message: I18n.t('errors.messages.invalid_account_format')
   }
-  validates :pix, uniqueness: true, allow_blank: true
 
   # Normalize data before saving
   before_save :normalize_bank_data
@@ -70,7 +60,7 @@ class BankAccount < ApplicationRecord
   scope :for_offices, -> { where(bankable_type: 'Office') }
   scope :for_customers, -> { where(bankable_type: 'ProfileCustomer') }
   scope :for_users, -> { where(bankable_type: 'UserProfile') }
-  scope :main_accounts, -> { where(account_type: 'main') }
+  scope :checking_accounts, -> { where(account_type: 'checking') }
   scope :with_pix, -> { where.not(pix: [nil, '']) }
 
   # Instance methods
