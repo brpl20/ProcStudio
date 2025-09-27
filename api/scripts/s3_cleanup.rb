@@ -16,9 +16,9 @@ Dotenv.load('.env', '.env.local')
 
 class S3Cleanup
   def initialize
-    @bucket = ENV.fetch('S3_BUCKET', nil)
+    @bucket = ENV.fetch('AWS_BUCKET_MAIN', nil)
     @s3_client = Aws::S3::Client.new(
-      region: ENV['AWS_REGION'] || 'us-east-1',
+      region: ENV.fetch('AWS_DEFAULT_REGION', nil),
       access_key_id: ENV.fetch('AWS_ACCESS_KEY_ID', nil),
       secret_access_key: ENV.fetch('AWS_SECRET_ACCESS_KEY', nil)
     )
@@ -140,13 +140,13 @@ end
 
 # Main execution
 if __FILE__ == $PROGRAM_NAME
-  unless ENV.fetch('S3_BUCKET', nil) && ENV.fetch('AWS_ACCESS_KEY_ID', nil) && ENV['AWS_SECRET_ACCESS_KEY']
+  unless ENV.fetch('AWS_BUCKET_MAIN', nil) && ENV.fetch('AWS_ACCESS_KEY_ID', nil) && ENV['AWS_SECRET_ACCESS_KEY']
     puts '❌ Missing AWS credentials!'
     puts '   Please ensure your .env file contains:'
-    puts '   - S3_BUCKET'
+    puts '   - AWS_BUCKET_MAIN'
     puts '   - AWS_ACCESS_KEY_ID'
     puts '   - AWS_SECRET_ACCESS_KEY'
-    puts '   - AWS_REGION (optional, defaults to us-east-1)'
+    puts '   - AWS_DEFAULT_REGION'
     exit 1
   end
 

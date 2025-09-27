@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: notifications
@@ -7,7 +9,6 @@
 #  body              :text
 #  data              :jsonb
 #  notification_type :string
-#  priority          :integer          default("normal")
 #  read              :boolean          default(FALSE)
 #  sender_type       :string
 #  title             :string
@@ -18,13 +19,11 @@
 #
 # Indexes
 #
-#  index_notifications_on_created_at                     (created_at)
-#  index_notifications_on_notification_type              (notification_type)
-#  index_notifications_on_priority                       (priority)
-#  index_notifications_on_read                           (read)
-#  index_notifications_on_sender_type_and_sender_id      (sender_type,sender_id)
-#  index_notifications_on_user_profile_id                (user_profile_id)
-#  index_notifications_on_user_profile_priority_created  (user_profile_id,priority,created_at)
+#  index_notifications_on_created_at                 (created_at)
+#  index_notifications_on_notification_type          (notification_type)
+#  index_notifications_on_read                       (read)
+#  index_notifications_on_sender_type_and_sender_id  (sender_type,sender_id)
+#  index_notifications_on_user_profile_id            (user_profile_id)
 #
 # Foreign Keys
 #
@@ -37,30 +36,22 @@ class Notification < ApplicationRecord
   belongs_to :user_profile
   belongs_to :sender, polymorphic: true, optional: true
 
-  TYPES = %w[
-    info
-    success
-    warning
-    error
-    system
-    user_action
-    process_update
-    task_assignment
-    compliance
+  TYPES = [
+    'info',
+    'success',
+    'warning',
+    'error',
+    'system',
+    'user_action',
+    'process_update',
+    'task_assignment',
+    'compliance'
   ].freeze
-
-  enum :priority, {
-    low: 0,
-    normal: 1,
-    high: 2,
-    urgent: 3
-  }, default: :normal
 
   validates :title, presence: true
   validates :notification_type, presence: true, inclusion: { in: TYPES }
 
   scope :unread, -> { where(read: false) }
-  scope :by_priority, -> { order(priority: :desc, created_at: :desc) }
   scope :recent, -> { order(created_at: :desc) }
   scope :for_user_profile, ->(user_profile) { where(user_profile: user_profile) }
 
@@ -72,10 +63,6 @@ class Notification < ApplicationRecord
 
   def mark_as_unread!
     update!(read: false)
-  end
-
-  def high_priority?
-    high? || urgent?
   end
 
   private

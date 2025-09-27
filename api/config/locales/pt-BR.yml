@@ -496,8 +496,23 @@
       update?: "Não autorizado a atualizar registros"
       destroy?: "Não autorizado a remover registros"
     team:
-      index?: "Não autorizado a listar teams. Apenas administradores com role super_admin podem executar esta ação."
+      index?: "Não autorizado a listar teams. Apenas administradores com role lawyer podem executar esta ação."
       show?: "Não autorizado a visualizar este team. Você só pode visualizar informações do seu próprio team."
-      create?: "Não autorizado a criar teams. Apenas administradores com role super_admin podem executar esta ação."
-      update?: "Não autorizado a atualizar teams. Apenas administradores com role super_admin podem executar esta ação."
-      destroy?: "Não autorizado a remover teams. Apenas administradores com role super_admin podem executar esta ação."
+      create?: "Não autorizado a criar teams. Apenas administradores com role lawyer podem executar esta ação."
+      update?: "Não autorizado a atualizar teams. Apenas administradores com role lawyer podem executar esta ação."
+      destroy?: "Não autorizado a remover teams. Apenas administradores com role lawyer podem executar esta ação."
+    represent:
+      already_representing: "já está representando este cliente"
+      representor_must_be_capable: "deve ser legalmente capaz (maior de 18 anos)"
+      end_date_before_start_date: "não pode ser anterior à data de início"
+      cannot_represent_self: "não pode representar a si mesmo"
+      notifications:
+        new_representation:
+          title: "Nova %{relationship_type} estabelecida"
+          description: "%{representor_name} agora é %{relationship_type} de %{customer_name}"
+        representation_ended:
+          title: "%{relationship_type} encerrada"
+          description: "%{representor_name} não é mais %{relationship_type} de %{customer_name}"
+        default:
+          title: "Status de representação alterado"
+          description: "Relacionamento de representação atualizado"

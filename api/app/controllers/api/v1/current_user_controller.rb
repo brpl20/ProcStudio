@@ -16,7 +16,7 @@ module Api
           :user_offices,
           user_profile: [:office, :phones, :addresses, :bank_accounts, :works, :jobs]
         ).find(@current_user.id)
-        
+
         serialized_data = FullUserSerializer.new(user).serializable_hash
 
         render json: {
@@ -181,9 +181,6 @@ module Api
       def can_view_user?(user)
         # Users can always view their own information
         return true if user.id == @current_user.id
-
-        # Check if current user is admin or super_admin
-        return true if @current_user.user_profile&.role&.in?(%w[super_admin])
 
         # Check if users are in the same team
         user.team_id == @current_user.team_id

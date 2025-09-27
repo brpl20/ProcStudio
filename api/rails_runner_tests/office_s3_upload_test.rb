@@ -45,19 +45,19 @@ class OfficeS3UploadTest
     puts '1. Checking Environment Variables...'
     puts '-' * 60
 
-    # Check for S3_BUCKET or AWS_BUCKET_MAIN
-    bucket_var = ENV['S3_BUCKET'] || ENV.fetch('AWS_BUCKET_MAIN', nil)
+    # Check for AWS_BUCKET_MAIN or AWS_BUCKET_MAIN
+    bucket_var = ENV['AWS_BUCKET_MAIN'] || ENV.fetch('AWS_BUCKET_MAIN', nil)
     if bucket_var.blank?
-      puts '   ❌ S3_BUCKET/AWS_BUCKET_MAIN: NOT SET'
+      puts '   ❌ AWS_BUCKET_MAIN/AWS_BUCKET_MAIN: NOT SET'
     else
-      ENV['S3_BUCKET'] = bucket_var unless ENV['S3_BUCKET'] # Set S3_BUCKET if not present
-      puts "   ✅ S3_BUCKET: #{bucket_var.first(10)}..."
+      ENV['AWS_BUCKET_MAIN'] = bucket_var unless ENV['AWS_BUCKET_MAIN'] # Set AWS_BUCKET_MAIN if not present
+      puts "   ✅ AWS_BUCKET_MAIN: #{bucket_var.first(10)}..."
     end
 
-    # Check for AWS_REGION or AWS_DEFAULT_REGION (use us-west-2 as fallback for this bucket)
-    region_var = ENV['AWS_REGION'] || ENV['AWS_DEFAULT_REGION'] || 'us-west-2'
-    ENV['AWS_REGION'] = region_var unless ENV['AWS_REGION'] # Set AWS_REGION if not present
-    puts "   ✅ AWS_REGION: #{region_var}"
+    # Check for AWS_DEFAULT_REGION
+    region_var = ENV.fetch('AWS_DEFAULT_REGION', nil)
+    ENV['AWS_DEFAULT_REGION'] = region_var unless ENV['AWS_DEFAULT_REGION'] # Set AWS_DEFAULT_REGION if not present
+    puts "   ✅ AWS_DEFAULT_REGION: #{region_var}"
 
     required_vars = ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY']
     missing_vars = []
@@ -75,8 +75,8 @@ class OfficeS3UploadTest
 
     if missing_vars.any? || bucket_var.blank? || region_var.blank?
       missing_list = missing_vars.dup
-      missing_list << 'S3_BUCKET/AWS_BUCKET_MAIN' if bucket_var.blank?
-      missing_list << 'AWS_REGION/AWS_DEFAULT_REGION' if region_var.blank?
+      missing_list << 'AWS_BUCKET_MAIN/AWS_BUCKET_MAIN' if bucket_var.blank?
+      missing_list << 'AWS_DEFAULT_REGION/AWS_DEFAULT_REGION' if region_var.blank?
       @test_results << { test: 'Environment Variables', status: 'FAILED', message: "Missing: #{missing_list.join(', ')}" }
       puts "\n⚠️  WARNING: Missing environment variables may cause upload failures"
     else
@@ -92,13 +92,13 @@ class OfficeS3UploadTest
 
     begin
       s3_client = Aws::S3::Client.new(
-        region: ENV['AWS_REGION'] || ENV['AWS_DEFAULT_REGION'] || 'us-west-2',
+        region: ENV.fetch('AWS_DEFAULT_REGION', nil),
         access_key_id: ENV.fetch('AWS_ACCESS_KEY_ID', nil),
         secret_access_key: ENV.fetch('AWS_SECRET_ACCESS_KEY', nil)
       )
 
       # Test bucket access
-      bucket = ENV.fetch('S3_BUCKET', nil)
+      bucket = ENV.fetch('AWS_BUCKET_MAIN', nil)
       s3_client.head_bucket(bucket: bucket)
       puts "   ✅ Connected to S3 bucket: #{bucket}"
 
@@ -473,12 +473,12 @@ class OfficeS3UploadTest
     return true if s3_key.start_with?('local/') # Local development mode
 
     s3_client = Aws::S3::Client.new(
-      region: ENV['AWS_REGION'] || 'us-east-1',
+      region: ENV.fetch('AWS_DEFAULT_REGION', nil),
       access_key_id: ENV.fetch('AWS_ACCESS_KEY_ID', nil),
       secret_access_key: ENV.fetch('AWS_SECRET_ACCESS_KEY', nil)
     )
 
-    s3_client.head_object(bucket: ENV.fetch('S3_BUCKET', nil), key: s3_key)
+    s3_client.head_object(bucket: ENV.fetch('AWS_BUCKET_MAIN', nil), key: s3_key)
     true
   rescue Aws::S3::Errors::NotFound
     false
@@ -488,12 +488,12 @@ class OfficeS3UploadTest
     return if s3_key.blank? || s3_key.start_with?('local/')
 
     s3_client = Aws::S3::Client.new(
-      region: ENV['AWS_REGION'] || 'us-east-1',
+      region: ENV.fetch('AWS_DEFAULT_REGION', nil),
       access_key_id: ENV.fetch('AWS_ACCESS_KEY_ID', nil),
       secret_access_key: ENV.fetch('AWS_SECRET_ACCESS_KEY', nil)
     )
 
-    s3_client.delete_object(bucket: ENV.fetch('S3_BUCKET', nil), key: s3_key)
+    s3_client.delete_object(bucket: ENV.fetch('AWS_BUCKET_MAIN', nil), key: s3_key)
     puts "   🗑️  Deleted S3 file: #{s3_key}"
   rescue StandardError => e
     puts "   ⚠️  Could not delete S3 file #{s3_key}: #{e.message}"

@@ -11,13 +11,13 @@ puts "\n1. Testing S3Service:"
 puts '-' * 30
 
 # Check if S3 is configured
-if ENV['AWS_ACCESS_KEY_ID'].present? && ENV['S3_BUCKET'].present?
+if ENV['AWS_ACCESS_KEY_ID'].present? && ENV['AWS_BUCKET_MAIN'].present?
   puts '✓ S3 credentials configured'
-  puts "  Bucket: #{ENV.fetch('S3_BUCKET', nil)}"
-  puts "  Region: #{ENV['AWS_REGION'] || 'us-west-2'}"
+  puts "  Bucket: #{ENV.fetch('AWS_BUCKET_MAIN', nil)}"
+  puts "  Region: #{ENV['AWS_DEFAULT_REGION'] || 'us-west-2'}"
 else
   puts '✗ S3 credentials not configured'
-  puts '  Please set AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and S3_BUCKET'
+  puts '  Please set AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_BUCKET_MAIN'
 end
 
 # Test S3PathBuilder

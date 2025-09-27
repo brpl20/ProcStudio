@@ -3,33 +3,26 @@
 class LegalData::LegalDataService
   include HTTParty
 
-  base_uri ENV.fetch('LEGAL_DATA_ENDPOINT') { raise "\e[31mLEGAL_DATA_ENDPOINT env not found!\e[0m" }
+  def base_uri
+    base_uri ENV.fetch('LEGAL_DATA_ENDPOINT') do
+      raise 'LEGAL_DATA_ENDPOINT environment variable is not set'
+    end
+  end
 
   # Configuração para lidar com certificados SSL
   default_options.update(verify: false) if Rails.env.development?
 
   def initialize
-    @api_key = ENV.fetch('LEGAL_DATA_API_KEY') { raise "\e[31mLEGAL_DATA_API_KEY env not found!\e[0m" }
+    @api_key = ENV.fetch('LEGAL_DATA_API_KEY') do
+      raise 'LEGAL_DATA_API_KEY environment variable is not set'
+    end
   end
 
   def find_lawyer(oab_number)
     return nil if oab_number.blank?
 
-    response = self.class.get("/#{oab_number}", {
-                                headers: {
-                                  'X-Api-Key' => @api_key,
-                                  'Content-Type' => 'application/json'
-                                },
-                                timeout: 10
-                              })
-
-    if response.success?
-      parse_lawyer_data(response.parsed_response)
-    else
-      Rails.logger.error "OAB API Error: #{response.code} - #{response.message}"
-      Rails.logger.error "Response body: #{response.body}" if Rails.env.development?
-      nil
-    end
+    response = make_api_request(oab_number)
+    process_api_response(response)
   rescue StandardError => e
     Rails.logger.error "OAB API Service Error: #{e.message}"
     nil
@@ -37,25 +30,73 @@ class LegalData::LegalDataService
 
   private
 
+  def make_api_request(oab_number)
+    self.class.get("/#{oab_number}",
+                   headers: api_headers,
+                   timeout: 10)
+  end
+
+  def api_headers
+    {
+      'X-Api-Key' => @api_key,
+      'Content-Type' => 'application/json'
+    }
+  end
+
+  def process_api_response(response)
+    if response.success?
+      parse_lawyer_data(response.parsed_response)
+    else
+      log_api_error(response)
+      nil
+    end
+  end
+
+  def log_api_error(response)
+    Rails.logger.error "OAB API Error: #{response.code} - #{response.message}"
+    Rails.logger.error "Response body: #{response.body}" if Rails.env.development?
+  end
+
   def parse_lawyer_data(data)
     return nil unless data&.dig('principal')
 
     principal = data['principal']
+    build_lawyer_hash(principal)
+  end
 
+  def build_lawyer_hash(principal)
     {
-      full_name: capitalize_name(principal['full_name']),
-      name: capitalize_name(extract_first_name(principal['full_name'])),
-      last_name: capitalize_name(extract_last_name(principal['full_name'])),
+      **extract_name_data(principal['full_name']),
+      **extract_professional_data(principal),
+      **extract_contact_data(principal)
+    }
+  end
+
+  def extract_name_data(full_name)
+    {
+      full_name: capitalize_name(full_name),
+      name: capitalize_name(extract_first_name(full_name)),
+      last_name: capitalize_name(extract_last_name(full_name))
+    }
+  end
+
+  def extract_professional_data(principal)
+    {
       oab: principal['oab_id'], # Usar oab_id que retorna formato PR_54159
       profession: principal['profession'],
       gender: gender_check(principal['profession']),
+      situation: principal['situation'],
+      profile_picture_url: principal['profile_picture']
+    }
+  end
+
+  def extract_contact_data(principal)
+    {
       city: principal['city'],
       state: principal['state'],
       address: principal['address'],
       zip_code: clean_zip_code(principal['zip_code']),
-      phone: clean_phone(principal['phone_number_1']),
-      profile_picture_url: principal['profile_picture'],
-      situation: principal['situation']
+      phone: clean_phone(principal['phone_number_1'])
     }
   end
 
@@ -92,10 +133,10 @@ class LegalData::LegalDataService
   end
 
   def gender_check(profession)
-    return 'male' if profession == 'ADVOGADO'
-    return 'female' if profession == 'ADVOGADA'
-
-    nil
+    case profession
+    when 'ADVOGADO' then 'male'
+    when 'ADVOGADA' then 'female'
+    end
   end
 
   def capitalize_name(name)

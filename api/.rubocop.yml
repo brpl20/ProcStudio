@@ -13,7 +13,6 @@ AllCops:
 
   SuggestExtensions: false
   Exclude:
-    - ./**/*
     - db/**/*
     - vendor/**/*
     - log/**/*
@@ -22,10 +21,24 @@ AllCops:
     - bin/*
     - lib/tasks/**/*
     - ai-tools/**/*
-    - docx/**/*
+    - docx/**/*w
     - public/**/*
     - node_modules/**/*
     - frontend/**/*
+
+    # Arquivos que serão revisados em uma próxima etapa:
+    - app/models/procedure.rb
+    - app/models/procedural_party.rb
+    - app/models/legal_cost.rb
+    - app/models/honorary_component.rb
+    - app/models/honorary.rb
+
+    # Arquivos que serão deprecados:
+    - app/services/works/**/*
+    - app/services/profile_customers/**/*
+    - app/services/draft_fulfillment_example.rb
+    - app/services/docx_services/social_contract_test.rb
+    - app/services/docx_services/**/*
 
 # Layout Cops
 Layout/LineLength:

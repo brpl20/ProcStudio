@@ -3,7 +3,7 @@
 module Api
   module V1
     class TeamsController < BackofficeController
-      before_action :authorize_super_admin!, except: [:show, :update]
+      before_action :authorize_admin!, except: [:show, :update]
       before_action :set_team, only: [:show, :update, :destroy]
       before_action :check_team_access!, only: [:show, :update]
 
@@ -65,8 +65,7 @@ module Api
       end
 
       # PATCH/PUT /api/v1/teams/1
-      # Super admins podem atualizar qualquer team
-      # Admins com role lawyer podem atualizar apenas o próprio team
+      # Lawyers podem atualizar apenas o próprio team
       def update
         if @team.update(team_params)
           render json: {
@@ -123,8 +122,8 @@ module Api
         params.expect(team: [:name, { settings: {} }])
       end
 
-      def authorize_super_admin!
-        return if @current_user&.user_profile&.super_admin?
+      def authorize_admin!
+        return if @current_user&.user_profile&.lawyer?
 
         action_map = {
           'index' => 'index?',
@@ -142,9 +141,6 @@ module Api
       end
 
       def check_team_access!
-        # Usuários com role super_admin podem acessar qualquer team
-        return if @current_user&.user_profile&.super_admin?
-
         # Para update, verificar se é o próprio team e se tem role lawyer
         if action_name == 'update'
           # Permitir update apenas se for o próprio team e tiver role lawyer
@@ -157,7 +153,7 @@ module Api
             }, status: :forbidden
             nil
           elsif !@current_user.user_profile&.lawyer?
-            error_message = 'Não autorizado a atualizar teams. Apenas usuários com role lawyer ou super_admin podem executar esta ação.'
+            error_message = 'Não autorizado a atualizar teams. Apenas usuários com role lawyer podem executar esta ação.'
             render json: {
               success: false,
               message: error_message,

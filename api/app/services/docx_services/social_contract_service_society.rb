@@ -464,7 +464,18 @@ module DocxServices
     def formatted_date
       today = Time.zone.now
       months = [
-        'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'
+        'janeiro',
+        'fevereiro',
+        'março',
+        'abril',
+        'maio',
+        'junho',
+        'julho',
+        'agosto',
+        'setembro',
+        'outubro',
+        'novembro',
+        'dezembro'
       ]
       "#{today.day} de #{months[today.month - 1]} de #{today.year}"
     end

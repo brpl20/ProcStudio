@@ -11,8 +11,8 @@ module ApplicationCable
     private
 
     def find_verified_user
-      token = request.params['token'] || request.headers['Authorization']&.split(' ')&.last
-      
+      token = request.params['token'] || request.headers['Authorization']&.split&.last
+
       if token
         decoded_token = decode_jwt(token)
         if decoded_token && (user = User.find_by(id: decoded_token['user_id']))

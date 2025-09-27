@@ -7,17 +7,17 @@ module Api
 
       def index
         notifications = @current_user.user_profile.notifications
-                                     .includes(:sender)
-                                     .by_priority
+                          .includes(:sender)
+                          .by_priority
 
         notifications = apply_filters(notifications)
 
         page = (params[:page] || 1).to_i
         per_page = (params[:per_page] || 25).to_i
-        
+
         total_count = notifications.count
         offset = (page - 1) * per_page
-        
+
         notifications = notifications.limit(per_page).offset(offset)
 
         serialized_data = NotificationSerializer.new(
@@ -74,10 +74,10 @@ module Api
         else
           notification = @current_user.user_profile.notifications.build(notification_params)
         end
-        
+
         # Set sender as current user's profile if not specified
         notification.sender ||= @current_user.user_profile
-        
+
         if notification.save
           serialized_data = NotificationSerializer.new(notification).serializable_hash
 
@@ -245,10 +245,10 @@ module Api
 
       def authorize_recipient(user_profile)
         # Check if current user can send notifications to this profile
-        # Allow if: same team, or current user is super_admin
-        unless same_team?(user_profile) || @current_user.user_profile&.super_admin?
-          raise Pundit::NotAuthorizedError, 'Você não pode enviar notificações para este usuário'
-        end
+        # Allow if: same team
+        return if same_team?(user_profile)
+
+        raise Pundit::NotAuthorizedError, 'Você não pode enviar notificações para este usuário'
       end
 
       def same_team?(user_profile)
@@ -267,20 +267,16 @@ module Api
         if params[:priority].present?
           # Support both string names and integer values
           priority_value = if params[:priority].match?(/^\d+$/)
-                            params[:priority].to_i
-                          else
-                            Notification.priorities[params[:priority]]
-                          end
+                             params[:priority].to_i
+                           else
+                             Notification.priorities[params[:priority]]
+                           end
           notifications = notifications.where(priority: priority_value) if priority_value
         end
 
-        if params[:from_date].present?
-          notifications = notifications.where('created_at >= ?', params[:from_date])
-        end
+        notifications = notifications.where(created_at: (params[:from_date])..) if params[:from_date].present?
 
-        if params[:to_date].present?
-          notifications = notifications.where('created_at <= ?', params[:to_date])
-        end
+        notifications = notifications.where(created_at: ..(params[:to_date])) if params[:to_date].present?
 
         notifications
       end

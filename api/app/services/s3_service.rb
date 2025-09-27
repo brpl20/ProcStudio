@@ -186,13 +186,15 @@ class S3Service
     end
 
     def bucket_name
-      ENV.fetch('S3_BUCKET') do
-        raise 'S3_BUCKET environment variable is not set'
+      ENV.fetch('AWS_BUCKET_MAIN') do
+        raise 'AWS_BUCKET_MAIN environment variable is not set'
       end
     end
 
     def region
-      ENV['AWS_REGION'] || ENV['AWS_DEFAULT_REGION'] || 'us-west-2'
+      ENV.fetch('AWS_DEFAULT_REGION') do
+        raise 'AWS_DEFAULT_REGION environment variable is not set'
+      end
     end
 
     def access_key_id
@@ -211,9 +213,7 @@ class S3Service
       case file
       when ActionDispatch::Http::UploadedFile
         file.tempfile.read
-      when Tempfile
-        file.read
-      when File
+      when Tempfile, File
         file.read
       when String
         file

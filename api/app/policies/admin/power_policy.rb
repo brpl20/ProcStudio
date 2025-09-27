@@ -12,28 +12,20 @@ class Admin::PowerPolicy < Admin::BasePolicy
   end
 
   def create?
-    # Apenas lawyers e super_admins podem criar novos poderes
-    super_admin? || lawyer?
+    # Apenas lawyers podem criar novos poderes
+    lawyer?
   end
 
   def update?
-    # Apenas lawyers e super_admins podem editar poderes
-    # E só podem editar poderes customizados do próprio team ou poderes do sistema se for super_admin
-    return true if super_admin?
+    # Apenas lawyers podem editar poderes customizados do próprio team
     return false unless lawyer?
 
-    # Se é um poder customizado, deve ser do mesmo team
-    if record.custom_power?
-      record.created_by_team == user.team
-    else
-      # Poderes do sistema só super_admin pode editar
-      false
-    end
+    # Só pode editar poderes customizados do próprio team
+    record.custom_power? && record.created_by_team == user.team
   end
 
   def destroy?
-    # Mesma lógica do update
-    return true if super_admin?
+    # Só lawyers podem deletar poderes customizados do próprio team
     return false unless lawyer?
 
     # Só pode deletar poderes customizados do próprio team

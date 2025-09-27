@@ -10,12 +10,8 @@ module Api
       after_action :verify_authorized
 
       def index
-        # Super admin vê todos os perfis, outros usuários veem apenas do seu team
-        user_profiles = if super_admin_access?
-                          UserProfile.includes(:user)
-                        else
-                          UserProfile.joins(:user).where(users: { team: current_team }).includes(:user)
-                        end
+        # Usuários veem apenas perfis do seu team
+        user_profiles = UserProfile.joins(:user).where(users: { team: current_team }).includes(:user)
 
         filter_by_deleted_params.each do |key, value|
           next if value.blank?
@@ -295,21 +291,13 @@ module Api
       end
 
       def retrieve_user_profile
-        # Super admin pode acessar qualquer perfil
-        @user_profile = if super_admin_access?
-                          UserProfile.find(params[:id])
-                        else
-                          UserProfile.joins(:user).where(users: { team: current_team }).find(params[:id])
-                        end
+        # Usuários podem acessar apenas perfis do seu team
+        @user_profile = UserProfile.joins(:user).where(users: { team: current_team }).find(params[:id])
       end
 
       def retrieve_deleted_user_profile
-        # Super admin pode acessar qualquer perfil deletado
-        @user_profile = if super_admin_access?
-                          UserProfile.with_deleted.find(params[:id])
-                        else
-                          UserProfile.with_deleted.joins(:user).where(users: { team: current_team }).find(params[:id])
-                        end
+        # Usuários podem acessar apenas perfis deletados do seu team
+        @user_profile = UserProfile.with_deleted.joins(:user).where(users: { team: current_team }).find(params[:id])
       end
 
       def profile_completion_params

@@ -12,28 +12,20 @@ class Admin::LawAreaPolicy < Admin::BasePolicy
   end
 
   def create?
-    # Apenas lawyers e super_admins podem criar novas áreas
-    super_admin? || lawyer?
+    # Apenas lawyers podem criar novas áreas
+    lawyer?
   end
 
   def update?
-    # Apenas lawyers e super_admins podem editar áreas
-    # E só podem editar áreas customizadas do próprio team ou áreas do sistema se for super_admin
-    return true if super_admin?
+    # Apenas lawyers podem editar áreas customizadas do próprio team
     return false unless lawyer?
 
-    # Se é uma área customizada, deve ser do mesmo team
-    if record.custom_area?
-      record.created_by_team == user.team
-    else
-      # Áreas do sistema só super_admin pode editar
-      false
-    end
+    # Só pode editar áreas customizadas do próprio team
+    record.custom_area? && record.created_by_team == user.team
   end
 
   def destroy?
-    # Mesma lógica do update
-    return true if super_admin?
+    # Só lawyers podem deletar áreas customizadas do próprio team
     return false unless lawyer?
 
     # Só pode deletar áreas customizadas do próprio team

@@ -22,12 +22,12 @@ module DocxServices
         office_address: office_formatter.office_street,
         office_zip_code: office_formatter.office_zip_code,
         office_full_address: office_formatter.office_full_address,
-        
+
         # Capital and quotes fields
         office_total_value: format_currency(office_formatter.total_capital_value),
         office_quotes: format_number(office_formatter.total_quotes),
         office_quote_value: "#{office_formatter.quote_value.to_i},00",
-        
+
         # Partner fields (single partner for unipessoal)
         partner_qualification: partner_formatter&.qualification,
         partner_full_name: partner_formatter&.full_name(upcase: true),
@@ -37,19 +37,19 @@ module DocxServices
         partner_address: partner_formatter&.address,
         partner_email: partner_formatter&.email,
         partner_phone: partner_formatter&.phone,
-        
+
         # Partner capital fields
         partner_subscription: format_currency(office_formatter.lawyer_capital_value(lawyers.first)),
         partner_total_quotes: format_number(office_formatter.lawyer_quotes(lawyers.first)),
         partner_sum: format_currency(office_formatter.lawyer_capital_value(lawyers.first)),
         partner_percentage: '100%',
-        
+
         # Pro labore and dividends
         pro_labore_enabled: office_formatter.pro_labore_enabled?,
         pro_labore_text: office_formatter.pro_labore_text,
         dividends_enabled: office_formatter.dividends_enabled?,
         dividends_text: office_formatter.dividends_text,
-        
+
         # Date
         date: formatted_date
       }

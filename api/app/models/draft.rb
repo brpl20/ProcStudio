@@ -59,7 +59,7 @@ class Draft < ApplicationRecord
 
   before_validation :set_default_expiration
 
-  def self.save_draft(draftable: nil, form_type:, data:, user: nil, customer: nil, team: nil, session_id: nil)
+  def self.save_draft(form_type:, data:, draftable: nil, user: nil, customer: nil, team: nil, session_id: nil)
     # Determine team from user or customer if not provided
     team ||= determine_team(user, customer)
 
@@ -97,7 +97,7 @@ class Draft < ApplicationRecord
   def self.find_draft_for_new_record(form_type:, user:, team: nil, session_id: nil)
     scope = where(form_type: form_type, draftable_id: nil, user: user, status: 'draft')
     scope = scope.where(team: team) if team
-    
+
     if session_id
       scope.find { |draft| draft.data['session_id'] == session_id }
     else
@@ -164,8 +164,8 @@ class Draft < ApplicationRecord
   def draftable_presence_for_existing_records
     # Only validate draftable presence if draftable_id is present
     # This allows drafts for new records (draftable_id: nil)
-    if draftable_id.present? && draftable.nil?
-      errors.add(:draftable, 'must exist for drafts with draftable_id')
-    end
+    return unless draftable_id.present? && draftable.nil?
+
+    errors.add(:draftable, 'must exist for drafts with draftable_id')
   end
 end

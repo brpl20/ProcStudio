@@ -84,7 +84,7 @@ end
 # Delete logo
 office.delete_logo!
 
-# Delete avatar  
+# Delete avatar
 user_profile.delete_avatar!
 
 # Delete specific social contract
@@ -97,8 +97,8 @@ Required environment variables:
 ```bash
 AWS_ACCESS_KEY_ID=your_key_id
 AWS_SECRET_ACCESS_KEY=your_secret_key
-S3_BUCKET=your_bucket_name
-AWS_REGION=us-west-2  # Optional, defaults to us-west-2
+AWS_BUCKET_MAIN=your_bucket_name
+AWS_DEFAULT_REGION=us-west-2
 ```
 
 ## Testing

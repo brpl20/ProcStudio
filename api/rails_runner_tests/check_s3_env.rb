@@ -13,9 +13,9 @@ puts
 env_vars = {
   'AWS_ACCESS_KEY_ID' => ENV.fetch('AWS_ACCESS_KEY_ID', nil),
   'AWS_SECRET_ACCESS_KEY' => ENV.fetch('AWS_SECRET_ACCESS_KEY', nil),
-  'S3_BUCKET' => ENV.fetch('S3_BUCKET', nil),
   'AWS_BUCKET_MAIN' => ENV.fetch('AWS_BUCKET_MAIN', nil),
-  'AWS_REGION' => ENV.fetch('AWS_REGION', nil),
+  'AWS_BUCKET_MAIN' => ENV.fetch('AWS_BUCKET_MAIN', nil),
+  'AWS_DEFAULT_REGION' => ENV.fetch('AWS_DEFAULT_REGION', nil),
   'AWS_DEFAULT_REGION' => ENV.fetch('AWS_DEFAULT_REGION', nil)
 }
 
@@ -31,8 +31,8 @@ end
 puts
 puts 'Effective S3 Configuration:'
 puts '-' * 40
-bucket = ENV['S3_BUCKET'] || ENV.fetch('AWS_BUCKET_MAIN', nil)
-region = ENV['AWS_REGION'] || ENV['AWS_DEFAULT_REGION'] || 'us-east-1'
+bucket = ENV['AWS_BUCKET_MAIN'] || ENV.fetch('AWS_BUCKET_MAIN', nil)
+region = ENV.fetch('AWS_DEFAULT_REGION', nil)
 
 if bucket.present? && ENV['AWS_ACCESS_KEY_ID'].present?
   puts '✅ S3 appears to be configured'

@@ -52,9 +52,9 @@ puts '-' * 40
 team = Team.first || Team.create!(name: 'Test Team')
 team.offices.build(name: 'Test Office', cnpj: '11.222.333/0001-81')
 
-puts "   S3 Bucket Expected: #{ENV['S3_BUCKET'] || 'NOT SET'}"
+puts "   S3 Bucket Expected: #{ENV['AWS_BUCKET_MAIN'] || 'NOT SET'}"
 puts "   AWS Bucket Main: #{ENV['AWS_BUCKET_MAIN'] || 'NOT SET'}"
-puts "   AWS Region: #{ENV['AWS_REGION'] || ENV['AWS_DEFAULT_REGION'] || 'NOT SET'}"
+puts "   AWS Region: #{ENV.fetch('AWS_DEFAULT_REGION', nil) | 'NOT SET'}"
 
 # Check if S3 client can be created
 begin
@@ -62,7 +62,7 @@ begin
 
   # Try to create S3 client as Office model does
   s3_client = Aws::S3::Client.new(
-    region: ENV['AWS_REGION'] || ENV['AWS_DEFAULT_REGION'] || 'us-east-1',
+    region: ENV['AWS_DEFAULT_REGION'] || ENV['AWS_DEFAULT_REGION'],
     access_key_id: ENV.fetch('AWS_ACCESS_KEY_ID', nil),
     secret_access_key: ENV.fetch('AWS_SECRET_ACCESS_KEY', nil)
   )
@@ -72,7 +72,7 @@ begin
   puts '   ✅ S3 client created successfully'
 
   # Check bucket access
-  bucket = ENV['S3_BUCKET'] || ENV.fetch('AWS_BUCKET_MAIN', nil)
+  bucket = ENV['AWS_BUCKET_MAIN'] || ENV.fetch('AWS_BUCKET_MAIN', nil)
   if bucket
     begin
       s3_client.head_bucket(bucket: bucket)
@@ -98,7 +98,7 @@ puts "\n6. OFFICE MODEL BEHAVIOR:"
 puts '-' * 40
 
 # Check the upload_logo method behavior
-if ENV['AWS_ACCESS_KEY_ID'].present? && ENV['AWS_SECRET_ACCESS_KEY'].present? && ENV['S3_BUCKET'].present?
+if ENV['AWS_ACCESS_KEY_ID'].present? && ENV['AWS_SECRET_ACCESS_KEY'].present? && ENV['AWS_BUCKET_MAIN'].present?
   puts '   ✅ Office model WILL use S3 storage'
   puts "   S3 Path pattern: #{Rails.env}/team-#{team.id}/offices/[office_id]/..."
 else
@@ -107,7 +107,7 @@ else
   missing = []
   missing << 'AWS_ACCESS_KEY_ID' if ENV['AWS_ACCESS_KEY_ID'].blank?
   missing << 'AWS_SECRET_ACCESS_KEY' if ENV['AWS_SECRET_ACCESS_KEY'].blank?
-  missing << 'S3_BUCKET' if ENV['S3_BUCKET'].blank?
+  missing << 'AWS_BUCKET_MAIN' if ENV['AWS_BUCKET_MAIN'].blank?
   puts "   Missing variables: #{missing.join(', ')}"
 end
 
@@ -116,12 +116,12 @@ puts 'SUMMARY:'
 puts '=' * 60
 
 # Final diagnosis
-if ENV['AWS_ACCESS_KEY_ID'].present? && ENV['AWS_SECRET_ACCESS_KEY'].present? && ENV['S3_BUCKET'].present?
+if ENV['AWS_ACCESS_KEY_ID'].present? && ENV['AWS_SECRET_ACCESS_KEY'].present? && ENV['AWS_BUCKET_MAIN'].present?
   puts '✅ S3 is properly configured for uploads'
 elsif ENV['AWS_ACCESS_KEY_ID'].present? && ENV['AWS_SECRET_ACCESS_KEY'].present? && ENV['AWS_BUCKET_MAIN'].present?
-  puts '⚠️  You have AWS credentials but using AWS_BUCKET_MAIN instead of S3_BUCKET'
-  puts '    The Office model expects S3_BUCKET to be set'
-  puts "    Solution: Add to your .env file: S3_BUCKET=#{ENV.fetch('AWS_BUCKET_MAIN', nil)}"
+  puts '⚠️  You have AWS credentials but using AWS_BUCKET_MAIN instead of AWS_BUCKET_MAIN'
+  puts '    The Office model expects AWS_BUCKET_MAIN to be set'
+  puts "    Solution: Add to your .env file: AWS_BUCKET_MAIN=#{ENV.fetch('AWS_BUCKET_MAIN', nil)}"
 else
   puts '❌ S3 is not configured - using local file storage'
 end

@@ -24,7 +24,7 @@
 
 class CustomerFile < ApplicationRecord
   include S3PathBuilder
-  
+
   acts_as_paranoid
 
   belongs_to :profile_customer

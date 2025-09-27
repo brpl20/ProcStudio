@@ -68,9 +68,6 @@ module TeamScoped
   end
 
   def team_scoped(model)
-    # Super admin tem acesso total ao sistema, sem limitação de team
-    return model if super_admin_access?
-
     if model.reflect_on_association(:team)
       model.where(team: current_team)
     else
@@ -81,21 +78,11 @@ module TeamScoped
   def ensure_belongs_to_current_team(record)
     return unless record.respond_to?(:team)
 
-    # Super admin pode acessar qualquer resource
-    return true if super_admin_access?
-
     unless record.team == current_team
       render json: { error: 'Resource not found' }, status: :not_found
       return false
     end
 
     true
-  end
-
-  def super_admin_access?
-    # Verifica se o usuário atual tem role de super_admin
-    @current_user.present? &&
-      @current_user.respond_to?(:user_profile) &&
-      @current_user.user_profile&.role == 'super_admin'
   end
 end

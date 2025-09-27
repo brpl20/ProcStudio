@@ -23,7 +23,7 @@
 #  idx_on_office_id_document_type_167734bb2a           (office_id,document_type)
 #  index_office_attachment_metadata_on_document_type   (document_type)
 #  index_office_attachment_metadata_on_office_id       (office_id)
-#  index_office_attachment_metadata_on_s3_key          (s3_key)
+#  index_office_attachment_metadata_on_s3_key          (s3_key) UNIQUE
 #  index_office_attachment_metadata_on_uploaded_by_id  (uploaded_by_id)
 #
 # Foreign Keys

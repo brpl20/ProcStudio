@@ -26,6 +26,9 @@ class Email < ApplicationRecord
   # Polymorphic association
   belongs_to :emailable, polymorphic: true
 
+  # Explicitly declare string attribute for enum (Rails 7.2+ requirement)
+  attribute :email_type, :string, default: 'main'
+
   # Enums for email types
   enum :email_type, {
     main: 'main',

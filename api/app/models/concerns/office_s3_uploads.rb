@@ -34,7 +34,7 @@ module OfficeS3Uploads
       if ENV['AWS_ACCESS_KEY_ID'].present? && ENV['AWS_SECRET_ACCESS_KEY'].present? && ENV['S3_BUCKET'].present?
         begin
           s3_client.put_object(
-            bucket: ENV.fetch('S3_BUCKET', nil),
+            bucket: ENV.fetch('AWS_BUCKET_MAIN', nil),
             key: s3_key,
             body: file_content,
             content_type: file.content_type,
@@ -110,9 +110,9 @@ module OfficeS3Uploads
       save!(validate: false)
 
       # Upload to S3
-      if ENV['AWS_ACCESS_KEY_ID'].present? && ENV['S3_BUCKET'].present?
+      if ENV['AWS_ACCESS_KEY_ID'].present? && ENV['AWS_BUCKET_MAIN'].present?
         s3_client.put_object(
-          bucket: ENV.fetch('S3_BUCKET', nil),
+          bucket: ENV.fetch('AWS_BUCKET_MAIN', nil),
           key: s3_key,
           body: file_content,
           content_type: file.content_type,

@@ -65,8 +65,7 @@ class UserProfile < ApplicationRecord
     secretary: 'secretary',
     counter: 'counter',
     excounter: 'excounter',
-    representant: 'representant',
-    super_admin: 'super_admin'
+    representant: 'representant'
   }
 
   enum :civil_status, {

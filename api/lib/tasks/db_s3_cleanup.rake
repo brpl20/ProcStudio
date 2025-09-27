@@ -11,7 +11,7 @@ namespace :s3 do
       end
 
       puts "\n⚠️  WARNING: This will DELETE all development files from S3!"
-      puts "   Path: s3://#{ENV.fetch('S3_BUCKET', nil)}/development/"
+      puts "   Path: s3://#{ENV.fetch('AWS_BUCKET_MAIN', nil)}/development/"
       print "\nType 'DELETE' to confirm: "
 
       confirmation = $stdin.gets.chomp
@@ -23,12 +23,12 @@ namespace :s3 do
       require 'aws-sdk-s3'
 
       s3_client = Aws::S3::Client.new(
-        region: ENV['AWS_REGION'] || 'us-east-1',
+        region: ENV.fetch('AWS_DEFAULT_REGION', nil),
         access_key_id: ENV.fetch('AWS_ACCESS_KEY_ID', nil),
         secret_access_key: ENV.fetch('AWS_SECRET_ACCESS_KEY', nil)
       )
 
-      bucket = ENV.fetch('S3_BUCKET', nil)
+      bucket = ENV.fetch('AWS_BUCKET_MAIN', nil)
       prefix = 'development/'
 
       begin
@@ -92,7 +92,7 @@ namespace :s3 do
       team_id = args[:team_id]
 
       puts "\n⚠️  WARNING: This will DELETE all files for team #{team_id} from S3 development!"
-      puts "   Path: s3://#{ENV.fetch('S3_BUCKET', nil)}/development/team-#{team_id}/"
+      puts "   Path: s3://#{ENV.fetch('AWS_BUCKET_MAIN', nil)}/development/team-#{team_id}/"
       print "\nType 'DELETE' to confirm: "
 
       confirmation = $stdin.gets.chomp
@@ -104,12 +104,12 @@ namespace :s3 do
       require 'aws-sdk-s3'
 
       s3_client = Aws::S3::Client.new(
-        region: ENV['AWS_REGION'] || 'us-east-1',
+        region: ENV.fetch('AWS_DEFAULT_REGION', nil),
         access_key_id: ENV.fetch('AWS_ACCESS_KEY_ID', nil),
         secret_access_key: ENV.fetch('AWS_SECRET_ACCESS_KEY', nil)
       )
 
-      bucket = ENV.fetch('S3_BUCKET', nil)
+      bucket = ENV.fetch('AWS_BUCKET_MAIN', nil)
       prefix = "development/team-#{team_id}/"
 
       begin
@@ -163,12 +163,12 @@ namespace :s3 do
       require 'aws-sdk-s3'
 
       s3_client = Aws::S3::Client.new(
-        region: ENV['AWS_REGION'] || 'us-east-1',
+        region: ENV.fetch('AWS_DEFAULT_REGION', nil),
         access_key_id: ENV.fetch('AWS_ACCESS_KEY_ID', nil),
         secret_access_key: ENV.fetch('AWS_SECRET_ACCESS_KEY', nil)
       )
 
-      bucket = ENV.fetch('S3_BUCKET', nil)
+      bucket = ENV.fetch('AWS_BUCKET_MAIN', nil)
       prefix = 'development/'
 
       begin

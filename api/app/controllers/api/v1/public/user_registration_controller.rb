@@ -134,10 +134,10 @@ module Api
             if lawyer_data[:profile_picture_url].present?
               avatar_service = LegalData::AvatarAttachmentService.new
               success = avatar_service.attach_from_url(user_profile, lawyer_data[:profile_picture_url])
-              
+
               # Store the original URL as backup in origin field
               user_profile.update(origin: lawyer_data[:profile_picture_url])
-              
+
               Rails.logger.info "Avatar attachment #{success ? 'succeeded' : 'failed'} for user_profile #{user_profile.id}"
             end
           end

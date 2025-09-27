@@ -42,16 +42,18 @@ class Represent < ApplicationRecord
   enum :relationship_type, {
     representation: 'representation', # Full legal representation (for unable persons)
     assistance: 'assistance',         # Legal assistance (for relatively incapable)
-    curatorship: 'curatorship', # Court-appointed curator
-    tutorship: 'tutorship' # Court-appointed tutor
+    curatorship: 'curatorship',       # Court-appointed curator
+    tutorship: 'tutorship'            # Court-appointed tutor
   }
 
   # Validations
   validates :relationship_type, presence: true
+  # NOTE: Multiple representors per client are allowed (e.g., father and mother representing a minor)
+  # This validation only prevents the SAME representor from having duplicate active representations of the SAME client
   validates :representor_id, uniqueness: {
     scope: [:profile_customer_id, :active],
     conditions: -> { where(active: true) },
-    message: 'já está representando este cliente'
+    message: -> { I18n.t('pundit.represent.already_representing') }
   }
   validate :validate_representor_capacity
   validate :validate_dates
@@ -77,7 +79,6 @@ class Represent < ApplicationRecord
 
   def set_defaults
     self.start_date ||= Date.current
-    self.team_id ||= profile_customer&.customer&.teams&.first&.id
   end
 
   def validate_representor_capacity
@@ -85,7 +86,7 @@ class Represent < ApplicationRecord
 
     return unless representor.capacity != 'able'
 
-    errors.add(:representor_id, 'deve ser legalmente capaz (maior de 18 anos)')
+    errors.add(:representor_id, I18n.t('pundit.represent.representor_must_be_capable'))
   end
 
   def validate_dates
@@ -93,85 +94,22 @@ class Represent < ApplicationRecord
 
     return unless end_date < start_date
 
-    errors.add(:end_date, 'não pode ser anterior à data de início')
+    errors.add(:end_date, I18n.t('pundit.represent.end_date_before_start_date'))
   end
 
   def prevent_self_representation
     return unless profile_customer_id == representor_id
 
-    errors.add(:representor_id, 'não pode representar a si mesmo')
+    errors.add(:representor_id, I18n.t('pundit.represent.cannot_represent_self'))
   end
 
   def notify_compliance_if_needed
-    # Notify compliance team when a new representation is created
-    return unless ['unable', 'relatively'].include?(profile_customer.capacity)
-
-    create_compliance_notification('new_representation')
+    Compliance::RepresentationNotificationService.new(self, 'new_representation').call
   end
 
   def notify_compliance_on_changes
-    # Notify compliance team when representation is deactivated
     return unless saved_change_to_active? && !active
 
-    create_compliance_notification('representation_ended')
-  end
-
-  def create_compliance_notification(compliance_type)
-    return unless team
-
-    title = notification_title(compliance_type)
-    description = notification_description(compliance_type)
-    
-    # Notify team admins about representation changes
-    team.users.joins(:user_profile).where(user_profiles: { role: ['lawyer', 'super_admin'] }).each do |user|
-      next unless user.user_profile
-      
-      Notification.create!(
-        user_profile: user.user_profile,
-        notification_type: 'compliance',
-        title: title,
-        body: description,
-        priority: '1', # Normal priority for representation changes
-        sender_type: 'Represent',
-        sender_id: id,
-        action_url: "/customers/#{profile_customer_id}/represents",
-        data: {
-          compliance_type: compliance_type,
-          profile_customer_id: profile_customer_id,
-          profile_customer_name: profile_customer&.name,
-          representor_id: representor_id,
-          representor_name: representor&.name,
-          relationship_type: relationship_type,
-          active: active
-        }
-      )
-    end
-  rescue StandardError => e
-    Rails.logger.error "Failed to create compliance notification: #{e.message}"
-  end
-
-  def notification_title(type)
-    case type
-    when 'new_representation'
-      "New #{relationship_type} established"
-    when 'representation_ended'
-      "#{relationship_type.capitalize} terminated"
-    else
-      'Representation status changed'
-    end
-  end
-
-  def notification_description(type)
-    customer_name = profile_customer&.full_name
-    representor_name = representor&.full_name
-
-    case type
-    when 'new_representation'
-      "#{representor_name} is now the #{relationship_type} for #{customer_name}"
-    when 'representation_ended'
-      "#{representor_name} is no longer the #{relationship_type} for #{customer_name}"
-    else
-      'Representation relationship updated'
-    end
+    Compliance::RepresentationNotificationService.new(self, 'representation_ended').call
   end
 end

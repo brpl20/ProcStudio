@@ -26,11 +26,25 @@ class Api::V1::DraftsController < BackofficeController
       success: true,
       message: 'Rascunhos obtidos com sucesso',
       data: serialize_drafts(drafts),
-      meta: { 
+      meta: {
         total_count: drafts.count,
         new_records_count: drafts.for_new_records.count,
         existing_records_count: drafts.for_existing_records.count
       }
+    }, status: :ok
+  rescue StandardError => e
+    render json: {
+      success: false,
+      message: e.message,
+      errors: [e.message]
+    }, status: :internal_server_error
+  end
+
+  def show
+    render json: {
+      success: true,
+      message: 'Rascunho obtido com sucesso',
+      data: serialize_draft(@draft)
     }, status: :ok
   rescue StandardError => e
     render json: {
@@ -74,14 +88,14 @@ class Api::V1::DraftsController < BackofficeController
   # PATCH /drafts/:id/fulfill - Mark draft as fulfilled
   def fulfill
     created_record = nil
-    
+
     # If record_type and record_id are provided, associate with created record
     if params[:record_type].present? && params[:record_id].present?
       created_record = params[:record_type].constantize.find(params[:record_id])
     end
-    
+
     @draft.fulfill!(created_record)
-    
+
     render json: {
       success: true,
       message: 'Rascunho marcado como utilizado',
@@ -93,20 +107,6 @@ class Api::V1::DraftsController < BackofficeController
       message: e.message,
       errors: [e.message]
     }, status: :unprocessable_entity
-  end
-
-  def show
-    render json: {
-      success: true,
-      message: 'Rascunho obtido com sucesso',
-      data: serialize_draft(@draft)
-    }, status: :ok
-  rescue StandardError => e
-    render json: {
-      success: false,
-      message: e.message,
-      errors: [e.message]
-    }, status: :internal_server_error
   end
 
   def recover
@@ -177,7 +177,7 @@ class Api::V1::DraftsController < BackofficeController
       return
     end
 
-    unless draftable_type.present?
+    if draftable_type.blank?
       render json: {
         success: false,
         message: 'Tipo de rascunho é obrigatório',
@@ -226,10 +226,12 @@ class Api::V1::DraftsController < BackofficeController
                # For backwards compatibility with existing endpoints
                set_draftable_if_exists
                return unless @draftable
+
                @draftable.drafts.active.find_by!(form_type: params[:form_type])
              end
 
     raise ActiveRecord::RecordNotFound unless @draft
+
     authorize_draft!(@draft)
   rescue ActiveRecord::RecordNotFound
     render json: {
@@ -286,7 +288,7 @@ class Api::V1::DraftsController < BackofficeController
 
     # Add draftable if it exists (for existing records)
     draft_params[:draftable] = @draftable if @draftable
-    
+
     # Add session_id for new records
     draft_params[:session_id] = params[:session_id] if params[:session_id].present?
 

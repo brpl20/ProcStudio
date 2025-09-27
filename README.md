@@ -69,7 +69,8 @@ Svelte 5.0
   - [Deletion](./docs/Deletion.md)
 
 - Compliance System
-  - Será um sistema para verificação de conformidade do sistema com relação aos clientes, jobs, works, honorários etc. Atualmente temos dois arquivos no ./brpl que precisarão ser revistos em momento oportuno. Neste primeiros códigos teve um pequeno sistema de notificações específico para as verificações de conformidade que serão integrados com o sistema de notificação definitivo.
+  - Será um sistema para verificação de conformidade do sistema com relação aos clientes, jobs, works, honorários etc. Atualmente temos dois arquivos no ./brpl que precisarão ser revistos em momento oportuno. Neste primeiros códigos teve um pequeno sistema de notificações específico para as verificações de conformidade que serão integrados com o sistema de notificação definitivo;
+  - Documentação ainda não está pronta, veja por enquanto: `services/compliance;
 
 - Draft System - Rascunhos
   - [Draft](./docs/Draft.md)

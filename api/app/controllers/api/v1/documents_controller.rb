@@ -87,30 +87,30 @@ module Api
 
       def attach_signed_file(file)
         @document.signed.purge if @document.signed.attached?
-        
+
         # Generate S3 key for signed document
         extension = File.extname(file.original_filename).delete('.').downcase
         s3_key = @document.build_work_document_s3_key("#{@document.document_type}_signed", extension)
-        
+
         # Upload to S3
-        if S3Service.upload(file, s3_key, { content_type: file.content_type })
-          Rails.logger.info "Signed document uploaded to S3: #{s3_key}"
-          @document.update_column(:signed_s3_key, s3_key) if @document.respond_to?(:signed_s3_key)
-        end
+        return unless S3Service.upload(file, s3_key, { content_type: file.content_type })
+
+        Rails.logger.info "Signed document uploaded to S3: #{s3_key}"
+        @document.update_column(:signed_s3_key, s3_key) if @document.respond_to?(:signed_s3_key)
       end
 
       def attach_source_file(file)
         @document.original.purge if @document.original.attached?
-        
+
         # Generate S3 key for original document
         extension = File.extname(file.original_filename).delete('.').downcase
         s3_key = @document.build_work_document_s3_key(@document.document_type, extension)
-        
+
         # Upload to S3
-        if S3Service.upload(file, s3_key, { content_type: file.content_type })
-          Rails.logger.info "Original document uploaded to S3: #{s3_key}"
-          @document.update_column(:original_s3_key, s3_key) if @document.respond_to?(:original_s3_key)
-        end
+        return unless S3Service.upload(file, s3_key, { content_type: file.content_type })
+
+        Rails.logger.info "Original document uploaded to S3: #{s3_key}"
+        @document.update_column(:original_s3_key, s3_key) if @document.respond_to?(:original_s3_key)
       end
 
       def update_document_status(status, sign_source)

@@ -21,9 +21,9 @@ class Admin::JobCommentPolicy < Admin::BasePolicy
   end
 
   def destroy?
-    # Only the comment author or super_admin can delete
+    # Only the comment author or lawyers can delete
     return false unless record
 
-    record.user_profile == user.user_profile || super_admin?
+    record.user_profile == user.user_profile || lawyer?
   end
 end

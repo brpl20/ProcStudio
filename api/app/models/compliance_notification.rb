@@ -53,7 +53,9 @@ class ComplianceNotification < ApplicationRecord
     lawyer_retirement: 'lawyer_retirement',
     trainee_promotion: 'trainee_promotion',
     company_manager_change: 'company_manager_change',
-    contract_cancellation: 'contract_cancellation'
+    contract_cancellation: 'contract_cancellation',
+    new_representation: 'new_representation',
+    representation_ended: 'representation_ended'
   }
 
   validates :title, presence: true

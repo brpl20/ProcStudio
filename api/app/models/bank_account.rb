@@ -31,6 +31,10 @@ class BankAccount < ApplicationRecord
   # Polymorphic association
   belongs_to :bankable, polymorphic: true
 
+  # Explicitly declare string attributes for enums (Rails 7.2+ requirement)
+  attribute :account_type, :string, default: 'main'
+  attribute :type_account, :string
+
   # Enums for account categories
   enum :account_type, {
     main: 'main',

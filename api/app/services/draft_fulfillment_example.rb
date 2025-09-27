@@ -8,7 +8,7 @@ class DraftFulfillmentExample
     ActiveRecord::Base.transaction do
       # Create the work
       work = Work.create!(params)
-      
+
       # If there was a draft for this creation, fulfill it
       if session_id
         Work.fulfill_draft_after_create(
@@ -18,7 +18,7 @@ class DraftFulfillmentExample
           user: user
         )
       end
-      
+
       work
     end
   end
@@ -28,7 +28,7 @@ class DraftFulfillmentExample
     ActiveRecord::Base.transaction do
       # Create the job
       job = Job.create!(params)
-      
+
       # Fulfill the draft if it exists
       if session_id
         draft = Draft.find_draft_for_new_record(
@@ -37,10 +37,10 @@ class DraftFulfillmentExample
           team: job.team,
           session_id: session_id
         )
-        
+
         draft&.fulfill!(job)
       end
-      
+
       job
     end
   end
@@ -50,10 +50,10 @@ class DraftFulfillmentExample
     ActiveRecord::Base.transaction do
       # Update the record
       record.update!(params)
-      
+
       # Mark any draft as fulfilled
       record.mark_draft_fulfilled!(form_type, team: record.team)
-      
+
       record
     end
   end
@@ -63,7 +63,7 @@ class DraftFulfillmentExample
     def create
       # Check if there's a draft session
       session_id = params[:draft_session_id]
-      
+
       # If session_id exists, try to load draft data
       if session_id.present?
         draft = Draft.find_draft_for_new_record(
@@ -72,22 +72,20 @@ class DraftFulfillmentExample
           team: current_team,
           session_id: session_id
         )
-        
+
         # Merge draft data with submitted params if draft exists
-        if draft
-          work_params = work_params.merge(draft.data.except('session_id'))
-        end
+        work_params = work_params.merge(draft.data.except('session_id')) if draft
       end
-      
+
       # Create the work and fulfill the draft
       work = DraftFulfillmentExample.create_work_from_draft(
         work_params,
         user: current_user,
         session_id: session_id
       )
-      
-      render json: { 
-        success: true, 
+
+      render json: {
+        success: true,
         message: 'Work created successfully',
         data: work,
         draft_fulfilled: session_id.present?

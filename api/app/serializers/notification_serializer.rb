@@ -9,7 +9,6 @@
 #  body              :text
 #  data              :jsonb
 #  notification_type :string
-#  priority          :integer          default("normal")
 #  read              :boolean          default(FALSE)
 #  sender_type       :string
 #  title             :string
@@ -20,13 +19,11 @@
 #
 # Indexes
 #
-#  index_notifications_on_created_at                     (created_at)
-#  index_notifications_on_notification_type              (notification_type)
-#  index_notifications_on_priority                       (priority)
-#  index_notifications_on_read                           (read)
-#  index_notifications_on_sender_type_and_sender_id      (sender_type,sender_id)
-#  index_notifications_on_user_profile_id                (user_profile_id)
-#  index_notifications_on_user_profile_priority_created  (user_profile_id,priority,created_at)
+#  index_notifications_on_created_at                 (created_at)
+#  index_notifications_on_notification_type          (notification_type)
+#  index_notifications_on_read                       (read)
+#  index_notifications_on_sender_type_and_sender_id  (sender_type,sender_id)
+#  index_notifications_on_user_profile_id            (user_profile_id)
 #
 # Foreign Keys
 #
@@ -34,6 +31,7 @@
 #
 class NotificationSerializer
   include JSONAPI::Serializer
+  include ActionView::Helpers::DateHelper
 
   attributes :id,
              :title,
@@ -44,14 +42,6 @@ class NotificationSerializer
              :action_url,
              :created_at,
              :updated_at
-  
-  attribute :priority do |notification|
-    {
-      value: notification.priority,
-      name: notification.priority,
-      numeric: Notification.priorities[notification.priority]
-    }
-  end
 
   attribute :sender do |notification|
     if notification.sender
@@ -63,31 +53,11 @@ class NotificationSerializer
     end
   end
 
-  attribute :priority_label do |notification|
-    case notification.priority
-    when 0 then 'low'
-    when 1 then 'normal'
-    when 2 then 'high'
-    when 3 then 'urgent'
-    else 'normal'
-    end
-  end
-
   attribute :time_ago do |notification|
-    time_diff = Time.current - notification.created_at
-    
-    case time_diff
-    when 0..59
-      'agora'
-    when 60..3599
-      minutes = (time_diff / 60).to_i
-      "#{minutes} #{minutes == 1 ? 'minuto' : 'minutos'} atrás"
-    when 3600..86399
-      hours = (time_diff / 3600).to_i
-      "#{hours} #{hours == 1 ? 'hora' : 'horas'} atrás"
-    when 86400..604799
-      days = (time_diff / 86400).to_i
-      "#{days} #{days == 1 ? 'dia' : 'dias'} atrás"
+    if notification.created_at > 7.days.ago
+      I18n.with_locale(:'pt-BR') do
+        "#{time_ago_in_words(notification.created_at)} atrás"
+      end
     else
       notification.created_at.strftime('%d/%m/%Y')
     end
