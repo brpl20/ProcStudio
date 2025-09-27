@@ -1,7 +1,15 @@
+# frozen_string_literal: true
+
 # ==========================================
-# CUSTOMERS AND PROFILE CUSTOMERS
+# CUSTOMERS AND PROFILE CUSTOMERS with Polymorphic Associations
 # ==========================================
-puts '👥 Creating Customers and ProfileCustomers...'
+puts '[CUSTOMERS] Creating Customers and ProfileCustomers with nested attributes...'
+
+# Get references to users and teams from previous seed files
+user1 = User.find_by(email: 'joao.prado@advocacia.com.br')
+user2 = User.find_by(email: 'maria.silva@advocacia.com.br')
+team = Team.find_by(subdomain: 'principal')
+team2 = Team.find_by(subdomain: 'filial')
 
 # Customer 1 - Individual
 customer1 = Customer.find_or_create_by!(email: 'cliente1@gmail.com') do |c|
@@ -9,7 +17,7 @@ customer1 = Customer.find_or_create_by!(email: 'cliente1@gmail.com') do |c|
   c.password_confirmation = 'ClientPass123!'
   c.confirmed_at = Time.current
   c.created_by_id = user1.id
-  puts "  ✅ Created customer: #{c.email}"
+  puts "  [OK] Created customer: #{c.email}"
 end
 
 profile_customer1 = ProfileCustomer.find_or_create_by!(customer: customer1) do |pc|
@@ -27,27 +35,49 @@ profile_customer1 = ProfileCustomer.find_or_create_by!(customer: customer1) do |
   pc.capacity = 'able'
   pc.status = 'active'
   pc.created_by_id = user1.id
-  puts "  ✅ Created profile customer: #{pc.full_name}"
-end
-
-# Add address for customer 1 using polymorphic association
-profile_customer1.addresses.find_or_create_by!(
-  zip_code: '85810020',
-  street: 'Rua Brasil',
-  number: '100'
-) do |a|
-  a.neighborhood = 'Centro'
-  a.city = 'Cascavel'
-  a.state = 'PR'
-  a.address_type = 'main'
-  puts "  ✅ Created address for customer: #{profile_customer1.full_name}"
-end
-
-# Add phone for customer 1
-profile_customer1.phones.find_or_create_by!(
-  phone_number: '4598765432'
-) do |_p|
-  puts "  ✅ Created phone for customer: #{profile_customer1.full_name}"
+  
+  # Using nested attributes for polymorphic associations
+  pc.addresses_attributes = [
+    {
+      zip_code: '85810020',
+      street: 'Rua Brasil',
+      number: '100',
+      complement: 'Casa',
+      neighborhood: 'Centro',
+      city: 'Cascavel',
+      state: 'PR',
+      address_type: 'main'
+    }
+  ]
+  
+  pc.phones_attributes = [
+    {
+      phone_number: '4598765432'
+    },
+    {
+      phone_number: '45999887766'
+    }
+  ]
+  
+  pc.emails_attributes = [
+    {
+      email: 'carlos.oliveira@gmail.com',
+      email_type: 'main'
+    }
+  ]
+  
+  pc.bank_accounts_attributes = [
+    {
+      bank_name: 'Caixa Econômica Federal',
+      type_account: 'checking',
+      agency: '2222',
+      account: '333444',
+      pix: '123.456.789-09',
+      account_type: 'main'
+    }
+  ]
+  
+  puts "  [OK] Created profile customer: #{pc.full_name} with nested attributes"
 end
 
 # Customer 2 - Company
@@ -56,13 +86,13 @@ customer2 = Customer.find_or_create_by!(email: 'empresa@empresa.com.br') do |c|
   c.password_confirmation = 'ClientPass123!'
   c.confirmed_at = Time.current
   c.created_by_id = user1.id
-  puts "  ✅ Created customer: #{c.email}"
+  puts "  [OK] Created customer: #{c.email}"
 end
 
 profile_customer2 = ProfileCustomer.find_or_create_by!(customer: customer2) do |pc|
   pc.customer_type = 'legal_person'
   pc.name = 'Empresa Exemplo LTDA'
-  pc.cnpj = '11.222.333/0001-44'
+  pc.cnpj = '11.444.777/0001-61' # Valid test CNPJ
   pc.company = 'Empresa Exemplo LTDA'
   pc.cpf = '111.444.777-35' # Representative's CPF - valid test
   pc.rg = '5555555' # Representative's RG
@@ -73,36 +103,84 @@ profile_customer2 = ProfileCustomer.find_or_create_by!(customer: customer2) do |
   pc.capacity = 'able'
   pc.status = 'active'
   pc.created_by_id = user1.id
-  puts "  ✅ Created profile customer: #{pc.name}"
+  
+  # Using nested attributes for polymorphic associations
+  pc.addresses_attributes = [
+    {
+      zip_code: '01310200',
+      street: 'Avenida Paulista',
+      number: '2000',
+      complement: 'Andar 10, Sala 1001',
+      neighborhood: 'Bela Vista',
+      city: 'São Paulo',
+      state: 'SP',
+      address_type: 'main'
+    },
+    {
+      zip_code: '01310300',
+      street: 'Rua Haddock Lobo',
+      number: '595',
+      complement: 'Depósito',
+      neighborhood: 'Cerqueira César',
+      city: 'São Paulo',
+      state: 'SP',
+      address_type: 'secondary'
+    }
+  ]
+  
+  pc.phones_attributes = [
+    {
+      phone_number: '1133445566'
+    },
+    {
+      phone_number: '11955443322'
+    }
+  ]
+  
+  pc.emails_attributes = [
+    {
+      email: 'contato@empresa.com.br',
+      email_type: 'main'
+    },
+    {
+      email: 'financeiro@empresa.com.br',
+      email_type: 'secondary'
+    },
+    {
+      email: 'juridico@empresa.com.br',
+      email_type: 'work'
+    }
+  ]
+  
+  pc.bank_accounts_attributes = [
+    {
+      bank_name: 'Banco do Brasil',
+      type_account: 'checking',
+      agency: '1234',
+      account: '98765',
+      pix: '11.444.777/0001-61',
+      account_type: 'main'
+    },
+    {
+      bank_name: 'Santander',
+      type_account: 'savings_account',
+      agency: '5678',
+      account: '55555',
+      pix: 'empresa@pix.com.br',
+      account_type: 'savings'
+    }
+  ]
+  
+  puts "  [OK] Created profile customer: #{pc.name} with nested attributes"
 end
 
-# Add address for customer 2 using polymorphic association
-profile_customer2.addresses.find_or_create_by!(
-  zip_code: '01310200',
-  street: 'Avenida Paulista',
-  number: '2000'
-) do |a|
-  a.neighborhood = 'Bela Vista'
-  a.city = 'São Paulo'
-  a.state = 'SP'
-  a.address_type = 'main'
-  puts "  ✅ Created address for customer: #{profile_customer2.name}"
-end
-
-# Add phone for customer 2
-profile_customer2.phones.find_or_create_by!(
-  phone_number: '1133445566'
-) do |_p|
-  puts "  ✅ Created phone for customer: #{profile_customer2.name}"
-end
-
-# Customer 3 - Individual with representative
+# Customer 3 - Individual with representative (minor)
 customer3 = Customer.find_or_create_by!(email: 'cliente.menor@gmail.com') do |c|
   c.password = 'ClientPass123!'
   c.password_confirmation = 'ClientPass123!'
   c.confirmed_at = Time.current
   c.created_by_id = user2.id
-  puts "  ✅ Created customer: #{c.email}"
+  puts "  [OK] Created customer: #{c.email}"
 end
 
 profile_customer3 = ProfileCustomer.find_or_create_by!(customer: customer3) do |pc|
@@ -120,7 +198,35 @@ profile_customer3 = ProfileCustomer.find_or_create_by!(customer: customer3) do |
   pc.capacity = 'relatively'
   pc.status = 'active'
   pc.created_by_id = user2.id
-  puts "  ✅ Created profile customer: #{pc.full_name}"
+  
+  # Using nested attributes for polymorphic associations
+  pc.addresses_attributes = [
+    {
+      zip_code: '85810030',
+      street: 'Rua São Paulo',
+      number: '456',
+      complement: 'Apto 202',
+      neighborhood: 'Centro',
+      city: 'Cascavel',
+      state: 'PR',
+      address_type: 'main'
+    }
+  ]
+  
+  pc.phones_attributes = [
+    {
+      phone_number: '4533221100'
+    }
+  ]
+  
+  pc.emails_attributes = [
+    {
+      email: 'pedro.junior@gmail.com',
+      email_type: 'personal'
+    }
+  ]
+  
+  puts "  [OK] Created profile customer: #{pc.full_name} with nested attributes"
 end
 
 # Create representative for minor
@@ -129,7 +235,7 @@ Represent.find_or_create_by!(
   representor: profile_customer1,
   team: team
 ) do |_r|
-  puts '  ✅ Created representative relationship'
+  puts '  [OK] Created representative relationship'
 end
 
 # Associate customers with teams
@@ -137,3 +243,5 @@ TeamCustomer.find_or_create_by!(team: team, customer: customer1, customer_email:
 TeamCustomer.find_or_create_by!(team: team, customer: customer2, customer_email: customer2.email)
 TeamCustomer.find_or_create_by!(team: team, customer: customer3, customer_email: customer3.email)
 TeamCustomer.find_or_create_by!(team: team2, customer: customer1, customer_email: customer1.email)
+
+puts "  [OK] Customers created successfully with polymorphic associations!"

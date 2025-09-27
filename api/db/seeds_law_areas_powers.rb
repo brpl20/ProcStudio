@@ -1,6 +1,16 @@
 # frozen_string_literal: true
 
-Rails.logger.debug '⚖️ Criando poderes base por procedimento...'
+Rails.logger.debug '[POWERS] Creating base powers by procedure...'
+
+# ============================================================================
+# 0. LOAD LAW AREAS REFERENCES
+# ============================================================================
+civil = LawArea.find_by(code: 'civil')
+previdenciario = LawArea.find_by(code: 'social_security')
+tributario = LawArea.find_by(code: 'tributary')
+familia = LawArea.find_by(code: 'family')
+aposentadoria = LawArea.find_by(code: 'retirement')
+pis_cofins = LawArea.find_by(code: 'pis_cofins')
 
 # ============================================================================
 # 1. CRIAÇÃO DOS PODERES BASE (PROCEDIMENTOS)
