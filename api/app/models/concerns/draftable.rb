@@ -27,31 +27,12 @@ module Draftable
     scope.first
   end
 
-  def save_draft(form_type:, data:, user: nil, customer: nil, team: nil, session_id: nil)
-    unless draftable_form_types.include?(form_type.to_s)
-      raise ArgumentError, "Invalid form_type '#{form_type}' for #{self.class.name}. Valid types: #{draftable_form_types.join(', ')}"
-    end
-
-    # If this is a new record (not persisted), save as standalone draft
+  def save_draft(options = {})
+    validate_form_type!(options[:form_type])
     if new_record?
-      Draft.save_draft(
-        draftable: nil,
-        form_type: form_type,
-        data: data,
-        user: user,
-        customer: customer,
-        team: team,
-        session_id: session_id
-      )
+      save_standalone_draft(options)
     else
-      Draft.save_draft(
-        draftable: self,
-        form_type: form_type,
-        data: data,
-        user: user,
-        customer: customer,
-        team: team
-      )
+      save_associated_draft(options)
     end
   end
 
@@ -105,5 +86,37 @@ module Draftable
     scope = drafts.unfulfilled
     scope = scope.where(form_type: form_type) if form_type
     scope.exists?
+  end
+
+  private
+
+  def validate_form_type!(form_type)
+    return if draftable_form_types.include?(form_type.to_s)
+
+    raise ArgumentError,
+          "Invalid form_type '#{form_type}' for #{self.class.name}. Valid types: #{draftable_form_types.join(', ')}"
+  end
+
+  def save_standalone_draft(options)
+    Draft.save_draft(
+      draftable: nil,
+      form_type: options[:form_type],
+      data: options[:data],
+      user: options[:user],
+      customer: options[:customer],
+      team: options[:team],
+      session_id: options[:session_id]
+    )
+  end
+
+  def save_associated_draft(options)
+    Draft.save_draft(
+      draftable: self,
+      form_type: options[:form_type],
+      data: options[:data],
+      user: options[:user],
+      customer: options[:customer],
+      team: options[:team]
+    )
   end
 end

@@ -3,91 +3,53 @@
 module Api
   module V1
     class CustomersController < BackofficeController
+      include CustomerResponses
+
       before_action :retrieve_customer, only: [:update, :show, :resend_confirmation]
       before_action :perform_authorization, except: [:update]
 
       after_action :verify_authorized
 
       def index
-        customers = current_team.customers.includes(
-          profile_customer: [
-            :customer, :emails, :phones, :addresses, :bank_accounts,
-            :customer_files, :represented_customers, :active_represents
-          ]
+        customers = Customers::QueryService.build_query(
+          team: current_team,
+          filter_params: filter_by_deleted_params
         )
 
-        filter_by_deleted_params.each do |key, value|
-          next if value.blank?
-
-          customers = customers.public_send("filter_by_#{key}", value.strip)
-        end
-
-        serialized = CustomerSerializer.new(
-          customers,
-          include: [:profile_customer],
-          meta: {
-            total_count: customers.offset(nil).limit(nil).count
-          }
-        ).serializable_hash
-
-        render json: {
-          success: true,
-          message: 'Clientes listados com sucesso',
+        serialized = Customers::SerializerService.serialize_customers(customers)
+        render_customers_success(
           data: serialized[:data],
-          included: serialized[:included],
-          meta: serialized[:meta]
-        }, status: :ok
+          meta: serialized[:meta],
+          included: serialized[:included]
+        )
       end
 
       def show
-        serialized = CustomerSerializer.new(
-          @customer,
-          include: [:profile_customer],
-          params: { action: 'show' }
-        ).serializable_hash
-
-        render json: {
-          success: true,
-          message: 'Cliente encontrado com sucesso',
+        serialized = Customers::SerializerService.serialize_customer(@customer, action: 'show')
+        render_customer_success(
           data: serialized[:data],
+          message: 'Cliente encontrado com sucesso',
           included: serialized[:included]
-        }, status: :ok
+        )
       end
 
       def create
-        customer = ::Customer.new(customers_params)
-        customer.created_by_id = current_user&.id
+        result = Customers::CreationService.create_customer(
+          params: customers_params,
+          current_user: current_user,
+          current_team: current_team
+        )
 
-        if customer.save
-          # Associar customer ao team atual
-          TeamCustomer.create!(
-            team: current_team,
-            customer: customer,
-            customer_email: customer.email
-          )
-
-          render json: {
-            success: true,
+        if result.success?
+          serialized = Customers::SerializerService.serialize_customer(result.customer)
+          render_customer_success(
+            data: serialized[:data],
             message: 'Cliente criado com sucesso',
-            data: CustomerSerializer.new(customer, include: [:profile_customer]).serializable_hash[:data]
-          }, status: :created
+            status: :created
+          )
         else
-          error_messages = customer.errors.full_messages
-          render json: {
-            success: false,
-            message: error_messages.first,
-            errors: error_messages
-          }, status: :unprocessable_content
+          render_customer_error(errors: result.errors)
         end
-      rescue StandardError => e
-        Rails.logger.error "Customer creation error: #{e.class} - #{e.message}"
-        Rails.logger.error e.backtrace.first(10).join("\n") if e.backtrace
-        error_message = 'Erro ao criar cliente. Tente novamente.'
-        render json: {
-          success: false,
-          message: error_message,
-          errors: [error_message]
-        }, status: :internal_server_error
       end
 
       def resend_confirmation
@@ -105,20 +67,10 @@ module Api
         authorize @customer, :update?, policy_class: Admin::CustomerPolicy
 
         if @customer.update(customers_params)
-          @customer.send_confirmation_instructions if @customer.saved_change_to_email?
-
-          render json: {
-            success: true,
-            message: 'Cliente atualizado com sucesso',
-            data: CustomerSerializer.new(@customer, include: [:profile_customer]).serializable_hash[:data]
-          }, status: :ok
+          handle_email_confirmation_if_needed
+          render_successful_update
         else
-          error_messages = @customer.errors.full_messages
-          render json: {
-            success: false,
-            message: error_messages.first,
-            errors: error_messages
-          }, status: :unprocessable_content
+          render_customer_error(errors: @customer.errors.full_messages)
         end
       end
 
@@ -141,27 +93,17 @@ module Api
       end
 
       def restore
-        customer = current_team.customers.with_deleted.includes(
-          profile_customer: [
-            :customer, :emails, :phones, :addresses, :bank_accounts,
-            :customer_files, :represented_customers, :active_represents
-          ]
-        ).find(params[:id])
+        customer = find_deleted_customer
         authorize customer, :restore?, policy_class: Admin::CustomerPolicy
 
         if customer.recover
-          render json: {
-            success: true,
-            message: 'Cliente restaurado com sucesso',
-            data: CustomerSerializer.new(customer, include: [:profile_customer]).serializable_hash[:data]
-          }, status: :ok
+          serialized = Customers::SerializerService.serialize_customer(customer)
+          render_customer_success(
+            data: serialized[:data],
+            message: 'Cliente restaurado com sucesso'
+          )
         else
-          error_messages = customer.errors.full_messages
-          render json: {
-            success: false,
-            message: error_messages.first,
-            errors: error_messages
-          }, status: :unprocessable_content
+          render_customer_error(errors: customer.errors.full_messages)
         end
       end
 
@@ -188,6 +130,27 @@ module Api
 
       def normalize_email_param
         params[:customer][:email] ||= params[:customer].delete(:access_email)
+      end
+
+      def handle_email_confirmation_if_needed
+        @customer.send_confirmation_instructions if @customer.saved_change_to_email?
+      end
+
+      def render_successful_update
+        serialized = Customers::SerializerService.serialize_customer(@customer)
+        render_customer_success(
+          data: serialized[:data],
+          message: 'Cliente atualizado com sucesso'
+        )
+      end
+
+      def find_deleted_customer
+        current_team.customers.with_deleted.includes(
+          profile_customer: [
+            :customer, :emails, :phones, :addresses, :bank_accounts,
+            :customer_files, :represented_customers, :active_represents
+          ]
+        ).find(params[:id])
       end
     end
   end

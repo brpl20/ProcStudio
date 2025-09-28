@@ -32,7 +32,7 @@ class JobUserProfile < ApplicationRecord
   belongs_to :job
   belongs_to :user_profile
 
-  validates :job_id, uniqueness: { scope: :user_profile_id, message: 'Usuário já está atribuído a este job' }
+  validates :job_id, uniqueness: { scope: :user_profile_id }
   validate :user_profile_same_team
   validate :user_profile_belongs_to_team
 
@@ -52,7 +52,7 @@ class JobUserProfile < ApplicationRecord
 
     return if job.team == user_profile.user.team
 
-    errors.add(:user_profile, 'deve pertencer ao mesmo team do job')
+    errors.add(:user_profile, :same_team_required)
   end
 
   def user_profile_belongs_to_team
@@ -60,6 +60,6 @@ class JobUserProfile < ApplicationRecord
 
     return if user_profile.user.team.present?
 
-    errors.add(:user_profile, 'deve pertencer a um team')
+    errors.add(:user_profile, :team_required)
   end
 end

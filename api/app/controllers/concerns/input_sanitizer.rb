@@ -80,14 +80,27 @@ module InputSanitizer
     when Array
       param_object.any? { |item| contains_xss_patterns?(item) }
     when String
-      # Check for common XSS patterns
-      param_object =~ /<script/i ||
-        param_object =~ /javascript:/i ||
-        param_object =~ /\bon\w+\s*=/i ||
-        param_object =~ %r{data:text/html}i ||
-        (param_object.include?('alert') && param_object =~ /[();]/)
+      string_contains_xss?(param_object)
     else
       false
     end
+  end
+
+  def string_contains_xss?(string)
+    xss_patterns.any? { |pattern| string.match?(pattern) } ||
+      contains_alert_injection?(string)
+  end
+
+  def xss_patterns
+    [
+      /<script/i,
+      /javascript:/i,
+      /\bon\w+\s*=/i,
+      %r{data:text/html}i
+    ]
+  end
+
+  def contains_alert_injection?(string)
+    string.include?('alert') && string.match?(/[();]/)
   end
 end

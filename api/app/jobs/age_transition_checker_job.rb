@@ -47,19 +47,9 @@ class AgeTransitionCheckerJob < ApplicationJob
   end
 
   def should_transition?(profile, age, _expected_capacity)
-    # Only transition if it's a birthday-triggered change
-    today = Date.current
-    birth_date = profile.birth
+    return false unless birthday_today?(profile.birth)
 
-    # Check if today is the birthday that triggers a transition
-    is_16th_birthday = age == 16 && birth_date.month == today.month && birth_date.day == today.day
-    is_18th_birthday = age == 18 && birth_date.month == today.month && birth_date.day == today.day
-
-    # Transition if it's a significant birthday
-    return true if is_16th_birthday && profile.capacity == 'unable'
-    return true if is_18th_birthday && profile.capacity == 'relatively'
-
-    false
+    transition_16th_birthday?(profile, age) || transition_18th_birthday?(profile, age)
   end
 
   def handle_age_transition(profile, age, new_capacity)
@@ -78,6 +68,20 @@ class AgeTransitionCheckerJob < ApplicationJob
       reason: 'age_transition'
     )
 
-    Rails.logger.info "Age transition: ProfileCustomer ##{profile.id} changed from #{old_capacity} to #{new_capacity} (age: #{age})"
+    Rails.logger.info "Age transition: ProfileCustomer ##{profile.id} changed " \
+                      "from #{old_capacity} to #{new_capacity} (age: #{age})"
+  end
+
+  def birthday_today?(birth_date)
+    today = Date.current
+    birth_date.month == today.month && birth_date.day == today.day
+  end
+
+  def transition_16th_birthday?(profile, age)
+    age == 16 && profile.capacity == 'unable'
+  end
+
+  def transition_18th_birthday?(profile, age)
+    age == 18 && profile.capacity == 'relatively'
   end
 end

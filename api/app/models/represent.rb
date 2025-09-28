@@ -34,8 +34,8 @@
 #
 
 class Represent < ApplicationRecord
-  belongs_to :profile_customer
-  belongs_to :representor, class_name: 'ProfileCustomer'
+  belongs_to :profile_customer, inverse_of: :represents
+  belongs_to :representor, class_name: 'ProfileCustomer', inverse_of: :represented_customers
   belongs_to :team
 
   # Enums

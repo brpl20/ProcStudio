@@ -58,7 +58,7 @@ class ProfileCustomer < ApplicationRecord
   # Track changes for compliance, only tracking capacity changes manually
   has_paper_trail only: [:capacity], on: [:update]
 
-  belongs_to :customer, -> { with_deleted }, optional: true
+  belongs_to :customer, -> { with_deleted }, optional: true, inverse_of: :profile_customer
   belongs_to :accountant, class_name: 'ProfileCustomer', optional: true
 
   # Compliance callback for manual capacity changes
@@ -137,12 +137,14 @@ class ProfileCustomer < ApplicationRecord
 
   # Relationships for representation
   # As a representor (guardian/assistant), this person can represent multiple customers
-  has_many :represented_customers, class_name: 'Represent', foreign_key: 'representor_id', dependent: :nullify
+  has_many :represented_customers, class_name: 'Represent', foreign_key: 'representor_id', dependent: :nullify,
+                                   inverse_of: :representor
 
   # As a represented person (unable/relatively incapable), can have multiple representors
-  has_many :represents, dependent: :destroy
+  has_many :represents, dependent: :destroy, inverse_of: :profile_customer
   has_many :representors, through: :represents, source: :representor
-  has_many :active_represents, -> { active.current }, class_name: 'Represent', dependent: :destroy
+  has_many :active_represents, -> { active.current }, class_name: 'Represent', dependent: :destroy,
+                                                      inverse_of: :profile_customer
   has_many :active_representors, through: :active_represents, source: :representor
 
   accepts_nested_attributes_for :customer_files, :customer, :represents,

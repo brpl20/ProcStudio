@@ -47,12 +47,12 @@ class Address < ApplicationRecord
   validates :zip_code, :street, :city, :state, presence: true
   validates :zip_code, format: {
     with: /\A\d{5}-?\d{3}\z/,
-    message: 'Invalid CEP format (use: 12345-678)'
+    message: I18n.t('activerecord.errors.models.address.attributes.zip_code.invalid_format')
   }
   validates :state, inclusion: {
     in: ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI',
          'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'],
-    message: 'Invalid Brazilian state'
+    message: I18n.t('activerecord.errors.models.address.attributes.state.invalid_state')
   }
 
   # Normalize CEP before saving

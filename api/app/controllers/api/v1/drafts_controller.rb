@@ -1,57 +1,35 @@
 # frozen_string_literal: true
 
 class Api::V1::DraftsController < BackofficeController
+  include DraftResponses
+
   before_action :authenticate_user!
   before_action :set_draftable_if_exists, only: [:save, :create]
   before_action :set_draft, only: [:show, :update, :recover, :destroy, :fulfill]
 
   def index
-    drafts = Draft.active.unfulfilled
-    drafts = drafts.where(team: current_team) if current_team
-    drafts = drafts.where(user: current_user) if current_user
+    drafts = Drafts::QueryService.build_query(
+      current_user: current_user,
+      current_team: current_team,
+      draft_type: params[:draft_type]
+    )
 
-    # Separate new and existing record drafts if requested
-    if params[:draft_type].present?
-      drafts = case params[:draft_type]
-               when 'new'
-                 drafts.for_new_records
-               when 'existing'
-                 drafts.for_existing_records
-               else
-                 drafts
-               end
-    end
-
-    render json: {
-      success: true,
+    render_success_response(
       message: 'Rascunhos obtidos com sucesso',
-      data: serialize_drafts(drafts),
-      meta: {
-        total_count: drafts.count,
-        new_records_count: drafts.for_new_records.count,
-        existing_records_count: drafts.for_existing_records.count
-      }
-    }, status: :ok
+      data: Drafts::SerializerService.serialize_drafts(drafts),
+      meta: Drafts::QueryService.build_meta(drafts)
+    )
   rescue StandardError => e
-    render json: {
-      success: false,
-      message: e.message,
-      errors: [e.message]
-    }, status: :internal_server_error
+    render_error_response(e)
   end
 
   def show
-    render json: {
-      success: true,
+    render_success_response(
       message: 'Rascunho obtido com sucesso',
-      data: serialize_draft(@draft)
-    }, status: :ok
+      data: Drafts::SerializerService.serialize_draft(@draft)
+    )
   rescue StandardError => e
-    render json: {
-      success: false,
-      message: e.message,
-      errors: [e.message]
-    }, status: :internal_server_error
+    render_error_response(e)
   end
 
   # POST /drafts - RESTful create
@@ -67,17 +45,12 @@ class Api::V1::DraftsController < BackofficeController
       status: 'draft'
     )
 
-    render json: {
-      success: true,
+    render_success_response(
       message: 'Rascunho atualizado com sucesso',
-      data: serialize_draft(@draft)
-    }, status: :ok
+      data: Drafts::SerializerService.serialize_draft(@draft)
+    )
   rescue StandardError => e
-    render json: {
-      success: false,
-      message: e.message,
-      errors: [e.message]
-    }, status: :unprocessable_content
+    render_error_response(e, :unprocessable_content)
   end
 
   # POST /drafts/save - Backwards compatibility
@@ -96,59 +69,32 @@ class Api::V1::DraftsController < BackofficeController
 
     @draft.fulfill!(created_record)
 
-    render json: {
-      success: true,
+    render_success_response(
       message: 'Rascunho marcado como utilizado',
-      data: serialize_draft(@draft)
-    }, status: :ok
+      data: Drafts::SerializerService.serialize_draft(@draft)
+    )
   rescue StandardError => e
-    render json: {
-      success: false,
-      message: e.message,
-      errors: [e.message]
-    }, status: :unprocessable_content
+    render_error_response(e, :unprocessable_content)
   end
 
   def recover
-    # For new record drafts, just return the draft data
-    # For existing record drafts, mark as recovered
     if @draft.for_new_record?
-      render json: {
-        success: true,
-        message: 'Rascunho de novo registro recuperado',
-        data: serialize_draft(@draft),
-        is_new_record: true
-      }, status: :ok
+      render_new_record_recovery
     else
-      @draft.recover!
-      render json: {
-        success: true,
-        message: 'Rascunho recuperado com sucesso',
-        data: serialize_draft(@draft),
-        is_new_record: false
-      }, status: :ok
+      render_existing_record_recovery
     end
   rescue StandardError => e
-    render json: {
-      success: false,
-      message: e.message,
-      errors: [e.message]
-    }, status: :unprocessable_content
+    render_error_response(e, :unprocessable_content)
   end
 
   def destroy
     @draft.destroy
-    render json: {
-      success: true,
+    render_success_response(
       message: 'Rascunho removido com sucesso',
       data: { id: @draft.id }
-    }, status: :ok
+    )
   rescue StandardError => e
-    render json: {
-      success: false,
-      message: e.message,
-      errors: [e.message]
-    }, status: :unprocessable_content
+    render_error_response(e, :unprocessable_content)
   end
 
   private
@@ -168,83 +114,31 @@ class Api::V1::DraftsController < BackofficeController
   end
 
   def set_draftable_if_exists
-    draftable_type = params[:draftable_type]
-    draftable_id = params[:draftable_id]
+    return if skip_draftable?
+    return render_missing_type_error if params[:draftable_type].blank?
 
-    # For new records, draftable_id is optional or nil
-    if draftable_id.blank? || draftable_id == '0'
-      @draftable = nil
-      return
-    end
-
-    if draftable_type.blank?
-      render json: {
-        success: false,
-        message: 'Tipo de rascunho é obrigatório',
-        errors: ['draftable_type é obrigatório']
-      }, status: :bad_request
-      return
-    end
-
-    @draftable = case draftable_type
-                 when 'ProfileCustomer'
-                   ProfileCustomer.find(draftable_id)
-                 when 'UserProfile'
-                   UserProfile.find(draftable_id)
-                 when 'Work'
-                   Work.find(draftable_id)
-                 when 'Job'
-                   Job.find(draftable_id)
-                 else
-                   render json: {
-                     success: false,
-                     message: "Tipo de rascunho desconhecido: #{draftable_type}",
-                     errors: ["Tipo '#{draftable_type}' não é suportado. Tipos válidos: ProfileCustomer, UserProfile, Work, Job"]
-                   }, status: :bad_request
-                   return
-                 end
+    @draftable = find_draftable
+  rescue Drafts::DraftableFinderService::InvalidTypeError => e
+    render_invalid_type_error(e.message)
   rescue ActiveRecord::RecordNotFound
-    render json: {
-      success: false,
-      message: 'Registro não encontrado',
-      errors: ["#{draftable_type} com ID #{draftable_id} não encontrado"]
-    }, status: :not_found
+    render_record_not_found_error
   end
 
   def set_draft
-    @draft = if params[:id]
-               Draft.find(params[:id])
-             elsif params[:session_id].present? && params[:form_type].present?
-               # Find draft for new record by session_id
-               Draft.find_draft_for_new_record(
-                 form_type: params[:form_type],
-                 user: current_user,
-                 team: current_team,
-                 session_id: params[:session_id]
-               )
-             else
-               # For backwards compatibility with existing endpoints
-               set_draftable_if_exists
-               return unless @draftable
-
-               @draftable.drafts.active.find_by!(form_type: params[:form_type])
-             end
-
-    raise ActiveRecord::RecordNotFound unless @draft
+    @draft = Drafts::DraftFinderService.find_draft(
+      params: params,
+      current_user: current_user,
+      current_team: current_team,
+      draftable: @draftable
+    )
 
     authorize_draft!(@draft)
   rescue ActiveRecord::RecordNotFound
-    render json: {
-      success: false,
-      message: 'Rascunho não encontrado',
-      errors: ['Rascunho não encontrado ou expirado']
-    }, status: :not_found
+    render_draft_not_found_error
   end
 
   def authorize_draft!(draft)
-    authorized = current_user && (draft.user == current_user || draft.team == current_user.team)
-
-    return if authorized
+    return if Drafts::AuthorizationService.authorized?(draft: draft, user: current_user)
 
     render json: {
       success: false,
@@ -253,57 +147,40 @@ class Api::V1::DraftsController < BackofficeController
     }, status: :forbidden
   end
 
-  def serialize_draft(draft)
-    {
-      id: draft.id,
-      draftable_type: draft.draftable_type,
-      draftable_id: draft.draftable_id,
-      form_type: draft.form_type,
-      data: draft.data,
-      status: draft.status,
-      expires_at: draft.expires_at,
-      created_at: draft.created_at,
-      updated_at: draft.updated_at,
-      user_id: draft.user_id,
-      customer_id: draft.customer_id,
-      team_id: draft.team_id,
-      is_new_record: draft.for_new_record?,
-      session_id: draft.session_id
-    }
-  end
-
-  def serialize_drafts(drafts)
-    drafts.map { |draft| serialize_draft(draft) }
-  end
-
   def save_draft_action
-    # Shared logic for save and create actions
-    draft_params = {
-      form_type: params[:form_type],
-      data: params[:data].to_unsafe_h, # Convert ActionController::Parameters to Hash
-      user: current_user,
-      customer: nil,
-      team: current_team
-    }
-
-    # Add draftable if it exists (for existing records)
-    draft_params[:draftable] = @draftable if @draftable
-
-    # Add session_id for new records
-    draft_params[:session_id] = params[:session_id] if params[:session_id].present?
-
+    draft_params = build_draft_params
     draft = Draft.save_draft(**draft_params)
 
-    render json: {
-      success: true,
+    render_success_response(
       message: 'Rascunho salvo com sucesso',
-      data: serialize_draft(draft)
-    }, status: :ok
+      data: Drafts::SerializerService.serialize_draft(draft)
+    )
   rescue StandardError => e
-    render json: {
-      success: false,
-      message: e.message,
-      errors: [e.message]
-    }, status: :unprocessable_content
+    render_error_response(e, :unprocessable_content)
+  end
+
+  # Draftable helpers
+  def skip_draftable?
+    params[:draftable_id].blank? || params[:draftable_id] == '0'
+  end
+
+  def find_draftable
+    Drafts::DraftableFinderService.find(
+      type: params[:draftable_type],
+      id: params[:draftable_id]
+    )
+  end
+
+  # Draft params builder
+  def build_draft_params
+    {
+      form_type: params[:form_type],
+      data: params[:data].to_unsafe_h,
+      user: current_user,
+      customer: nil,
+      team: current_team,
+      draftable: @draftable,
+      session_id: params[:session_id]
+    }.compact
   end
 end

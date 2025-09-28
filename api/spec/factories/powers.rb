@@ -27,7 +27,7 @@
 #
 FactoryBot.define do
   factory :power do
-    description { "Criminal" }
+    description { 'Criminal' }
     category { 1 }
   end
 end

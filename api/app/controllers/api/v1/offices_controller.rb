@@ -47,140 +47,27 @@ module Api
       end
 
       def create
-        # Extract non-model attributes before creating office
-        logo = params[:office].delete(:logo)
-        social_contracts = params[:office].delete(:social_contracts)
-        params[:office].delete(:profit_distribution)
-        params[:office].delete(:partners_with_pro_labore)
-
-        Rails.logger.info "Current team: #{current_team.inspect}"
-        Rails.logger.info "Current team ID: #{current_team&.id}"
-
-        @office = current_team.offices.build(offices_params)
-        @office.created_by = current_user if current_user
-
-        Rails.logger.info "Office team_id after build: #{@office.team_id}"
+        file_params = extract_file_params
+        @office = build_office
 
         if @office.save
-          # Handle logo upload if present
-          if logo.present?
-            Rails.logger.info "Uploading logo for office #{@office.id}"
-            metadata_params = {
-              uploaded_by_id: current_user.id,
-              description: "Logo for #{@office.name}"
-            }
-            if @office.upload_logo(logo, metadata_params)
-              Rails.logger.info 'Logo uploaded successfully'
-            else
-              Rails.logger.error "Logo upload failed: #{@office.errors.full_messages}"
-            end
-          end
-
-          # Handle social contracts upload if present
-          if social_contracts.present?
-            Rails.logger.info "Uploading social contracts for office #{@office.id}"
-            Array(social_contracts).each do |contract|
-              next if contract.blank?
-
-              metadata_params = {
-                uploaded_by_id: current_user.id,
-                document_date: Date.current,
-                description: "Social contract for #{@office.name}"
-              }
-              if @office.upload_social_contract(contract, metadata_params)
-                Rails.logger.info 'Social contract uploaded successfully'
-              else
-                Rails.logger.error "Social contract upload failed: #{@office.errors.full_messages}"
-              end
-            end
-          end
-
-          # Handle social contract generation if requested (separate from upload)
-          if @office.create_social_contract == 'true'
-            Rails.logger.info "Social contract generation requested for office #{@office.id}"
-            # TODO: Call generate_social_contract service when implemented
-          end
-
-          serialized = OfficeSerializer.new(
-            @office,
-            { params: { action: 'show' } }
-          ).serializable_hash
-
-          render json: {
-            success: true,
-            message: 'Escritório criado com sucesso',
-            data: serialized[:data]
-          }, status: :created
+          process_file_uploads(file_params)
+          render_create_success
         else
           render_error_response(@office)
         end
       rescue StandardError => e
-        Rails.logger.error "Office creation failed: #{e.message}"
-        Rails.logger.error e.backtrace.first(10).join("\n") if e.backtrace
-        error_message = 'Erro ao criar escritório. Tente novamente.'
-        render json: {
-          success: false,
-          message: error_message,
-          errors: [error_message]
-        }, status: :internal_server_error
+        log_creation_error(e)
+        render_creation_error
       end
 
       def update
-        # Extract non-model attributes before updating office
-        logo = params[:office].delete(:logo)
-        social_contracts = params[:office].delete(:social_contracts)
-        params[:office].delete(:profit_distribution)
-        params[:office].delete(:partners_with_pro_labore)
-
-        # Check if only file uploads were sent (no other office attributes)
-        # In this case, skip the update and just process the files
-        should_update_office = params[:office].present? && !params[:office].empty?
+        file_params = extract_file_params
+        should_update_office = should_update_office_attributes?
 
         if !should_update_office || @office.update(offices_params)
-          # Handle logo upload if present
-          if logo.present?
-            metadata_params = {
-              uploaded_by_id: current_user.id,
-              description: "Logo for #{@office.name}"
-            }
-            @office.upload_logo(logo, metadata_params)
-          end
-
-          # Handle social contracts upload if present
-          if social_contracts.present?
-            Rails.logger.info "Uploading social contracts for office #{@office.id}"
-            Array(social_contracts).each do |contract|
-              next if contract.blank?
-
-              metadata_params = {
-                uploaded_by_id: current_user.id,
-                document_date: Date.current,
-                description: "Social contract for #{@office.name}"
-              }
-              if @office.upload_social_contract(contract, metadata_params)
-                Rails.logger.info 'Social contract uploaded successfully'
-              else
-                Rails.logger.error "Social contract upload failed: #{@office.errors.full_messages}"
-              end
-            end
-          end
-
-          # Handle social contract generation if requested (separate from upload)
-          if @office.create_social_contract == 'true'
-            Rails.logger.info "Social contract generation requested for office #{@office.id}"
-            # TODO: Call generate_social_contract service when implemented
-          end
-
-          serialized = OfficeSerializer.new(
-            @office,
-            { params: { action: 'show' } }
-          ).serializable_hash
-
-          render json: {
-            success: true,
-            message: 'Escritório atualizado com sucesso',
-            data: serialized[:data]
-          }, status: :ok
+          process_file_uploads(file_params)
+          render_update_success
         else
           render_error_response(@office)
         end
@@ -402,6 +289,107 @@ module Api
 
       private
 
+      def extract_file_params
+        {
+          logo: params[:office].delete(:logo),
+          social_contracts: params[:office].delete(:social_contracts)
+        }.tap do
+          params[:office].delete(:profit_distribution)
+          params[:office].delete(:partners_with_pro_labore)
+        end
+      end
+
+      def build_office
+        Rails.logger.info "Current team: #{current_team.inspect}"
+        Rails.logger.info "Current team ID: #{current_team&.id}"
+
+        office = current_team.offices.build(offices_params)
+        office.created_by = current_user if current_user
+
+        Rails.logger.info "Office team_id after build: #{office.team_id}"
+        office
+      end
+
+      def process_file_uploads(file_params)
+        process_logo_upload(file_params[:logo]) if file_params[:logo].present?
+        process_social_contracts_upload(file_params[:social_contracts]) if file_params[:social_contracts].present?
+        process_social_contract_generation if @office.create_social_contract == 'true'
+      end
+
+      def process_logo_upload(logo)
+        Rails.logger.info "Uploading logo for office #{@office.id}"
+        metadata_params = {
+          uploaded_by_id: current_user.id,
+          description: "Logo for #{@office.name}"
+        }
+        if @office.upload_logo(logo, metadata_params)
+          Rails.logger.info 'Logo uploaded successfully'
+        else
+          Rails.logger.error "Logo upload failed: #{@office.errors.full_messages}"
+        end
+      end
+
+      def process_social_contracts_upload(social_contracts)
+        Rails.logger.info "Uploading social contracts for office #{@office.id}"
+        Array(social_contracts).each do |contract|
+          next if contract.blank?
+
+          metadata_params = {
+            uploaded_by_id: current_user.id,
+            document_date: Date.current,
+            description: "Social contract for #{@office.name}"
+          }
+          if @office.upload_social_contract(contract, metadata_params)
+            Rails.logger.info 'Social contract uploaded successfully'
+          else
+            Rails.logger.error "Social contract upload failed: #{@office.errors.full_messages}"
+          end
+        end
+      end
+
+      def process_social_contract_generation
+        Rails.logger.info "Social contract generation requested for office #{@office.id}"
+        # TODO: Call generate_social_contract service when implemented
+      end
+
+      def render_create_success
+        serialized = OfficeSerializer.new(@office, { params: { action: 'show' } }).serializable_hash
+
+        render json: {
+          success: true,
+          message: 'Escritório criado com sucesso',
+          data: serialized[:data]
+        }, status: :created
+      end
+
+      def log_creation_error(error)
+        Rails.logger.error "Office creation failed: #{error.message}"
+        Rails.logger.error error.backtrace.first(10).join("\n") if error.backtrace
+      end
+
+      def render_creation_error
+        error_message = 'Erro ao criar escritório. Tente novamente.'
+        render json: {
+          success: false,
+          message: error_message,
+          errors: [error_message]
+        }, status: :internal_server_error
+      end
+
+      def should_update_office_attributes?
+        params[:office].present? && !params[:office].empty?
+      end
+
+      def render_update_success
+        serialized = OfficeSerializer.new(@office, { params: { action: 'show' } }).serializable_hash
+
+        render json: {
+          success: true,
+          message: 'Escritório atualizado com sucesso',
+          data: serialized[:data]
+        }, status: :ok
+      end
+
       def render_error_response(object, status = :unprocessable_content)
         error_messages = object.errors.full_messages
         render json: {
@@ -468,7 +456,8 @@ module Api
       end
 
       def parse_nested_json_attributes
-        ['phones_attributes', 'addresses_attributes', 'emails_attributes', 'office_emails_attributes', 'bank_accounts_attributes', 'user_offices_attributes'].each do |attr|
+        ['phones_attributes', 'addresses_attributes', 'emails_attributes', 'office_emails_attributes',
+         'bank_accounts_attributes', 'user_offices_attributes'].each do |attr|
           next unless params[:office][attr].is_a?(String)
 
           begin

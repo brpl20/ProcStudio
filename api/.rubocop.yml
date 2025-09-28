@@ -54,7 +54,7 @@ AllCops:
     - app/services/profile_customers/**/*
     - app/services/docx_services/social_contract_test.rb
     - app/services/docx_services/**/*
-    - app/models/concerns/office_s3_uploads.rb
+    - app/models/office_type.rb
 
 # Layout Cops
 Layout/LineLength:

@@ -75,28 +75,8 @@ module Api
       end
 
       def batch_create
-        entries = []
-        errors = []
-
-        params[:entries].each do |entry_params|
-          entry = @legal_cost.entries.build(entry_params.permit(permitted_params))
-
-          if entry.save
-            entries << entry
-          else
-            errors << { entry: entry_params[:name], errors: entry.errors.full_messages }
-          end
-        end
-
-        if errors.empty?
-          render json: LegalCostEntrySerializer.new(entries), status: :created
-        else
-          render json: {
-            created: entries.count,
-            failed: errors.count,
-            errors: errors
-          }, status: :unprocessable_content
-        end
+        entries, errors = process_batch_entries
+        render_batch_response(entries, errors)
       end
 
       def by_type
@@ -118,13 +98,7 @@ module Api
 
       def set_legal_cost
         work = team_scoped(Work).find(params[:work_id])
-        if params[:procedure_id].present?
-          procedure = work.procedures.find(params[:procedure_id])
-          honorary = procedure.honoraries.find(params[:honorary_id])
-        else
-          honorary = work.honoraries.find(params[:honorary_id])
-        end
-
+        honorary = find_honorary(work)
         @legal_cost = honorary.legal_cost
         raise ActiveRecord::RecordNotFound unless @legal_cost
       end
@@ -154,16 +128,69 @@ module Api
       end
 
       def apply_filters(entries)
-        entries = entries.where(cost_type: params[:cost_type]) if params[:cost_type].present?
-        entries = entries.where(paid: params[:paid] == 'true') if params[:paid].present?
-        entries = entries.where(estimated: params[:estimated] == 'true') if params[:estimated].present?
-        entries = entries.overdue if params[:overdue] == 'true'
-        entries = entries.upcoming if params[:upcoming] == 'true'
-        entries
+        entries = apply_type_filter(entries)
+        entries = apply_status_filters(entries)
+        apply_date_filters(entries)
       end
 
       def perform_authorization
         authorize LegalCostEntry
+      end
+
+      def process_batch_entries
+        entries = []
+        errors = []
+
+        params[:entries].each do |entry_params|
+          entry = @legal_cost.entries.build(entry_params.permit(permitted_params))
+
+          if entry.save
+            entries << entry
+          else
+            errors << { entry: entry_params[:name], errors: entry.errors.full_messages }
+          end
+        end
+
+        [entries, errors]
+      end
+
+      def render_batch_response(entries, errors)
+        if errors.empty?
+          render json: LegalCostEntrySerializer.new(entries), status: :created
+        else
+          render json: {
+            created: entries.count,
+            failed: errors.count,
+            errors: errors
+          }, status: :unprocessable_content
+        end
+      end
+
+      def find_honorary(work)
+        if params[:procedure_id].present?
+          procedure = work.procedures.find(params[:procedure_id])
+          procedure.honoraries.find(params[:honorary_id])
+        else
+          work.honoraries.find(params[:honorary_id])
+        end
+      end
+
+      def apply_type_filter(entries)
+        return entries if params[:cost_type].blank?
+
+        entries.where(cost_type: params[:cost_type])
+      end
+
+      def apply_status_filters(entries)
+        entries = entries.where(paid: params[:paid] == 'true') if params[:paid].present?
+        entries = entries.where(estimated: params[:estimated] == 'true') if params[:estimated].present?
+        entries
+      end
+
+      def apply_date_filters(entries)
+        entries = entries.overdue if params[:overdue] == 'true'
+        entries = entries.upcoming if params[:upcoming] == 'true'
+        entries
       end
     end
   end

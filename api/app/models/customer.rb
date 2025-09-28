@@ -45,7 +45,7 @@ class Customer < ApplicationRecord
 
   alias_attribute :access_email, :email
 
-  has_one :profile_customer, dependent: :destroy
+  has_one :profile_customer, dependent: :destroy, inverse_of: :customer
   has_many :team_customers, dependent: :destroy
   has_many :teams, through: :team_customers
 

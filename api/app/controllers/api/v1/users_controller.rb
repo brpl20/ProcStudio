@@ -3,208 +3,111 @@
 module Api
   module V1
     class UsersController < BackofficeController
+      include UserResponses
+
       before_action :retrieve_user, only: [:update, :show]
       before_action :perform_authorization, unless: -> { Rails.env.development? && params[:all_teams] == 'true' }
 
       after_action :verify_authorized, unless: -> { Rails.env.development? && params[:all_teams] == 'true' }
 
       def index
-        # Super admin bypass em dev mode
-        users = if Rails.env.development? && params[:all_teams] == 'true'
-                  User.includes(:user_profile, :team)
-                else
-                  team_scoped(User).includes(:user_profile)
-                end
+        users = Users::QueryService.build_query(
+          params: params,
+          team_scoped_proc: method(:team_scoped)
+        )
 
-        filter_by_deleted_params.each do |key, value|
-          next if value.blank?
-
-          users = users.public_send("filter_by_#{key}", value.strip)
-        end
-
-        serialized_data = UserSerializer.new(
-          users,
-          meta: {
-            total_count: users.offset(nil).limit(nil).count
-          },
-          include: [:user_profile]
-        ).serializable_hash
-
-        render json: {
-          success: true,
-          message: 'Usuários obtidos com sucesso',
-          data: serialized_data[:data],
-          meta: serialized_data[:meta]
-        }, status: :ok
+        serialized_data = Users::SerializerService.serialize_users_with_meta(users)
+        render_users_success(data: serialized_data[:data], meta: serialized_data[:meta])
       rescue StandardError => e
-        render json: {
-          success: false,
-          message: e.message,
-          errors: [e.message]
-        }, status: :internal_server_error
+        render_internal_error(e)
       end
 
       def show
-        serialized_data = UserSerializer.new(
-          @user,
-          include: [:user_profile]
-        ).serializable_hash
-
-        render json: {
-          success: true,
-          message: 'Usuário obtido com sucesso',
-          data: serialized_data[:data]
-        }, status: :ok
+        serialized_data = Users::SerializerService.serialize_user(@user)
+        render_user_success(data: serialized_data[:data], message: 'Usuário obtido com sucesso')
       rescue StandardError => e
-        render json: {
-          success: false,
-          message: e.message,
-          errors: [e.message]
-        }, status: :internal_server_error
+        render_internal_error(e)
       end
 
       def create
-        user = User.new(users_params)
-        # Automaticamente atribui o team do usuário atual ao novo usuário
-        user.team = current_team || @current_user.team
+        result = Users::CreationService.create_user(
+          params: users_params,
+          current_team: current_team,
+          current_user: @current_user
+        )
 
-        if user.save
-          serialized_data = UserSerializer.new(
-            user,
-            include: [:user_profile]
-          ).serializable_hash
-
-          render json: {
-            success: true,
+        if result.success?
+          serialized_data = Users::SerializerService.serialize_user(result.data)
+          render_user_success(
+            data: serialized_data[:data],
             message: 'Usuário criado com sucesso',
-            data: serialized_data[:data]
-          }, status: :created
-        else
-          error_messages = user.errors.full_messages
-          render(
-            status: :bad_request,
-            json: {
-              success: false,
-              message: error_messages.first,
-              errors: error_messages
-            }
+            status: :created
           )
+        else
+          render_user_error(errors: result.errors, status: :bad_request)
         end
       rescue StandardError => e
-        error_message = e.message
-        render(
-          status: :bad_request,
-          json: {
-            success: false,
-            message: error_message,
-            errors: [error_message]
-          }
-        )
+        render_user_error(errors: [e.message], status: :bad_request)
       end
 
       def update
-        if @user.update(users_params)
-          serialized_data = UserSerializer.new(
-            @user,
-            include: [:user_profile]
-          ).serializable_hash
+        result = Users::UpdateService.update_user(user: @user, params: users_params)
 
-          render json: {
-            success: true,
-            message: 'Usuário atualizado com sucesso',
-            data: serialized_data[:data]
-          }, status: :ok
+        if result.success?
+          serialized_data = Users::SerializerService.serialize_user(result.data)
+          render_user_success(
+            data: serialized_data[:data],
+            message: 'Usuário atualizado com sucesso'
+          )
         else
-          error_messages = @user.errors.full_messages
-          render json: {
-            success: false,
-            message: error_messages.first,
-            errors: error_messages
-          }, status: :unprocessable_content
+          render_user_error(errors: result.errors)
         end
       rescue StandardError => e
-        render json: {
-          success: false,
-          message: e.message,
-          errors: [e.message]
-        }, status: :internal_server_error
+        render_internal_error(e)
       end
 
       def destroy
-        if destroy_fully?
-          user = User.with_deleted.find(params[:id])
-          user.destroy_fully!
-          message = 'Usuário removido permanentemente'
-        else
-          retrieve_user
-          @user.destroy
-          message = 'Usuário removido com sucesso'
-        end
+        result = Users::DeletionService.delete_user(
+          user_id: params[:id],
+          destroy_fully: destroy_fully?
+        )
 
-        render json: {
-          success: true,
-          message: message,
-          data: { id: params[:id] }
-        }, status: :ok
-      rescue ActiveRecord::RecordNotFound
-        render json: {
-          success: false,
-          message: 'Usuário não encontrado',
-          errors: ['Usuário não encontrado']
-        }, status: :not_found
+        if result.success?
+          render_user_success(
+            data: { id: result.data[:id] },
+            message: result.data[:message]
+          )
+        else
+          handle_deletion_error(result.errors)
+        end
       rescue StandardError => e
-        error_message = e.message
-        render json: {
-          success: false,
-          message: error_message,
-          errors: [error_message]
-        }, status: :unprocessable_content
+        render_user_error(errors: [e.message])
       end
 
       def restore
-        user = User.with_deleted.find(params[:id])
-        if user.recover
-          serialized_data = UserSerializer.new(
-            user,
-            include: [:user_profile]
-          ).serializable_hash
+        result = Users::RestorationService.restore_user(user_id: params[:id])
 
-          render json: {
-            success: true,
-            message: 'Usuário restaurado com sucesso',
-            data: serialized_data[:data]
-          }, status: :ok
+        if result.success?
+          serialized_data = Users::SerializerService.serialize_user(result.data)
+          render_user_success(
+            data: serialized_data[:data],
+            message: 'Usuário restaurado com sucesso'
+          )
         else
-          error_messages = user.errors.full_messages
-          render json: {
-            success: false,
-            message: error_messages.first,
-            errors: error_messages
-          }, status: :unprocessable_content
+          handle_restoration_error(result.errors)
         end
-      rescue ActiveRecord::RecordNotFound
-        render json: {
-          success: false,
-          message: 'Usuário não encontrado',
-          errors: ['Usuário não encontrado']
-        }, status: :not_found
       rescue StandardError => e
-        render json: {
-          success: false,
-          message: e.message,
-          errors: [e.message]
-        }, status: :internal_server_error
+        render_internal_error(e)
       end
 
       private
 
       def users_params
         params.expect(
-          user: [:email, :access_email, :password,
-                 :password_confirmation, :status,
-                 { user_profile_attributes: [
-                   :role, :status, :user_id, :office_id, :name, :last_name, :gender, :oab, :rg, :cpf, :nationality, :civil_status, :birth, :mother_name
-                 ] }]
+          user: [
+            :email, :access_email, :password, :password_confirmation, :status,
+            { user_profile_attributes: user_profile_attributes }
+          ]
         )
       end
 
@@ -214,6 +117,34 @@ module Api
 
       def perform_authorization
         authorize [:admin, :user], :"#{action_name}?"
+      end
+
+      def user_profile_attributes
+        [
+          :role, :status, :user_id, :office_id, :name, :last_name,
+          :gender, :oab, :rg, :cpf, :nationality, :civil_status,
+          :birth, :mother_name
+        ]
+      end
+
+      def destroy_fully?
+        params[:destroy_fully] == 'true'
+      end
+
+      def handle_deletion_error(errors)
+        if errors.include?('Usuário não encontrado')
+          render_not_found_error
+        else
+          render_user_error(errors: errors)
+        end
+      end
+
+      def handle_restoration_error(errors)
+        if errors.include?('Usuário não encontrado')
+          render_not_found_error
+        else
+          render_user_error(errors: errors)
+        end
       end
     end
   end

@@ -86,33 +86,12 @@ module Api
 
       def build_auth_response(token, user_profile)
         response = { token: token }
-
-        # Pega o user do token decodificado
-        user_id = decode_jwt_token(token)['user_id'] || decode_jwt_token(token)['admin_id']
-        user = User.find(user_id)
+        user = extract_user_from_token(token)
 
         if user_profile.nil?
-          response[:needs_profile_completion] = true
-          response[:missing_fields] = required_profile_fields
-          response[:oab] = user.oab if user.oab.present?
-          response[:message] = I18n.t('errors.messages.profile.incomplete')
+          build_incomplete_profile_response(response, user)
         else
-          incomplete_fields = check_profile_completeness(user_profile)
-
-          if incomplete_fields.any?
-            response[:needs_profile_completion] = true
-            response[:missing_fields] = incomplete_fields
-            response[:message] = I18n.t('errors.messages.profile.incomplete')
-          else
-            response[:needs_profile_completion] = false
-            response[:message] = 'Login realizado com sucesso'
-          end
-
-          response[:role] = user_profile.role
-          response[:name] = user_profile.name
-          response[:last_name] = user_profile.last_name
-          response[:oab] = user_profile.oab if user_profile.lawyer? && user_profile.oab.present?
-          response[:gender] = user_profile.gender if user_profile.gender.present?
+          build_complete_profile_response(response, user_profile)
         end
 
         response
@@ -120,30 +99,67 @@ module Api
 
       def check_profile_completeness(user_profile)
         missing_fields = []
-
-        # Campos obrigatórios básicos
-        missing_fields << :name if user_profile.name.blank?
-        missing_fields << :last_name if user_profile.last_name.blank?
-        missing_fields << :cpf if user_profile.cpf.blank?
-        missing_fields << :rg if user_profile.rg.blank?
-        missing_fields << :role if user_profile.role.blank?
-        missing_fields << :gender if user_profile.gender.blank?
-        missing_fields << :civil_status if user_profile.civil_status.blank?
-        missing_fields << :nationality if user_profile.nationality.blank?
-        missing_fields << :birth if user_profile.birth.blank?
-
-        # OAB obrigatório apenas para advogados
-        missing_fields << :oab if user_profile.lawyer? && user_profile.oab.blank?
-
-        # Verificar se tem pelo menos um telefone e email
-        missing_fields << :phone if user_profile.phones.empty?
-        missing_fields << :address if user_profile.addresses.empty?
-
+        missing_fields.concat(check_basic_fields(user_profile))
+        missing_fields.concat(check_lawyer_fields(user_profile))
+        missing_fields.concat(check_contact_fields(user_profile))
         missing_fields
       end
 
       def required_profile_fields
         [:name, :last_name, :cpf, :rg, :role, :gender, :civil_status, :nationality, :birth, :phone, :address]
+      end
+
+      def extract_user_from_token(token)
+        user_id = decode_jwt_token(token)['user_id'] || decode_jwt_token(token)['admin_id']
+        User.find(user_id)
+      end
+
+      def build_incomplete_profile_response(response, user)
+        response[:needs_profile_completion] = true
+        response[:missing_fields] = required_profile_fields
+        response[:oab] = user.oab if user.oab.present?
+        response[:message] = I18n.t('errors.messages.profile.incomplete')
+      end
+
+      def build_complete_profile_response(response, user_profile)
+        incomplete_fields = check_profile_completeness(user_profile)
+
+        if incomplete_fields.any?
+          response[:needs_profile_completion] = true
+          response[:missing_fields] = incomplete_fields
+          response[:message] = I18n.t('errors.messages.profile.incomplete')
+        else
+          response[:needs_profile_completion] = false
+          response[:message] = 'Login realizado com sucesso'
+        end
+
+        add_profile_data(response, user_profile)
+      end
+
+      def add_profile_data(response, user_profile)
+        response[:role] = user_profile.role
+        response[:name] = user_profile.name
+        response[:last_name] = user_profile.last_name
+        response[:oab] = user_profile.oab if user_profile.lawyer? && user_profile.oab.present?
+        response[:gender] = user_profile.gender if user_profile.gender.present?
+      end
+
+      def check_basic_fields(user_profile)
+        basic_fields = [:name, :last_name, :cpf, :rg, :role, :gender, :civil_status, :nationality, :birth]
+        basic_fields.select { |field| user_profile.send(field).blank? }
+      end
+
+      def check_lawyer_fields(user_profile)
+        return [] unless user_profile.lawyer? && user_profile.oab.blank?
+
+        [:oab]
+      end
+
+      def check_contact_fields(user_profile)
+        fields = []
+        fields << :phone if user_profile.phones.empty?
+        fields << :address if user_profile.addresses.empty?
+        fields
       end
     end
   end

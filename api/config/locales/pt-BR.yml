@@ -100,6 +100,14 @@
         state: Estado
         street: Rua
         zip_code: CEP
+    errors:
+      models:
+        address:
+          attributes:
+            zip_code:
+              invalid_format: "Formato de CEP inválido (use: 12345-678)"
+            state:
+              invalid_state: "Estado brasileiro inválido"
       bank_account:
         account: Conta
         agency: Agência
@@ -258,6 +266,13 @@
           attributes:
             name:
               taken: "'%{value}' já está em uso"
+        job_user_profile:
+          attributes:
+            job_id:
+              taken: "Usuário já está atribuído a este job"
+            user_profile:
+              same_team_required: "deve pertencer ao mesmo team do job"
+              team_required: "deve pertencer a um team"
         profile_customer:
           attributes:
             phones:

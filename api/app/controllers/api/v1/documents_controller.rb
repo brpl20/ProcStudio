@@ -49,7 +49,8 @@ module Api
           render json: { error: @document.errors.full_messages }, status: :unprocessable_content
         end
       rescue ActiveStorage::IntegrityError => e
-        render json: { error: "Erro de integridade ao anexar o documento: #{e.message}" }, status: :unprocessable_content
+        render json: { error: "Erro de integridade ao anexar o documento: #{e.message}" },
+               status: :unprocessable_content
       rescue ActiveRecord::RecordInvalid => e
         render json: { error: "Erro ao salvar documento: #{e.message}" }, status: :unprocessable_content
       rescue StandardError => e
@@ -70,7 +71,8 @@ module Api
           render json: { error: @document.errors.full_messages }, status: :unprocessable_content
         end
       rescue ActiveStorage::IntegrityError => e
-        render json: { error: "Erro de integridade ao anexar o documento: #{e.message}" }, status: :unprocessable_content
+        render json: { error: "Erro de integridade ao anexar o documento: #{e.message}" },
+               status: :unprocessable_content
       rescue ActiveRecord::RecordInvalid => e
         render json: { error: "Erro ao salvar documento: #{e.message}" }, status: :unprocessable_content
       rescue StandardError => e
@@ -96,7 +98,7 @@ module Api
         return unless S3Service.upload(file, s3_key, { content_type: file.content_type })
 
         Rails.logger.info "Signed document uploaded to S3: #{s3_key}"
-        @document.update_column(:signed_s3_key, s3_key) if @document.respond_to?(:signed_s3_key)
+        @document.update!(signed_s3_key: s3_key) if @document.respond_to?(:signed_s3_key)
       end
 
       def attach_source_file(file)
@@ -110,7 +112,7 @@ module Api
         return unless S3Service.upload(file, s3_key, { content_type: file.content_type })
 
         Rails.logger.info "Original document uploaded to S3: #{s3_key}"
-        @document.update_column(:original_s3_key, s3_key) if @document.respond_to?(:original_s3_key)
+        @document.update!(original_s3_key: s3_key) if @document.respond_to?(:original_s3_key)
       end
 
       def update_document_status(status, sign_source)

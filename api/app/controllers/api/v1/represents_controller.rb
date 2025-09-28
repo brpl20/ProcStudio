@@ -207,7 +207,17 @@ module Api
       end
 
       def serialize_represent(represent, detailed: false)
-        data = {
+        data = build_basic_representation_data(represent)
+        data.merge!(build_detailed_representation_data(represent)) if detailed
+        data
+      end
+
+      def perform_authorization
+        authorize [:admin, :work], :"#{action_name}?"
+      end
+
+      def build_basic_representation_data(represent)
+        {
           id: represent.id,
           profile_customer_id: represent.profile_customer_id,
           profile_customer_name: represent.profile_customer&.full_name,
@@ -223,35 +233,37 @@ module Api
           created_at: represent.created_at,
           updated_at: represent.updated_at
         }
-
-        if detailed
-          data.merge!(
-            notes: represent.notes,
-            team_id: represent.team_id,
-            profile_customer: {
-              id: represent.profile_customer&.id,
-              name: represent.profile_customer&.full_name,
-              cpf: represent.profile_customer&.cpf,
-              capacity: represent.profile_customer&.capacity,
-              birth: represent.profile_customer&.birth,
-              email: represent.profile_customer&.customer&.email
-            },
-            representor: {
-              id: represent.representor&.id,
-              name: represent.representor&.full_name,
-              cpf: represent.representor&.cpf,
-              profession: represent.representor&.profession,
-              email: represent.representor&.customer&.email,
-              phone: represent.representor&.last_phone
-            }
-          )
-        end
-
-        data
       end
 
-      def perform_authorization
-        authorize [:admin, :work], :"#{action_name}?"
+      def build_detailed_representation_data(represent)
+        {
+          notes: represent.notes,
+          team_id: represent.team_id,
+          profile_customer: build_profile_customer_data(represent),
+          representor: build_representor_data(represent)
+        }
+      end
+
+      def build_profile_customer_data(represent)
+        {
+          id: represent.profile_customer&.id,
+          name: represent.profile_customer&.full_name,
+          cpf: represent.profile_customer&.cpf,
+          capacity: represent.profile_customer&.capacity,
+          birth: represent.profile_customer&.birth,
+          email: represent.profile_customer&.customer&.email
+        }
+      end
+
+      def build_representor_data(represent)
+        {
+          id: represent.representor&.id,
+          name: represent.representor&.full_name,
+          cpf: represent.representor&.cpf,
+          profession: represent.representor&.profession,
+          email: represent.representor&.customer&.email,
+          phone: represent.representor&.last_phone
+        }
       end
     end
   end

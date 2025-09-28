@@ -137,22 +137,28 @@ class BankAccount < ApplicationRecord
   private
 
   def normalize_bank_data
-    # Remove non-numeric characters from agency and account
+    normalize_account_fields
+    normalize_pix_key
+  end
+
+  def normalize_account_fields
     self.agency = agency.gsub(/\D/, '') if agency.present?
     self.account = account.gsub(/\D/, '') if account.present?
+  end
 
-    # Clean PIX key formatting
+  def normalize_pix_key
     return if pix.blank?
 
-    # Remove spaces and normalize
     self.pix = pix.strip
+    normalize_cpf_cnpj_pix
+    normalize_email_pix
+  end
 
-    # If it looks like a CPF/CNPJ, remove formatting
+  def normalize_cpf_cnpj_pix
     self.pix = pix.gsub(/\D/, '') if %r{^[\d\.\-/]+$}.match?(pix)
+  end
 
-    # Downcase email PIX keys
-    return unless pix.include?('@')
-
-    self.pix = pix.downcase
+  def normalize_email_pix
+    self.pix = pix.downcase if pix.include?('@')
   end
 end

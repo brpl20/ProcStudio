@@ -10,34 +10,11 @@ module Api
       after_action :verify_authorized
 
       def index
-        # Usuários veem apenas perfis do seu team
-        user_profiles = UserProfile.joins(:user).where(users: { team: current_team }).includes(:user)
-
-        filter_by_deleted_params.each do |key, value|
-          next if value.blank?
-
-          user_profiles = user_profiles.public_send("filter_by_#{key}", value.strip)
-        end
-
-        serialized_data = UserProfileSerializer.new(
-          user_profiles,
-          meta: {
-            total_count: user_profiles.offset(nil).limit(nil).count
-          }
-        ).serializable_hash
-
-        render json: {
-          success: true,
-          message: 'Perfis de usuário obtidos com sucesso',
-          data: serialized_data[:data],
-          meta: serialized_data[:meta]
-        }, status: :ok
+        user_profiles = fetch_team_user_profiles
+        user_profiles = apply_filters(user_profiles)
+        render_profiles_success(user_profiles)
       rescue StandardError => e
-        render json: {
-          success: false,
-          message: e.message,
-          errors: [e.message]
-        }, status: :internal_server_error
+        render_error(e.message, [e.message])
       end
 
       def show
@@ -60,59 +37,14 @@ module Api
       end
 
       def create
-        profile_params = user_profiles_params
-
-        # If user_attributes are present but user_id is not, we're creating a new user
-        if profile_params[:user_attributes].present? && !profile_params[:user_id]
-          user_attrs = profile_params[:user_attributes]
-          user_attrs[:team_id] = current_team.id
-          user_attrs[:access_email] ||= user_attrs[:email]
-
-          # Build the user first
-          user = User.new(user_attrs)
-          profile_params.delete(:user_attributes)
-
-          # Build the profile with the user
-          user_profile = user.build_user_profile(profile_params)
-        else
-          user_profile = UserProfile.new(profile_params)
-
-          # If creating a new user through nested attributes, set the team
-          if user_profile.user&.new_record?
-            user_profile.user.team_id = current_team.id
-            user_profile.user.access_email = user_profile.user.email
-          end
-        end
-
+        user_profile = build_user_profile
         if user_profile.save
-          # Reload to ensure all associations are loaded
-          user_profile.reload
-
-          serialized_data = UserProfileSerializer.new(
-            user_profile,
-            params: { action: 'show' }
-          ).serializable_hash
-
-          render json: {
-            success: true,
-            message: 'Perfil de usuário criado com sucesso',
-            data: serialized_data[:data]
-          }, status: :created
+          render_create_success(user_profile)
         else
-          error_messages = user_profile.errors.full_messages
-          render json: {
-            success: false,
-            message: error_messages.first,
-            errors: error_messages
-          }, status: :unprocessable_content
+          render_create_error(user_profile)
         end
       rescue StandardError => e
-        error_message = e.message
-        render json: {
-          success: false,
-          message: error_message,
-          errors: [error_message]
-        }, status: :unprocessable_content
+        render_error(e.message, [e.message], status: :unprocessable_content)
       end
 
       def update
@@ -331,6 +263,101 @@ module Api
         return if action_name == 'complete_profile'
 
         authorize [:admin, :work], :"#{action_name}?"
+      end
+
+      def fetch_team_user_profiles
+        UserProfile.joins(:user).where(users: { team: current_team }).includes(:user)
+      end
+
+      def apply_filters(user_profiles)
+        filter_by_deleted_params.each do |key, value|
+          next if value.blank?
+
+          user_profiles = user_profiles.public_send("filter_by_#{key}", value.strip)
+        end
+        user_profiles
+      end
+
+      def render_profiles_success(user_profiles)
+        serialized_data = UserProfileSerializer.new(
+          user_profiles,
+          meta: {
+            total_count: user_profiles.offset(nil).limit(nil).count
+          }
+        ).serializable_hash
+
+        render json: {
+          success: true,
+          message: 'Perfis de usuário obtidos com sucesso',
+          data: serialized_data[:data],
+          meta: serialized_data[:meta]
+        }, status: :ok
+      end
+
+      def render_error(message, errors, status: :internal_server_error)
+        render json: {
+          success: false,
+          message: message,
+          errors: errors
+        }, status: status
+      end
+
+      def build_user_profile
+        profile_params = user_profiles_params
+
+        if creating_new_user?(profile_params)
+          build_profile_with_new_user(profile_params)
+        else
+          build_profile_with_existing_user(profile_params)
+        end
+      end
+
+      def creating_new_user?(profile_params)
+        profile_params[:user_attributes].present? && !profile_params[:user_id]
+      end
+
+      def build_profile_with_new_user(profile_params)
+        user_attrs = profile_params[:user_attributes]
+        user_attrs[:team_id] = current_team.id
+        user_attrs[:access_email] ||= user_attrs[:email]
+
+        user = User.new(user_attrs)
+        profile_params.delete(:user_attributes)
+        user.build_user_profile(profile_params)
+      end
+
+      def build_profile_with_existing_user(profile_params)
+        user_profile = UserProfile.new(profile_params)
+
+        if user_profile.user&.new_record?
+          user_profile.user.team_id = current_team.id
+          user_profile.user.access_email = user_profile.user.email
+        end
+
+        user_profile
+      end
+
+      def render_create_success(user_profile)
+        user_profile.reload
+        serialized_data = UserProfileSerializer.new(
+          user_profile,
+          params: { action: 'show' }
+        ).serializable_hash
+
+        render json: {
+          success: true,
+          message: 'Perfil de usuário criado com sucesso',
+          data: serialized_data[:data]
+        }, status: :created
+      end
+
+      def render_create_error(user_profile)
+        error_messages = user_profile.errors.full_messages
+        render json: {
+          success: false,
+          message: error_messages.first,
+          errors: error_messages
+        }, status: :unprocessable_content
       end
     end
   end

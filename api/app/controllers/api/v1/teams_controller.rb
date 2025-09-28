@@ -44,25 +44,12 @@ module Api
         team = Team.new(team_params)
 
         if team.save
-          render json: {
-            success: true,
-            message: 'Team criado com sucesso',
-            data: team.as_json(only: [:id, :name, :subdomain, :created_at])
-          }, status: :created
+          render_create_success(team)
         else
-          error_messages = team.errors.full_messages
-          render json: {
-            success: false,
-            message: error_messages.first,
-            errors: error_messages
-          }, status: :unprocessable_content
+          render_create_error(team)
         end
       rescue StandardError => e
-        render json: {
-          success: false,
-          message: e.message,
-          errors: [e.message]
-        }, status: :internal_server_error
+        render_server_error(e.message)
       end
 
       # PATCH/PUT /api/v1/teams/1
@@ -142,38 +129,66 @@ module Api
       end
 
       def check_team_access!
-        # Para update, verificar se é o próprio team e se tem role lawyer
         if action_name == 'update'
-          # Permitir update apenas se for o próprio team e tiver role lawyer
-          if @team != @current_user.team
-            error_message = 'Não autorizado a atualizar este team. Você só pode atualizar o seu próprio team.'
-            render json: {
-              success: false,
-              message: error_message,
-              errors: [error_message]
-            }, status: :forbidden
-            nil
-          elsif !@current_user.user_profile&.lawyer?
-            error_message = 'Não autorizado a atualizar teams. Apenas usuários com role lawyer podem executar esta ação.'
-            render json: {
-              success: false,
-              message: error_message,
-              errors: [error_message]
-            }, status: :forbidden
-            nil
-          end
+          check_update_access
         else
-          # Para show, qualquer usuário pode ver o próprio team
-          unless @team == @current_user.team
-            error_message = I18n.t('pundit.team.show?')
-            render json: {
-              success: false,
-              message: error_message,
-              errors: [error_message]
-            }, status: :forbidden
-            nil
-          end
+          check_show_access
         end
+      end
+
+      def render_create_success(team)
+        render json: {
+          success: true,
+          message: 'Team criado com sucesso',
+          data: team.as_json(only: [:id, :name, :subdomain, :created_at])
+        }, status: :created
+      end
+
+      def render_create_error(team)
+        error_messages = team.errors.full_messages
+        render json: {
+          success: false,
+          message: error_messages.first,
+          errors: error_messages
+        }, status: :unprocessable_content
+      end
+
+      def render_server_error(message)
+        render json: {
+          success: false,
+          message: message,
+          errors: [message]
+        }, status: :internal_server_error
+      end
+
+      def check_update_access
+        if @team != @current_user.team
+          render_team_access_error('Não autorizado a atualizar este team. Você só pode atualizar o seu próprio team.')
+          return nil
+        end
+
+        return if @current_user.user_profile&.lawyer?
+
+        error_message = 'Não autorizado a atualizar teams. Apenas usuários com ' \
+                        'role lawyer podem executar esta ação.'
+        render_team_access_error(error_message)
+        nil
+      end
+
+      def check_show_access
+        return if @team == @current_user.team
+
+        error_message = I18n.t('pundit.team.show?')
+        render_team_access_error(error_message)
+        nil
+      end
+
+      def render_team_access_error(message)
+        render json: {
+          success: false,
+          message: message,
+          errors: [message]
+        }, status: :forbidden
       end
     end
   end
