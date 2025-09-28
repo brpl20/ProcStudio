@@ -251,7 +251,7 @@ module Api
           return render json: {
             success: false,
             message: 'Formato de arquivo inválido. Use imagens JPEG, PNG, GIF ou WEBP'
-          }, status: :unprocessable_entity
+          }, status: :unprocessable_content
         end
 
         metadata_params = {
@@ -278,7 +278,7 @@ module Api
             success: false,
             message: 'Erro ao fazer upload do logo',
             errors: @office.errors.full_messages
-          }, status: :unprocessable_entity
+          }, status: :unprocessable_content
         end
       rescue StandardError => e
         Rails.logger.error "Logo upload failed: #{e.message}"
@@ -292,9 +292,25 @@ module Api
       def upload_contracts
         retrieve_office
 
-        service = OfficeContractUploadService.new(@office, current_user)
+        return render_error('Nenhum contrato enviado', :unprocessable_content) if params[:contracts].blank?
 
-        if service.upload_contracts(params[:contracts], params)
+        contracts = Array(params[:contracts])
+        uploaded_count = 0
+        errors = []
+
+        contracts.each do |contract|
+          next unless valid_contract?(contract, errors)
+
+          metadata = build_contract_metadata(contract, params)
+
+          if @office.upload_social_contract(contract, metadata)
+            uploaded_count += 1
+          else
+            errors << "Erro ao fazer upload de #{contract.original_filename}: #{@office.errors[:social_contract]&.first}"
+          end
+        end
+
+        if errors.empty?
           serialized = OfficeSerializer.new(
             @office,
             { params: { action: 'show' } }
@@ -302,15 +318,15 @@ module Api
 
           render json: {
             success: true,
-            message: "#{service.uploaded_count} contrato(s) adicionado(s) com sucesso",
+            message: "#{uploaded_count} contrato(s) adicionado(s) com sucesso",
             data: serialized[:data]
           }, status: :ok
         else
           render json: {
             success: false,
-            message: service.errors.first || 'Erro ao fazer upload dos contratos',
-            errors: service.errors
-          }, status: :unprocessable_entity
+            message: errors.first || 'Erro ao fazer upload dos contratos',
+            errors: errors
+          }, status: :unprocessable_content
         end
       rescue StandardError => e
         Rails.logger.error "Contract upload failed: #{e.message}"
@@ -386,7 +402,7 @@ module Api
 
       private
 
-      def render_error_response(object, status = :unprocessable_entity)
+      def render_error_response(object, status = :unprocessable_content)
         error_messages = object.errors.full_messages
         render json: {
           success: false,
@@ -461,6 +477,30 @@ module Api
             Rails.logger.error "Error parsing #{attr}: #{e.message}"
           end
         end
+      end
+
+      def valid_contract?(contract, errors)
+        allowed_types = [
+          'application/pdf',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ]
+
+        unless contract.content_type.in?(allowed_types)
+          errors << "Formato de arquivo inválido para #{contract.original_filename}. Use PDF ou DOCX"
+          return false
+        end
+        true
+      end
+
+      def build_contract_metadata(contract, params)
+        filename_key = contract.original_filename
+
+        {
+          document_date: params["document_date_#{filename_key}"] || params[:document_date],
+          description: params["description_#{filename_key}"] || params[:description],
+          custom_metadata: params["custom_metadata_#{filename_key}"] || params[:custom_metadata],
+          uploaded_by_id: current_user.id
+        }
       end
 
       def perform_authorization

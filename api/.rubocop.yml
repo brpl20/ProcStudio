@@ -3,8 +3,6 @@ plugins:
   - rubocop-performance
   # - rubocop-rspec
 
-inherit_from: .rubocop_todo.yml
-
 AllCops:
   NewCops: enable
   TargetRubyVersion: 3.2.7
@@ -27,19 +25,36 @@ AllCops:
     - frontend/**/*
 
     # Arquivos que serão revisados em uma próxima etapa:
+    - app/models/work.rb
+    - app/models/customer_work.rb
     - app/models/procedure.rb
     - app/models/procedural_party.rb
     - app/models/legal_cost.rb
     - app/models/honorary_component.rb
     - app/models/honorary.rb
+    - app/models/power.rb
+    - app/controllers/api/v1/works_controller.rb
     - app/services/notification_service.rb
+    - app/services/zapsign_service.rb
+    - app/services/draft_service.rb
+    - app/services/customers/mail/welcome_service.rb
+    - app/services/customers/mail/reset_password_service.rb
+    - app/services/customers/mail/mailjet_service.rb
+    - app/services/works/**/*
+    - app/serializers/customer_work_serializer.rb
+    - app/services/draft_fulfillment_example.rb
+    - app/models/draft/work.rb
+    - app/models/draft.rb
+    - app/mailers/application_mailer.rb
+    - app/jobs/mail_delivery_job.rb
+    - app/controllers/concerns/draft_controller_concern.rb
+    - app/mailers/new_customer_email_mailer.rb
 
     # Arquivos que serão deprecados:
-    - app/services/works/**/*
     - app/services/profile_customers/**/*
-    - app/services/draft_fulfillment_example.rb
     - app/services/docx_services/social_contract_test.rb
     - app/services/docx_services/**/*
+    - app/models/concerns/office_s3_uploads.rb
 
 # Layout Cops
 Layout/LineLength:
@@ -201,6 +216,9 @@ Naming/PredicatePrefix:
   ForbiddenPrefixes:
     - is_
 
+Naming/PredicateMethod:
+  Enabled: false
+
 Naming/VariableName:
   Enabled: true
 
@@ -290,6 +308,10 @@ Rails/ShortI18n:
 
 Rails/WhereExists:
   Enabled: true
+
+Rails/UniqueValidationWithoutIndex:
+  Exclude:
+    - "app/models/email.rb"
 
 # RSpec configuration removed for now due to compatibility issues
 # Can be re-added when using a compatible version

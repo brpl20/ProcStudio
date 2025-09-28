@@ -15,27 +15,39 @@ class CpfValidator < ActiveModel::EachValidator
   def valid_cpf?(cpf)
     return false if cpf.nil?
 
-    # Remove non-numeric characters
-    cpf_numbers = cpf.to_s.gsub(/[^0-9]/, '')
+    cpf_numbers = normalize_cpf(cpf)
+    return false unless valid_cpf_format?(cpf_numbers)
 
-    # CPF must have 11 digits
-    return false unless cpf_numbers.length == 11
+    validate_check_digits(cpf_numbers)
+  end
 
-    # Check for known invalid CPFs (all same digits)
-    return false if cpf_numbers.chars.uniq.size == 1
+  def normalize_cpf(cpf)
+    cpf.to_s.gsub(/[^0-9]/, '')
+  end
 
-    # Calculate first check digit
-    sum = 0
-    9.times { |i| sum += cpf_numbers[i].to_i * (10 - i) }
+  def valid_cpf_format?(cpf_numbers)
+    cpf_numbers.length == 11 && cpf_numbers.chars.uniq.size > 1
+  end
+
+  def validate_check_digits(cpf_numbers)
+    first_digit_valid?(cpf_numbers) && second_digit_valid?(cpf_numbers)
+  end
+
+  def first_digit_valid?(cpf_numbers)
+    sum = calculate_sum(cpf_numbers, 9, 10)
     first_digit = ((sum * 10) % 11) % 10
+    first_digit == cpf_numbers[9].to_i
+  end
 
-    return false unless first_digit == cpf_numbers[9].to_i
-
-    # Calculate second check digit
-    sum = 0
-    10.times { |i| sum += cpf_numbers[i].to_i * (11 - i) }
+  def second_digit_valid?(cpf_numbers)
+    sum = calculate_sum(cpf_numbers, 10, 11)
     second_digit = ((sum * 10) % 11) % 10
-
     second_digit == cpf_numbers[10].to_i
+  end
+
+  def calculate_sum(cpf_numbers, count, multiplier_start)
+    sum = 0
+    count.times { |i| sum += cpf_numbers[i].to_i * (multiplier_start - i) }
+    sum
   end
 end
