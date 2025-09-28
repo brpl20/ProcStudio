@@ -3,6 +3,8 @@
 module Api
   module V1
     class UserProfilesController < BackofficeController
+      include UserProfileResponses
+
       before_action :retrieve_user_profile, only: [:update, :show]
       before_action :retrieve_deleted_user_profile, only: [:restore]
       before_action :perform_authorization
@@ -49,161 +51,74 @@ module Api
 
       def update
         if @user_profile.update(user_profiles_params)
-          serialized_data = UserProfileSerializer.new(
-            @user_profile,
-            params: { action: 'show' }
-          ).serializable_hash
-
-          render json: {
-            success: true,
-            message: 'Perfil de usuário atualizado com sucesso',
-            data: serialized_data[:data]
-          }, status: :ok
+          user_profile_success_response(
+            'Perfil de usuário atualizado com sucesso',
+            @user_profile
+          )
         else
-          error_messages = @user_profile.errors.full_messages
-          render json: {
-            success: false,
-            message: error_messages.first,
-            errors: error_messages
-          }, status: :unprocessable_content
+          user_profile_error_response(
+            @user_profile.errors.full_messages.first,
+            @user_profile.errors.full_messages
+          )
         end
       rescue StandardError => e
-        render json: {
-          success: false,
-          message: e.message,
-          errors: [e.message]
-        }, status: :internal_server_error
+        user_profile_internal_error_response(e)
       end
 
       def destroy
-        if destroy_fully?
-          user_profile = UserProfile.with_deleted.find(params[:id])
-          user_profile.destroy_fully!
-          message = 'Perfil de usuário removido permanentemente'
-        else
-          retrieve_user_profile
-          @user_profile.destroy
-          message = 'Perfil de usuário removido com sucesso'
-        end
+        message = if destroy_fully?
+                    perform_full_destroy
+                    'Perfil de usuário removido permanentemente'
+                  else
+                    perform_soft_destroy
+                    'Perfil de usuário removido com sucesso'
+                  end
 
-        render json: {
-          success: true,
-          message: message,
-          data: { id: params[:id] }
-        }, status: :ok
+        user_profile_destroy_response(message, params[:id])
       rescue ActiveRecord::RecordNotFound
-        render json: {
-          success: false,
-          message: 'Perfil de usuário não encontrado',
-          errors: ['Perfil de usuário não encontrado']
-        }, status: :not_found
+        user_profile_not_found_response
       rescue StandardError => e
-        error_message = e.message
-        render json: {
-          success: false,
-          message: error_message,
-          errors: [error_message]
-        }, status: :unprocessable_content
+        user_profile_error_response(e.message, [e.message])
       end
 
       def restore
         if @user_profile.recover
-          serialized_data = UserProfileSerializer.new(
-            @user_profile,
-            params: { action: 'show' }
-          ).serializable_hash
-
-          render json: {
-            success: true,
-            message: 'Perfil de usuário restaurado com sucesso',
-            data: serialized_data[:data]
-          }, status: :ok
+          user_profile_success_response(
+            'Perfil de usuário restaurado com sucesso',
+            @user_profile
+          )
         else
-          error_messages = @user_profile.errors.full_messages
-          render json: {
-            success: false,
-            message: error_messages.first,
-            errors: error_messages
-          }, status: :unprocessable_content
+          user_profile_error_response(
+            @user_profile.errors.full_messages.first,
+            @user_profile.errors.full_messages
+          )
         end
       rescue ActiveRecord::RecordNotFound
-        render json: {
-          success: false,
-          message: 'Perfil de usuário não encontrado',
-          errors: ['Perfil de usuário não encontrado']
-        }, status: :not_found
+        user_profile_not_found_response
       rescue StandardError => e
-        render json: {
-          success: false,
-          message: e.message,
-          errors: [e.message]
-        }, status: :internal_server_error
+        user_profile_internal_error_response(e)
       end
 
       def complete_profile
-        # Autorizar explicitamente para este método
         authorize :user_profile, :complete?
 
-        user = @current_user
-        user_profile = user.user_profile
+        service = UserProfiles::ProfileCompletionService.new(@current_user)
+        result = service.call(profile_completion_params)
 
-        # Se não existe user_profile, criar um novo
-        user_profile = user.build_user_profile if user_profile.nil?
-
-        ActiveRecord::Base.transaction do # rubocop:disable Metrics/BlockLength
-          # Atualizar dados básicos do profile
-          basic_params = profile_completion_params.except(:phone, :addresses_attributes, :phones_attributes)
-          user_profile.update!(basic_params) if basic_params.present?
-
-          # Lidar com telefone legacy (campo único)
-          phone_number = params.dig(:user_profile, :phone)
-          create_or_update_phone(user_profile, phone_number) if phone_number.present?
-
-          # Lidar com phones_attributes (nested)
-          phones_attrs = params.dig(:user_profile, :phones_attributes)
-          if phones_attrs.present?
-            phones_attrs.each do |phone_attr|
-              create_or_update_phone(user_profile, phone_attr[:phone_number])
-            end
-          end
-
-          # Lidar com addresses_attributes (nested) - using polymorphic association
-          addresses_attrs = params.dig(:user_profile, :addresses_attributes)
-          if addresses_attrs.present?
-            addresses_attrs.each do |address_attr|
-              user_profile.addresses.create!(
-                street: address_attr[:street],
-                number: address_attr[:number],
-                neighborhood: address_attr[:neighborhood],
-                city: address_attr[:city],
-                state: address_attr[:state],
-                zip_code: address_attr[:zip_code],
-                complement: address_attr[:description],
-                address_type: 'main'
-              )
-            end
-          end
-
+        if result.success?
           render json: {
             success: true,
             message: 'Perfil completado com sucesso!',
-            data: UserProfileSerializer.new(user_profile).serializable_hash
+            data: UserProfileSerializer.new(result.user_profile).serializable_hash
           }, status: :ok
+        else
+          user_profile_error_response(
+            result.errors.first,
+            result.errors
+          )
         end
-      rescue ActiveRecord::RecordInvalid => e
-        error_messages = e.record.errors.full_messages
-        render json: {
-          success: false,
-          message: error_messages.first,
-          errors: error_messages
-        }, status: :unprocessable_content
       rescue StandardError => e
-        Rails.logger.error "Error completing profile: #{e.message}"
-        render json: {
-          success: false,
-          message: 'Erro interno do servidor',
-          errors: [e.message]
-        }, status: :internal_server_error
+        user_profile_internal_error_response(e, 'Erro interno do servidor')
       end
 
       private
@@ -358,6 +273,16 @@ module Api
           message: error_messages.first,
           errors: error_messages
         }, status: :unprocessable_content
+      end
+
+      def perform_full_destroy
+        user_profile = UserProfile.with_deleted.find(params[:id])
+        user_profile.destroy_fully!
+      end
+
+      def perform_soft_destroy
+        retrieve_user_profile
+        @user_profile.destroy
       end
     end
   end

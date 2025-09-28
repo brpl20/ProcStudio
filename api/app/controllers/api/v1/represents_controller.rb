@@ -3,6 +3,8 @@
 module Api
   module V1
     class RepresentsController < BackofficeController
+      include RepresentResponses
+
       before_action :set_represent, only: [:show, :update, :destroy]
       before_action :set_profile_customer, only: [:index, :create]
       before_action :perform_authorization
@@ -11,145 +13,110 @@ module Api
       # GET /api/v1/profile_customers/:profile_customer_id/represents
       # GET /api/v1/represents (for all represents in the team)
       def index
-        represents = if @profile_customer
-                       # Get represents for a specific customer
-                       @profile_customer.represents
-                         .includes(:representor, :profile_customer)
-                         .by_team(current_team.id)
-                     else
-                       # Get all represents for the current team
-                       Represent.includes(:representor, :profile_customer)
-                         .by_team(current_team.id)
-                     end
-
-        # Apply filters
-        represents = apply_filters(represents)
-
-        render json: {
-          success: true,
-          message: 'Representações listadas com sucesso',
-          data: represents.map { |r| serialize_represent(r) },
-          meta: {
-            total_count: represents.count
-          }
-        }, status: :ok
+        represents = query_service.call(
+          profile_customer: @profile_customer,
+          filters: filter_params
+        )
+        represent_index_response(represents)
       end
 
       # GET /api/v1/represents/:id
       def show
-        render json: {
-          success: true,
-          message: 'Representação encontrada com sucesso',
-          data: serialize_represent(@represent, detailed: true)
-        }, status: :ok
+        represent_success_response(
+          'Representação encontrada com sucesso',
+          Represents::SerializerService.call(@represent, detailed: true)
+        )
       end
 
       # POST /api/v1/profile_customers/:profile_customer_id/represents
       # POST /api/v1/represents
       def create
-        represent = Represent.new(represent_params)
-        represent.team = current_team
-        represent.profile_customer = @profile_customer if @profile_customer
+        represent = build_represent
 
         if represent.save
-          render json: {
-            success: true,
-            message: 'Representação criada com sucesso',
-            data: serialize_represent(represent, detailed: true)
-          }, status: :created
+          represent_success_response(
+            'Representação criada com sucesso',
+            Represents::SerializerService.call(represent, detailed: true),
+            :created
+          )
         else
-          render json: {
-            success: false,
-            message: 'Erro ao criar representação',
-            errors: represent.errors.full_messages
-          }, status: :unprocessable_content
+          represent_error_response(
+            'Erro ao criar representação',
+            represent.errors.full_messages
+          )
         end
       end
 
       # PATCH/PUT /api/v1/represents/:id
       def update
         if @represent.update(represent_params)
-          render json: {
-            success: true,
-            message: 'Representação atualizada com sucesso',
-            data: serialize_represent(@represent, detailed: true)
-          }, status: :ok
+          represent_success_response(
+            'Representação atualizada com sucesso',
+            Represents::SerializerService.call(@represent, detailed: true)
+          )
         else
-          render json: {
-            success: false,
-            message: 'Erro ao atualizar representação',
-            errors: @represent.errors.full_messages
-          }, status: :unprocessable_content
+          represent_error_response(
+            'Erro ao atualizar representação',
+            @represent.errors.full_messages
+          )
         end
       end
 
       # DELETE /api/v1/represents/:id
       def destroy
         if @represent.destroy
-          render json: {
-            success: true,
-            message: 'Representação removida com sucesso'
-          }, status: :ok
+          represent_success_response('Representação removida com sucesso')
         else
-          render json: {
-            success: false,
-            message: 'Erro ao remover representação',
-            errors: @represent.errors.full_messages
-          }, status: :unprocessable_content
+          represent_error_response(
+            'Erro ao remover representação',
+            @represent.errors.full_messages
+          )
         end
       end
 
       # POST /api/v1/represents/:id/deactivate
       def deactivate
         @represent = Represent.find(params[:id])
+        status_updater = Represents::StatusUpdaterService.new(@represent)
 
-        if @represent.update(active: false, end_date: Date.current)
-          render json: {
-            success: true,
-            message: 'Representação desativada com sucesso',
-            data: serialize_represent(@represent)
-          }, status: :ok
+        if status_updater.deactivate
+          represent_success_response(
+            'Representação desativada com sucesso',
+            Represents::SerializerService.call(@represent)
+          )
         else
-          render json: {
-            success: false,
-            message: 'Erro ao desativar representação',
-            errors: @represent.errors.full_messages
-          }, status: :unprocessable_content
+          represent_error_response(
+            'Erro ao desativar representação',
+            @represent.errors.full_messages
+          )
         end
       end
 
       # POST /api/v1/represents/:id/reactivate
       def reactivate
         @represent = Represent.find(params[:id])
+        status_updater = Represents::StatusUpdaterService.new(@represent)
 
-        if @represent.update(active: true, end_date: nil)
-          render json: {
-            success: true,
-            message: 'Representação reativada com sucesso',
-            data: serialize_represent(@represent)
-          }, status: :ok
+        if status_updater.reactivate
+          represent_success_response(
+            'Representação reativada com sucesso',
+            Represents::SerializerService.call(@represent)
+          )
         else
-          render json: {
-            success: false,
-            message: 'Erro ao reativar representação',
-            errors: @represent.errors.full_messages
-          }, status: :unprocessable_content
+          represent_error_response(
+            'Erro ao reativar representação',
+            @represent.errors.full_messages
+          )
         end
       end
 
       # GET /api/v1/represents/by_representor/:representor_id
       def by_representor
-        representor_id = params[:representor_id]
-        represents = Represent.includes(:profile_customer)
-                       .by_representor(representor_id)
-                       .by_team(current_team.id)
-                       .active
-
-        render json: {
-          success: true,
-          message: 'Clientes representados listados com sucesso',
-          data: represents.map { |r| serialize_represent(r) }
-        }, status: :ok
+        represents = query_service.by_representor(params[:representor_id])
+        represent_success_response(
+          'Clientes representados listados com sucesso',
+          represents.map { |r| Represents::SerializerService.call(r) }
+        )
       end
 
       private
@@ -157,10 +124,7 @@ module Api
       def set_represent
         @represent = Represent.by_team(current_team.id).find(params[:id])
       rescue ActiveRecord::RecordNotFound
-        render json: {
-          success: false,
-          message: 'Representação não encontrada'
-        }, status: :not_found
+        represent_not_found_response
       end
 
       def set_profile_customer
@@ -171,10 +135,7 @@ module Api
                               .where(customers: { teams: { id: current_team.id } })
                               .find(params[:profile_customer_id])
       rescue ActiveRecord::RecordNotFound
-        render json: {
-          success: false,
-          message: 'Cliente não encontrado'
-        }, status: :not_found
+        represent_not_found_response('Cliente não encontrado')
       end
 
       def represent_params
@@ -189,81 +150,27 @@ module Api
         )
       end
 
-      def apply_filters(represents)
-        # Filter by active status
-        if params[:active].present?
-          represents = params[:active] == 'true' ? represents.active : represents.inactive
-        end
-
-        # Filter by relationship type
-        if params[:relationship_type].present?
-          represents = represents.where(relationship_type: params[:relationship_type])
-        end
-
-        # Filter by date range
-        represents = represents.current if params[:current].present? && params[:current] == 'true'
-
-        represents
+      def filter_params
+        {
+          active: params[:active],
+          relationship_type: params[:relationship_type],
+          current: params[:current]
+        }
       end
 
-      def serialize_represent(represent, detailed: false)
-        data = build_basic_representation_data(represent)
-        data.merge!(build_detailed_representation_data(represent)) if detailed
-        data
+      def build_represent
+        represent = Represent.new(represent_params)
+        represent.team = current_team
+        represent.profile_customer = @profile_customer if @profile_customer
+        represent
+      end
+
+      def query_service
+        @query_service ||= Represents::QueryService.new(current_team)
       end
 
       def perform_authorization
         authorize [:admin, :work], :"#{action_name}?"
-      end
-
-      def build_basic_representation_data(represent)
-        {
-          id: represent.id,
-          profile_customer_id: represent.profile_customer_id,
-          profile_customer_name: represent.profile_customer&.full_name,
-          profile_customer_cpf: represent.profile_customer&.cpf,
-          profile_customer_capacity: represent.profile_customer&.capacity,
-          representor_id: represent.representor_id,
-          representor_name: represent.representor&.full_name,
-          representor_cpf: represent.representor&.cpf,
-          relationship_type: represent.relationship_type,
-          active: represent.active,
-          start_date: represent.start_date,
-          end_date: represent.end_date,
-          created_at: represent.created_at,
-          updated_at: represent.updated_at
-        }
-      end
-
-      def build_detailed_representation_data(represent)
-        {
-          notes: represent.notes,
-          team_id: represent.team_id,
-          profile_customer: build_profile_customer_data(represent),
-          representor: build_representor_data(represent)
-        }
-      end
-
-      def build_profile_customer_data(represent)
-        {
-          id: represent.profile_customer&.id,
-          name: represent.profile_customer&.full_name,
-          cpf: represent.profile_customer&.cpf,
-          capacity: represent.profile_customer&.capacity,
-          birth: represent.profile_customer&.birth,
-          email: represent.profile_customer&.customer&.email
-        }
-      end
-
-      def build_representor_data(represent)
-        {
-          id: represent.representor&.id,
-          name: represent.representor&.full_name,
-          cpf: represent.representor&.cpf,
-          profession: represent.representor&.profession,
-          email: represent.representor&.customer&.email,
-          phone: represent.representor&.last_phone
-        }
       end
     end
   end

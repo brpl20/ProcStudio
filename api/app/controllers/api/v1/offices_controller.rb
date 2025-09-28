@@ -3,6 +3,8 @@
 module Api
   module V1
     class OfficesController < BackofficeController # rubocop:disable Metrics/ClassLength
+      include OfficeResponses
+
       before_action :retrieve_office, only: [:show, :update]
       before_action :retrieve_deleted_office, only: [:restore]
       before_action :perform_authorization, except: [:with_lawyers]
@@ -132,129 +134,51 @@ module Api
 
       def upload_logo
         retrieve_office
+        service = Offices::LogoUploadService.new(@office, current_user)
 
-        # Validate file type
-        unless params[:logo].content_type.in?(['image/jpeg', 'image/png', 'image/gif', 'image/webp'])
-          return render json: {
-            success: false,
-            message: 'Formato de arquivo inválido. Use imagens JPEG, PNG, GIF ou WEBP'
-          }, status: :unprocessable_content
-        end
+        metadata_params = logo_metadata_params
+        result = service.call(params[:logo], metadata_params)
 
-        metadata_params = {
-          document_date: params[:document_date],
-          description: params[:description],
-          custom_metadata: params[:custom_metadata],
-          uploaded_by_id: current_user.id
-        }
-
-        if @office.upload_logo(params[:logo], metadata_params)
-
-          serialized = OfficeSerializer.new(
-            @office,
-            { params: { action: 'show' } }
-          ).serializable_hash
-
-          render json: {
-            success: true,
-            message: 'Logo atualizado com sucesso',
-            data: serialized[:data]
-          }, status: :ok
+        if result == true || (result.respond_to?(:success) && result.success != false)
+          office_upload_success_response(@office, 'Logo atualizado com sucesso')
         else
-          render json: {
-            success: false,
-            message: 'Erro ao fazer upload do logo',
-            errors: @office.errors.full_messages
-          }, status: :unprocessable_content
+          office_error_response(
+            result.respond_to?(:message) ? result.message : 'Erro ao fazer upload do logo',
+            @office.errors.full_messages
+          )
         end
       rescue StandardError => e
-        Rails.logger.error "Logo upload failed: #{e.message}"
-        render json: {
-          success: false,
-          message: 'Erro ao fazer upload do logo',
-          errors: [e.message]
-        }, status: :internal_server_error
+        office_internal_error_response(e, 'Erro ao fazer upload do logo')
       end
 
       def upload_contracts
         retrieve_office
+        service = Offices::ContractsUploadService.new(@office, current_user)
 
-        return render_error('Nenhum contrato enviado', :unprocessable_content) if params[:contracts].blank?
+        result = service.call(params[:contracts], contract_metadata_params)
 
-        contracts = Array(params[:contracts])
-        uploaded_count = 0
-        errors = []
-
-        contracts.each do |contract|
-          next unless valid_contract?(contract, errors)
-
-          metadata = build_contract_metadata(contract, params)
-
-          if @office.upload_social_contract(contract, metadata)
-            uploaded_count += 1
-          else
-            errors << "Erro ao fazer upload de #{contract.original_filename}: #{@office.errors[:social_contract]&.first}"
-          end
-        end
-
-        if errors.empty?
-          serialized = OfficeSerializer.new(
-            @office,
-            { params: { action: 'show' } }
-          ).serializable_hash
-
-          render json: {
-            success: true,
-            message: "#{uploaded_count} contrato(s) adicionado(s) com sucesso",
-            data: serialized[:data]
-          }, status: :ok
+        if result.success
+          office_upload_success_response(@office, result.message)
         else
-          render json: {
-            success: false,
-            message: errors.first || 'Erro ao fazer upload dos contratos',
-            errors: errors
-          }, status: :unprocessable_content
+          office_upload_error_response(result)
         end
       rescue StandardError => e
-        Rails.logger.error "Contract upload failed: #{e.message}"
-        Rails.logger.error e.backtrace.first(10).join("\n") if e.backtrace
-        render json: {
-          success: false,
-          message: 'Erro ao fazer upload dos contratos',
-          errors: [e.message]
-        }, status: :internal_server_error
+        office_internal_error_response(e, 'Erro ao fazer upload dos contratos')
       end
 
       def remove_attachment
         retrieve_office
+        service = Offices::AttachmentRemovalService.new(@office)
 
-        attachment = @office.social_contracts.find(params[:attachment_id])
+        result = service.call(params[:attachment_id])
 
-        # Remove metadata
-        @office.attachment_metadata.find_by(blob_id: attachment.blob.id)&.destroy
-
-        # Remove attachment
-        attachment.purge
-
-        render json: {
-          success: true,
-          message: 'Anexo removido com sucesso',
-          data: { id: params[:attachment_id] }
-        }, status: :ok
-      rescue ActiveRecord::RecordNotFound => e
-        Rails.logger.error "Attachment not found: #{e.message}"
-        render json: {
-          success: false,
-          message: 'Anexo não encontrado'
-        }, status: :not_found
+        if result.success
+          office_success_response(result.message, result.data)
+        else
+          office_error_response(result.message, nil, :not_found)
+        end
       rescue StandardError => e
-        Rails.logger.error "Attachment removal failed: #{e.message}"
-        Rails.logger.error e.backtrace.first(10).join("\n") if e.backtrace
-        render json: {
-          success: false,
-          message: 'Erro ao remover anexo',
-          errors: [e.message]
-        }, status: :internal_server_error
+        office_internal_error_response(e, 'Erro ao remover anexo')
       end
 
       def update_attachment_metadata
@@ -489,6 +413,22 @@ module Api
           description: params["description_#{filename_key}"] || params[:description],
           custom_metadata: params["custom_metadata_#{filename_key}"] || params[:custom_metadata],
           uploaded_by_id: current_user.id
+        }
+      end
+
+      def logo_metadata_params
+        {
+          document_date: params[:document_date],
+          description: params[:description],
+          custom_metadata: params[:custom_metadata]
+        }
+      end
+
+      def contract_metadata_params
+        {
+          document_date: params[:document_date],
+          description: params[:description],
+          custom_metadata: params[:custom_metadata]
         }
       end
 
