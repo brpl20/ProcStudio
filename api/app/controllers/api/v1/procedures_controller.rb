@@ -39,7 +39,7 @@ module Api
         if procedure.save
           render json: ProcedureSerializer.new(procedure), status: :created
         else
-          render json: { errors: procedure.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: procedure.errors.full_messages }, status: :unprocessable_content
         end
       end
 
@@ -47,7 +47,7 @@ module Api
         if @procedure.update(procedure_params)
           render json: ProcedureSerializer.new(@procedure), status: :ok
         else
-          render json: { errors: @procedure.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: @procedure.errors.full_messages }, status: :unprocessable_content
         end
       end
 
@@ -65,7 +65,7 @@ module Api
         if child.save
           render json: ProcedureSerializer.new(child), status: :created
         else
-          render json: { errors: child.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: child.errors.full_messages }, status: :unprocessable_content
         end
       end
 

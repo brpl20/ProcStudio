@@ -49,7 +49,7 @@ class Api::V1::LawAreasController < BackofficeController
       render json: {
         success: false,
         errors: law_area.errors.full_messages
-      }, status: :unprocessable_entity
+      }, status: :unprocessable_content
     end
   rescue StandardError => e
     render json: {
@@ -68,7 +68,7 @@ class Api::V1::LawAreasController < BackofficeController
       render json: {
         success: false,
         errors: @law_area.errors.full_messages
-      }, status: :unprocessable_entity
+      }, status: :unprocessable_content
     end
   end
 
@@ -77,12 +77,12 @@ class Api::V1::LawAreasController < BackofficeController
       render json: {
         success: false,
         errors: ['Não é possível excluir área do direito que possui poderes associados']
-      }, status: :unprocessable_entity
+      }, status: :unprocessable_content
     elsif @law_area.sub_areas.exists?
       render json: {
         success: false,
         errors: ['Não é possível excluir área do direito que possui subáreas']
-      }, status: :unprocessable_entity
+      }, status: :unprocessable_content
     else
       @law_area.destroy
       head :no_content

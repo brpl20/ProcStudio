@@ -61,6 +61,8 @@ class User < ApplicationRecord
 
   private
 
+  # rubocop:disable all
+  # TODO: Fix soft delete and destroy methods here
   def update_created_by_records
     Work.where(created_by_id: id).update_all(created_by_id: nil)
     Customer.where(created_by_id: id).update_all(created_by_id: nil)

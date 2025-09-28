@@ -41,7 +41,7 @@ class Api::V1::Draft::WorksController < BackofficeController
         params: { action: 'show' }
       ), status: :created
     else
-      render json: @draft_work.errors, status: :unprocessable_entity
+      render json: @draft_work.errors, status: :unprocessable_content
     end
   rescue StandardError => e
     render(
@@ -58,7 +58,7 @@ class Api::V1::Draft::WorksController < BackofficeController
         params: { action: 'show' }
       ), status: :ok
     else
-      render json: @draft_work.errors, status: :unprocessable_entity
+      render json: @draft_work.errors, status: :unprocessable_content
     end
   end
 
@@ -80,7 +80,7 @@ class Api::V1::Draft::WorksController < BackofficeController
         params: { action: 'show' }
       ), status: :ok
     else
-      render json: @draft_work.errors, status: :unprocessable_entity
+      render json: @draft_work.errors, status: :unprocessable_content
     end
   end
 

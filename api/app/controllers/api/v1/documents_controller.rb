@@ -14,7 +14,7 @@ module Api
             handle_docx
           end
         else
-          render json: { error: 'Arquivo não fornecido' }, status: :unprocessable_entity
+          render json: { error: 'Arquivo não fornecido' }, status: :unprocessable_content
         end
       end
 
@@ -36,7 +36,7 @@ module Api
 
       def handle_signed_pdf
         unless valid_pdf?(params[:file])
-          render json: { error: 'O arquivo deve ser um PDF' }, status: :unprocessable_entity
+          render json: { error: 'O arquivo deve ser um PDF' }, status: :unprocessable_content
           return
         end
 
@@ -46,19 +46,19 @@ module Api
         if @document.save
           render json: { message: 'Documento assinado atualizado com sucesso!' }, status: :ok
         else
-          render json: { error: @document.errors.full_messages }, status: :unprocessable_entity
+          render json: { error: @document.errors.full_messages }, status: :unprocessable_content
         end
       rescue ActiveStorage::IntegrityError => e
-        render json: { error: "Erro de integridade ao anexar o documento: #{e.message}" }, status: :unprocessable_entity
+        render json: { error: "Erro de integridade ao anexar o documento: #{e.message}" }, status: :unprocessable_content
       rescue ActiveRecord::RecordInvalid => e
-        render json: { error: "Erro ao salvar documento: #{e.message}" }, status: :unprocessable_entity
+        render json: { error: "Erro ao salvar documento: #{e.message}" }, status: :unprocessable_content
       rescue StandardError => e
         render json: { error: "Erro ao atualizar documento: #{e.message}" }, status: :internal_server_error
       end
 
       def handle_docx
         unless valid_docx?(params[:file])
-          render json: { error: 'O arquivo deve ser um DOCX' }, status: :unprocessable_entity
+          render json: { error: 'O arquivo deve ser um DOCX' }, status: :unprocessable_content
           return
         end
 
@@ -67,12 +67,12 @@ module Api
         if @document.save
           render json: { message: 'Documento atualizado com sucesso!' }, status: :ok
         else
-          render json: { error: @document.errors.full_messages }, status: :unprocessable_entity
+          render json: { error: @document.errors.full_messages }, status: :unprocessable_content
         end
       rescue ActiveStorage::IntegrityError => e
-        render json: { error: "Erro de integridade ao anexar o documento: #{e.message}" }, status: :unprocessable_entity
+        render json: { error: "Erro de integridade ao anexar o documento: #{e.message}" }, status: :unprocessable_content
       rescue ActiveRecord::RecordInvalid => e
-        render json: { error: "Erro ao salvar documento: #{e.message}" }, status: :unprocessable_entity
+        render json: { error: "Erro ao salvar documento: #{e.message}" }, status: :unprocessable_content
       rescue StandardError => e
         render json: { error: "Erro ao atualizar documento: #{e.message}" }, status: :internal_server_error
       end

@@ -38,7 +38,7 @@ class Api::V1::WorkEventsController < BackofficeController
       render json: WorkEventSerializer.new(work_event), status: :created
     else
       render(
-        status: :unprocessable_entity,
+        status: :unprocessable_content,
         json: { errors: [{ code: work_event.errors.full_messages }] }
       )
     end
@@ -55,7 +55,7 @@ class Api::V1::WorkEventsController < BackofficeController
       render json: WorkEventSerializer.new(@work_event), status: :ok
     else
       render(
-        status: :unprocessable_entity,
+        status: :unprocessable_content,
         json: { errors: [{ code: @work_event.errors.full_messages }] }
       )
     end
@@ -82,7 +82,7 @@ class Api::V1::WorkEventsController < BackofficeController
       render json: WorkEventSerializer.new(@work_event), status: :ok
     else
       render(
-        status: :unprocessable_entity,
+        status: :unprocessable_content,
         json: { errors: [{ code: @work_event.errors.full_messages }] }
       )
     end

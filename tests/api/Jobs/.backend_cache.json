@@ -1,0 +1,37 @@
+{
+  "../api/app/models/job.rb": {
+    "exists": true,
+    "size": 6093,
+    "mtime": 1759006190707
+  },
+  "../api/app/models/job_comment.rb": {
+    "exists": true,
+    "size": 1309,
+    "mtime": 1758562807973
+  },
+  "../api/app/models/job_user_profile.rb": {
+    "exists": true,
+    "size": 1859,
+    "mtime": 1758109424884
+  },
+  "../api/app/controllers/api/v1/jobs_controller.rb": {
+    "exists": true,
+    "size": 6993,
+    "mtime": 1759006415595
+  },
+  "../api/app/controllers/api/v1/job_comments_controller.rb": {
+    "exists": true,
+    "size": 2819,
+    "mtime": 1759006415638
+  },
+  "../api/app/serializers/job_serializer.rb": {
+    "exists": true,
+    "size": 6955,
+    "mtime": 1758984005474
+  },
+  "../api/app/serializers/job_comment_serializer.rb": {
+    "exists": true,
+    "size": 1264,
+    "mtime": 1758562807979
+  }
+}

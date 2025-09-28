@@ -77,7 +77,7 @@ class Api::V1::DraftsController < BackofficeController
       success: false,
       message: e.message,
       errors: [e.message]
-    }, status: :unprocessable_entity
+    }, status: :unprocessable_content
   end
 
   # POST /drafts/save - Backwards compatibility
@@ -106,7 +106,7 @@ class Api::V1::DraftsController < BackofficeController
       success: false,
       message: e.message,
       errors: [e.message]
-    }, status: :unprocessable_entity
+    }, status: :unprocessable_content
   end
 
   def recover
@@ -133,7 +133,7 @@ class Api::V1::DraftsController < BackofficeController
       success: false,
       message: e.message,
       errors: [e.message]
-    }, status: :unprocessable_entity
+    }, status: :unprocessable_content
   end
 
   def destroy
@@ -148,7 +148,7 @@ class Api::V1::DraftsController < BackofficeController
       success: false,
       message: e.message,
       errors: [e.message]
-    }, status: :unprocessable_entity
+    }, status: :unprocessable_content
   end
 
   private
@@ -304,6 +304,6 @@ class Api::V1::DraftsController < BackofficeController
       success: false,
       message: e.message,
       errors: [e.message]
-    }, status: :unprocessable_entity
+    }, status: :unprocessable_content
   end
 end

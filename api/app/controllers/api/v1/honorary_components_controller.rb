@@ -37,7 +37,7 @@ module Api
         if component.persisted?
           render json: HonoraryComponentSerializer.new(component), status: :created
         else
-          render json: { errors: component.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: component.errors.full_messages }, status: :unprocessable_content
         end
       end
 
@@ -45,7 +45,7 @@ module Api
         if @component.update(component_params)
           render json: HonoraryComponentSerializer.new(@component), status: :ok
         else
-          render json: { errors: @component.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: @component.errors.full_messages }, status: :unprocessable_content
         end
       end
 

@@ -92,7 +92,7 @@ module Api
             success: false,
             message: error_messages.first,
             errors: error_messages
-          }, status: :unprocessable_entity
+          }, status: :unprocessable_content
         end
       rescue ActiveRecord::RecordInvalid => e
         # Handle validation errors from associated models (like Customer)
@@ -103,7 +103,7 @@ module Api
           success: false,
           message: "Validation error: #{e.message}",
           errors: e.record&.errors&.full_messages || [e.message]
-        }, status: :unprocessable_entity
+        }, status: :unprocessable_content
       rescue ArgumentError => e
         # Handle invalid enum values
         Rails.logger.error "ProfileCustomer invalid argument: #{e.message}"
@@ -112,7 +112,7 @@ module Api
           success: false,
           message: e.message,
           errors: [e.message]
-        }, status: :unprocessable_entity
+        }, status: :unprocessable_content
       rescue ActiveRecord::RecordNotUnique => e
         # Handle database uniqueness constraint violations
         Rails.logger.error "ProfileCustomer uniqueness constraint violation: #{e.message}"
@@ -121,7 +121,7 @@ module Api
           success: false,
           message: 'Este email já está em uso. Tente um email diferente.',
           errors: ['Duplicate record: email already exists']
-        }, status: :unprocessable_entity
+        }, status: :unprocessable_content
       rescue ActionController::ParameterMissing => e
         # Handle missing required parameters
         Rails.logger.error "ProfileCustomer missing parameters: #{e.message}"
@@ -181,7 +181,7 @@ module Api
             success: false,
             message: error_messages.first,
             errors: error_messages
-          }, status: :unprocessable_entity
+          }, status: :unprocessable_content
         end
       rescue ActiveRecord::RecordInvalid => e
         # Handle validation errors from associated models
@@ -191,7 +191,7 @@ module Api
           success: false,
           message: "Validation error: #{e.message}",
           errors: e.record&.errors&.full_messages || [e.message]
-        }, status: :unprocessable_entity
+        }, status: :unprocessable_content
       rescue ActiveModel::UnknownAttributeError, ArgumentError => e
         # Handle unknown attributes and invalid enum values
         Rails.logger.error "ProfileCustomer attribute error: #{e.message}"
@@ -200,7 +200,7 @@ module Api
           success: false,
           message: "Invalid attribute: #{e.message}",
           errors: [e.message]
-        }, status: :unprocessable_entity
+        }, status: :unprocessable_content
       rescue ActionController::ParameterMissing => e
         # Handle missing required parameters
         Rails.logger.error "ProfileCustomer missing parameters: #{e.message}"
@@ -222,13 +222,13 @@ module Api
             message: "Development Error: #{e.class} - #{e.message}",
             errors: [e.message],
             backtrace: e.backtrace.first(5)
-          }, status: :unprocessable_entity
+          }, status: :unprocessable_content
         else
           render json: {
             success: false,
             message: 'Erro ao atualizar perfil. Por favor, verifique os dados enviados.',
             errors: ['Invalid data provided']
-          }, status: :unprocessable_entity
+          }, status: :unprocessable_content
         end
       end
 
@@ -269,7 +269,7 @@ module Api
             success: false,
             message: error_messages.first,
             errors: error_messages
-          }, status: :unprocessable_entity
+          }, status: :unprocessable_content
         end
       end
 

@@ -104,7 +104,7 @@ module Api
             success: false,
             message: error_messages.first,
             errors: error_messages
-          }, status: :unprocessable_entity
+          }, status: :unprocessable_content
         end
       rescue StandardError => e
         error_message = e.message
@@ -112,7 +112,7 @@ module Api
           success: false,
           message: error_message,
           errors: [error_message]
-        }, status: :unprocessable_entity
+        }, status: :unprocessable_content
       end
 
       def update
@@ -133,7 +133,7 @@ module Api
             success: false,
             message: error_messages.first,
             errors: error_messages
-          }, status: :unprocessable_entity
+          }, status: :unprocessable_content
         end
       rescue StandardError => e
         render json: {
@@ -171,7 +171,7 @@ module Api
           success: false,
           message: error_message,
           errors: [error_message]
-        }, status: :unprocessable_entity
+        }, status: :unprocessable_content
       end
 
       def restore
@@ -192,7 +192,7 @@ module Api
             success: false,
             message: error_messages.first,
             errors: error_messages
-          }, status: :unprocessable_entity
+          }, status: :unprocessable_content
         end
       rescue ActiveRecord::RecordNotFound
         render json: {
@@ -264,7 +264,7 @@ module Api
           success: false,
           message: error_messages.first,
           errors: error_messages
-        }, status: :unprocessable_entity
+        }, status: :unprocessable_content
       rescue StandardError => e
         Rails.logger.error "Error completing profile: #{e.message}"
         render json: {

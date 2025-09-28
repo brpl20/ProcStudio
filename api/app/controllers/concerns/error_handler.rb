@@ -33,12 +33,12 @@ module ErrorHandler
 
   def handle_record_invalid(exception)
     log_error(exception)
-    render_error(exception.record.errors.full_messages.join(', '), :unprocessable_entity)
+    render_error(exception.record.errors.full_messages.join(', '), :unprocessable_content)
   end
 
   def handle_not_destroyed(exception)
     log_error(exception)
-    render_error('Record could not be deleted', :unprocessable_entity)
+    render_error('Record could not be deleted', :unprocessable_content)
   end
 
   def handle_parameter_missing(exception)

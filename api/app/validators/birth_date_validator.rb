@@ -56,27 +56,23 @@ class BirthDateValidator < ActiveModel::EachValidator
     begin
       date = Date.parse(value.to_s)
       age = calculate_age(date)
+      capacity_data = capacity_for_age(age)
 
-      record.capacity = case age
-                        when 0..15
-                          'unable' # Menor absolutamente incapaz
-                        when 16..17
-                          'relative' # Menor relativamente incapaz
-                        else
-                          'able' # Maior de idade
-                        end
-
-      # Set capacity message for UI
-      if record.respond_to?(:capacity_message=)
-        record.capacity_message = case age
-                                  when 0..15
-                                    'Menor absolutamente incapaz: selecione um representante'
-                                  when 16..17
-                                    'Menor relativamente incapaz: selecione um assistente'
-                                  end
-      end
+      record.capacity = capacity_data[:status]
+      record.capacity_message = capacity_data[:message] if record.respond_to?(:capacity_message=)
     rescue ArgumentError
       # Already handled in validate_date_format
+    end
+  end
+
+  def capacity_for_age(age)
+    case age
+    when 0..15
+      { status: 'unable', message: 'Menor absolutamente incapaz: selecione um representante' }
+    when 16..17
+      { status: 'relative', message: 'Menor relativamente incapaz: selecione um assistente' }
+    else
+      { status: 'able', message: nil }
     end
   end
 

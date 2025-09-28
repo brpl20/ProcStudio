@@ -23,11 +23,11 @@
 #
 # Indexes
 #
-#  index_customers_on_confirmation_token       (confirmation_token) UNIQUE
-#  index_customers_on_created_by_id            (created_by_id)
-#  index_customers_on_deleted_at               (deleted_at)
-#  index_customers_on_email_where_not_deleted  (email) UNIQUE WHERE (deleted_at IS NULL)
-#  index_customers_on_reset_password_token     (reset_password_token) UNIQUE
+#  index_customers_on_confirmation_token    (confirmation_token) UNIQUE
+#  index_customers_on_created_by_id         (created_by_id)
+#  index_customers_on_deleted_at            (deleted_at)
+#  index_customers_on_email_not_deleted     (email) WHERE (deleted_at IS NULL)
+#  index_customers_on_reset_password_token  (reset_password_token) UNIQUE
 #
 # Foreign Keys
 #

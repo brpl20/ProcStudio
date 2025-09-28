@@ -444,3 +444,58 @@ end
 2. **Compliance**: Some regulations may require true deletion - use hard delete for GDPR compliance
 3. **Access Control**: Implement strict permissions for restore and hard delete operations
 4. **Audit Requirements**: Maintain logs of all deletion activities for compliance
+
+## Known Issues and Future Improvements
+
+### User Model Soft Delete Issue (app/models/user.rb:64-70)
+
+**Current Problem:**
+The `update_created_by_records` callback nullifies `created_by_id` references when a user is soft deleted. This is problematic because:
+1. **Data Loss**: Permanently removes historical audit information about who created records
+2. **Inconsistent with Soft Delete**: The user record still exists (just marked with `deleted_at`), so nullifying references defeats the purpose of soft deletion
+3. **Foreign Key Constraint Workaround**: This appears to be a workaround for foreign key constraint violations when soft deleting users
+
+**Root Cause:**
+The database has foreign key constraints on `created_by_id` columns that reference the users table:
+- `customers.created_by_id → users.id`
+- `jobs.created_by_id → users.id`
+- `profile_customers.created_by_id → users.id`
+- `works.created_by_id → users.id`
+- `offices.created_by_id → users.id`
+
+These constraints prevent soft deletion because they still validate referential integrity even when using `acts_as_paranoid`.
+
+**Recommended Solution:**
+Remove the foreign key constraints and rely on application-level validations instead:
+
+```ruby
+# Migration to fix the issue
+class RemoveCreatedByForeignKeys < ActiveRecord::Migration[7.1]
+  def change
+    # Remove foreign key constraints
+    remove_foreign_key :customers, column: :created_by_id
+    remove_foreign_key :jobs, column: :created_by_id
+    remove_foreign_key :profile_customers, column: :created_by_id
+    remove_foreign_key :works, column: :created_by_id
+    remove_foreign_key :offices, column: :created_by_id
+    
+    # Keep the indexes for performance
+    add_index :customers, :created_by_id unless index_exists?(:customers, :created_by_id)
+    add_index :jobs, :created_by_id unless index_exists?(:jobs, :created_by_id)
+    add_index :profile_customers, :created_by_id unless index_exists?(:profile_customers, :created_by_id)
+    add_index :works, :created_by_id unless index_exists?(:works, :created_by_id)
+    add_index :offices, :created_by_id unless index_exists?(:offices, :created_by_id)
+  end
+end
+```
+
+After applying this migration, remove the `before_destroy :update_created_by_records` callback and the associated method from the User model.
+
+**Alternative Solutions (Not Recommended):**
+1. **ON DELETE SET NULL**: Modify foreign keys to automatically set NULL on delete, but this still loses audit data
+2. **Dependent Nullify**: Add associations with `dependent: :nullify`, but again loses historical information
+
+**Implementation Status:** 
+- TODO added to app/models/user.rb:65
+- Rubocop disabled for the problematic method (line 64)
+- To be addressed in future refactoring

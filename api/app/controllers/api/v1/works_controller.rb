@@ -74,7 +74,7 @@ module Api
             success: false,
             message: work.errors.full_messages.first || 'Failed to create work',
             errors: work.errors.full_messages
-          }, status: :unprocessable_entity
+          }, status: :unprocessable_content
         end
       rescue StandardError => e
         render json: {
@@ -104,7 +104,7 @@ module Api
             success: false,
             message: @work.errors.full_messages.first || 'Failed to update work',
             errors: @work.errors.full_messages
-          }, status: :unprocessable_entity
+          }, status: :unprocessable_content
         end
       end
 

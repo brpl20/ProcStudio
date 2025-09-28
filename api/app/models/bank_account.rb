@@ -6,14 +6,13 @@
 #
 #  id            :bigint           not null, primary key
 #  account       :string
-#  account_type  :string           default("main")
+#  account_type  :string           default("checking")
 #  agency        :string
 #  bank_name     :string
 #  bankable_type :string
 #  deleted_at    :datetime
 #  operation     :string
 #  pix           :string
-#  type_account  :string
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #  bankable_id   :bigint

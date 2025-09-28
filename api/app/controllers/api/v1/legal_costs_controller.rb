@@ -22,7 +22,7 @@ module Api
         if legal_cost.save
           render json: LegalCostSerializer.new(legal_cost), status: :created
         else
-          render json: { errors: legal_cost.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: legal_cost.errors.full_messages }, status: :unprocessable_content
         end
       end
 
@@ -30,7 +30,7 @@ module Api
         if @legal_cost.update(legal_cost_params)
           render json: LegalCostSerializer.new(@legal_cost), status: :ok
         else
-          render json: { errors: @legal_cost.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: @legal_cost.errors.full_messages }, status: :unprocessable_content
         end
       end
 

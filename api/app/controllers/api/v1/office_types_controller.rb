@@ -34,7 +34,7 @@ module Api
           ), status: :created
         else
           render(
-            status: :unprocessable_entity,
+            status: :unprocessable_content,
             json: { errors: [{ code: office_type.errors.full_messages }] }
           )
         end
@@ -51,7 +51,7 @@ module Api
           render json: OfficeTypeSerializer.new(@office_type), status: :ok
         else
           render(
-            status: :unprocessable_entity,
+            status: :unprocessable_content,
             json: { errors: [{ code: @office_type.errors.full_messages }] }
           )
         end

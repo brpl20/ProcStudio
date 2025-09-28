@@ -36,7 +36,7 @@ module Api
             success: false,
             message: error_messages.first, # Single user-friendly message
             errors: error_messages # Array for detailed errors
-          }, status: :unprocessable_entity
+          }, status: :unprocessable_content
         rescue StandardError => e
           Rails.logger.error "Error creating user and team: #{e.message}"
           error_message = 'Erro interno do servidor. Tente novamente.'

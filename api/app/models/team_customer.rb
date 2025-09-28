@@ -16,6 +16,7 @@
 #
 #  index_team_customers_on_customer_id                 (customer_id)
 #  index_team_customers_on_deleted_at                  (deleted_at)
+#  index_team_customers_on_team_and_customer           (team_id,customer_id) UNIQUE
 #  index_team_customers_on_team_id                     (team_id)
 #  index_team_customers_on_team_id_and_customer_email  (team_id,customer_email) UNIQUE
 #  index_team_customers_on_team_id_and_customer_id     (team_id,customer_id) UNIQUE

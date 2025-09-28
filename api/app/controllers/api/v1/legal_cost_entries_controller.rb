@@ -41,7 +41,7 @@ module Api
         if entry.persisted?
           render json: LegalCostEntrySerializer.new(entry), status: :created
         else
-          render json: { errors: entry.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: entry.errors.full_messages }, status: :unprocessable_content
         end
       end
 
@@ -49,7 +49,7 @@ module Api
         if @entry.update(entry_params)
           render json: LegalCostEntrySerializer.new(@entry), status: :ok
         else
-          render json: { errors: @entry.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: @entry.errors.full_messages }, status: :unprocessable_content
         end
       end
 
@@ -95,7 +95,7 @@ module Api
             created: entries.count,
             failed: errors.count,
             errors: errors
-          }, status: :unprocessable_entity
+          }, status: :unprocessable_content
         end
       end
 

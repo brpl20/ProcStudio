@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 20_250_927_190_717) do
+ActiveRecord::Schema[8.0].define(version: 20_250_927_210_640) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_catalog.plpgsql'
 
@@ -164,7 +164,7 @@ ActiveRecord::Schema[8.0].define(version: 20_250_927_190_717) do
     t.index ['confirmation_token'], name: 'index_customers_on_confirmation_token', unique: true
     t.index ['created_by_id'], name: 'index_customers_on_created_by_id'
     t.index ['deleted_at'], name: 'index_customers_on_deleted_at'
-    t.index ['email'], name: 'index_customers_on_email_where_not_deleted', unique: true, where: '(deleted_at IS NULL)'
+    t.index ['email'], name: 'index_customers_on_email_not_deleted', where: '(deleted_at IS NULL)'
     t.index ['reset_password_token'], name: 'index_customers_on_reset_password_token', unique: true
   end
 
@@ -691,6 +691,7 @@ ActiveRecord::Schema[8.0].define(version: 20_250_927_190_717) do
     t.index ['customer_id'], name: 'index_team_customers_on_customer_id'
     t.index ['deleted_at'], name: 'index_team_customers_on_deleted_at'
     t.index ['team_id', 'customer_email'], name: 'index_team_customers_on_team_id_and_customer_email', unique: true
+    t.index ['team_id', 'customer_id'], name: 'index_team_customers_on_team_and_customer', unique: true
     t.index ['team_id', 'customer_id'], name: 'index_team_customers_on_team_id_and_customer_id', unique: true
     t.index ['team_id'], name: 'index_team_customers_on_team_id'
   end

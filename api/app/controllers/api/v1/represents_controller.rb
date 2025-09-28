@@ -62,7 +62,7 @@ module Api
             success: false,
             message: 'Erro ao criar representação',
             errors: represent.errors.full_messages
-          }, status: :unprocessable_entity
+          }, status: :unprocessable_content
         end
       end
 
@@ -79,7 +79,7 @@ module Api
             success: false,
             message: 'Erro ao atualizar representação',
             errors: @represent.errors.full_messages
-          }, status: :unprocessable_entity
+          }, status: :unprocessable_content
         end
       end
 
@@ -95,7 +95,7 @@ module Api
             success: false,
             message: 'Erro ao remover representação',
             errors: @represent.errors.full_messages
-          }, status: :unprocessable_entity
+          }, status: :unprocessable_content
         end
       end
 
@@ -114,7 +114,7 @@ module Api
             success: false,
             message: 'Erro ao desativar representação',
             errors: @represent.errors.full_messages
-          }, status: :unprocessable_entity
+          }, status: :unprocessable_content
         end
       end
 
@@ -133,7 +133,7 @@ module Api
             success: false,
             message: 'Erro ao reativar representação',
             errors: @represent.errors.full_messages
-          }, status: :unprocessable_entity
+          }, status: :unprocessable_content
         end
       end
 

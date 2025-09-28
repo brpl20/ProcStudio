@@ -77,7 +77,7 @@ module Api
             success: false,
             message: error_messages.first,
             errors: error_messages
-          }, status: :unprocessable_entity
+          }, status: :unprocessable_content
         end
       rescue StandardError => e
         Rails.logger.error "Customer creation error: #{e.class} - #{e.message}"
@@ -118,7 +118,7 @@ module Api
             success: false,
             message: error_messages.first,
             errors: error_messages
-          }, status: :unprocessable_entity
+          }, status: :unprocessable_content
         end
       end
 
@@ -161,7 +161,7 @@ module Api
             success: false,
             message: error_messages.first,
             errors: error_messages
-          }, status: :unprocessable_entity
+          }, status: :unprocessable_content
         end
       end
 

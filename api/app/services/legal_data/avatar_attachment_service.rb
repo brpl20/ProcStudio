@@ -53,7 +53,6 @@ class LegalData::AvatarAttachmentService
     image_data
   end
 
-  # rubocop:disable Naming/PredicateMethod
   def attach_image_to_profile(user_profile, image_data, source_key)
     metadata = fetch_image_metadata(source_key)
     filename = extract_filename(source_key)
@@ -67,7 +66,6 @@ class LegalData::AvatarAttachmentService
     log_attachment_success(user_profile.id)
     true
   end
-  # rubocop:enable Naming/PredicateMethod
 
   def fetch_image_metadata(s3_key)
     metadata = S3Service.get_object_metadata(s3_key)
@@ -100,7 +98,6 @@ class LegalData::AvatarAttachmentService
     response
   end
 
-  # rubocop:disable Naming/PredicateMethod
   def process_http_response(user_profile, response, image_url)
     attachment_params = build_http_attachment_params(response, image_url)
 

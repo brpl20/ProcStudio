@@ -15,7 +15,7 @@ module StandardResponses
     render json: response, status: status
   end
 
-  def render_error(message: nil, errors: [], status: :unprocessable_entity)
+  def render_error(message: nil, errors: [], status: :unprocessable_content)
     render json: {
       success: false,
       message: message || errors.first || 'Request failed',

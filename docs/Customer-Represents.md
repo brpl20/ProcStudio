@@ -8,7 +8,7 @@ This guide explains how to create and manage legal representations between custo
 ### Capacity Types
 - **able**: Fully capable (18+ years)
 - **relatively**: Relatively incapable (16-17 years)
-- **unable**: Absolutely incapable (0-15 years)
+- **unable**: Absolutely incapable (0-15 years) or with some disability
 
 ### Relationship Types
 - **representation**: Full legal representation (for unable persons)
@@ -166,9 +166,9 @@ async function createUnablePersonWithRepresentatives() {
         // ... other fields
       }
     });
-    
+
     const childId = childResponse.data.data.id;
-    
+
     // Step 2: Create first representative (mother)
     const motherResponse = await api.post('/api/v1/profile_customers', {
       profile_customer: {
@@ -181,9 +181,9 @@ async function createUnablePersonWithRepresentatives() {
         // ... other fields
       }
     });
-    
+
     const motherId = motherResponse.data.data.id;
-    
+
     // Step 3: Create second representative (father)
     const fatherResponse = await api.post('/api/v1/profile_customers', {
       profile_customer: {
@@ -196,9 +196,9 @@ async function createUnablePersonWithRepresentatives() {
         // ... other fields
       }
     });
-    
+
     const fatherId = fatherResponse.data.data.id;
-    
+
     // Step 4: Create representation relationships
     const motherRelationship = await api.post('/api/v1/represents', {
       represent: {
@@ -209,7 +209,7 @@ async function createUnablePersonWithRepresentatives() {
         notes: "Mãe"
       }
     });
-    
+
     const fatherRelationship = await api.post('/api/v1/represents', {
       represent: {
         profile_customer_id: childId,
@@ -219,14 +219,14 @@ async function createUnablePersonWithRepresentatives() {
         notes: "Pai"
       }
     });
-    
+
     return {
       child: childResponse.data,
       mother: motherResponse.data,
       father: fatherResponse.data,
       relationships: [motherRelationship.data, fatherRelationship.data]
     };
-    
+
   } catch (error) {
     console.error('Error creating representation:', error);
     throw error;

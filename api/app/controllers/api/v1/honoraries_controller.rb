@@ -40,7 +40,7 @@ module Api
         if honorary.save
           render json: HonorarySerializer.new(honorary), status: :created
         else
-          render json: { errors: honorary.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: honorary.errors.full_messages }, status: :unprocessable_content
         end
       end
 
@@ -48,7 +48,7 @@ module Api
         if @honorary.update(honorary_params)
           render json: HonorarySerializer.new(@honorary), status: :ok
         else
-          render json: { errors: @honorary.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: @honorary.errors.full_messages }, status: :unprocessable_content
         end
       end
 

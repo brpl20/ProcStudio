@@ -23,11 +23,11 @@
 #
 # Indexes
 #
-#  index_customers_on_confirmation_token       (confirmation_token) UNIQUE
-#  index_customers_on_created_by_id            (created_by_id)
-#  index_customers_on_deleted_at               (deleted_at)
-#  index_customers_on_email_where_not_deleted  (email) UNIQUE WHERE (deleted_at IS NULL)
-#  index_customers_on_reset_password_token     (reset_password_token) UNIQUE
+#  index_customers_on_confirmation_token    (confirmation_token) UNIQUE
+#  index_customers_on_created_by_id         (created_by_id)
+#  index_customers_on_deleted_at            (deleted_at)
+#  index_customers_on_email_not_deleted     (email) WHERE (deleted_at IS NULL)
+#  index_customers_on_reset_password_token  (reset_password_token) UNIQUE
 #
 # Foreign Keys
 #
@@ -53,10 +53,8 @@ class Customer < ApplicationRecord
 
   before_validation :setup_password, if: :new_record?
 
-  validates :email, uniqueness: {
-    conditions: -> { where(deleted_at: nil) },
-    unless: :unable_person?
-  }
+  # TD: melhorar mensagem de erro -> errors.add(:email, "já está sendo usado por um cliente")
+  validate :email_unique_within_teams
 
   # From Devise module Validatable
   validates :email, presence: { if: :email_required? }
@@ -100,5 +98,23 @@ class Customer < ApplicationRecord
   # Used to allow email sharing with their guardian
   def unable_person?
     profile_customer&.unable?
+  end
+
+  private
+
+  def email_unique_within_teams
+    return if email.blank?
+    return if unable_person?
+
+    # Check if email is unique within each team this customer belongs to
+    teams.each do |team|
+      existing_customer = team.customers
+                            .where(deleted_at: nil)
+                            .where(email: email)
+                            .where.not(id: id)
+                            .exists?
+
+      errors.add(:email, 'já está sendo usado por um cliente') if existing_customer
+    end
   end
 end

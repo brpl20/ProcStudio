@@ -34,7 +34,7 @@ module Api
         if procedural_party.save
           render json: ProceduralPartySerializer.new(procedural_party), status: :created
         else
-          render json: { errors: procedural_party.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: procedural_party.errors.full_messages }, status: :unprocessable_content
         end
       end
 
@@ -42,7 +42,7 @@ module Api
         if @procedural_party.update(procedural_party_params)
           render json: ProceduralPartySerializer.new(@procedural_party), status: :ok
         else
-          render json: { errors: @procedural_party.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: @procedural_party.errors.full_messages }, status: :unprocessable_content
         end
       end
 

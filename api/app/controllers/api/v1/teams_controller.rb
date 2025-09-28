@@ -55,7 +55,7 @@ module Api
             success: false,
             message: error_messages.first,
             errors: error_messages
-          }, status: :unprocessable_entity
+          }, status: :unprocessable_content
         end
       rescue StandardError => e
         render json: {
@@ -80,7 +80,7 @@ module Api
             success: false,
             message: error_messages.first,
             errors: error_messages
-          }, status: :unprocessable_entity
+          }, status: :unprocessable_content
         end
       rescue StandardError => e
         render json: {
@@ -103,7 +103,7 @@ module Api
           success: false,
           message: e.message,
           errors: [e.message]
-        }, status: :unprocessable_entity
+        }, status: :unprocessable_content
       end
 
       private

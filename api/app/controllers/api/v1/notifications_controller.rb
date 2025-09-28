@@ -94,7 +94,7 @@ module Api
             success: false,
             message: 'Erro ao criar notificação',
             errors: notification.errors.full_messages
-          }, status: :unprocessable_entity
+          }, status: :unprocessable_content
         end
       rescue StandardError => e
         render json: {
@@ -120,7 +120,7 @@ module Api
             success: false,
             message: 'Erro ao atualizar notificação',
             errors: @notification.errors.full_messages
-          }, status: :unprocessable_entity
+          }, status: :unprocessable_content
         end
       rescue StandardError => e
         render json: {
@@ -143,7 +143,7 @@ module Api
             success: false,
             message: 'Erro ao remover notificação',
             errors: @notification.errors.full_messages
-          }, status: :unprocessable_entity
+          }, status: :unprocessable_content
         end
       rescue StandardError => e
         render json: {
