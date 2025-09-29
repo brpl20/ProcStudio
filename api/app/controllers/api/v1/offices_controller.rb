@@ -325,7 +325,7 @@ module Api
       end
 
       def parse_nested_json_attributes
-        ['phones_attributes', 'addresses_attributes', 'emails_attributes', 'office_emails_attributes',
+        ['phones_attributes', 'addresses_attributes', 'emails_attributes',
          'bank_accounts_attributes', 'user_offices_attributes'].each do |attr|
           next unless params[:office][attr].is_a?(String)
 
@@ -441,8 +441,7 @@ module Api
           :quote_value, :number_of_quotes, :create_social_contract,
           { phones_attributes: [:id, :phone_number, :_destroy],
             addresses_attributes: address_permitted_attributes,
-            office_emails_attributes: [:id, :email_id, :_destroy],
-            emails_attributes: [:id, :email, :_destroy],
+            emails_attributes: [:id, :email, :email_type, :_destroy],
             bank_accounts_attributes: bank_account_permitted_attributes,
             user_offices_attributes: user_office_permitted_attributes }
         ]

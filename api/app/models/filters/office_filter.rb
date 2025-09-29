@@ -7,7 +7,7 @@ class OfficeFilter
     end
 
     def retrieve_offices(team)
-      team.offices.includes(:phones, :addresses, :office_emails, :office_bank_accounts)
+      team.offices.includes(:phones, :addresses, :emails, :bank_accounts)
     end
 
     def retrieve_offices_with_lawyers(team)
