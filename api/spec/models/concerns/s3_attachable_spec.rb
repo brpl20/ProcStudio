@@ -31,7 +31,7 @@ RSpec.describe S3Attachable do
       end
 
       it 'deletes old logo before uploading new one' do
-        office.update_column(:logo_s3_key, 'old/logo.png')
+        office.update_column(:logo_s3_key, 'old/logo.png') # rubocop:disable Rails/SkipsModelValidations
         expect(S3Service).to receive(:delete).with('old/logo.png')
         office.upload_logo(file)
       end
@@ -39,7 +39,7 @@ RSpec.describe S3Attachable do
 
     describe '#logo_url' do
       it 'returns presigned URL when logo exists' do
-        office.update_column(:logo_s3_key, 'test/logo.png')
+        office.update_column(:logo_s3_key, 'test/logo.png') # rubocop:disable Rails/SkipsModelValidations
         allow(S3Service).to receive(:presigned_url).and_return('https://s3.amazonaws.com/signed-url')
 
         expect(office.logo_url).to eq('https://s3.amazonaws.com/signed-url')
@@ -52,7 +52,7 @@ RSpec.describe S3Attachable do
 
     describe '#delete_logo!' do
       it 'deletes logo from S3 and clears key' do
-        office.update_column(:logo_s3_key, 'test/logo.png')
+        office.update_column(:logo_s3_key, 'test/logo.png') # rubocop:disable Rails/SkipsModelValidations
         expect(S3Service).to receive(:delete).with('test/logo.png').and_return(true)
 
         expect(office.delete_logo!).to be true
@@ -86,7 +86,7 @@ RSpec.describe S3Attachable do
       end
 
       it 'deletes old avatar before uploading new one' do
-        user_profile.update_column(:avatar_s3_key, 'old/avatar.jpg')
+        user_profile.update_column(:avatar_s3_key, 'old/avatar.jpg') # rubocop:disable Rails/SkipsModelValidations
         expect(S3Service).to receive(:delete).with('old/avatar.jpg')
         user_profile.upload_avatar(file)
       end
@@ -94,7 +94,7 @@ RSpec.describe S3Attachable do
 
     describe '#avatar_url' do
       it 'returns presigned URL when avatar exists' do
-        user_profile.update_column(:avatar_s3_key, 'test/avatar.jpg')
+        user_profile.update_column(:avatar_s3_key, 'test/avatar.jpg') # rubocop:disable Rails/SkipsModelValidations
         allow(S3Service).to receive(:presigned_url).and_return('https://s3.amazonaws.com/signed-url')
 
         expect(user_profile.avatar_url).to eq('https://s3.amazonaws.com/signed-url')
@@ -107,7 +107,7 @@ RSpec.describe S3Attachable do
 
     describe '#delete_avatar!' do
       it 'deletes avatar from S3 and clears key' do
-        user_profile.update_column(:avatar_s3_key, 'test/avatar.jpg')
+        user_profile.update_column(:avatar_s3_key, 'test/avatar.jpg') # rubocop:disable Rails/SkipsModelValidations
         expect(S3Service).to receive(:delete).with('test/avatar.jpg').and_return(true)
 
         expect(user_profile.delete_avatar!).to be true

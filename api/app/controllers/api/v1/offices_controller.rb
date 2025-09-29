@@ -76,28 +76,10 @@ module Api
       end
 
       def destroy
-        if destroy_fully?
-          office = current_team.offices.with_deleted.find(params[:id])
-          office.destroy_fully!
-          message = 'Escritório removido permanentemente'
-        else
-          retrieve_office
-          @office.deleted_by = current_user if current_user
-          @office.destroy
-          message = 'Escritório removido com sucesso'
-        end
-
-        render json: {
-          success: true,
-          message: message,
-          data: { id: params[:id] }
-        }, status: :ok
+        message = destroy_fully? ? destroy_office_permanently : destroy_office_softly
+        render_destroy_success(message)
       rescue ActiveRecord::RecordNotFound
-        render json: {
-          success: false,
-          message: 'Escritório não encontrado',
-          errors: ['Escritório não encontrado']
-        }, status: :not_found
+        render_office_not_found
       end
 
       def with_lawyers
@@ -184,28 +166,13 @@ module Api
       def update_attachment_metadata
         retrieve_office
 
-        metadata = @office.attachment_metadata.find_by(blob_id: params[:blob_id])
-
-        unless metadata
-          return render json: {
-            success: false,
-            message: 'Metadados do anexo não encontrados'
-          }, status: :not_found
-        end
+        metadata = find_attachment_metadata
+        return render_metadata_not_found unless metadata
 
         metadata_params = params.permit(:document_date, :description, :custom_metadata)
 
         if metadata.update(metadata_params)
-          render json: {
-            success: true,
-            message: 'Metadados atualizados com sucesso',
-            data: {
-              blob_id: metadata.blob_id,
-              document_date: metadata.document_date,
-              description: metadata.description,
-              custom_metadata: metadata.custom_metadata
-            }
-          }, status: :ok
+          render_metadata_update_success(metadata)
         else
           render_error_response(metadata)
         end
@@ -353,30 +320,8 @@ module Api
       end
 
       def offices_params
-        # Parse JSON strings for nested attributes if they come as strings
         parse_nested_json_attributes if params[:office]
-
-        params.require(:office).permit(
-          :name, :cnpj, :oab_id, :oab_status, :oab_inscricao, :oab_link,
-          :society, :foundation, :site, :accounting_type,
-          :quote_value, :number_of_quotes,
-          :create_social_contract, # Virtual attribute - just a trigger, not saved
-          phones_attributes: [:id, :phone_number, :_destroy],
-          addresses_attributes: [:id, :street, :number, :complement, :neighborhood,
-                                 :city, :state, :zip_code, :address_type, :_destroy],
-          office_emails_attributes: [:id, :email_id, :_destroy],
-          emails_attributes: [:id, :email, :_destroy],
-          bank_accounts_attributes: [:id, :bank_name, :account_type, :agency,
-                                     :account, :operation, :pix, :_destroy],
-          user_offices_attributes: [:id, :user_id, :partnership_type,
-                                    :partnership_percentage, :is_administrator,
-                                    :cna_link, :entry_date, :_destroy,
-                                    { compensations_attributes: [:id, :compensation_type,
-                                                                 :amount, :effective_date,
-                                                                 :end_date, :payment_frequency,
-                                                                 :notes, :_destroy] }]
-        )
-        # rubocop:enable Rails/StrongParametersExpect
+        params.require(:office).permit(office_permitted_attributes)
       end
 
       def parse_nested_json_attributes
@@ -434,6 +379,95 @@ module Api
 
       def perform_authorization
         authorize [:admin, :office], :"#{action_name}?"
+      end
+
+      def destroy_office_permanently
+        office = current_team.offices.with_deleted.find(params[:id])
+        office.destroy_fully!
+        'Escritório removido permanentemente'
+      end
+
+      def destroy_office_softly
+        retrieve_office
+        @office.deleted_by = current_user if current_user
+        @office.destroy
+        'Escritório removido com sucesso'
+      end
+
+      def render_destroy_success(message)
+        render json: {
+          success: true,
+          message: message,
+          data: { id: params[:id] }
+        }, status: :ok
+      end
+
+      def render_office_not_found
+        render json: {
+          success: false,
+          message: 'Escritório não encontrado',
+          errors: ['Escritório não encontrado']
+        }, status: :not_found
+      end
+
+      def find_attachment_metadata
+        @office.attachment_metadata.find_by(blob_id: params[:blob_id])
+      end
+
+      def render_metadata_not_found
+        render json: {
+          success: false,
+          message: 'Metadados do anexo não encontrados'
+        }, status: :not_found
+      end
+
+      def render_metadata_update_success(metadata)
+        render json: {
+          success: true,
+          message: 'Metadados atualizados com sucesso',
+          data: {
+            blob_id: metadata.blob_id,
+            document_date: metadata.document_date,
+            description: metadata.description,
+            custom_metadata: metadata.custom_metadata
+          }
+        }, status: :ok
+      end
+
+      def office_permitted_attributes
+        [
+          :name, :cnpj, :oab_id, :oab_status, :oab_inscricao, :oab_link,
+          :society, :foundation, :site, :accounting_type,
+          :quote_value, :number_of_quotes, :create_social_contract,
+          { phones_attributes: [:id, :phone_number, :_destroy],
+            addresses_attributes: address_permitted_attributes,
+            office_emails_attributes: [:id, :email_id, :_destroy],
+            emails_attributes: [:id, :email, :_destroy],
+            bank_accounts_attributes: bank_account_permitted_attributes,
+            user_offices_attributes: user_office_permitted_attributes }
+        ]
+      end
+
+      def address_permitted_attributes
+        [:id, :street, :number, :complement, :neighborhood,
+         :city, :state, :zip_code, :address_type, :_destroy]
+      end
+
+      def bank_account_permitted_attributes
+        [:id, :bank_name, :account_type, :agency,
+         :account, :operation, :pix, :_destroy]
+      end
+
+      def user_office_permitted_attributes
+        [:id, :user_id, :partnership_type,
+         :partnership_percentage, :is_administrator,
+         :cna_link, :entry_date, :_destroy,
+         { compensations_attributes: compensation_permitted_attributes }]
+      end
+
+      def compensation_permitted_attributes
+        [:id, :compensation_type, :amount, :effective_date,
+         :end_date, :payment_frequency, :notes, :_destroy]
       end
     end
   end

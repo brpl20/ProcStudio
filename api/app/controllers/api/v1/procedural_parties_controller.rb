@@ -59,7 +59,7 @@ module Api
         @procedure.procedural_parties
           .where(party_type: party.party_type, is_primary: true)
           .where.not(id: party.id)
-          .update_all(is_primary: false)
+          .find_each { |p| p.update!(is_primary: false) }
 
         party.update!(is_primary: true)
 

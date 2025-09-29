@@ -97,7 +97,7 @@ RSpec.describe Api::V1::AuthController, type: :request do
       let(:headers) { {} }
 
       it 'Retorna não autorizado' do
-        admin.update_attribute(:jwt_token, jwt_token)
+        admin.update_attribute(:jwt_token, jwt_token) # rubocop:disable Rails/SkipsModelValidations
 
         delete '/api/v1/logout', headers: headers
 
@@ -117,7 +117,7 @@ RSpec.describe Api::V1::AuthController, type: :request do
       let(:headers) { { 'Authorization' => "Bearer #{jwt_token}" } }
 
       it 'Retorna não autorizado e não revoga token' do
-        admin.update_attribute(:jwt_token, jwt_token)
+        admin.update_attribute(:jwt_token, jwt_token) # rubocop:disable Rails/SkipsModelValidations
 
         delete '/api/v1/logout', headers: headers
 

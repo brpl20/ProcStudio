@@ -6,7 +6,8 @@
 # Fazer todos os modelos
 # Adicionar quando modelos forem alterados -> Deletar antigos
 
-class ModelExplorer
+class ModelExplorer # rubocop:disable Metrics/ClassLength
+  # rubocop:disable Metrics/BlockLength
   def self.generate_markdown(model_class)
     model_name = model_class.name
 
@@ -154,6 +155,7 @@ class ModelExplorer
 
     puts "Generated model information at #{file_path}"
   end
+  # rubocop:enable Metrics/BlockLength
 
   def self.find_related_files(model_name)
     related_files = {
@@ -260,7 +262,8 @@ class ModelExplorer
       file.puts "#{model_class.name}.find_by(email: 'user@example.com')"
       file.puts "# Returns: #<#{model_class.name} ...> or nil"
     else
-      first_col = model_class.column_names.reject { |c| ['id', 'created_at', 'updated_at'].include?(c) }.first
+      excluded_columns = ['id', 'created_at', 'updated_at']
+      first_col = model_class.column_names.reject { |c| excluded_columns.include?(c) }.first
       if first_col
         file.puts "#{model_class.name}.find_by(#{first_col}: 'value')"
         file.puts "# Returns: #<#{model_class.name} ...> or nil"

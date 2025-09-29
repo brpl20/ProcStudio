@@ -8,43 +8,15 @@ module Api
 
         def create
           ActiveRecord::Base.transaction do
-            # Primeiro criar o team
-            team = create_team_for_user
-
-            # Depois criar o user associado ao team
-            user = User.new(user_params.merge(team: team))
-
-            # Usar save! para garantir rollback automático se falhar
-            user.save!
-
-            # Se OAB foi fornecida, consultar API e criar UserProfile
+            user = create_user_with_team
             create_profile_from_oab(user) if user.oab.present?
-
-            # Recarregar user para pegar o user_profile que foi criado
             user.reload
-
-            render json: {
-              success: true,
-              message: 'User and team created successfully',
-              data: build_response_data(user)
-            }, status: :created
+            render_creation_success(user)
           end
         rescue ActiveRecord::RecordInvalid => e
-          Rails.logger.error "Validation error creating user: #{e.message}"
-          error_messages = e.record.errors.full_messages
-          render json: {
-            success: false,
-            message: error_messages.first, # Single user-friendly message
-            errors: error_messages # Array for detailed errors
-          }, status: :unprocessable_content
+          handle_validation_error(e)
         rescue StandardError => e
-          Rails.logger.error "Error creating user and team: #{e.message}"
-          error_message = 'Erro interno do servidor. Tente novamente.'
-          render json: {
-            success: false,
-            message: error_message,
-            errors: [error_message]
-          }, status: :internal_server_error
+          handle_creation_error(e)
         end
 
         private
@@ -77,14 +49,6 @@ module Api
           )
         end
 
-        def fetch_lawyer_data_from_oab(oab_number)
-          oab_service = LegalData::LegalDataService.new
-          oab_service.find_lawyer(oab_number)
-        rescue StandardError => e
-          Rails.logger.warn "Could not fetch OAB data for team creation: #{e.message}"
-          nil
-        end
-
         def build_full_name(lawyer_data)
           return nil unless lawyer_data
 
@@ -103,47 +67,16 @@ module Api
         end
 
         def create_profile_from_oab(user)
-          oab_service = LegalData::LegalDataService.new
-          lawyer_data = oab_service.find_lawyer(user.oab)
-
-          Rails.logger.info "OAB API returned data: #{lawyer_data.inspect}" if Rails.env.development?
-
+          lawyer_data = fetch_lawyer_data_from_oab(user.oab)
           return unless lawyer_data
 
           ActiveRecord::Base.transaction do
-            user_profile = user.create_user_profile!(
-              name: lawyer_data[:name],
-              last_name: lawyer_data[:last_name],
-              oab: lawyer_data[:oab],
-              role: 'lawyer',
-              status: 'active',
-              gender: lawyer_data[:gender]
-              # Campos opcionais deixados em branco para serem preenchidos via modal
-              # civil_status, cpf, nationality, rg, birth serão nil
-            )
-
-            Rails.logger.info "Created UserProfile: #{user_profile.inspect}" if Rails.env.development?
-
-            # Criar endereço se dados estiverem disponíveis
-            create_address_from_data(user_profile, lawyer_data) if has_address_data?(lawyer_data)
-
-            # Criar telefone se disponível
-            create_phone_from_data(user_profile, lawyer_data) if lawyer_data[:phone].present?
-
-            # Attach avatar from S3 URL if available
-            if lawyer_data[:profile_picture_url].present?
-              avatar_service = LegalData::AvatarAttachmentService.new
-              success = avatar_service.attach_from_url(user_profile, lawyer_data[:profile_picture_url])
-
-              # Store the original URL as backup in origin field
-              user_profile.update(origin: lawyer_data[:profile_picture_url])
-
-              Rails.logger.info "Avatar attachment #{success ? 'succeeded' : 'failed'} for user_profile #{user_profile.id}"
-            end
+            user_profile = create_user_profile_with_data(user, lawyer_data)
+            process_additional_profile_data(user_profile, lawyer_data)
+            attach_avatar_if_available(user_profile, lawyer_data)
           end
         rescue StandardError => e
-          Rails.logger.error "Error creating profile from OAB: #{e.message}"
-          # Não falha o cadastro se não conseguir criar o profile
+          log_profile_creation_error(e)
         end
 
         def has_address_data?(lawyer_data)
@@ -197,8 +130,94 @@ module Api
         end
 
         def build_response_data(user)
-          # Response simples para registro - lógica de completeness vai para o login
-          data = {
+          data = build_user_base_data(user)
+          add_profile_data(data, user)
+          data
+        end
+
+        def create_user_with_team
+          team = create_team_for_user
+          user = User.new(user_params.merge(team: team))
+          user.save!
+          user
+        end
+
+        def render_creation_success(user)
+          render json: {
+            success: true,
+            message: 'User and team created successfully',
+            data: build_response_data(user)
+          }, status: :created
+        end
+
+        def handle_validation_error(error)
+          Rails.logger.error "Validation error creating user: #{error.message}"
+          error_messages = error.record.errors.full_messages
+          render json: {
+            success: false,
+            message: error_messages.first,
+            errors: error_messages
+          }, status: :unprocessable_content
+        end
+
+        def handle_creation_error(error)
+          Rails.logger.error "Error creating user and team: #{error.message}"
+          error_message = 'Erro interno do servidor. Tente novamente.'
+          render json: {
+            success: false,
+            message: error_message,
+            errors: [error_message]
+          }, status: :internal_server_error
+        end
+
+        def fetch_lawyer_data_from_oab(oab)
+          oab_service = LegalData::LegalDataService.new
+          lawyer_data = oab_service.find_lawyer(oab)
+          Rails.logger.info "OAB API returned data: #{lawyer_data.inspect}" if Rails.env.development?
+          lawyer_data
+        rescue StandardError => e
+          Rails.logger.warn "Could not fetch OAB data: #{e.message}"
+          nil
+        end
+
+        def create_user_profile_with_data(user, lawyer_data)
+          user_profile = user.create_user_profile!(
+            name: lawyer_data[:name],
+            last_name: lawyer_data[:last_name],
+            oab: lawyer_data[:oab],
+            role: 'lawyer',
+            status: 'active',
+            gender: lawyer_data[:gender]
+          )
+          Rails.logger.info "Created UserProfile: #{user_profile.inspect}" if Rails.env.development?
+          user_profile
+        end
+
+        def process_additional_profile_data(user_profile, lawyer_data)
+          create_address_from_data(user_profile, lawyer_data) if has_address_data?(lawyer_data)
+          create_phone_from_data(user_profile, lawyer_data) if lawyer_data[:phone].present?
+        end
+
+        def attach_avatar_if_available(user_profile, lawyer_data)
+          return if lawyer_data[:profile_picture_url].blank?
+
+          avatar_service = LegalData::AvatarAttachmentService.new
+          success = avatar_service.attach_from_url(user_profile, lawyer_data[:profile_picture_url])
+          user_profile.update(origin: lawyer_data[:profile_picture_url])
+          log_avatar_attachment_result(success, user_profile.id)
+        end
+
+        def log_avatar_attachment_result(success, profile_id)
+          status = success ? 'succeeded' : 'failed'
+          Rails.logger.info "Avatar attachment #{status} for user_profile #{profile_id}"
+        end
+
+        def log_profile_creation_error(error)
+          Rails.logger.error "Error creating profile from OAB: #{error.message}"
+        end
+
+        def build_user_base_data(user)
+          {
             id: user.id,
             email: user.email,
             oab: user.oab,
@@ -208,8 +227,9 @@ module Api
               subdomain: user.team.subdomain
             }
           }
+        end
 
-          # Informar se UserProfile foi criado com dados da OAB
+        def add_profile_data(data, user)
           if user.user_profile.present?
             data[:profile_created] = true
             data[:profile] = {
@@ -220,8 +240,6 @@ module Api
           else
             data[:profile_created] = false
           end
-
-          data
         end
       end
     end

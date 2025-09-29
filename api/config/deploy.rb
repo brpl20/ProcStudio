@@ -102,7 +102,8 @@ task rollback: :remote_environment do
   # Delete existing sym link and create a new symlink pointing to the previous release
   queue %(echo -n "-----> Creating new symlink from the previous release: ")
   queue %(ls "#{deploy_to}/releases" -Art | sort | tail -n 2 | head -n 1)
-  queue! %(ls -Art "#{deploy_to}/releases" | sort | tail -n 2 | head -n 1 | xargs -I active ln -nfs "#{deploy_to}/releases/active" "#{deploy_to}/current")
+  queue! %(ls -Art "#{deploy_to}/releases" | sort | tail -n 2 | head -n 1 | ) +
+         %(xargs -I active ln -nfs "#{deploy_to}/releases/active" "#{deploy_to}/current")
 
   # Remove latest release folder (active release)
   queue %(echo -n "-----> Deleting active release: ")

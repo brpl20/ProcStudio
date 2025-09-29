@@ -102,51 +102,15 @@ module Api
       end
 
       def procedure_params
-        params.expect(
-          procedure: [:procedure_type,
-                      :law_area_id,
-                      :number,
-                      :city,
-                      :state,
-                      :system,
-                      :competence,
-                      :start_date,
-                      :end_date,
-                      :procedure_class,
-                      :responsible,
-                      :claim_value,
-                      :conviction_value,
-                      :received_value,
-                      :status,
-                      :justice_free,
-                      :conciliation,
-                      :priority,
-                      :priority_type,
-                      :notes,
-                      :parent_id,
-                      { procedural_parties_attributes: [
-                        :id,
-                        :party_type,
-                        :partyable_type,
-                        :partyable_id,
-                        :name,
-                        :cpf_cnpj,
-                        :oab_number,
-                        :is_primary,
-                        :represented_by,
-                        :notes,
-                        :_destroy
-                      ] }]
-        )
+        params.expect(procedure: procedure_permitted_attributes)
       end
 
       def apply_filters(procedures)
-        procedures = procedures.where(procedure_type: params[:procedure_type]) if params[:procedure_type].present?
-        procedures = procedures.where(status: params[:status]) if params[:status].present?
-        procedures = procedures.where(system: params[:system]) if params[:system].present?
-        procedures = procedures.where(competence: params[:competence]) if params[:competence].present?
-        procedures = procedures.with_priority if params[:priority] == 'true'
-        procedures
+        procedures = apply_type_filter(procedures)
+        procedures = apply_status_filter(procedures)
+        procedures = apply_system_filter(procedures)
+        procedures = apply_competence_filter(procedures)
+        apply_priority_filter(procedures)
       end
 
       def build_tree(procedures)
@@ -163,6 +127,49 @@ module Api
 
       def perform_authorization
         authorize Procedure
+      end
+
+      def procedure_permitted_attributes
+        [:procedure_type, :law_area_id, :number, :city, :state, :system,
+         :competence, :start_date, :end_date, :procedure_class, :responsible,
+         :claim_value, :conviction_value, :received_value, :status,
+         :justice_free, :conciliation, :priority, :priority_type, :notes,
+         :parent_id, { procedural_parties_attributes: procedural_party_attributes }]
+      end
+
+      def procedural_party_attributes
+        [:id, :party_type, :partyable_type, :partyable_id, :name, :cpf_cnpj,
+         :oab_number, :is_primary, :represented_by, :notes, :_destroy]
+      end
+
+      def apply_type_filter(procedures)
+        return procedures if params[:procedure_type].blank?
+
+        procedures.where(procedure_type: params[:procedure_type])
+      end
+
+      def apply_status_filter(procedures)
+        return procedures if params[:status].blank?
+
+        procedures.where(status: params[:status])
+      end
+
+      def apply_system_filter(procedures)
+        return procedures if params[:system].blank?
+
+        procedures.where(system: params[:system])
+      end
+
+      def apply_competence_filter(procedures)
+        return procedures if params[:competence].blank?
+
+        procedures.where(competence: params[:competence])
+      end
+
+      def apply_priority_filter(procedures)
+        return procedures unless params[:priority] == 'true'
+
+        procedures.with_priority
       end
     end
   end
