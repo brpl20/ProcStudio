@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DropOfficeEmailsTable < ActiveRecord::Migration[8.0]
   def change
     drop_table :office_emails, if_exists: true do |t|

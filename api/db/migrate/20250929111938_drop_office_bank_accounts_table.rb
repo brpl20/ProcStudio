@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DropOfficeBankAccountsTable < ActiveRecord::Migration[8.0]
   def change
     drop_table :office_bank_accounts, if_exists: true do |t|
