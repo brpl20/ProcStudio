@@ -177,7 +177,8 @@ RSpec.describe 'Api::V1::Jobs Comprehensive', type: :request do
       job = Job.last
       expect(job.assignees.pluck(:id)).to match_array([assignee_profile.id, user3_profile.id])
       expect(job.supervisors.pluck(:id)).to match_array([supervisor_profile.id])
-      expect(job.job_user_profiles.where(role: 'collaborator').pluck(:user_profile_id)).to match_array([collaborator_profile.id])
+      expect(job.job_user_profiles.where(role: 'collaborator').pluck(:user_profile_id))
+        .to match_array([collaborator_profile.id])
     end
   end
 

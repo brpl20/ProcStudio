@@ -15,14 +15,19 @@ AllCops:
     - vendor/**/*
     - log/**/*
     - tmp/**/*
+    - tmp-backup/**/*
     - storage/**/*
     - bin/*
     - lib/tasks/**/*
     - ai-tools/**/*
-    - docx/**/*w
+    - docx/**/*
     - public/**/*
     - node_modules/**/*
     - frontend/**/*
+    # Helpers - Scripts - Tests que não precisam ser verificados
+    - models-explorer/model_explorer.rb
+    - rails_runner_tests/**/*
+    - scripts/**/*
 
     # Arquivos que serão revisados em uma próxima etapa:
     - app/models/work.rb

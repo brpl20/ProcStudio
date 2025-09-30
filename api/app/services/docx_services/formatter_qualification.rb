@@ -291,27 +291,22 @@ module DocxServices
     end
 
     def extract_email(entity)
-      # Direct email attribute
-      return entity.email if entity.respond_to?(:email) && entity.email.present?
-
-      # For ProfileCustomer -> Customer
-      if entity.respond_to?(:customer) && entity.customer.respond_to?(:email) && entity.customer.email.present?
-        return entity.customer.email
+      # Check for polymorphic emails association - get first one
+      if entity.respond_to?(:emails) && entity.emails.any?
+        email = entity.emails.first
+        return email.email if email.respond_to?(:email) && email.email.present?
       end
 
-      # For UserProfile -> User
-      if entity.respond_to?(:user) && entity.user.respond_to?(:email) && entity.user.email.present?
-        return entity.user.email
+      # For ProfileCustomer -> check customer's emails
+      if entity.respond_to?(:customer) && entity.customer.respond_to?(:emails) && entity.customer.emails.any?
+        email = entity.customer.emails.first
+        return email.email if email.respond_to?(:email) && email.email.present?
       end
 
-      # For Customer -> ProfileCustomer (reverse lookup)
-      if entity.respond_to?(:profile_customer) && entity.profile_customer.respond_to?(:email) && entity.profile_customer.email.present?
-        return entity.profile_customer.email
-      end
-
-      # For User -> UserProfile (reverse lookup)
-      if entity.respond_to?(:user_profile) && entity.user_profile.respond_to?(:email) && entity.user_profile.email.present?
-        return entity.user_profile.email
+      # For UserProfile -> check user's emails
+      if entity.respond_to?(:user) && entity.user.respond_to?(:emails) && entity.user.emails.any?
+        email = entity.user.emails.first
+        return email.email if email.respond_to?(:email) && email.email.present?
       end
 
       nil

@@ -179,7 +179,9 @@ RSpec.describe Api::V1::OfficesController, type: :request do
                 city: 'Nova Andradina',
                 state: 'MS',
                 office_type_id: FactoryBot.create(:office_type).id,
-                bank_accounts_attributes: [bank_name: 'BB', account_type: 'checking', agency: '35478', account: 254, operation: 0o02]
+                bank_accounts_attributes: [
+                  bank_name: 'BB', account_type: 'checking', agency: '35478', account: 254, operation: 0o02
+                ]
               }
             }, headers: { Authorization: "Bearer #{admin.jwt_token}", Accept: 'application/json' }
           end.to change(OfficeBankAccount, :count).by(1)
