@@ -33,13 +33,17 @@ module DocxServices
       mother_name: {
         male: 'filho de',
         female: 'filha de'
+      },
+      bank: {
+        default: 'Dados Bancários:'
       }
     }.freeze
 
     ADDRESS_PREFIXES = {
       person: {
         male: 'residente e domiciliado',
-        female: 'residente e domiciliada'
+        female: 'residente e domiciliada',
+        lawyer: 'com endereço profissional à'
       },
       company: {
         default: 'com sede à'
@@ -134,6 +138,12 @@ module DocxServices
 
     SEPARATORS = {
       partner_lines: "\n\n"
+    }.freeze
+
+    ACCOUNT_TYPES = {
+      checking: 'Conta Corrente',
+      savings: 'Conta Poupança',
+      default: 'Conta'
     }.freeze
   end
 end

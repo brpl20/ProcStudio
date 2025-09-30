@@ -112,9 +112,7 @@ module DocxServices
     def address(with_prefix: true)
       return nil unless has_address?
 
-      prefix = if with_prefix
-                 entity_type == :company ? ADDRESS_PREFIXES[:company][:default] : ADDRESS_PREFIXES[:person][gender]
-               end
+      prefix = with_prefix ? address_prefix : nil
 
       parts = []
       parts << street if street
@@ -127,7 +125,7 @@ module DocxServices
       address_text = parts.compact.reject(&:empty?).join(', ')
       return nil if address_text.empty?
 
-      with_prefix && prefix ? "#{prefix} #{address_text}" : address_text
+      prefix ? "#{prefix} #{address_text}" : address_text
     end
 
     def street
@@ -166,7 +164,48 @@ module DocxServices
       "CEP #{mask_zip(data[:zip_code])}"
     end
 
-    def qualification(include_email: false, include_phone: false, include_mother_name: false, include_number_benefit: false, include_nit: false, include_oab: true, include_rg: true, include_cpf: true)
+    def bank
+      return nil unless has_bank_account?
+
+      prefix = DOCUMENT_PREFIXES[:bank][:default]
+      bank_parts = []
+
+      bank_parts << "Agência: #{bank_agency}" if bank_agency
+      bank_parts << "#{account_type_text}: #{bank_account}" if bank_account
+      bank_parts << bank_name if bank_name
+      bank_parts << "Operação: #{bank_operation}" if bank_operation
+      bank_parts << "PIX: #{data[:pix]}" if data[:pix]
+
+      bank_text = bank_parts.compact.reject(&:empty?).join(', ')
+      return nil if bank_text.empty?
+
+      "#{prefix} #{bank_text}"
+    end
+
+    def bank_account
+      data[:account]
+    end
+
+    def bank_agency
+      data[:agency]
+    end
+
+    def bank_name
+      data[:bank_name]
+    end
+
+    def bank_operation
+      data[:operation]
+    end
+
+    def pix
+      return nil unless data[:pix]
+
+      "PIX: #{data[:pix]}"
+    end
+
+    def qualification(options = {})
+      opts = default_qualification_options.merge(options)
       parts = []
 
       parts << full_name.upcase
@@ -177,18 +216,21 @@ module DocxServices
         parts << profession
       end
 
-      parts << cpf if entity_type == :person && include_cpf && cpf
+      parts << cpf if entity_type == :person && opts[:include_cpf] && cpf
       parts << cnpj if entity_type == :company && cnpj
-      parts << rg if include_rg && rg
-      parts << oab if include_oab && oab
-      parts << number_benefit if include_number_benefit && number_benefit
-      parts << nit if include_nit && nit
+      parts << rg if opts[:include_rg] && rg
+      parts << oab if opts[:include_oab] && oab
+      parts << number_benefit if opts[:include_number_benefit] && number_benefit
+      parts << nit if opts[:include_nit] && nit
 
-      parts << email if include_email && email
-      parts << phone if include_phone && phone
-      parts << mother_name if include_mother_name && mother_name
+      parts << email if opts[:include_email] && email
+      parts << phone if opts[:include_phone] && phone
+      parts << mother_name if opts[:include_mother_name] && mother_name
 
       parts << address
+
+      parts << bank if opts[:include_bank] && bank
+      parts << pix if opts[:include_pix] && !opts[:include_bank] && pix
 
       parts.compact.reject(&:empty?).join(', ')
     end
@@ -254,6 +296,17 @@ module DocxServices
         extracted[:zip_code] = entity.zip_code if entity.respond_to?(:zip_code)
       end
 
+      # Bank account - check for bank_accounts polymorphic association
+      if entity.respond_to?(:bank_accounts) && entity.bank_accounts.any?
+        bank_account = entity.bank_accounts.first
+        extracted[:bank_name] = bank_account.bank_name if bank_account.respond_to?(:bank_name)
+        extracted[:agency] = bank_account.agency if bank_account.respond_to?(:agency)
+        extracted[:account] = bank_account.account if bank_account.respond_to?(:account)
+        extracted[:operation] = bank_account.operation if bank_account.respond_to?(:operation)
+        extracted[:account_type] = bank_account.account_type if bank_account.respond_to?(:account_type)
+        extracted[:pix] = bank_account.pix if bank_account.respond_to?(:pix)
+      end
+
       # Additional fields
       extracted[:capacity] = entity.capacity if entity.respond_to?(:capacity)
 
@@ -264,13 +317,15 @@ module DocxServices
       return provided_type.to_sym if provided_type
 
       # Check if entity has CNPJ (company indicator)
-      if entity.respond_to?(:cnpj) && entity.cnpj.present?
-        :company
-      elsif entity.is_a?(Hash) && entity[:cnpj].present?
-        :company
-      else
-        :person
-      end
+      cnpj_present = if entity.respond_to?(:cnpj)
+                       entity.cnpj.present?
+                     elsif entity.is_a?(Hash)
+                       entity[:cnpj].present?
+                     else
+                       false
+                     end
+
+      cnpj_present ? :company : :person
     end
 
     def determine_gender(entity, provided_gender)
@@ -288,6 +343,44 @@ module DocxServices
 
     def has_address?
       data[:street].present? || data[:city].present? || data[:state].present? || data[:zip_code].present?
+    end
+
+    def address_prefix
+      return ADDRESS_PREFIXES[:company][:default] if entity_type == :company
+
+      # Check if person is a lawyer (has OAB)
+      return ADDRESS_PREFIXES[:person][:lawyer] if entity_type == :person && lawyer?
+
+      # Default to gender-based residential prefix
+      ADDRESS_PREFIXES[:person][gender]
+    end
+
+    def lawyer?
+      data[:oab].present?
+    end
+
+    def has_bank_account?
+      data[:bank_name].present? || data[:agency].present? || data[:account].present? || data[:pix].present?
+    end
+
+    def account_type_text
+      account_type_key = data[:account_type]&.to_s&.to_sym
+      ACCOUNT_TYPES[account_type_key] || ACCOUNT_TYPES[:default]
+    end
+
+    def default_qualification_options
+      {
+        include_email: false,
+        include_phone: false,
+        include_mother_name: false,
+        include_number_benefit: false,
+        include_nit: false,
+        include_oab: true,
+        include_rg: true,
+        include_cpf: true,
+        include_bank: false,
+        include_pix: false
+      }
     end
 
     def extract_email(entity)
@@ -389,10 +482,10 @@ module DocxServices
       "#{digits[0..4]}-#{digits[5..7]}"
     end
 
-    def mask_nb(nb)
-      return nb unless nb
+    def mask_nb(number_benefit)
+      return number_benefit unless number_benefit
 
-      nb.to_s.gsub(/(\d{3})(\d{4})(\d{4})/, '\1.\2.\3-\4')
+      number_benefit.to_s.gsub(/(\d{3})(\d{4})(\d{4})/, '\1.\2.\3-\4')
     end
 
     def mask_nit(nit)

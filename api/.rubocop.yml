@@ -57,9 +57,17 @@ AllCops:
 
     # Arquivos que serão deprecados:
     - app/services/profile_customers/**/*
-    - app/services/docx_services/social_contract_test.rb
-    - app/services/docx_services/**/*
     - app/models/office_type.rb
+
+    # DocxServices - Refactor in progress (exclude specific files, but keep formatter_constants.rb and formatter_qualification.rb)
+    - app/services/docx_services/social_contract_test.rb
+    - app/services/docx_services/base_template.rb
+    - app/services/docx_services/formatter_offices.rb
+    - app/services/docx_services/social_contract_service_facade.rb
+    - app/services/docx_services/social_contract_service_society.rb
+    - app/services/docx_services/social_contract_service_unipessoal.rb
+    - app/services/docx_services/output/**/*
+    - app/services/docx_services/templates/**/*
 
 # Layout Cops
 Layout/LineLength:
