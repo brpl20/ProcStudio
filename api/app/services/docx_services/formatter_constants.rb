@@ -157,6 +157,11 @@ module DocxServices
       }
     }.freeze
 
+    CAPACITY_TERMS = {
+      unable: 'absolutamente incapaz',
+      relatively: 'relativamente incapaz'
+    }.freeze
+
     COMPANY_REPRESENTATION = {
       single_admin: 'seu sócio administrador',
       multiple_admins: 'seus sócios administradores'

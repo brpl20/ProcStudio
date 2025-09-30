@@ -227,10 +227,16 @@ module DocxServices
       parts << phone if opts[:include_phone] && phone
       parts << mother_name if opts[:include_mother_name] && mother_name
 
-      parts << address
+      parts << address_with_capacity_consideration
 
       parts << bank if opts[:include_bank] && bank
       parts << pix if opts[:include_pix] && !opts[:include_bank] && pix
+
+      # Add capacity term and representation at the end
+      if entity_type == :person && has_capacity_representation?
+        parts << capacity_term
+        parts << capacity_representation
+      end
 
       parts.compact.reject(&:empty?).join(', ')
     end
@@ -309,6 +315,9 @@ module DocxServices
 
       # Additional fields
       extracted[:capacity] = entity.capacity if entity.respond_to?(:capacity)
+
+      # Extract representors
+      extracted[:representors] = extract_representors(entity)
 
       extracted.with_indifferent_access
     end
@@ -505,6 +514,137 @@ module DocxServices
       else
         # Handle other formats or return as-is
         oab
+      end
+    end
+
+    # Capacity handling methods
+    def extract_representors(entity)
+      representors = []
+
+      # Check for representors association (ProfileCustomer model)
+      if entity.respond_to?(:representors) && entity.representors.any?
+        representors = entity.representors.map do |representor|
+          extract_data(representor)
+        end
+      elsif entity.respond_to?(:active_representors) && entity.active_representors.any?
+        representors = entity.active_representors.map do |representor|
+          extract_data(representor)
+        end
+      end
+
+      representors
+    end
+
+    def has_capacity_representation?
+      capacity = data[:capacity]&.to_s&.to_sym
+      return false unless capacity && [:unable, :relatively].include?(capacity)
+
+      representors.any?
+    end
+
+    def representors
+      data[:representors] || []
+    end
+
+    def capacity_term
+      capacity = data[:capacity]&.to_s&.to_sym
+      return nil unless capacity && [:unable, :relatively].include?(capacity)
+
+      CAPACITY_TERMS[capacity]
+    end
+
+    def capacity_representation
+      return nil unless has_capacity_representation?
+
+      capacity = data[:capacity]&.to_s&.to_sym
+      representor_data = representors.first
+
+      return nil unless representor_data
+
+      representor_formatter = FormatterQualification.new(representor_data, entity_type: :person)
+
+      case capacity
+      when :unable
+        if entity_type == :company
+          if representors.size > 1
+            "#{COMPANY_REPRESENTATION[:multiple_admins]} #{format_multiple_representors_with_qualification}"
+          else
+            representor_qualification = representor_formatter.qualification
+            "#{COMPANY_REPRESENTATION[:single_admin]} #{representor_qualification}"
+          end
+        else
+          representor_qualification = representor_formatter.qualification
+          "#{CAPACITY_PREFIXES[:unable][:person]} #{representor_qualification}"
+        end
+      when :relatively
+        representor_qualification = representor_formatter.qualification
+        "#{CAPACITY_PREFIXES[:relatively][:person]} #{representor_qualification}"
+      end
+    end
+
+    def format_multiple_representors
+      return '' if representors.empty?
+
+      names = representors.map do |rep_data|
+        rep_formatter = FormatterQualification.new(rep_data, entity_type: :person)
+        rep_formatter.full_name
+      end
+
+      names.join(' e ')
+    end
+
+    def format_multiple_representors_with_qualification
+      return '' if representors.empty?
+
+      qualifications = representors.map do |rep_data|
+        rep_formatter = FormatterQualification.new(rep_data, entity_type: :person)
+        rep_formatter.qualification
+      end
+
+      qualifications.join(' e ')
+    end
+
+    def address_with_capacity_consideration
+      return address unless has_capacity_representation? && same_address_as_representors?
+
+      # If addresses are the same, format with "ambos" or "todos"
+      base_address = address(with_prefix: false)
+      return base_address unless base_address
+
+      prefix = determine_shared_address_prefix
+      "#{prefix} com endereço à #{base_address}"
+    end
+
+    def same_address_as_representors?
+      return false unless has_address? && representors.any?
+
+      main_address_key = address_key_for(data)
+
+      representors.all? do |rep_data|
+        rep_address_key = address_key_for(rep_data)
+        main_address_key == rep_address_key
+      end
+    end
+
+    def address_key_for(address_data)
+      [
+        address_data[:street],
+        address_data[:number],
+        address_data[:complement],
+        address_data[:neighborhood],
+        address_data[:city],
+        address_data[:state],
+        address_data[:zip_code]
+      ].compact.map { |x| x.to_s.strip }.reject(&:empty?).join('|').downcase
+    end
+
+    def determine_shared_address_prefix
+      total_people = 1 + representors.size
+
+      if total_people == 2
+        ADDRESS_COMBINATION[:both]
+      else
+        ADDRESS_COMBINATION[:all]
       end
     end
   end
