@@ -1,0 +1,20 @@
+inherit_from: api/.rubocop.yml
+
+AllCops:
+  # Only process files in the api directory
+  Include:
+    - 'api/**/*'
+  
+  # Exclude everything else
+  Exclude:
+    - 'frontend/**/*'
+    - 'tests/**/*'
+    - 'docx/**/*'
+    - 'docs/**/*'
+    - '.git/**/*'
+    - 'node_modules/**/*'
+    - '**/*.md'
+    - 'Gemfile'
+    - 'Gemfile.lock'
+    - 'CLAUDE.md'
+    - 'VALUE_OBJECT_STRATEGY.md'

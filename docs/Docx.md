@@ -60,9 +60,10 @@ Recomendo fazer testes usando `rails console` antes de passar para a programaç�
 3. Utilizar o método `qualify` para gerar a qualificação completa da pessoa ou empresa ou simplesmente checar dados como e-mail e telefone individualmente:
 
 ```
-f.qualify
-f.email
-f.street
+f.qualify -> Qualificação Completa
+f.email -> Email
+f.street -> Apenas rua
+f.address -> Endereço completo
 ```
 
 #### Qualificação
@@ -94,6 +95,25 @@ include_number_benefit: true
 include_nit: true
 ```
 
+Exemplos:
+1. Sem Include:
+```ruby
+doc.qualification
+=> "ESCRITÓRIO DE ADVOCACIA EXEMPLO, inscrita no CNPJ sob o nº 11.222.333/0001-81, com sede à Rua Exemplo, nº 123, Sala 456, Centro, São Paulo - SP, CEP 01234-567"
+```
+
+2. Com Include:
+```ruby
+doc.qualification(include_email: true)
+=> "ESCRITÓRIO DE ADVOCACIA EXEMPLO, inscrita no CNPJ sob o nº 11.222.333/0001-81, com endereço eletrônico: contato@exemplo.com.br, com sede à Rua Exemplo, nº 123, Sala 456, Centro, São Paulo - SP, CEP 01234-567"
+```
+
+1. Com NIT:
+```ruby
+docpf.qualification(include_nit:true)
+=> "JOHN DOE, brasileiro, solteiro, software engineer, inscrito no CPF sob o nº 058.802.539-96, RG nº 12.345.678-9, NIT: 134154124, residente e domiciliado Avenida Paulista, nº 1578, Bela Vista, São Paulo - SP, CEP 01310-100"
+```
+
 Os campos padrões `cpf, rg, oab` também podem ser desabilitados;
 
 ```ruby
@@ -105,3 +125,54 @@ include_oab: false
 Isso pode acontecer por exemplo na qualificação de um advogado no contrato, em que só é necessário a sua oab:
 
 `... advogado, inscrito na OAB/PR 54.159 ...`
+
+#### Dados Bancários e PIX
+
+A partir da versão atual, o sistema também suporta a inclusão de dados bancários e informações de PIX na qualificação. Estes dados são extraídos automaticamente da associação polimórfica `bank_accounts` dos modelos.
+
+Os campos bancários disponíveis incluem:
+- Nome do Banco (bank_name)
+- Agência (bank_agency) 
+- Conta (bank_account)
+- Operação (bank_operation)
+- Tipo de Conta (definido automaticamente como "Conta Corrente", "Conta Poupança" ou "Conta")
+- PIX (pix)
+
+No `include` para dados bancários temos:
+- Dados Bancários Completos (bank)
+- PIX isolado (pix)
+
+```ruby
+include_bank: true    # Inclui todos os dados bancários
+include_pix: true     # Inclui apenas o PIX
+```
+
+Exemplos:
+
+1. Qualificação com dados bancários completos:
+```ruby
+f.qualification(include_bank: true)
+=> "JOÃO SILVA SANTOS, brasileiro, solteiro, advogado, inscrito no CPF sob o nº 123.456.789-01, RG nº 1234567, inscrito na OAB sob o nº 123456, com endereço profissional à Rua das Flores, nº 123, Centro, São Paulo - SP, CEP 01234-567, Dados Bancários: Agência: 12345, Conta Corrente: 123456, Banco do Brasil, Operação: 001, PIX: joao.silva@email.com"
+```
+
+2. Qualificação apenas com PIX:
+```ruby
+f.qualification(include_pix: true)
+=> "JOÃO SILVA SANTOS, brasileiro, solteiro, advogado, inscrito no CPF sob o nº 123.456.789-01, RG nº 1234567, inscrito na OAB sob o nº 123456, com endereço profissional à Rua das Flores, nº 123, Centro, São Paulo - SP, CEP 01234-567, PIX: joao.silva@email.com"
+```
+
+3. Métodos individuais para dados bancários:
+```ruby
+f.bank           # "Dados Bancários: Agência: 12345, Conta Corrente: 123456, Banco do Brasil, Operação: 001, PIX: joao.silva@email.com"
+f.bank_name      # "Banco do Brasil"
+f.bank_agency    # "12345"
+f.bank_account   # "123456"
+f.bank_operation # "001"
+f.pix           # "PIX: joao.silva@email.com"
+```
+
+**Importante**: Quando `include_bank: true` é utilizado junto com `include_pix: true`, o PIX não será duplicado na qualificação, sendo exibido apenas dentro dos dados bancários completos.
+
+#### Advogados e Endereço Profissional
+
+O sistema detecta automaticamente quando uma pessoa é advogada através da presença do campo `oab`. Nestes casos, o prefixo do endereço é alterado automaticamente de "residente e domiciliado/a" para "com endereço profissional à", conforme as convenções jurídicas brasileiras.

@@ -145,5 +145,26 @@ module DocxServices
       savings: 'Conta Poupança',
       default: 'Conta'
     }.freeze
+
+    CAPACITY_PREFIXES = {
+      unable: {
+        person: 'representado por',
+        company: 'representada por'
+      },
+      relatively: {
+        person: 'assistido por',
+        company: 'assistida por'
+      }
+    }.freeze
+
+    COMPANY_REPRESENTATION = {
+      single_admin: 'seu sócio administrador',
+      multiple_admins: 'seus sócios administradores'
+    }.freeze
+
+    ADDRESS_COMBINATION = {
+      both: 'ambos',
+      all: 'todos'
+    }.freeze
   end
 end
