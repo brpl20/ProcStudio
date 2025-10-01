@@ -176,3 +176,82 @@ f.pix           # "PIX: joao.silva@email.com"
 #### Advogados e Endereço Profissional
 
 O sistema detecta automaticamente quando uma pessoa é advogada através da presença do campo `oab`. Nestes casos, o prefixo do endereço é alterado automaticamente de "residente e domiciliado/a" para "com endereço profissional à", conforme as convenções jurídicas brasileiras.
+
+#### Capacidade Civil e Representação Legal
+
+A partir da versão atual, o sistema suporta automaticamente o tratamento da capacidade civil e representação legal para pessoas físicas, seguindo as normas do Código Civil brasileiro. O sistema identifica a capacidade através do campo `capacity` do modelo `ProfileCustomer` e formata a qualificação de acordo com as regras jurídicas.
+
+##### Tipos de Capacidade
+
+O sistema reconhece três tipos de capacidade civil:
+
+- **able**: Pessoa plenamente capaz (não requer representação)
+- **relatively**: Pessoa relativamente incapaz (requer assistência)
+- **unable**: Pessoa absolutamente incapaz (requer representação)
+
+##### Estrutura da Qualificação com Capacidade
+
+Para pessoas com capacidade limitada, a qualificação segue a seguinte estrutura:
+
+1. **Dados pessoais completos** da pessoa (nome, nacionalidade, estado civil, profissão, documentos, endereço)
+2. **Termo de capacidade** ("relativamente incapaz" ou "absolutamente incapaz")
+3. **Representação legal** ("assistido por" ou "representado por" + qualificação completa do representante)
+
+##### Representação e Assistência
+
+O sistema diferencia automaticamente entre assistência e representação:
+
+- **Relativamente incapazes**: utiliza "**assistido por**" + qualificação do assistente
+- **Absolutamente incapazes**: utiliza "**representado por**" + qualificação do representante
+
+##### Exemplos de Qualificação com Capacidade
+
+1. **Pessoa relativamente incapaz**:
+```ruby
+# ProfileCustomer com capacity: 'relatively' e representante cadastrado
+f.qualification
+=> "PEDRO SILVA JUNIOR, brasileiro, solteiro, estudante, inscrito no CPF sob o nº 111.222.333-96, RG nº 9876543, residente e domiciliado Rua São Paulo, nº 456, Apto 202, Centro, Cascavel - PR, CEP 85810-030, relativamente incapaz, assistido por CARLOS OLIVEIRA SANTOS, brasileiro, casado, empresário, inscrito no CPF sob o nº 123.456.789-09, RG nº 1234567, residente e domiciliado Rua Brasil, nº 123, Apto 202, Centro, Cascavel - PR, CEP 85810-030"
+```
+
+2. **Pessoa absolutamente incapaz**:
+```ruby
+# ProfileCustomer com capacity: 'unable' e representante cadastrado
+f.qualification
+=> "PAULO DA SILVA, brasileiro, casado, empresário, inscrito no CPF sob o nº 999.888.777-66, RG nº 1111111, residente e domiciliado Rua Alexandre de Gusmão, nº 100, Centro, São Paulo - SP, CEP 01000-000, absolutamente incapaz, representado por MARIA DA SILVA, brasileira, viúva, doméstica, inscrita no CPF sob o nº 555.444.333-22, RG nº 2222222, residente e domiciliada Rua das Flores, nº 200, Centro, São Paulo - SP, CEP 01001-000"
+```
+
+##### Endereços Compartilhados
+
+Quando a pessoa incapaz e seu representante/assistente possuem o mesmo endereço, o sistema automaticamente detecta essa situação e formata a qualificação com as expressões "ambos" (para 2 pessoas) ou "todos" (para mais de 2 pessoas):
+
+```ruby
+# Mesmo endereço entre representado e representante
+f.qualification
+=> "PAULO DA SILVA, brasileiro, casado, empresário, inscrito no CPF sob o nº 999.888.777-66, RG nº 1111111, absolutamente incapaz, representado por MARIA DA SILVA, brasileira, viúva, doméstica, inscrita no CPF sob o nº 555.444.333-22, RG nº 2222222, ambos com endereço à Rua Alexandre de Gusmão, nº 100, Centro, São Paulo - SP, CEP 01000-000"
+```
+
+##### Múltiplos Representantes
+
+O sistema também suporta múltiplos representantes para uma mesma pessoa incapaz:
+
+```ruby
+# ProfileCustomer com múltiplos representantes
+f.qualification
+=> "JOÃO DA SILVA, brasileiro, solteiro, absolutamente incapaz, representado por MARIA DA SILVA, brasileira, viúva, doméstica, inscrita no CPF sob o nº 111.111.111-11, RG nº 1111111, residente e domiciliada Rua A, nº 100 e CARLOS DA SILVA, brasileiro, casado, empresário, inscrito no CPF sob o nº 222.222.222-22, RG nº 2222222, residente e domiciliado Rua B, nº 200"
+```
+
+##### Associações Necessárias
+
+Para o funcionamento correto da representação, é necessário que o modelo `ProfileCustomer` tenha os seguintes relacionamentos configurados:
+
+- `has_many :representors` ou `has_many :active_representors`
+- Relacionamento através da tabela `represents`
+
+O sistema automaticamente detecta e extrai os dados dos representantes através dessas associações.
+
+##### Notas Importantes
+
+- A qualificação **sempre inclui** os dados da capacidade quando aplicável, sem necessidade de parâmetros adicionais
+- O sistema **não duplica informações** quando endereços são iguais
+- A **ordem da qualificação** segue rigorosamente as normas jurídicas brasileiras
+- Todos os **documentos dos representantes** são incluídos automaticamente (CPF, RG, etc.)
