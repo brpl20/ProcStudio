@@ -34,6 +34,8 @@ user10 = User.find_by!(email: 'u10@gmail.com')
 office1 = Office.find_or_create_by!(cnpj: '61.457.002/6403-43') do |o|
   o.name = 'Escritório Advocacia João Augusto Prado'
   o.oab_id = 'PR_15047'
+  o.oab_status = 'active'
+  o.oab_inscricao = 'PR123456'
   o.society = 'individual'
   o.foundation = Date.parse('25-09-2023')
   o.site = 'advocacia.com.br'
@@ -100,6 +102,8 @@ user1.user_profile.update!(office: office1)
 office2 = Office.find_or_create_by!(cnpj: '08.177.535/5326-69') do |o|
   o.name = 'Escritório Advocacia Terezinha e Mendes'
   o.oab_id = 'PR_1821'
+  o.oab_status = 'active'
+  o.oab_inscricao = 'PR789012'
   o.society = 'company'
   o.foundation = Date.parse('15-01-2020')
   o.site = 'terezinha-mendes.adv.br'
@@ -186,6 +190,8 @@ user3.user_profile.update!(office: office2)
 office3a = Office.find_or_create_by!(cnpj: '00.714.999/6011-34') do |o|
   o.name = 'Machado Advocacia Individual'
   o.oab_id = 'PR_2001'
+  o.oab_status = 'active'
+  o.oab_inscricao = 'PR345678'
   o.society = 'individual'
   o.foundation = Date.parse('01-03-2019')
   o.site = 'machado-individual.adv.br'
@@ -248,6 +254,8 @@ user4.user_profile.update!(office: office3a)
 office3b = Office.find_or_create_by!(cnpj: '37.794.415/8709-20') do |o|
   o.name = 'Oliveira & Costa Advogados Associados'
   o.oab_id = 'PR_2002'
+  o.oab_status = 'inactive'
+  o.oab_inscricao = 'PR901234'
   o.society = 'company'
   o.foundation = Date.parse('15-06-2021')
   o.site = 'oliveira-costa.adv.br'
@@ -321,6 +329,8 @@ user6.user_profile.update!(office: office3b)
 office4 = Office.find_or_create_by!(cnpj: '03.382.290/3891-00') do |o|
   o.name = 'Silva & Pereira Sociedade de Advogados'
   o.oab_id = 'PR_3001'
+  o.oab_status = 'active'
+  o.oab_inscricao = 'PR567890'
   o.society = 'company'
   o.foundation = Date.parse('10-08-2018')
   o.site = 'silva-pereira.adv.br'
@@ -401,6 +411,8 @@ user8.user_profile.update!(office: office4)
 office5 = Office.find_or_create_by!(cnpj: '32.423.347/9878-17') do |o|
   o.name = 'Costa & Rodrigues Advogados'
   o.oab_id = 'PR_4001'
+  o.oab_status = 'active'
+  o.oab_inscricao = 'PR234567'
   o.society = 'company'
   o.foundation = Date.parse('20-05-2022')
   o.site = 'costa-rodrigues.adv.br'
