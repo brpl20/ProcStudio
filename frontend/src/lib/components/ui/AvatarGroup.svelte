@@ -18,6 +18,14 @@
     lg: 'w-12 h-12 text-base'
   };
 
+  const plusCountSizeClasses = {
+    responsive: 'w-4 h-4 text-xs sm:w-5 sm:h-5 sm:text-xs md:w-6 md:h-6 md:text-xs lg:w-8 lg:h-8 lg:text-sm',
+    xs: 'w-4 h-4 text-xs',
+    sm: 'w-5 h-5 text-xs', 
+    md: 'w-6 h-6 text-xs',
+    lg: 'w-8 h-8 text-xs'
+  };
+
   // Função para gerar hash simples baseado no nome do usuário
   function hashString(str: string): number {
     let hash = 0;
@@ -79,7 +87,7 @@
 {#if users.length === 0}
   <span class="text-base-content/30">-</span>
 {:else}
-  <div class="avatar-group -space-x-4 justify-center">
+  <div class="avatar-group -space-x-3 justify-center">
     {#each displayUsers as user, index}
       <div class="avatar">
         {#if user.avatar}
@@ -102,9 +110,9 @@
       </div>
     {/each}
     {#if remainingCount > 0}
-      <div class="avatar placeholder">
+      <div class="avatar placeholder -ml-1">
         <div 
-          class="bg-primary text-neutral-content rounded-full {sizeClasses[size]} font-medium ring-2 ring-offset-2 ring-neutral"
+          class="bg-primary text-primary-content rounded-full {plusCountSizeClasses[size]} font-medium"
           style="display: flex !important; align-items: center; justify-content: center;"
         >
           +{remainingCount}
