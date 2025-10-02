@@ -75,7 +75,9 @@ class SeedsFacade
 
     def load_teams_offices_users
       puts "\n[TEAMS] Loading Teams, Offices, and Users..."
-      load Rails.root.join('db/seeds_teams_offices_users.rb')
+      load Rails.root.join('db/seeds_teams.rb')
+      load Rails.root.join('db/seeds_users.rb')
+      load Rails.root.join('db/seeds_offices.rb')
       puts '  [OK] Teams, Offices, and Users loaded successfully'
     end
 
