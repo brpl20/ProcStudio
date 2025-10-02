@@ -20,6 +20,7 @@ gem 'pg'
 gem 'prawn'
 gem 'puma', '~> 6.0'
 gem 'pundit'
+gem 'extensobr'
 gem 'rack-cors'
 gem 'rails', '~> 8.0.0'
 gem 'rubocop', '~> 1.50', require: false
@@ -59,5 +60,3 @@ group :development do
   gem 'better_errors'
   gem 'binding_of_caller'
 end
-
-gem 'extensobr'

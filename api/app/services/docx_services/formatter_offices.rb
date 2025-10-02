@@ -1,276 +1,146 @@
 # frozen_string_literal: true
 
-require_relative 'formatter_constants'
+# FormatterOffices methods são para extrair informações de uma office e as suas relações com os advogados
+# NÃO é para extrair a qualificação, nome e outros atributos que estão concentrados no formatter_qualification
+
+require_relative 'formatter_constants_offices'
 
 module DocxServices
   class FormatterOffices
-    include FormatterConstants
+    include FormatterConstantsOffices
 
-    attr_reader :office, :lawyers
+    attr_reader :data, :office, :lawyers, :lawyers_society_info
 
     def initialize(office, _lawyers = nil)
       @office = office
-      @lawyers = office.users_profiles
+      @lawyers = office.user_profiles
+      @lawyers_society_info = office.user_offices
+      @data = extract_data(office)
     end
 
     class << self
-      def for_office(office, lawyers = nil)
-        new(office, lawyers)
+      def for(entity, **)
+        new(entity, **)
       end
     end
 
-    def partner_subscription_text
-      if lawyers.size == 1
-        lawyer = lawyers.first
-        quotes = format_number(lawyer_quotes(lawyer))
-        value = quote_value.to_i
-        total = format_currency(lawyer_capital_value(lawyer))
+    def society
+      return nil unless data[:society]
 
-        format(SUBSCRIPTION_TEXT[:single],
-               name: lawyer_full_name(lawyer),
-               quotes: quotes,
-               value: value,
-               total: total)
+      SOCIETY[data[:society].to_sym] || data[:society]
+    end
+
+    def accounting_type
+      return nil unless data[:accounting_type]
+
+      ACCOUNTING_TYPE[data[:accounting_type].to_sym] || data[:accounting_type]
+    end
+
+    def oab_status
+      return nil unless data[:oab_status]
+
+      OAB_STATUS[data[:oab_status].to_sym] || data[:oab_status]
+    end
+
+    def oab_id
+      return nil unless data[:oab_id]
+
+      OabValidator.format_oab(data[:oab_id])
+    end
+
+    def oab_inscricao
+      data[:oab_inscricao]
+    end
+
+    def quote_value(extenso: false)
+      return nil unless data[:quote_value]
+
+      formatted = MonetaryValidator.format(data[:quote_value])
+      if extenso && formatted
+        por_extenso = MonetaryValidator.por_extenso(data[:quote_value])
+        "#{formatted} (#{por_extenso})"
       else
-        lines = []
-        lawyers.each do |lawyer|
-          quotes = format_number(lawyer_quotes(lawyer))
-          value = quote_value.to_i
-          total = format_currency(lawyer_capital_value(lawyer))
-
-          line = format(SUBSCRIPTION_TEXT[:multiple],
-                        name: lawyer_full_name(lawyer),
-                        quotes: quotes,
-                        value: value,
-                        total: total)
-          lines << line
-        end
-        lines.join(SEPARATORS[:partner_lines])
+        formatted
       end
     end
 
-    def partner_total_quotes_text
-      if lawyers.size == 1
-        format_number(lawyer_quotes(lawyers.first))
+    def number_of_quotes(extenso: false)
+      return nil unless data[:number_of_quotes]
+
+      formatted = NumberValidator.format(data[:number_of_quotes])
+      if extenso && formatted
+        por_extenso = NumberValidator.por_extenso(data[:number_of_quotes])
+        "#{formatted} (#{por_extenso})"
       else
-        admin_lawyer = find_administrator_lawyer || lawyers.first
-        format_number(lawyer_quotes(admin_lawyer))
+        formatted
       end
     end
 
-    def partner_sum_text
-      if lawyers.size == 1
-        format_currency(lawyer_capital_value(lawyers.first))
-      else
-        admin_lawyer = find_administrator_lawyer || lawyers.first
-        format_currency(lawyer_capital_value(admin_lawyer))
+    # Relacionamento do Office com os Advogados (users)
+    def partnership_type(lawyer_number = nil)
+      raise ArgumentError, "Você deve especificar o número do advogado (1, 2, 3...)" if lawyer_number.nil?
+
+      lawyer_info = @lawyers_society_info[lawyer_number - 1]
+      return nil unless lawyer_info&.partnership_type
+
+      PARTNERSHIP_TYPE[lawyer_info.partnership_type.to_sym] || lawyer_info.partnership_type
+    end
+
+    def partnership_percentage(lawyer_number = nil)
+      raise ArgumentError, "Você deve especificar o número do advogado (1, 2, 3...)" if lawyer_number.nil?
+
+      lawyer_info = @lawyers_society_info[lawyer_number - 1]
+      return nil unless lawyer_info&.partnership_percentage
+
+      "#{lawyer_info.partnership_percentage.to_i}%"
+    end
+
+    def is_administrator(lawyer_number = nil)
+      raise ArgumentError, "Você deve especificar o número do advogado (1, 2, 3...)" if lawyer_number.nil?
+
+      lawyer_info = @lawyers_society_info[lawyer_number - 1]
+      return nil unless lawyer_info
+
+      lawyer_info.is_administrator
+    end
+
+    def partners_count
+      @lawyers_society_info.length
+    end
+
+    def partners_info
+      @lawyers_society_info.map.with_index do |lawyer_info, index|
+        lawyer_num = index + 1
+        {
+          number: lawyer_num,
+          partnership_type: PARTNERSHIP_TYPE[lawyer_info.partnership_type.to_sym] || lawyer_info.partnership_type,
+          partnership_percentage: "#{lawyer_info.partnership_percentage.to_i}%",
+          is_administrator: lawyer_info.is_administrator
+        }
       end
     end
 
-    def percentage_text
-      if lawyers.size == 1
-        OFFICE_DEFAULTS[:full_percentage]
-      else
-        admin_lawyer = find_administrator_lawyer || lawyers.first
-        format(OFFICE_DEFAULTS[:percentage_format], value: lawyer_percentage(admin_lawyer))
-      end
-    end
-
-    def total_quotes
-      # Get from office or user_offices association
-      if office.respond_to?(:total_quotes)
-        office.total_quotes
-      else
-        # Default value or calculate from user_offices
-        calculate_total_quotes
-      end
-    end
-
-    def quote_value
-      # Calculate quote value
-      total_capital_value.to_f / total_quotes
-    end
-
-    def total_capital_value
-      # Get from office or user_offices association
-      if office.respond_to?(:capital_value)
-        office.capital_value
-      else
-        # Default value or calculate from user_offices
-        calculate_total_capital_value
-      end
-    end
-
-    def lawyer_quotes(lawyer)
-      # Check if there's a user_office association
-      user_office = find_user_office(lawyer)
-      return user_office.quotes if user_office.respond_to?(:quotes)
-
-      # Otherwise, divide equally among lawyers
-      total_quotes / lawyers.size
-    end
-
-    def lawyer_capital_value(lawyer)
-      # Check if there's a user_office association
-      user_office = find_user_office(lawyer)
-      return user_office.capital_value if user_office.respond_to?(:capital_value)
-
-      # Calculate based on percentage or equal division
-      total_capital_value / lawyers.size
-    end
-
-    def lawyer_percentage(lawyer)
-      # Check if there's a user_office association
-      user_office = find_user_office(lawyer)
-      return user_office.percentage if user_office.respond_to?(:percentage)
-
-      # Calculate percentage
-      (100.0 / lawyers.size).round(2)
-    end
-
-    def lawyer_full_name(lawyer)
-      FormatterQualification.for(lawyer).full_name(upcase: true)
-    end
-
-    def lawyer_association(lawyer)
-      user_office = find_user_office(lawyer)
-
-      # Check if specified in user_office
-      return user_office.role if user_office.respond_to?(:role) && user_office.role.present?
-
-      # Check if administrator
-      return PARTNER_ROLES[:administrator] if is_administrator?(lawyer)
-
-      PARTNER_ROLES[:partner]
-    end
-
-    def find_administrator_lawyer
-      # Look for administrator in user_offices
-      if office.respond_to?(:user_offices)
-        admin_office = office.user_offices.find_by(role: ROLE_IDENTIFIERS[:administrator]) ||
-                       office.user_offices.find_by(is_admin: true)
-        return admin_office.users_profile if admin_office
-      end
-
-      # Default to first lawyer as administrator
-      lawyers.first
-    end
-
-    def is_administrator?(lawyer)
-      user_office = find_user_office(lawyer)
-
-      # Check user_office association for admin status
-      return true if user_office.respond_to?(:is_admin) && user_office.is_admin
-      return true if user_office.respond_to?(:role) && user_office.role == ROLE_IDENTIFIERS[:administrator]
-
-      # Check if lawyer is the default administrator
-      find_administrator_lawyer == lawyer
-    end
-
-    def pro_labore_enabled?
-      # Check if pro labore is enabled in office
-      return office.pro_labore_enabled if office.respond_to?(:pro_labore_enabled)
-
-      PRO_LABORE[:enabled_by_default]
-    end
-
-    def pro_labore_text
-      # Check for custom text in office
-      return office.pro_labore_text if office.respond_to?(:pro_labore_text) && office.pro_labore_text.present?
-
-      PRO_LABORE[:default_text]
-    end
-
-    def dividends_enabled?
-      # Check if dividends clause is enabled in office
-      return office.dividends_enabled if office.respond_to?(:dividends_enabled)
-
-      DIVIDENDS[:enabled_by_default]
-    end
-
-    def dividends_text
-      # Check for custom text in office
-      return office.dividends_text if office.respond_to?(:dividends_text) && office.dividends_text.present?
-
-      DIVIDENDS[:default_text]
-    end
-
-    def office_name
-      office&.name
-    end
-
-    def office_city
-      office_address&.city || office&.city || ''
-    end
-
-    def office_state
-      office_address&.state || office&.state || ''
-    end
-
-    def office_street
-      if office_address
-        formatter = FormatterQualification.for(office_address)
-        formatter.street
-      elsif office&.street
-        office.street.to_s.downcase.titleize
-      else
-        ''
-      end
-    end
-
-    def office_zip_code
-      zip = office_address&.zip_code || office&.zip_code || office&.zip || ''
-      return '' if zip.blank?
-
-      FormatterQualification.new({ zip_code: zip }).zip_code || zip
-    end
-
-    def office_address
-      # Get address from office association if available
-      return office.address if office.respond_to?(:address) && office.address
-      return office.addresses.first if office.respond_to?(:addresses) && office.addresses.any?
-
-      nil
-    end
-
-    def office_full_address
-      # Use FormatterQualification to format the office address
-      formatter = FormatterQualification.for(office, entity_type: :company)
-      formatter.address(with_prefix: true)
+    def entry_date
     end
 
     private
 
-    def find_user_office(lawyer)
-      return nil unless office.respond_to?(:user_offices)
+    def extract_data(entity)
+      return entity if entity.is_a?(Hash)
 
-      # Find UserOffice record for this lawyer and office
-      office.user_offices.find_by(users_profile: lawyer)
-    end
+      # Extract data from ActiveRecord model
+      extracted = {}
 
-    def calculate_total_quotes
-      if office.respond_to?(:user_offices) && office.user_offices.any?
-        office.user_offices.sum(:quotes) || OFFICE_DEFAULTS[:total_quotes]
-      else
-        OFFICE_DEFAULTS[:total_quotes]
-      end
-    end
+      # Office info
+      extracted[:society] = entity.society if entity.respond_to?(:society)
+      extracted[:accounting_type] = entity.accounting_type if entity.respond_to?(:accounting_type)
+      extracted[:oab_status] = entity.oab_status if entity.respond_to?(:oab_status)
+      extracted[:oab_id] = entity.oab_id if entity.respond_to?(:oab_id)
+      extracted[:oab_inscricao] = entity.oab_inscricao if entity.respond_to?(:oab_inscricao)
+      extracted[:quote_value] = entity.quote_value if entity.respond_to?(:quote_value)
+      extracted[:number_of_quotes] = entity.number_of_quotes if entity.respond_to?(:number_of_quotes)
 
-    def calculate_total_capital_value
-      if office.respond_to?(:user_offices) && office.user_offices.any?
-        office.user_offices.sum(:capital_value) || OFFICE_DEFAULTS[:total_capital_value]
-      else
-        OFFICE_DEFAULTS[:total_capital_value]
-      end
-    end
-
-    def format_currency(value)
-      formatted = value.to_i.to_s.gsub(/\B(?=(\d{3})+(?!\d))/, FORMATTING[:currency_separator])
-      "#{formatted}#{FORMATTING[:currency_decimal]}"
-    end
-
-    def format_number(value)
-      value.to_s.gsub(/\B(?=(\d{3})+(?!\d))/, FORMATTING[:thousands_separator])
+      extracted.with_indifferent_access
     end
   end
 end
