@@ -30,6 +30,7 @@ export class JobService {
   private transformJsonApiJob(jsonApiData: JsonApiJobData): Job {
     return {
       id: parseInt(jsonApiData.id),
+      title: jsonApiData.attributes.title,
       description: jsonApiData.attributes.description,
       deadline: jsonApiData.attributes.deadline,
       status: jsonApiData.attributes.status,

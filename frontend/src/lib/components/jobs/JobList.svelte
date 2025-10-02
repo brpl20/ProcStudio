@@ -54,6 +54,7 @@
       const term = searchTerm.toLowerCase();
       result = result.filter((job) => {
         return (
+          job.title?.toLowerCase().includes(term) ||
           job.description?.toLowerCase().includes(term) ||
           // job.latest_comment?.content?.toLowerCase().includes(term) ||
           job.latest_comment?.author?.name?.toLowerCase().includes(term) ||
@@ -140,13 +141,24 @@
               {job.id}
             </td>
             <td>
-              {#if job.description}
-                <div class="font-medium tooltip" data-tip={job.description}>
-                  {truncateDescription(job.description)}
-                </div>
-              {:else}
-                <div class="font-medium text-base-content/60">Sem descrição</div>
-              {/if}
+              <div class="text-left">
+                {#if job.title}
+                  <div class="font-medium text-base-content">
+                    {job.title}
+                  </div>
+                  {#if job.description}
+                    <div class="text-xs text-base-content/60 tooltip" data-tip={job.description}>
+                      {truncateDescription(job.description)}
+                    </div>
+                  {/if}
+                {:else if job.description}
+                  <div class="font-medium tooltip" data-tip={job.description}>
+                    {truncateDescription(job.description)}
+                  </div>
+                {:else}
+                  <div class="font-medium text-base-content/60">Sem título ou descrição</div>
+                {/if}
+              </div>
             </td>
             <td class="w-12 text-center">
               {#if job.latest_comment}

@@ -25,6 +25,7 @@ export interface JobComment {
 
 export interface Job {
   id: number; // Backend returns number directly, not string
+  title?: string | null;
   description?: string | null;
   deadline?: string;
   status: JobStatus;
@@ -97,6 +98,7 @@ export interface JsonApiJobData {
   id: string;
   type: 'job';
   attributes: {
+    title?: string | null;
     description?: string | null;
     deadline?: string;
     status: JobStatus;
