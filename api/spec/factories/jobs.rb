@@ -11,6 +11,7 @@
 #  description         :string
 #  priority            :string
 #  status              :string
+#  title               :string
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
 #  created_by_id       :bigint

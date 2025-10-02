@@ -11,6 +11,7 @@
 #  description         :string
 #  priority            :string
 #  status              :string
+#  title               :string
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
 #  created_by_id       :bigint
@@ -42,7 +43,7 @@ class JobSerializer
 
   private_class_method :avatar_url_for
 
-  attributes :description, :deadline, :status, :priority, :created_by_id
+  attributes :title, :description, :deadline, :status, :priority, :created_by_id
 
   attribute :customer_id, &:profile_customer_id
 

@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 20_250_929_111_938) do
+ActiveRecord::Schema[8.0].define(version: 20_251_002_112_440) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_catalog.plpgsql'
 
@@ -319,6 +319,7 @@ ActiveRecord::Schema[8.0].define(version: 20_250_929_111_938) do
     t.bigint 'created_by_id'
     t.datetime 'deleted_at'
     t.bigint 'team_id', null: false
+    t.string 'title'
     t.index ['created_by_id'], name: 'index_jobs_on_created_by_id'
     t.index ['deleted_at'], name: 'index_jobs_on_deleted_at'
     t.index ['profile_customer_id'], name: 'index_jobs_on_profile_customer_id'

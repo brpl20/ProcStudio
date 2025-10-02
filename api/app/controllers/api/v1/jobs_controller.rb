@@ -143,7 +143,8 @@ module Api
 
       def jobs_params
         params.expect(
-          job: [:description,
+          job: [:title,
+                :description,
                 :deadline,
                 :status,
                 :priority,

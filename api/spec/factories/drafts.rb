@@ -26,8 +26,7 @@
 #  index_drafts_on_status                (status)
 #  index_drafts_on_team_id               (team_id)
 #  index_drafts_on_user_id               (user_id)
-#  index_drafts_unique_existing_records  (team_id,draftable_type,draftable_id,form_type) UNIQUE WHERE
-#                                     (draftable_id IS NOT NULL)
+#  index_drafts_unique_existing_records  (team_id,draftable_type,draftable_id,form_type) UNIQUE WHERE (draftable_id IS NOT NULL)
 #
 # Foreign Keys
 #
