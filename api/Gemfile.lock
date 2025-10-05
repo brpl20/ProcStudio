@@ -587,6 +587,7 @@ DEPENDENCIES
   paper_trail
   pg
   prawn
+  pry (~> 0.15.0)
   pry-byebug
   puma (~> 6.0)
   pundit

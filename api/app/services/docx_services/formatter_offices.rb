@@ -111,16 +111,62 @@ module DocxServices
     def partners_info
       @lawyers_society_info.map.with_index do |lawyer_info, index|
         lawyer_num = index + 1
+        percentage = lawyer_info.partnership_percentage.to_f
+
         {
           number: lawyer_num,
           partnership_type: PARTNERSHIP_TYPE[lawyer_info.partnership_type.to_sym] || lawyer_info.partnership_type,
           partnership_percentage: "#{lawyer_info.partnership_percentage.to_i}%",
-          is_administrator: lawyer_info.is_administrator
+          is_administrator: lawyer_info.is_administrator,
+          partner_quote_value: calculate_partner_quote_value(percentage),
+          partner_quote_value_formatted: format_partner_quote_value(percentage),
+          partner_number_of_quotes: calculate_partner_number_of_quotes(percentage),
+          partner_number_of_quotes_formatted: format_partner_number_of_quotes(percentage)
         }
       end
     end
 
     def entry_date
+    end
+
+    def partner_subscription(lawyer_number = nil)
+      raise ArgumentError, "Você deve especificar o número do advogado (1, 2, 3...)" if lawyer_number.nil?
+
+      lawyer_info = @lawyers_society_info[lawyer_number - 1]
+      return nil unless lawyer_info
+
+      lawyer = @lawyers[lawyer_number - 1]
+      return nil unless lawyer
+
+      lawyer_formatter = FormatterQualification.new(lawyer)
+      percentage = lawyer_info.partnership_percentage.to_f
+
+      partner_quotes = calculate_partner_number_of_quotes(percentage)
+      partner_quote_value = calculate_partner_quote_value(percentage)
+      individual_quote_value = data[:quote_value] ? (data[:quote_value].to_f / data[:number_of_quotes].to_f) : 0
+
+      return nil unless partner_quotes && partner_quote_value
+
+      # Get gender from lawyer
+      gender = determine_lawyer_gender(lawyer)
+      partnership_type_key = lawyer_info.partnership_type&.to_sym || :socio
+
+      # Get the appropriate prefix based on gender and partnership type
+      prefix = PARTNERSHIP_SUBSCRIPTION_PREFIXES.dig(gender, partnership_type_key) || 'O sócio'
+
+      # Format numbers with Brazilian formatting and lowercase extenso
+      partner_quotes_formatted = format_brazilian_number(partner_quotes)
+      partner_quotes_extenso = NumberValidator.por_extenso(partner_quotes).downcase
+      individual_quote_extenso = MonetaryValidator.por_extenso(individual_quote_value).downcase
+      total_value_extenso = MonetaryValidator.por_extenso(partner_quote_value).downcase
+
+      "#{prefix} #{lawyer_formatter.full_name(upcase: true)}, #{SUBSCRIPTION_TEMPLATE} #{partner_quotes_formatted} (#{partner_quotes_extenso}) #{QUOTES_TEXT} #{MonetaryValidator.format(individual_quote_value)} (#{individual_quote_extenso}) #{EACH_ONE_TEXT} #{MonetaryValidator.format(partner_quote_value)} (#{total_value_extenso})"
+    end
+
+    def all_partners_subscription
+      @lawyers_society_info.map.with_index do |_, index|
+        partner_subscription(index + 1)
+      end.compact.join('; ')
     end
 
     private
@@ -141,6 +187,59 @@ module DocxServices
       extracted[:number_of_quotes] = entity.number_of_quotes if entity.respond_to?(:number_of_quotes)
 
       extracted.with_indifferent_access
+    end
+
+    def calculate_partner_quote_value(percentage)
+      return nil unless data[:quote_value] && percentage > 0
+
+      total_value = data[:quote_value].to_f
+      (total_value * percentage / 100).round(2)
+    end
+
+    def format_partner_quote_value(percentage)
+      partner_value = calculate_partner_quote_value(percentage)
+      return nil unless partner_value
+
+      MonetaryValidator.format(partner_value)
+    end
+
+    def calculate_partner_number_of_quotes(percentage)
+      return nil unless data[:number_of_quotes] && percentage > 0
+
+      total_quotes = data[:number_of_quotes].to_f
+      (total_quotes * percentage / 100).round(2)
+    end
+
+    def format_partner_number_of_quotes(percentage)
+      partner_quotes = calculate_partner_number_of_quotes(percentage)
+      return nil unless partner_quotes
+
+      NumberValidator.format(partner_quotes)
+    end
+
+    def determine_lawyer_gender(lawyer)
+      if lawyer.respond_to?(:gender) && lawyer.gender.present?
+        lawyer.gender.to_sym
+      else
+        :male # Default
+      end
+    end
+
+    def format_brazilian_number(number)
+      return nil unless number
+
+      # Convert to string with Brazilian formatting (comma for decimals)
+      formatted = sprintf("%.2f", number).gsub('.', ',')
+
+      # Add thousand separators if needed
+      parts = formatted.split(',')
+      integer_part = parts[0]
+      decimal_part = parts[1]
+
+      # Add dots for thousands
+      integer_part = integer_part.reverse.scan(/.{1,3}/).join('.').reverse
+
+      "#{integer_part},#{decimal_part}"
     end
   end
 end

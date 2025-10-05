@@ -49,28 +49,13 @@ module DocxServices
     end
 
     def substitute_partner_qualification(paragraph)
-      # Partner full name - iterate through all partners
-      @user_formatters.each_with_index do |user_formatter, index|
-        paragraph.substitute_across_runs_with_block_regex("_partner_#{index + 1}_full_name_") do |_|
-          user_formatter.full_name(upcase: true)
-        end
-        
-        paragraph.substitute_across_runs_with_block_regex("_partner_#{index + 1}_qualification_") do |_|
-          user_formatter.qualification
-        end
+      # Replace single placeholder with all partners' qualifications
+      paragraph.substitute_across_runs_with_block_regex("_partner_qualification_") do |_|
+        @user_formatters.map(&:qualification).join('; ')
       end
-      
-      # Generic partner placeholders (for first partner)
-      if @user_formatters.first
-        first_user = @user_formatters.first
-        
-        paragraph.substitute_across_runs_with_block_regex("_partner_full_name_") do |_|
-          first_user.full_name(upcase: true)
-        end
-        
-        paragraph.substitute_across_runs_with_block_regex("_partner_qualification_") do |_|
-          first_user.qualification
-        end
+
+      paragraph.substitute_across_runs_with_block_regex("_partner_subscription_") do |_|
+        @formatter_office.all_partners_subscription
       end
     end
 
@@ -100,19 +85,19 @@ module DocxServices
       paragraph.substitute_across_runs_with_block_regex("_office_total_value_") do |_|
         @formatter_office.quote_value || ''
       end
-      
+
       paragraph.substitute_across_runs_with_block_regex("_office_quotes_") do |_|
         @formatter_office.number_of_quotes || ''
       end
-      
+
       paragraph.substitute_across_runs_with_block_regex("_office_quote_value_") do |_|
         individual_quote_value
       end
-      
+
       paragraph.substitute_across_runs_with_block_regex("_office_society_type_") do |_|
         @formatter_office.society || ''
       end
-      
+
       paragraph.substitute_across_runs_with_block_regex("_office_accounting_type_") do |_|
         @formatter_office.accounting_type || ''
       end
@@ -123,12 +108,12 @@ module DocxServices
         I18n.l(Date.current, format: :long)
       end
     end
-    
+
     private
-    
+
     def individual_quote_value
       return '' unless @office.quote_value && @office.number_of_quotes && @office.number_of_quotes > 0
-      
+
       individual_value = @office.quote_value.to_f / @office.number_of_quotes.to_f
       MonetaryValidator.format(individual_value)
     end

@@ -154,8 +154,24 @@ module DocxServices
       data[:city]&.strip
     end
 
-    def state
-      data[:state]&.strip
+    def state(extenso: false, prefix: false)
+      return nil unless data[:state]
+      
+      state_code = data[:state].strip
+      return state_code unless extenso || prefix
+      
+      state_info = BRAZILIAN_STATES[state_code]
+      return state_code unless state_info
+      
+      if extenso && prefix
+        "#{state_info[:preposition]} #{state_info[:name]}"
+      elsif extenso
+        state_info[:name]
+      elsif prefix
+        "#{state_info[:preposition]} #{state_code}"
+      else
+        state_code
+      end
     end
 
     def zip_code

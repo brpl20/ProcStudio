@@ -39,6 +39,7 @@ group :development, :test, :staging do
   gem 'faker'
   gem 'mina', '0.3.8'
   gem 'pry-byebug'
+  gem 'pry', '~> 0.15.0'
   gem 'webmock'
 end
 

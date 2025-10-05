@@ -124,5 +124,35 @@ module DocxServices
       both: 'ambos',
       all: 'todos'
     }.freeze
+
+    BRAZILIAN_STATES = {
+      'AC' => { name: 'Acre', preposition: 'do' },
+      'AL' => { name: 'Alagoas', preposition: 'de' },
+      'AP' => { name: 'Amapá', preposition: 'do' },
+      'AM' => { name: 'Amazonas', preposition: 'do' },
+      'BA' => { name: 'Bahia', preposition: 'da' },
+      'CE' => { name: 'Ceará', preposition: 'do' },
+      'DF' => { name: 'Distrito Federal', preposition: 'do' },
+      'ES' => { name: 'Espírito Santo', preposition: 'do' },
+      'GO' => { name: 'Goiás', preposition: 'de' },
+      'MA' => { name: 'Maranhão', preposition: 'do' },
+      'MT' => { name: 'Mato Grosso', preposition: 'do' },
+      'MS' => { name: 'Mato Grosso do Sul', preposition: 'do' },
+      'MG' => { name: 'Minas Gerais', preposition: 'de' },
+      'PA' => { name: 'Pará', preposition: 'do' },
+      'PB' => { name: 'Paraíba', preposition: 'da' },
+      'PR' => { name: 'Paraná', preposition: 'do' },
+      'PE' => { name: 'Pernambuco', preposition: 'de' },
+      'PI' => { name: 'Piauí', preposition: 'do' },
+      'RJ' => { name: 'Rio de Janeiro', preposition: 'do' },
+      'RN' => { name: 'Rio Grande do Norte', preposition: 'do' },
+      'RS' => { name: 'Rio Grande do Sul', preposition: 'do' },
+      'RO' => { name: 'Rondônia', preposition: 'de' },
+      'RR' => { name: 'Roraima', preposition: 'de' },
+      'SC' => { name: 'Santa Catarina', preposition: 'de' },
+      'SP' => { name: 'São Paulo', preposition: 'de' },
+      'SE' => { name: 'Sergipe', preposition: 'de' },
+      'TO' => { name: 'Tocantins', preposition: 'do' }
+    }.freeze
   end
 end
