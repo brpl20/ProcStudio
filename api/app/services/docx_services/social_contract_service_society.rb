@@ -24,13 +24,18 @@ module DocxServices
       @doc = ::Docx::Document.open(template_path.to_s)
       @file_path = Rails.root.join('app', 'services', 'docx_services', 'output', file_name)
 
-      # Test table row insertion
-      test_partner_row_insertion
+      # Insert table rows for multiple partners
+      insert_partner_table_rows
 
+      # Replace placeholders in the document
       doc.paragraphs.each do |paragraph|
         substitute_placeholders_with_block(paragraph)
       end
 
+      # Replace numbered partner placeholders in tables
+      substitute_numbered_partner_placeholders
+
+      # Save the document
       doc.save(file_path.to_s)
     end
 
@@ -121,23 +126,85 @@ module DocxServices
       MonetaryValidator.format(individual_value)
     end
 
-    def test_partner_row_insertion
+    def insert_partner_table_rows
       partners = @office.user_profiles
-      
-      puts "\n🚀 test_partner_row_insertion called!"
+
+      puts "\n🚀 Inserting partner table rows"
       puts "   Number of partners: #{partners.count}"
       puts "   Partner names: #{partners.map(&:name).join(', ')}"
-      
-      # Minimal test - just insert the rows
-      insert_table_rows(
-        doc,
-        entities: partners,
-        entity_type: 'partner',
-        table_index: 0,
-        placeholders: %w[full_name total_quotes sum]
-      )
-      
-      puts "   ✅ test_partner_row_insertion finished!"
+
+      # Only insert rows if there are more than 1 partner
+      if partners.count > 1
+        # Define the placeholders that we'll be incrementing
+        placeholders = [
+          '_partner_full_name_1_',
+          '_partner_total_quotes_1_',
+          '_partner_sum_1_',
+          '_%_1_'
+        ]
+
+        # Use the new TableInserter to add rows
+        inserter = DocxServices::Concerns::TableInsertable::TableInserter.new(
+          doc,
+          entity_type: 'partner',
+          placeholders: placeholders
+        )
+
+        # Insert additional rows for partners 2, 3, etc.
+        # count is partners.count - 1 because we already have row 1 in the template
+        inserter.insert_blank_rows_with_placeholders(
+          count: partners.count - 1,
+          table_index: 0,  # First table in the document
+          after_row_index: 1  # Insert after the first row (which has _1_ placeholders)
+        )
+
+        puts "   ✅ Added #{partners.count - 1} new rows for additional partners"
+      else
+        puts "   ℹ️  Only 1 partner - no additional rows needed"
+      end
+    end
+
+    def substitute_numbered_partner_placeholders
+      partners = @office.user_profiles
+
+      # Process table cells for numbered partner placeholders
+      doc.tables.each do |table|
+        table.rows.each do |row|
+          row.cells.each do |cell|
+            cell.paragraphs.each do |paragraph|
+              partners.each_with_index do |partner, index|
+                partner_number = index + 1
+                formatter = user_formatters[index]
+
+                # Substitute each numbered placeholder
+                paragraph.substitute_across_runs_with_block_regex("_partner_full_name_#{partner_number}_") do |_|
+                  formatter.full_name || partner.name || ''
+                end
+
+                paragraph.substitute_across_runs_with_block_regex("_partner_total_quotes_#{partner_number}_") do |_|
+                  # Calculate partner's share of quotes
+                  total_quotes = @office.number_of_quotes || 0
+                  partner_quotes = (total_quotes.to_f / partners.count).round
+                  partner_quotes.to_s
+                end
+
+                paragraph.substitute_across_runs_with_block_regex("_partner_sum_#{partner_number}_") do |_|
+                  # Calculate partner's share of value
+                  total_value = @office.quote_value || 0
+                  partner_value = total_value.to_f / partners.count
+                  MonetaryValidator.format(partner_value)
+                end
+
+                paragraph.substitute_across_runs_with_block_regex("_%_#{partner_number}_") do |_|
+                  # Calculate partner's percentage share
+                  percentage = (100.0 / partners.count).round(2)
+                  "#{percentage}%"
+                end
+              end
+            end
+          end
+        end
+      end
     end
   end
 end

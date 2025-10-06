@@ -1,235 +1,173 @@
 # frozen_string_literal: true
 
+require 'nokogiri'
+
 module DocxServices
   module Concerns
     module TableInsertable
       extend ActiveSupport::Concern
 
-      class TableInserter
-        attr_reader :doc, :entity_type, :placeholders, :search_terms
+      class TableNotFoundError < StandardError; end
+      class InvalidTableIndexError < StandardError; end
 
-        def initialize(doc, entity_type:, placeholders:, search_terms: nil)
+      class TableInserter
+        attr_reader :doc, :entity_type, :placeholders
+
+        def initialize(doc, entity_type:, placeholders:)
           @doc = doc
-          @entity_type = entity_type.to_s
+          @entity_type = entity_type.to_s.presence || 'unknown'
           @placeholders = Array(placeholders)
-          @search_terms = search_terms || default_search_terms
+          
+          validate_initialization!
         end
 
-        def insert_rows(count:, table_index: nil, find_by: nil)
-          puts "\n🔍 Starting table row insertion..."
-          puts "   Entity type: #{entity_type}"
-          puts "   Number of entities: #{count}"
-          puts "   Placeholders: #{placeholders.inspect}"
-          puts "   Search terms: #{search_terms.inspect}"
+        def insert_blank_rows_with_placeholders(count:, table_index:, after_row_index: 1)
+          return if count.to_i <= 0
           
-          return if count <= 1 # No need to add rows if only 1 entity
-
-          puts "\n📊 Looking for table..."
-          puts "   Table index: #{table_index}" if table_index
-          puts "   Find by: #{find_by}" if find_by
+          validate_row_count!(count)
+          validate_row_index!(after_row_index)
           
-          table = find_table(table_index: table_index, find_by: find_by)
-          if table
-            puts "   ✅ Table found!"
-          else
-            puts "   ❌ Table NOT found!"
-            return
-          end
-
-          puts "\n🔍 Looking for template row with search terms..."
-          template_row = find_template_row(table)
-          if template_row
-            puts "   ✅ Template row found!"
-            row_text = template_row.cells.flat_map { |c| c.paragraphs.map(&:to_s) }.join(' ')
-            puts "   Row content preview: #{row_text[0..200]}..."
-          else
-            puts "   ❌ Template row NOT found!"
-            return
-          end
-
-          puts "\n➕ Adding #{count - 1} new rows..."
-          add_entity_rows(table, template_row, count - 1)
+          table = find_table_or_raise(table_index)
+          
+          log_insertion(count, after_row_index)
+          add_blank_rows_with_placeholders(table, count, after_row_index)
         end
 
         private
 
-        def default_search_terms
-          placeholders.map { |p| "_#{entity_type}_#{p}_" }
+        def validate_initialization!
+          raise ArgumentError, "Document cannot be nil" if doc.nil?
+          raise ArgumentError, "Placeholders cannot be empty" if placeholders.empty?
         end
 
-        def find_table(table_index: nil, find_by: nil)
-          if table_index
-            puts "   Using table index #{table_index}"
-            table = doc.tables[table_index]
-            if table
-              puts "   Found table at index #{table_index}"
-              # Debug first few rows
-              table.rows.first(2).each_with_index do |row, idx|
-                row_text = row.cells.flat_map { |c| c.paragraphs.map(&:to_s) }.join(' | ')
-                puts "   Row #{idx}: #{row_text[0..100]}..."
-              end
-            end
-            table
-          elsif find_by
-            find_table_by_content(find_by)
-          else
-            find_table_with_placeholders
+        def validate_row_count!(count)
+          raise ArgumentError, "Row count must be a positive integer" unless count.is_a?(Integer) && count.positive?
+        end
+
+        def validate_row_index!(index)
+          raise ArgumentError, "Row index must be a non-negative integer" unless index.is_a?(Integer) && index >= 0
+        end
+
+        def find_table_or_raise(table_index)
+          tables = doc.tables
+          
+          if tables.empty?
+            error_message = build_no_tables_error_message
+            log_and_raise_error(TableNotFoundError, error_message)
+          end
+          
+          validate_table_index!(table_index, tables.size)
+          tables[table_index]
+        end
+
+        def validate_table_index!(index, table_count)
+          unless index.is_a?(Integer) && index >= 0
+            error_message = "Table index must be a non-negative integer. Got: #{index.inspect}"
+            log_and_raise_error(InvalidTableIndexError, error_message)
+          end
+          
+          if index >= table_count
+            error_message = build_index_out_of_bounds_error_message(index, table_count)
+            log_and_raise_error(InvalidTableIndexError, error_message)
           end
         end
 
-        def find_table_by_content(content)
-          doc.tables.find do |table|
-            table_text = extract_table_text(table)
-            Array(content).any? { |term| table_text.include?(term) }
+        def build_no_tables_error_message
+          "No tables found in document for entity type: '#{entity_type}'. " \
+          "Please ensure the document template contains at least one table."
+        end
+
+        def build_index_out_of_bounds_error_message(requested_index, table_count)
+          "Table index #{requested_index} is out of bounds. " \
+          "Document contains #{table_count} table(s) (indices 0-#{table_count - 1}). " \
+          "Entity type: '#{entity_type}'"
+        end
+
+        def log_and_raise_error(error_class, message)
+          Rails.logger.error "[TableInsertable] #{message}"
+          raise error_class, message
+        end
+
+        def log_insertion(count, after_row_index)
+          Rails.logger.info "[TableInsertable] Adding #{count} row(s) with placeholders " \
+                           "after row #{after_row_index} for entity type: '#{entity_type}'"
+        end
+
+        def add_blank_rows_with_placeholders(table, count, after_index)
+          return if count <= 0
+          
+          # Access the table's rows through the Docx API
+          rows = table.rows
+          return if rows.empty? || after_index >= rows.length
+          
+          reference_row = rows[after_index]
+          reference_row_node = reference_row.node
+          last_inserted_row = reference_row_node
+          
+          base_index = extract_base_index(reference_row_node)
+          
+          (base_index + 1..base_index + count).each do |new_index|
+            new_row_node = create_new_row_with_placeholders(reference_row_node, base_index, new_index)
+            last_inserted_row.add_next_sibling(new_row_node)
+            last_inserted_row = new_row_node
           end
         end
-
-        def find_table_with_placeholders
-          doc.tables.find do |table|
-            table_text = extract_table_text(table)
-            search_terms.any? { |term| table_text.include?(term) }
-          end
-        end
-
-        def extract_table_text(table)
-          table.rows.flat_map do |row|
-            row.cells.flat_map do |cell|
-              cell.paragraphs.map(&:to_s).join(' ')
-            end
-          end.join(' ')
-        end
-
-        def find_template_row(table)
-          table.rows.find do |row|
-            row_text = row.cells.flat_map do |cell|
-              cell.paragraphs.map(&:to_s).join(' ')
-            end.join(' ')
-
-            search_terms.any? { |term| row_text.include?(term) }
-          end
-        end
-
-        def add_entity_rows(table, template_row, num_rows_to_add)
-          row_node = template_row.node
-          last_inserted = row_node
-
-          num_rows_to_add.times do |i|
-            entity_number = i + 2 # Start from 2 (first entity uses original placeholders)
-            puts "\n   🔄 Creating row for #{entity_type} #{entity_number}..."
-            
-            new_row = duplicate_and_update_row(row_node, entity_number)
-            
-            # Debug the new row content
-            new_row_text = new_row.xpath('.//w:t').map(&:content).join(' ')
-            puts "   New row content: #{new_row_text[0..150]}..."
-            
-            last_inserted.add_next_sibling(new_row)
-            last_inserted = new_row
-
-            puts "   ✅ Added row #{i + 1} with placeholders for #{entity_type} #{entity_number}"
-          end
-        end
-
-        def duplicate_and_update_row(row_node, entity_number)
-          new_row = row_node.dup
-
-          # Update placeholders in each cell
-          cells = new_row.xpath('.//w:tc')
-          cells.each do |cell|
-            update_cell_placeholders(cell, entity_number)
-          end
-
-          new_row
-        end
-
-        def update_cell_placeholders(cell, entity_number)
-          # Direct XML text node replacement
-          cell.xpath('.//w:t').each do |text_node|
-            original_text = text_node.content
-            
-            # Replace each placeholder with numbered version
-            placeholders.each do |placeholder|
-              original = "_#{entity_type}_#{placeholder}_"
-              replacement = "_#{entity_type}_#{placeholder}_#{entity_number}_"
-              original_text = original_text.gsub(original, replacement)
-            end
-            
-            # Also handle the percentage placeholder
-            original_text = original_text.gsub('_%_', "_%_#{entity_number}_")
-            
-            text_node.content = original_text
-          end
-        end
-      end
-
-      # Main module method to be used in docx services
-      def insert_table_rows(doc, entities:, entity_type:, placeholders: nil, **options)
-        puts "\n📌 insert_table_rows called!"
-        puts "   Entities class: #{entities.class}"
-        puts "   Entities size: #{entities.size if entities.respond_to?(:size)}"
         
-        # Convert to array if it's an ActiveRecord collection
-        entities = entities.to_a if entities.respond_to?(:to_a)
-        
-        return unless entities.is_a?(Array) && entities.size > 1
-
-        placeholders ||= default_placeholders_for(entity_type)
-        puts "   Using placeholders: #{placeholders.inspect}"
-
-        inserter = TableInserter.new(
-          doc,
-          entity_type: entity_type,
-          placeholders: placeholders,
-          search_terms: options[:search_terms]
-        )
-
-        inserter.insert_rows(
-          count: entities.size,
-          table_index: options[:table_index],
-          find_by: options[:find_by]
-        )
-      end
-
-      # Override this method in your service to define default placeholders
-      def default_placeholders_for(entity_type)
-        case entity_type.to_s
-        when 'partner'
-          %w[full_name total_quotes sum percentage number_of_quotes]
-        when 'lawyer'
-          %w[name oab_number oab_state email]
-        when 'witness'
-          %w[name cpf rg profession]
-        else
-          %w[name]
+        def create_new_row_with_placeholders(reference_row_node, original_index, new_index)
+          new_row_node = reference_row_node.dup
+          
+          cells = new_row_node.xpath('.//w:tc')
+          cells.each_with_index do |cell, cell_idx|
+            clear_cell_content(cell)
+            
+            if cell_idx < placeholders.length
+              placeholder_text = increment_placeholder(placeholders[cell_idx], original_index, new_index)
+              insert_text_in_cell(cell, placeholder_text)
+            end
+          end
+          
+          new_row_node
         end
-      end
-
-      # Convenience methods for common entity types
-      def insert_partner_rows(doc, partners, **options)
-        insert_table_rows(
-          doc,
-          entities: partners,
-          entity_type: 'partner',
-          **options
-        )
-      end
-
-      def insert_lawyer_rows(doc, lawyers, **options)
-        insert_table_rows(
-          doc,
-          entities: lawyers,
-          entity_type: 'lawyer',
-          **options
-        )
-      end
-
-      def insert_witness_rows(doc, witnesses, **options)
-        insert_table_rows(
-          doc,
-          entities: witnesses,
-          entity_type: 'witness',
-          **options
-        )
+        
+        def clear_cell_content(cell)
+          cell.xpath('.//w:t').each { |text_node| text_node.remove }
+        end
+        
+        def insert_text_in_cell(cell, text)
+          p_node = cell.at_xpath('.//w:p')
+          return unless p_node
+          
+          # Create proper Nokogiri nodes with namespace
+          run_node = p_node.document.create_element('r')
+          run_node.namespace = p_node.namespace
+          
+          text_node = p_node.document.create_element('t')
+          text_node.namespace = p_node.namespace
+          text_node.content = text
+          
+          run_node.add_child(text_node)
+          p_node.add_child(run_node)
+        end
+        
+        def increment_placeholder(placeholder, original_index, new_index)
+          placeholder.gsub(/_(\d+)_/) do
+            current_number = Regexp.last_match(1).to_i
+            if current_number == original_index
+              "_#{new_index}_"
+            else
+              "_#{current_number}_"
+            end
+          end
+        end
+        
+        def extract_base_index(row_node)
+          text_content = row_node.xpath('.//w:t').map(&:content).join(' ')
+          
+          matches = text_content.scan(/_(\d+)_/)
+          return 1 if matches.empty?
+          
+          matches.map { |m| m[0].to_i }.max
+        end
       end
     end
   end
