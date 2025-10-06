@@ -6,10 +6,10 @@
 Rails.logger.debug '[CUSTOMERS] Creating Customers and ProfileCustomers with nested attributes...'
 
 # Get references to users and teams from previous seed files
-user1 = User.find_by(email: 'joao.prado@advocacia.com.br')
-user2 = User.find_by(email: 'maria.silva@advocacia.com.br')
-team = Team.find_by(subdomain: 'principal')
-team2 = Team.find_by(subdomain: 'filial')
+user1 = User.find_by(email: 'u1@gmail.com')
+user2 = User.find_by(email: 'u2@gmail.com')
+team = Team.find_by(subdomain: 'joao-prado')
+team2 = Team.find_by(subdomain: 'terezinha-lawyer')
 
 # Customer 1 - Individual
 customer1 = Customer.find_or_create_by!(email: 'cliente1@gmail.com') do |c|

@@ -1,67 +1,34 @@
 # frozen_string_literal: true
 
 require 'docx'
+require_relative 'formatter_constants_offices'
 
 module DocxServices
-  class SocialContractServiceUnipessoal < BaseTemplate
-    attr_reader :office_formatter, :partner_formatter, :doc, :file_path
+  class SocialContractServiceUnipessoal
+    include FormatterConstantsOffices
 
-    def initialize(*args)
-      super
-      @office_formatter = FormatterOffices.for_office(office, lawyers)
-      @partner_formatter = FormatterQualification.for(lawyers.first) if lawyers.any?
+    attr_reader :office, :formatter_qualification, :formatter_office, :user_formatters, :doc, :file_path
+
+    def initialize(office_id)
+      @office = Office.find(office_id)
+      @formatter_qualification = FormatterQualification.new(@office)
+      @formatter_office = FormatterOffices.new(@office)
+      @user_formatters = @office.user_profiles.map { |user| FormatterQualification.new(user) }
     end
 
-    # Define which fields will be used in the document
-    def fields
-      {
-        # Office fields
-        office_name: office_formatter.office_name,
-        office_city: office_formatter.office_city,
-        office_state: office_formatter.office_state,
-        office_address: office_formatter.office_street,
-        office_zip_code: office_formatter.office_zip_code,
-        office_full_address: office_formatter.office_full_address,
-
-        # Capital and quotes fields
-        office_total_value: format_currency(office_formatter.total_capital_value),
-        office_quotes: format_number(office_formatter.total_quotes),
-        office_quote_value: "#{office_formatter.quote_value.to_i},00",
-
-        # Partner fields (single partner for unipessoal)
-        partner_qualification: partner_formatter&.qualification,
-        partner_full_name: partner_formatter&.full_name(upcase: true),
-        partner_name: partner_formatter&.full_name,
-        partner_cpf: partner_formatter&.cpf,
-        partner_rg: partner_formatter&.rg,
-        partner_address: partner_formatter&.address,
-        partner_email: partner_formatter&.email,
-        partner_phone: partner_formatter&.phone,
-
-        # Partner capital fields
-        partner_subscription: format_currency(office_formatter.lawyer_capital_value(lawyers.first)),
-        partner_total_quotes: format_number(office_formatter.lawyer_quotes(lawyers.first)),
-        partner_sum: format_currency(office_formatter.lawyer_capital_value(lawyers.first)),
-        partner_percentage: '100%',
-
-        # Pro labore and dividends
-        pro_labore_enabled: office_formatter.pro_labore_enabled?,
-        pro_labore_text: office_formatter.pro_labore_text,
-        dividends_enabled: office_formatter.dividends_enabled?,
-        dividends_text: office_formatter.dividends_text,
-
-        # Date
-        date: formatted_date
-      }
+    def call
+      process_document
+      file_path
     end
+
 
     def process_document
-      @doc = ::Docx::Document.open(template_path)
-      @file_path = Rails.root.join('tmp', file_name)
+      @doc = ::Docx::Document.open(template_path.to_s)
+      @file_path = Rails.root.join('app', 'services', 'docx_services', 'output', file_name)
 
       # Process all paragraphs in the document
       doc.paragraphs.each do |paragraph|
-        substitute_placeholders(paragraph)
+        substitute_placeholders_with_block(paragraph)
       end
 
       # Process all tables in the document
@@ -69,186 +36,287 @@ module DocxServices
         table.rows.each do |row|
           row.cells.each do |cell|
             cell.paragraphs.each do |paragraph|
-              substitute_placeholders(paragraph)
+              substitute_placeholders_with_block(paragraph)
             end
           end
         end
       end
 
-      doc.save(file_path)
+      doc.save(file_path.to_s)
     end
 
     protected
 
     def template_path
-      'tests/CS-TEMPLATE-INDIVIDUAL.docx'
+      Rails.root.join('app/services/docx_services/templates/CS-UNIPESSOAL-TEMPLATE.docx')
     end
 
     def file_name
-      "cs-unipessoal-#{office.name}.docx"
+      "cs-unipessoal-#{@office.name.parameterize}.docx"
     end
 
     private
 
-    def substitute_placeholders(paragraph)
-      # Office fields
-      paragraph.substitute_across_runs_with_block(/_office_name_/) do |_|
-        fields[:office_name]
+    def substitute_placeholders_with_block(paragraph)
+      substitute_partner_qualification(paragraph)
+      substitute_office_qualification(paragraph)
+      substitute_office_settings(paragraph)
+      substitute_partner_specific_placeholders(paragraph)
+      substitute_dividends_placeholders(paragraph)
+      substitute_administrator_placeholders(paragraph)
+      substitute_date_field(paragraph)
+    end
+
+    def substitute_partner_qualification(paragraph)
+      # Replace single placeholder with partner's qualification (single partner for unipessoal)
+      paragraph.substitute_across_runs_with_block_regex('_partner_qualification_') do |_|
+        @user_formatters.first&.qualification || ''
       end
 
-      paragraph.substitute_across_runs_with_block(/_office_city_/) do |_|
-        fields[:office_city]
+      paragraph.substitute_across_runs_with_block_regex('_partner_subscription_') do |_|
+        @formatter_office.all_partners_subscription
+      end
+    end
+
+    def substitute_office_qualification(paragraph)
+      paragraph.substitute_across_runs_with_block_regex('_office_name_') do |_|
+        @formatter_qualification.full_name
       end
 
-      paragraph.substitute_across_runs_with_block(/_office_state_/) do |_|
-        fields[:office_state]
+      paragraph.substitute_across_runs_with_block_regex('_office_state_') do |_|
+        @formatter_qualification.state || ''
       end
 
-      paragraph.substitute_across_runs_with_block(/_office_address_/) do |_|
-        fields[:office_address]
+      paragraph.substitute_across_runs_with_block_regex('_office_city_') do |_|
+        @formatter_qualification.city || ''
       end
 
-      paragraph.substitute_across_runs_with_block(/_office_zip_code_/) do |_|
-        fields[:office_zip_code]
+      paragraph.substitute_across_runs_with_block_regex('_office_address_') do |_|
+        @formatter_qualification.address(with_prefix: false) || ''
       end
 
-      paragraph.substitute_across_runs_with_block(/_office_full_address_/) do |_|
-        fields[:office_full_address]
+      paragraph.substitute_across_runs_with_block_regex('_office_zip_code_') do |_|
+        @formatter_qualification.zip_code || ''
+      end
+    end
+
+    def substitute_office_settings(paragraph)
+      paragraph.substitute_across_runs_with_block_regex('_office_total_value_') do |_|
+        @formatter_office.quote_value || ''
       end
 
-      # Capital and quotes fields
-      paragraph.substitute_across_runs_with_block(/_office_total_value_/) do |_|
-        fields[:office_total_value]
+      paragraph.substitute_across_runs_with_block_regex('_office_quotes_') do |_|
+        @formatter_office.number_of_quotes || ''
       end
 
-      paragraph.substitute_across_runs_with_block(/_office_quotes_/) do |_|
-        fields[:office_quotes]
+      paragraph.substitute_across_runs_with_block_regex('_office_quote_value_') do |_|
+        individual_quote_value
       end
 
-      paragraph.substitute_across_runs_with_block(/_office_quote_value_/) do |_|
-        fields[:office_quote_value]
+      paragraph.substitute_across_runs_with_block_regex('_office_society_type_') do |_|
+        @formatter_office.society || ''
       end
 
-      paragraph.substitute_across_runs_with_block(/_total_quotes_/) do |_|
-        fields[:office_quotes]
+      paragraph.substitute_across_runs_with_block_regex('_office_accounting_type_') do |_|
+        @formatter_office.accounting_type || ''
       end
-
-      # Partner qualification fields
-      paragraph.substitute_across_runs_with_block(/_partner_qualification_/) do |_|
-        fields[:partner_qualification]
+      
+      # Total quotes placeholder for tables
+      paragraph.substitute_across_runs_with_block_regex('_total_quotes_') do |_|
+        @office.number_of_quotes.to_s
       end
+    end
 
-      paragraph.substitute_across_runs_with_block(/_partner_full_name_/) do |_|
-        fields[:partner_full_name]
+    def substitute_partner_specific_placeholders(paragraph)
+      # For Unipessoal template, we need specific partner placeholders
+      if @user_formatters.any?
+        partner_formatter = @user_formatters.first
+        partners_info = @formatter_office.partners_info.first
+        
+        # Partner personal information
+        paragraph.substitute_across_runs_with_block_regex('_partner_full_name_') do |_|
+          partner_formatter.full_name
+        end
+        
+        paragraph.substitute_across_runs_with_block_regex('_partner_name_') do |_|
+          partner_formatter.full_name
+        end
+        
+        paragraph.substitute_across_runs_with_block_regex('_partner_cpf_') do |_|
+          partner_formatter.cpf
+        end
+        
+        paragraph.substitute_across_runs_with_block_regex('_partner_rg_') do |_|
+          partner_formatter.rg
+        end
+        
+        paragraph.substitute_across_runs_with_block_regex('_partner_address_') do |_|
+          partner_formatter.address
+        end
+        
+        paragraph.substitute_across_runs_with_block_regex('_partner_email_') do |_|
+          partner_formatter.email
+        end
+        
+        paragraph.substitute_across_runs_with_block_regex('_partner_phone_') do |_|
+          partner_formatter.phone
+        end
+        
+        # Partner capital/quotes information
+        paragraph.substitute_across_runs_with_block_regex('_partner_total_quotes_') do |_|
+          partners_info ? partners_info[:partner_number_of_quotes_formatted] : @office.number_of_quotes.to_s
+        end
+        
+        paragraph.substitute_across_runs_with_block_regex('_partner_sum_') do |_|
+          partners_info ? partners_info[:partner_quote_value_formatted] : @formatter_office.quote_value
+        end
+        
+        paragraph.substitute_across_runs_with_block_regex('_%_') do |_|
+          '100%'
+        end
+        
+        paragraph.substitute_across_runs_with_block_regex('_sum_percentage_') do |_|
+          '100%'
+        end
+        
+        # Partner 1 specific fields (for signature sections)
+        paragraph.substitute_across_runs_with_block_regex('_partner_1_full_name_') do |_|
+          partner_formatter.full_name
+        end
+        
+        paragraph.substitute_across_runs_with_block_regex('_partner_1_association_') do |_|
+          'Sócio Administrador'
+        end
+        
+        # Handle potential typo in template
+        paragraph.substitute_across_runs_with_block_regex('_parner_1_association_') do |_|
+          'Sócio Administrador'
+        end
+        
+        paragraph.substitute_across_runs_with_block_regex('_parner_full_name_') do |_|
+          partner_formatter.full_name
+        end
+      else
+        # Clear all partner placeholders if no partner found
+        placeholders = [
+          '_partner_full_name_', '_partner_name_', '_partner_cpf_', '_partner_rg_',
+          '_partner_address_', '_partner_email_', '_partner_phone_', '_partner_total_quotes_',
+          '_partner_sum_', '_%_', '_sum_percentage_', '_partner_1_full_name_',
+          '_partner_1_association_', '_parner_1_association_', '_parner_full_name_'
+        ]
+        
+        placeholders.each do |placeholder|
+          paragraph.substitute_across_runs_with_block_regex(placeholder) do |_|
+            ''
+          end
+        end
       end
-
-      # Handle typo in template
-      paragraph.substitute_across_runs_with_block(/_parner_full_name_/) do |_|
-        fields[:partner_full_name]
-      end
-
-      paragraph.substitute_across_runs_with_block(/_partner_name_/) do |_|
-        fields[:partner_name]
-      end
-
-      paragraph.substitute_across_runs_with_block(/_partner_cpf_/) do |_|
-        fields[:partner_cpf]
-      end
-
-      paragraph.substitute_across_runs_with_block(/_partner_rg_/) do |_|
-        fields[:partner_rg]
-      end
-
-      paragraph.substitute_across_runs_with_block(/_partner_address_/) do |_|
-        fields[:partner_address]
-      end
-
-      paragraph.substitute_across_runs_with_block(/_partner_email_/) do |_|
-        fields[:partner_email]
-      end
-
-      paragraph.substitute_across_runs_with_block(/_partner_phone_/) do |_|
-        fields[:partner_phone]
-      end
-
-      # Partner capital fields
-      paragraph.substitute_across_runs_with_block(/_partner_subscription_/) do |_|
-        fields[:partner_subscription]
-      end
-
-      paragraph.substitute_across_runs_with_block(/_partner_total_quotes_/) do |_|
-        fields[:partner_total_quotes]
-      end
-
-      paragraph.substitute_across_runs_with_block(/_partner_sum_/) do |_|
-        fields[:partner_sum]
-      end
-
-      paragraph.substitute_across_runs_with_block(/_%_/) do |_|
-        fields[:partner_percentage]
-      end
-
-      paragraph.substitute_across_runs_with_block(/_sum_percentage_/) do |_|
-        fields[:partner_percentage]
-      end
-
-      # Partner 1 specific fields
-      paragraph.substitute_across_runs_with_block(/_partner_1_full_name_/) do |_|
-        fields[:partner_full_name]
-      end
-
-      paragraph.substitute_across_runs_with_block(/_parner_1_association_/) do |_|
-        'Sócio Administrador'
-      end
-
-      # Empty partner 2 for single lawyer
-      paragraph.substitute_across_runs_with_block(/_partner_2_full_name_/) do |_|
+      
+      # Empty partner 2 placeholders for Unipessoal (since there's only one partner)
+      paragraph.substitute_across_runs_with_block_regex('_partner_2_full_name_') do |_|
         ''
       end
-
-      paragraph.substitute_across_runs_with_block(/_partner_2_association_/) do |_|
+      
+      paragraph.substitute_across_runs_with_block_regex('_partner_2_association_') do |_|
         ''
       end
+    end
 
-      # Pro labore and dividends clauses
-      paragraph.substitute_across_runs_with_block(/(?<![_\w])_pro_labore_(?![_\w])/) do |_|
-        fields[:pro_labore_enabled] ? 'Parágrafo Sétimo:' : ''
+    def substitute_dividends_placeholders(paragraph)
+      if @formatter_office.is_proportional
+        # If proportional is TRUE, replace with specific text from constants
+        paragraph.substitute_across_runs_with_block_regex('_dividends_') do |_|
+          DIVIDENDS_TITLE
+        end
+        
+        paragraph.substitute_across_runs_with_block_regex('_dividends_text_') do |_|
+          DIVIDENDS_TEXT
+        end
+      else
+        # If proportional is FALSE, remove the placeholders
+        paragraph.substitute_across_runs_with_block_regex('_dividends_') do |_|
+          ''
+        end
+        
+        paragraph.substitute_across_runs_with_block_regex('_dividends_text_') do |_|
+          ''
+        end
       end
-
-      paragraph.substitute_across_runs_with_block(/(?<![_\w])_pro_labore_text_(?![_\w])/) do |_|
-        fields[:pro_labore_enabled] ? fields[:pro_labore_text] : ''
-      end
-
-      paragraph.substitute_across_runs_with_block(/(?<![_\w])_dividends_(?![_\w])/) do |_|
-        fields[:dividends_enabled] ? 'Parágrafo Terceiro:' : ''
-      end
-
-      paragraph.substitute_across_runs_with_block(/(?<![_\w])_dividends_text_(?![_\w])/) do |_|
-        fields[:dividends_enabled] ? fields[:dividends_text] : ''
-      end
-
-      # Date field
-      paragraph.substitute_across_runs_with_block(/(?<![_\w])_date_(?![_\w])/) do |_|
-        fields[:date]
+      
+      # Check if the single partner has pro_labore compensation
+      partners_compensation = @formatter_office.partners_compensation
+      has_pro_labore = partners_compensation.any? { |partner| partner[:compensation_type] == 'pro_labore' }
+      
+      if has_pro_labore
+        # If partner has pro_labore, replace with specific text from constants
+        paragraph.substitute_across_runs_with_block_regex('_pro_labore_') do |_|
+          PRO_LABORE_TITLE
+        end
+        
+        paragraph.substitute_across_runs_with_block_regex('_pro_labore_text_') do |_|
+          PRO_LABORE_TEXT
+        end
+      else
+        # If no pro_labore, remove the placeholders
+        paragraph.substitute_across_runs_with_block_regex('_pro_labore_') do |_|
+          ''
+        end
+        
+        paragraph.substitute_across_runs_with_block_regex('_pro_labore_text_') do |_|
+          ''
+        end
       end
     end
 
-    # Helper methods
-    def format_currency(value)
-      "#{value.to_i.to_s.gsub(/\B(?=(\d{3})+(?!\d))/, '.')},00"
+    def substitute_administrator_placeholders(paragraph)
+      # For unipessoal, the single partner is always the administrator
+      if @user_formatters.any?
+        formatter = @user_formatters.first
+        user = @office.user_profiles.first
+        
+        # Determine gender and get prefix from constants
+        gender = determine_administrator_gender(user)
+        prefix = ADMINISTRATOR_PREFIXES[:single][gender]
+        
+        paragraph.substitute_across_runs_with_block_regex('_partner_full_name_administrator_') do |_|
+          "#{prefix} #{formatter.full_name}"
+        end
+      else
+        paragraph.substitute_across_runs_with_block_regex('_partner_full_name_administrator_') do |_|
+          ''
+        end
+      end
     end
 
-    def format_number(value)
-      value.to_s.gsub(/\B(?=(\d{3})+(?!\d))/, '.')
+    def substitute_date_field(paragraph)
+      paragraph.substitute_across_runs_with_block_regex('_current_date_') do |_|
+        I18n.l(Date.current, format: :long)
+      end
+      
+      paragraph.substitute_across_runs_with_block_regex('_date_') do |_|
+        I18n.l(Date.current, format: :long)
+      end
+    end
+    
+    def determine_administrator_gender(user)
+      # Use the same gender determination logic
+      return :male unless user
+      
+      # Check if user has gender field
+      if user.respond_to?(:gender)
+        return user.gender&.to_sym == :female ? :female : :male
+      end
+      
+      # Default to male if we can't determine
+      :male
     end
 
-    def formatted_date
-      today = Time.zone.now
-      months = [
-        'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
-        'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'
-      ]
-      "#{today.day} de #{months[today.month - 1]} de #{today.year}"
+    def individual_quote_value
+      return '' unless @office.quote_value && @office.number_of_quotes&.positive?
+
+      individual_value = @office.quote_value / @office.number_of_quotes.to_f
+      MonetaryValidator.format(individual_value)
     end
+
   end
 end

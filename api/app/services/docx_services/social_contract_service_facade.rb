@@ -3,11 +3,11 @@
 require 'docx'
 
 module DocxServices
-  class SocialContractServiceFacade < BaseTemplate
-    attr_reader :service
+  class SocialContractServiceFacade
+    attr_reader :office, :service
 
-    def initialize(*args)
-      super
+    def initialize(office_id)
+      @office = Office.find(office_id)
       @service = determine_service
     end
 
@@ -29,14 +29,19 @@ module DocxServices
 
     def determine_service
       if single_lawyer?
-        SocialContractServiceUnipessoal.new(document.id)
+        SocialContractServiceUnipessoal.new(office.id)
       else
-        SocialContractServiceSociety.new(document.id)
+        SocialContractServiceSociety.new(office.id)
       end
     end
 
     def single_lawyer?
-      lawyers.length == 1
+      lawyers_count == 1
+    end
+    
+    def lawyers_count
+      # Count UserProfiles with role=lawyer associated with this office
+      office.user_profiles.where(role: 'lawyer').count
     end
   end
 end

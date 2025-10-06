@@ -9,7 +9,7 @@ puts "Testing SocialContractServiceSociety with Office #6"
 puts "="*60
 
 # Find office
-office = Office.find(6)
+office = Office.find(42)
 puts "\nOffice Information:"
 puts "  ID: #{office.id}"
 puts "  Name: #{office.name}"
@@ -76,18 +76,18 @@ if template_found
     puts "="*60
     puts "Processing Document..."
     puts "="*60
-    
+
     file_path = service.call
-    
+
     puts "✓ Document processed successfully!"
     puts "  Generated file: #{file_path}"
     puts "  File exists: #{File.exist?(file_path)}"
-    
+
     if File.exist?(file_path)
       puts "  File size: #{File.size(file_path)} bytes"
       puts "  File location: #{file_path}"
     end
-    
+
   rescue => e
     puts "\n✗ Error processing document:"
     puts "  #{e.class}: #{e.message}"

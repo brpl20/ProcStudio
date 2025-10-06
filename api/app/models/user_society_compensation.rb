@@ -29,8 +29,7 @@ class UserSocietyCompensation < ApplicationRecord
 
   enum :compensation_type, {
     pro_labore: 'pro_labore',
-    salary: 'salary',
-    proportional: 'proportional'
+    salary: 'salary'
   }
 
   enum :payment_frequency, {

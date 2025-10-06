@@ -6,12 +6,12 @@
 puts '[JOBS] Creating Jobs...'
 
 # Get references from previous seed files
-user1 = User.find_by(email: 'joao.prado@advocacia.com.br')
-user2 = User.find_by(email: 'maria.silva@advocacia.com.br')
+user1 = User.find_by(email: 'u1@gmail.com')
+user2 = User.find_by(email: 'u2@gmail.com')
 profile1 = UserProfile.find_by(user: user1)
 profile2 = UserProfile.find_by(user: user2)
-profile3 = UserProfile.find_by(user: User.find_by(email: 'ana.secretaria@advocacia.com.br'))
-team = Team.find_by(subdomain: 'principal')
+profile3 = UserProfile.find_by(user: User.find_by(email: 'u3@gmail.com'))
+team = Team.find_by(subdomain: 'joao-prado')
 
 # Get customer references
 profile_customer1 = ProfileCustomer.joins(:customer).find_by(customers: { email: 'cliente1@gmail.com' })
@@ -69,6 +69,7 @@ if work2
   end
 else
   # Create job associated only with customer
+  # Keep using team1 since the customer is associated with team1
   job2 = Job.find_or_create_by!(
     description: 'Coletar documentos do cliente',
     profile_customer: profile_customer2
@@ -77,13 +78,13 @@ else
     j.status = 'pending'
     j.priority = 'medium'
     j.team = team
-    j.created_by_id = user2.id
+    j.created_by_id = user1.id  # Use user1 who belongs to team1
     puts "  [OK] Created job with customer: #{j.description}"
   end
 end
 
-# Associate user profile with job
-JobUserProfile.find_or_create_by!(job: job2, user_profile: profile3, role: 'assignee')
+# Associate user profile with job - use profile1 which belongs to team1
+JobUserProfile.find_or_create_by!(job: job2, user_profile: profile1, role: 'assignee')
 
 # Create a job without work association
 job3 = Job.find_or_create_by!(
@@ -99,6 +100,6 @@ job3 = Job.find_or_create_by!(
   puts "  [OK] Created job with customer: #{j.description}"
 end
 
-JobUserProfile.find_or_create_by!(job: job3, user_profile: profile2, role: 'assignee')
+JobUserProfile.find_or_create_by!(job: job3, user_profile: profile1, role: 'assignee')
 
 puts "  [OK] Jobs created successfully!"

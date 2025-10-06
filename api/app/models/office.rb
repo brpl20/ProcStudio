@@ -15,6 +15,7 @@
 #  oab_inscricao                            :string
 #  oab_link                                 :string
 #  oab_status                               :string
+#  proportional                             :boolean          default(FALSE), not null
 #  quote_value(Value per quote in BRL)      :decimal(10, 2)
 #  site                                     :string
 #  society                                  :string

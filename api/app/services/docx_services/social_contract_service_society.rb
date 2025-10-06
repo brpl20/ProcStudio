@@ -2,10 +2,12 @@
 
 require 'docx'
 require_relative 'concerns/table_insertable'
+require_relative 'formatter_constants_offices'
 
 module DocxServices
   class SocialContractServiceSociety
     include Concerns::TableInsertable
+    include FormatterConstantsOffices
 
     attr_reader :office, :formatter_qualification, :formatter_office, :user_formatters, :doc, :file_path
 
@@ -65,6 +67,8 @@ module DocxServices
       substitute_partner_qualification(paragraph)
       substitute_office_qualification(paragraph)
       substitute_office_settings(paragraph)
+      substitute_dividends_placeholders(paragraph)
+      substitute_administrator_placeholders(paragraph)
       substitute_date_field(paragraph)
     end
 
@@ -123,10 +127,124 @@ module DocxServices
       end
     end
 
+    def substitute_dividends_placeholders(paragraph)
+      if @formatter_office.is_proportional
+        # If proportional is TRUE, replace with specific text from constants
+        paragraph.substitute_across_runs_with_block_regex('_dividends_') do |_|
+          DIVIDENDS_TITLE
+        end
+        
+        paragraph.substitute_across_runs_with_block_regex('_dividends_text_') do |_|
+          DIVIDENDS_TEXT
+        end
+      else
+        # If proportional is FALSE, remove the placeholders
+        paragraph.substitute_across_runs_with_block_regex('_dividends_') do |_|
+          ''
+        end
+        
+        paragraph.substitute_across_runs_with_block_regex('_dividends_text_') do |_|
+          ''
+        end
+      end
+      
+      # Check if any partner has pro_labore compensation
+      partners_compensation = @formatter_office.partners_compensation
+      has_pro_labore = partners_compensation.any? { |partner| partner[:compensation_type] == 'pro_labore' }
+      
+      if has_pro_labore
+        # If any partner has pro_labore, replace with specific text from constants
+        paragraph.substitute_across_runs_with_block_regex('_pro_labore_') do |_|
+          PRO_LABORE_TITLE
+        end
+        
+        paragraph.substitute_across_runs_with_block_regex('_pro_labore_text_') do |_|
+          PRO_LABORE_TEXT
+        end
+      else
+        # If no partner has pro_labore, remove the placeholders
+        paragraph.substitute_across_runs_with_block_regex('_pro_labore_') do |_|
+          ''
+        end
+        
+        paragraph.substitute_across_runs_with_block_regex('_pro_labore_text_') do |_|
+          ''
+        end
+      end
+    end
+
+    def substitute_administrator_placeholders(paragraph)
+      partners_info = @formatter_office.partners_info
+      administrators = partners_info.select { |p| p[:is_administrator] }
+      
+      if administrators.empty?
+        # No administrators, clear the placeholder
+        paragraph.substitute_across_runs_with_block_regex('_partner_full_name_administrator_') do |_|
+          ''
+        end
+      elsif administrators.size == 1
+        # Single administrator
+        admin_index = administrators.first[:number] - 1
+        admin_formatter = @user_formatters[admin_index]
+        admin_user = @office.user_profiles[admin_index]
+        
+        # Determine gender for the single administrator and get prefix from constants
+        gender = determine_administrator_gender(admin_user)
+        prefix = ADMINISTRATOR_PREFIXES[:single][gender]
+        
+        paragraph.substitute_across_runs_with_block_regex('_partner_full_name_administrator_') do |_|
+          "#{prefix} #{admin_formatter.full_name}"
+        end
+      else
+        # Multiple administrators
+        admin_users = administrators.map do |admin|
+          @office.user_profiles[admin[:number] - 1]
+        end
+        
+        # Check if all administrators are female and get prefix from constants
+        all_female = admin_users.all? { |user| determine_administrator_gender(user) == :female }
+        prefix = all_female ? ADMINISTRATOR_PREFIXES[:multiple][:all_female] : ADMINISTRATOR_PREFIXES[:multiple][:mixed_or_male]
+        
+        # Get all administrator names
+        admin_names = administrators.map do |admin|
+          @user_formatters[admin[:number] - 1].full_name
+        end
+        
+        # Format the names list
+        formatted_names = if admin_names.size == 2
+          admin_names.join(' e ')
+        else
+          last_name = admin_names.pop
+          "#{admin_names.join(', ')} e #{last_name}"
+        end
+        
+        paragraph.substitute_across_runs_with_block_regex('_partner_full_name_administrator_') do |_|
+          "#{prefix} #{formatted_names}"
+        end
+      end
+    end
+
     def substitute_date_field(paragraph)
       paragraph.substitute_across_runs_with_block_regex('_current_date_') do |_|
         I18n.l(Date.current, format: :long)
       end
+      
+      paragraph.substitute_across_runs_with_block_regex('_date_') do |_|
+        I18n.l(Date.current, format: :long)
+      end
+    end
+    
+    def determine_administrator_gender(user)
+      # Use the same gender determination logic from FormatterOffices
+      return :male unless user
+      
+      # Check if user has gender field
+      if user.respond_to?(:gender)
+        return user.gender&.to_sym == :female ? :female : :male
+      end
+      
+      # Default to male if we can't determine
+      :male
     end
 
     def individual_quote_value
@@ -139,7 +257,7 @@ module DocxServices
     def insert_partner_table_rows
       partners = @office.user_profiles
 
-      # Only insert rows if there are more than 1 partner
+      # Only insert rows if there are more than 1 partner (facade ensures this service gets multiple partners)
       return unless partners.count > 1
 
       # Define the placeholders that we'll be incrementing

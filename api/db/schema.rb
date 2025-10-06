@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_02_112440) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_06_175117) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -473,6 +473,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_02_112440) do
     t.decimal "quote_value", precision: 10, scale: 2, comment: "Value per quote in BRL"
     t.integer "number_of_quotes", default: 0, comment: "Total number of quotes"
     t.string "logo_s3_key"
+    t.boolean "proportional", default: false, null: false
     t.index ["accounting_type"], name: "index_offices_on_accounting_type"
     t.index ["created_by_id"], name: "index_offices_on_created_by_id"
     t.index ["deleted_at"], name: "index_offices_on_deleted_at"
@@ -768,6 +769,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_02_112440) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_office_id"], name: "index_user_society_compensations_on_user_office_id"
+    t.check_constraint "compensation_type::text = ANY (ARRAY['pro_labore'::character varying::text, 'salary'::character varying::text])", name: "user_society_compensations_compensation_type_check"
   end
 
   create_table "users", force: :cascade do |t|

@@ -78,6 +78,10 @@ module DocxServices
       end
     end
 
+    def is_proportional
+      data[:proportional] || false
+    end
+
     # Relacionamento do Office com os Advogados (users)
     def partnership_type(lawyer_number:)
       lawyer_info = @lawyers_society_info[lawyer_number - 1]
@@ -122,6 +126,43 @@ module DocxServices
       end
     end
 
+    def partners_compensation
+      @lawyers_society_info.map.with_index do |lawyer_info, index|
+        lawyer_num = index + 1
+        lawyer = @lawyers[index]
+        compensations = lawyer_info.compensations.order(effective_date: :desc)
+        
+        # Get the most recent compensation
+        current_compensation = compensations.first
+        
+        {
+          number: lawyer_num,
+          lawyer_name: lawyer ? FormatterQualification.new(lawyer).full_name(upcase: true) : nil,
+          partnership_type: PARTNERSHIP_TYPE[lawyer_info.partnership_type.to_sym] || lawyer_info.partnership_type,
+          partnership_percentage: "#{lawyer_info.partnership_percentage.to_i}%",
+          is_administrator: lawyer_info.is_administrator,
+          compensation_type: current_compensation&.compensation_type,
+          compensation_amount: current_compensation&.amount,
+          compensation_amount_formatted: current_compensation ? MonetaryValidator.format(current_compensation.amount) : nil,
+          payment_frequency: current_compensation&.payment_frequency,
+          effective_date: current_compensation&.effective_date,
+          end_date: current_compensation&.end_date,
+          notes: current_compensation&.notes,
+          all_compensations: compensations.map do |comp|
+            {
+              type: comp.compensation_type,
+              amount: comp.amount,
+              amount_formatted: MonetaryValidator.format(comp.amount),
+              frequency: comp.payment_frequency,
+              effective_date: comp.effective_date,
+              end_date: comp.end_date,
+              notes: comp.notes
+            }
+          end
+        }
+      end
+    end
+
     def entry_date; end
 
     def partner_subscription(lawyer_number:)
@@ -131,12 +172,15 @@ module DocxServices
       lawyer = @lawyers[lawyer_number - 1]
       return nil unless lawyer
 
+      # Only generate subscription if proportional is true
+      return nil unless is_proportional
+
       lawyer_formatter = FormatterQualification.new(lawyer)
       percentage = lawyer_info.partnership_percentage.to_f
 
-      partner_quotes = calculate_partner_number_of_quotes(percentage)
-      partner_quote_value = calculate_partner_quote_value(percentage)
-      individual_quote_value = data[:quote_value] ? (data[:quote_value] / data[:number_of_quotes].to_f) : 0
+      partner_quotes = calculate_proportional_number_of_quotes(percentage)
+      partner_quote_value = calculate_proportional_quote_value(percentage)
+      individual_quote_value = data[:quote_value] && data[:number_of_quotes] ? (data[:quote_value] / data[:number_of_quotes].to_f) : 0
 
       return nil unless partner_quotes && partner_quote_value
 
@@ -178,6 +222,7 @@ module DocxServices
       extracted[:oab_inscricao] = entity.oab_inscricao if entity.respond_to?(:oab_inscricao)
       extracted[:quote_value] = entity.quote_value if entity.respond_to?(:quote_value)
       extracted[:number_of_quotes] = entity.number_of_quotes if entity.respond_to?(:number_of_quotes)
+      extracted[:proportional] = entity.proportional if entity.respond_to?(:proportional)
 
       extracted.with_indifferent_access
     end
@@ -208,6 +253,29 @@ module DocxServices
       return nil unless partner_quotes
 
       NumberValidator.format(partner_quotes)
+    end
+    
+    # Proportional-aware calculation methods
+    def calculate_proportional_quote_value(percentage)
+      return nil unless is_proportional
+      calculate_partner_quote_value(percentage)
+    end
+    
+    def format_proportional_quote_value(percentage)
+      value = calculate_proportional_quote_value(percentage)
+      return nil unless value
+      MonetaryValidator.format(value)
+    end
+    
+    def calculate_proportional_number_of_quotes(percentage)
+      return nil unless is_proportional
+      calculate_partner_number_of_quotes(percentage)
+    end
+    
+    def format_proportional_number_of_quotes(percentage)
+      quotes = calculate_proportional_number_of_quotes(percentage)
+      return nil unless quotes
+      NumberValidator.format(quotes)
     end
 
     def determine_lawyer_gender(lawyer)

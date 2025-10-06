@@ -37,18 +37,13 @@ module DocxServices
   #   end
 
   class << self
-    def generate(document_id, document_type = nil)
-      document = Document.find(document_id)
-      doc_type = document_type || document.document_type
-
-      service_class = case doc_type
-                      when 'social_contract', 'contrato_social'
-                        SocialContractService
-                      else
-                        raise ArgumentError, "Unknown document type: #{doc_type}"
-                      end
-
-      service_class.new(document_id).call
+    def generate(office_id, document_type = nil)
+      case document_type
+      when 'social_contract', 'contrato_social', nil
+        SocialContractServiceFacade.new(office_id).call
+      else
+        raise ArgumentError, "Unknown document type: #{document_type}"
+      end
     end
 
     def format_entity(entity, options = {})
