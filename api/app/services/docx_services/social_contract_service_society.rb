@@ -33,7 +33,8 @@ module DocxServices
       end
 
       # Replace numbered partner placeholders in tables
-      substitute_numbered_partner_placeholders
+      # TEMPORARILY DISABLED FOR DEBUGGING
+      # substitute_numbered_partner_placeholders
 
       # Save the document
       doc.save(file_path.to_s)

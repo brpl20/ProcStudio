@@ -13,36 +13,13 @@ doc.tables.each do |table|
 end
 
 
-# frozen_string_literal: true
-
-require 'docx'
-
-module DocxServices
-  # Handles social contract generation for multiple lawyers (society)
-  # rubocop:disable Metrics/ClassLength
-  class SocialContractServiceSociety < BaseTemplate
-    attr_reader :office_formatter, :doc, :file_path
-
-    def initialize(*args)
-      super
-      @office_formatter = FormatterOffices.for_office(office, lawyers)
-    end
-
-    def process_document
-      @doc = ::Docx::Document.open(template_path)
-      @file_path = Rails.root.join('tmp', file_name)
-
-      doc.paragraphs.each do |paragraph|
-        substitute_placeholders_with_block(paragraph)
-      end
-
       add_partner_rows_to_tables
 
       doc.tables.each do |table|
         table.rows.each do |row|
           row.cells.each do |cell|
             cell.paragraphs.each do |paragraph|
-              substitute_placeholders_with_block(paragraph)
+              substitute_placeholders_with_block_regex(paragraph)
             end
           end
         end
@@ -53,90 +30,6 @@ module DocxServices
 
     protected
 
-    def template_path
-      'tests/CS-TEMPLATE.docx'
-    end
-
-    def file_name
-      "cs-#{office.name}.docx"
-    end
-
-    private
-
-    def substitute_placeholders_with_block(paragraph)
-      substitute_office_fields(paragraph)
-      substitute_multiple_partner_fields(paragraph)
-      substitute_capital_fields(paragraph)
-      substitute_pro_labore_dividends_clauses(paragraph)
-      substitute_date_field(paragraph)
-    end
-
-    def substitute_office_fields(paragraph)
-      paragraph.substitute_across_runs_with_block(/_office_name_/) do |_|
-        office_name
-      end
-
-      paragraph.substitute_across_runs_with_block(/_office_city_/) do |_|
-        office_city
-      end
-
-      paragraph.substitute_across_runs_with_block(/_office_state_/) do |_|
-        office_state
-      end
-
-      paragraph.substitute_across_runs_with_block(/_office_address_/) do |_|
-        office_street
-      end
-
-      paragraph.substitute_across_runs_with_block(/_office_zip_code_/) do |_|
-        office_zip_code
-      end
-
-      paragraph.substitute_across_runs_with_block(/_office_total_value_/) do |_|
-        format_currency(total_capital_value)
-      end
-
-      paragraph.substitute_across_runs_with_block(/_office_quotes_/) do |_|
-        format_number(total_quotes)
-      end
-
-      paragraph.substitute_across_runs_with_block(/_office_quote_value_/) do |_|
-        "#{quote_value.to_i},00"
-      end
-    end
-
-    def substitute_multiple_partner_fields(paragraph)
-      paragraph.substitute_across_runs_with_block(/_partner_qualification_/) do |_|
-        partner_qualification_text
-      end
-
-      paragraph.substitute_across_runs_with_block(/_partner_full_name_/) do |_|
-        partner_full_name_text
-      end
-
-      paragraph.substitute_across_runs_with_block(/_partner_subscription_/) do |_|
-        partner_subscription_text
-      end
-
-      paragraph.substitute_across_runs_with_block(/_partner_total_quotes_/) do |_|
-        partner_total_quotes_text
-      end
-
-      paragraph.substitute_across_runs_with_block(/_partner_sum_/) do |_|
-        partner_sum_text
-      end
-
-      paragraph.substitute_across_runs_with_block(/_%_/) do |_|
-        percentage_text
-      end
-
-      paragraph.substitute_across_runs_with_block(/_total_quotes_/) do |_|
-        format_number(total_quotes)
-      end
-
-      paragraph.substitute_across_runs_with_block(/_sum_percentage_/) do |_|
-        '100%'
-      end
 
       # Signature fields for partners 1 and 2
       paragraph.substitute_across_runs_with_block(/_partner_1_full_name_/) do |_|
