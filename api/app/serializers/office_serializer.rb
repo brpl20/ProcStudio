@@ -44,7 +44,7 @@
 class OfficeSerializer
   include JSONAPI::Serializer
 
-  attributes :name, :cnpj, :site, :quote_value, :number_of_quotes, :total_quotes_value
+  attributes :name, :cnpj, :site, :quote_value, :number_of_quotes, :total_quotes_value, :proportional
 
   # Always include attachments
   attributes :logo_url, :social_contracts_with_metadata
@@ -53,6 +53,13 @@ class OfficeSerializer
              :accounting_type, :oab_id, :oab_inscricao, :oab_link, :oab_status,
              :formatted_total_quotes_value,
              if: proc { |_, options| options[:action] == 'show' }
+
+  # Include user_offices with compensations for detailed views
+  attribute :user_offices, if: proc { |_, options| options[:action] == 'show' } do |object|
+    object.user_offices.includes(:user, :compensations).map do |user_office|
+      UserOfficeSerializer.new(user_office).serializable_hash[:data][:attributes]
+    end
+  end
 
   attribute :city do |object|
     object.addresses.main_addresses.first&.city
@@ -64,5 +71,21 @@ class OfficeSerializer
 
   attribute :deleted do |object|
     object.deleted_at.present?
+  end
+
+  # Expose new FormatterOffices methods for detailed views
+  attribute :partners_info, if: proc { |_, options| options[:action] == 'show' } do |object|
+    formatter = DocxServices::FormatterOffices.new(object)
+    formatter.partners_info
+  end
+
+  attribute :partners_compensation, if: proc { |_, options| options[:action] == 'show' } do |object|
+    formatter = DocxServices::FormatterOffices.new(object)
+    formatter.partners_compensation
+  end
+
+  attribute :is_proportional, if: proc { |_, options| options[:action] == 'show' } do |object|
+    formatter = DocxServices::FormatterOffices.new(object)
+    formatter.is_proportional
   end
 end
