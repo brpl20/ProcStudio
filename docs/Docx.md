@@ -128,6 +128,34 @@ Isso pode acontecer por exemplo na qualificação de um advogado no contrato, em
 
 `... advogado, inscrito na OAB/PR 54.159 ...`
 
+#### Métodos de Estado
+
+O método `state` foi aprimorado para oferecer maior flexibilidade na formatação dos estados brasileiros:
+
+```ruby
+# Formato padrão - retorna a sigla
+instance.state                         # => "PR"
+
+# Com nome completo por extenso
+instance.state(extenso: true)          # => "Paraná"
+
+# Com preposição + nome completo
+instance.state(prefix: true, extenso: true)  # => "do Paraná"
+
+# Com preposição + sigla
+instance.state(prefix: true)           # => "do PR"
+```
+
+**Exemplos por estado:**
+- PR: "do Paraná", "do PR"
+- SC: "de Santa Catarina", "de SC"
+- RJ: "do Rio de Janeiro", "do RJ"
+- SP: "de São Paulo", "de SP"
+- MG: "de Minas Gerais", "de MG"
+- BA: "da Bahia", "da BA"
+
+O sistema utiliza automaticamente as preposições corretas ("do", "de", "da") conforme as regras gramaticais do português brasileiro.
+
 #### Dados Bancários e PIX
 
 A partir da versão atual, o sistema também suporta a inclusão de dados bancários e informações de PIX na qualificação. Estes dados são extraídos automaticamente da associação polimórfica `bank_accounts` dos modelos.
@@ -261,34 +289,6 @@ O sistema automaticamente detecta e extrai os dados dos representantes através 
 #### MultiQualificação
 
 Quando temos mais de um cliente precisaremos trabalhar qual a "multiqualificação" ou seja: Bruno, João e Paulo... por exemplo. Não temos uma forma automatizada de fazer isso ainda, então o caminho seria mais ou menos isso após a instância: ``x + ", " + y'`.
-
-#### Métodos de Estado Melhorados
-
-O método `state` foi aprimorado para oferecer maior flexibilidade na formatação dos estados brasileiros:
-
-```ruby
-# Formato padrão - retorna a sigla
-instance.state                         # => "PR"
-
-# Com nome completo por extenso
-instance.state(extenso: true)          # => "Paraná"
-
-# Com preposição + nome completo
-instance.state(prefix: true, extenso: true)  # => "do Paraná"
-
-# Com preposição + sigla
-instance.state(prefix: true)           # => "do PR"
-```
-
-**Exemplos por estado:**
-- PR: "do Paraná", "do PR"
-- SC: "de Santa Catarina", "de SC"
-- RJ: "do Rio de Janeiro", "do RJ"
-- SP: "de São Paulo", "de SP"
-- MG: "de Minas Gerais", "de MG"
-- BA: "da Bahia", "da BA"
-
-O sistema utiliza automaticamente as preposições corretas ("do", "de", "da") conforme as regras gramaticais do português brasileiro.
 
 ### Organizar a Informação => Modelos Específicos
 

@@ -4,10 +4,12 @@
 # NÃO é para extrair a qualificação, nome e outros atributos que estão concentrados no formatter_qualification
 
 require_relative 'formatter_constants_offices'
+require_relative 'concerns/gender_determinable'
 
 module DocxServices
   class FormatterOffices
     include FormatterConstantsOffices
+    include Concerns::GenderDeterminable
 
     attr_reader :data, :office, :lawyers, :lawyers_society_info
 
@@ -77,27 +79,21 @@ module DocxServices
     end
 
     # Relacionamento do Office com os Advogados (users)
-    def partnership_type(lawyer_number = nil)
-      raise ArgumentError, "Você deve especificar o número do advogado (1, 2, 3...)" if lawyer_number.nil?
-
+    def partnership_type(lawyer_number:)
       lawyer_info = @lawyers_society_info[lawyer_number - 1]
       return nil unless lawyer_info&.partnership_type
 
       PARTNERSHIP_TYPE[lawyer_info.partnership_type.to_sym] || lawyer_info.partnership_type
     end
 
-    def partnership_percentage(lawyer_number = nil)
-      raise ArgumentError, "Você deve especificar o número do advogado (1, 2, 3...)" if lawyer_number.nil?
-
+    def partnership_percentage(lawyer_number:)
       lawyer_info = @lawyers_society_info[lawyer_number - 1]
       return nil unless lawyer_info&.partnership_percentage
 
       "#{lawyer_info.partnership_percentage.to_i}%"
     end
 
-    def is_administrator(lawyer_number = nil)
-      raise ArgumentError, "Você deve especificar o número do advogado (1, 2, 3...)" if lawyer_number.nil?
-
+    def is_administrator(lawyer_number:)
       lawyer_info = @lawyers_society_info[lawyer_number - 1]
       return nil unless lawyer_info
 
@@ -126,12 +122,9 @@ module DocxServices
       end
     end
 
-    def entry_date
-    end
+    def entry_date; end
 
-    def partner_subscription(lawyer_number = nil)
-      raise ArgumentError, "Você deve especificar o número do advogado (1, 2, 3...)" if lawyer_number.nil?
-
+    def partner_subscription(lawyer_number:)
       lawyer_info = @lawyers_society_info[lawyer_number - 1]
       return nil unless lawyer_info
 
@@ -143,7 +136,7 @@ module DocxServices
 
       partner_quotes = calculate_partner_number_of_quotes(percentage)
       partner_quote_value = calculate_partner_quote_value(percentage)
-      individual_quote_value = data[:quote_value] ? (data[:quote_value].to_f / data[:number_of_quotes].to_f) : 0
+      individual_quote_value = data[:quote_value] ? (data[:quote_value] / data[:number_of_quotes].to_f) : 0
 
       return nil unless partner_quotes && partner_quote_value
 
@@ -165,7 +158,7 @@ module DocxServices
 
     def all_partners_subscription
       @lawyers_society_info.map.with_index do |_, index|
-        partner_subscription(index + 1)
+        partner_subscription(lawyer_number: index + 1)
       end.compact.join('; ')
     end
 
@@ -190,7 +183,7 @@ module DocxServices
     end
 
     def calculate_partner_quote_value(percentage)
-      return nil unless data[:quote_value] && percentage > 0
+      return nil unless data[:quote_value] && percentage.positive?
 
       total_value = data[:quote_value].to_f
       (total_value * percentage / 100).round(2)
@@ -204,7 +197,7 @@ module DocxServices
     end
 
     def calculate_partner_number_of_quotes(percentage)
-      return nil unless data[:number_of_quotes] && percentage > 0
+      return nil unless data[:number_of_quotes] && percentage.positive?
 
       total_quotes = data[:number_of_quotes].to_f
       (total_quotes * percentage / 100).round(2)
@@ -218,28 +211,14 @@ module DocxServices
     end
 
     def determine_lawyer_gender(lawyer)
-      if lawyer.respond_to?(:gender) && lawyer.gender.present?
-        lawyer.gender.to_sym
-      else
-        :male # Default
-      end
+      determine_gender(lawyer)
     end
 
     def format_brazilian_number(number)
       return nil unless number
-
-      # Convert to string with Brazilian formatting (comma for decimals)
-      formatted = sprintf("%.2f", number).gsub('.', ',')
-
-      # Add thousand separators if needed
-      parts = formatted.split(',')
-      integer_part = parts[0]
-      decimal_part = parts[1]
-
-      # Add dots for thousands
-      integer_part = integer_part.reverse.scan(/.{1,3}/).join('.').reverse
-
-      "#{integer_part},#{decimal_part}"
+      # Use existing NumberValidator to format with thousand separators
+      # and handle decimals properly
+      NumberValidator.format(number)
     end
   end
 end

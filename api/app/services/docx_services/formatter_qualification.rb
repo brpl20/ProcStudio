@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 require_relative 'formatter_constants'
+require_relative 'concerns/gender_determinable'
 
 module DocxServices
   class FormatterQualification
     include FormatterConstants
+    include Concerns::GenderDeterminable
 
     attr_reader :data, :entity_type, :gender
 
@@ -353,18 +355,6 @@ module DocxServices
       cnpj_present ? :company : :person
     end
 
-    def determine_gender(entity, provided_gender)
-      return provided_gender.to_sym if provided_gender
-
-      # Try to get gender from entity
-      if entity.respond_to?(:gender) && entity.gender.present?
-        entity.gender.to_sym
-      elsif entity.is_a?(Hash) && entity[:gender].present?
-        entity[:gender].to_sym
-      else
-        :male # Default
-      end
-    end
 
     def has_address?
       data[:street].present? || data[:city].present? || data[:state].present? || data[:zip_code].present?
