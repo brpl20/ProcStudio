@@ -47,11 +47,23 @@ export interface BankAccount {
   _destroy?: boolean;
 }
 
+// Compensation interface
+export interface Compensation {
+  id?: number;
+  compensation_type: 'pro_labore' | 'salary';
+  amount: number;
+  payment_frequency: 'monthly' | 'weekly' | 'annually';
+  effective_date: string; // YYYY-MM-DD format
+  notes?: string;
+  _destroy?: boolean;
+}
+
 export interface UserOffice {
   id?: number;
   user_id: number;
   partnership_type?: PartnershipType;
   partnership_percentage?: string;
+  compensations_attributes?: Compensation[];
   _destroy?: boolean;
 }
 
@@ -110,6 +122,7 @@ export interface Office {
   number_of_quotes?: number;
   total_quotes_value?: number;
   formatted_total_quotes_value?: string;
+  proportional?: boolean;
   city?: string;
   state?: string;
   deleted?: boolean;
@@ -159,6 +172,7 @@ export interface CreateOfficeRequest {
   accounting_type?: AccountingType;
   quote_value?: number;
   number_of_quotes?: number;
+  proportional?: boolean;
   logo?: File | string;
   phones_attributes?: Omit<Phone, 'id'>[];
   addresses_attributes?: Omit<Address, 'id'>[];
@@ -180,6 +194,7 @@ export interface UpdateOfficeRequest {
   accounting_type?: AccountingType;
   quote_value?: number;
   number_of_quotes?: number;
+  proportional?: boolean;
   logo?: File | string;
   phones_attributes?: Phone[];
   addresses_attributes?: Address[];
@@ -269,6 +284,7 @@ export interface JsonApiOfficeData {
     oab_inscricao?: string;
     oab_link?: string;
     oab_status?: string;
+    proportional?: boolean;
     formatted_total_quotes_value?: string;
     // Attachments
     logo_url?: string;

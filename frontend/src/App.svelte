@@ -22,7 +22,7 @@
   import CustomerProfilePage from './lib/pages/CustomerProfilePage.svelte';
   import UserConfigPage from './lib/pages/UserConfigPage.svelte';
   import ProfileCompletionEnhanced from './lib/pages/ProfileCompletionEnhanced.svelte';
-  import Lawyers from './lib/pages/Lawyers.svelte';
+  import OfficeCreationPage from './lib/pages/Office/OfficeCreationPage.svelte';
 
   // Reactive stores
   $: ({ isAuthenticated, showProfileCompletion, profileData, missingFields } = $authStore);
@@ -105,7 +105,7 @@
       '/customers': CustomersPage,
       '/customers/new': CustomersNewPage,
       '/user-config': UserConfigPage,
-      '/lawyers-test': Lawyers
+      '/lawyers-test': OfficeCreationPage
     };
 
     return routes[path] || LandingPage;

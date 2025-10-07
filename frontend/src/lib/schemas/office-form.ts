@@ -5,7 +5,7 @@
  * for office forms, following the Svelte 5 reactive pattern.
  */
 
-import type { Office, CreateOfficeRequest } from '../api/types/office.types';
+import type { Office, CreateOfficeRequest, Compensation } from '../api/types/office.types';
 
 // Phone form structure
 export interface PhoneFormData {
@@ -54,12 +54,14 @@ export interface PartnerFormData {
   pro_labore_amount: number;
 }
 
-// Compensation attributes for user offices
-export interface CompensationAttributes {
-  compensation_type: 'pro_labore';
+// Compensation form structure (matches API type)
+export interface CompensationFormData {
+  compensation_type: 'pro_labore' | 'salary';
   amount: number;
-  effective_date: string; // YYYY-MM-DD format
   payment_frequency: 'monthly' | 'weekly' | 'annually';
+  effective_date: string; // YYYY-MM-DD format
+  notes?: string;
+  id?: number;
 }
 
 // User office attributes for API
@@ -68,7 +70,7 @@ export interface UserOfficeAttributes {
   partnership_type: string;
   partnership_percentage: string;
   is_administrator: boolean;
-  compensations_attributes?: CompensationAttributes[];
+  compensations_attributes?: CompensationFormData[];
   _destroy: boolean;
 }
 
@@ -91,9 +93,10 @@ export interface OfficeFormData {
   // Financial information
   quote_value: string;
   number_of_quotes: string;
+  proportional: boolean;
 
   // CEP field (separate from address)
-  zip_code?: string;
+  zip_code: string;
 
   // Nested attributes
   phones_attributes: PhoneFormData[];
@@ -141,6 +144,10 @@ export const createDefaultOfficeFormData = (): OfficeFormData => ({
   // Financial information
   quote_value: '',
   number_of_quotes: '',
+  proportional: true,
+
+  // CEP field
+  zip_code: '',
 
   // Nested attributes with at least one empty item
   phones_attributes: [{ phone_number: '' }],
@@ -240,6 +247,7 @@ export function transformToApiRequest(
     oab_link: formData.oab_link,
     quote_value: formData.quote_value ? parseFloat(formData.quote_value) : undefined,
     number_of_quotes: formData.number_of_quotes ? parseInt(formData.number_of_quotes) : undefined,
+    proportional: formData.proportional,
 
     // Add zip_code if present
     ...(formData.zip_code && { zip_code: formData.zip_code }),
@@ -324,6 +332,7 @@ export function transformFromOffice(office: Office): OfficeFormData {
     oab_link: office.oab_link || '',
     quote_value: office.quote_value?.toString() || '',
     number_of_quotes: office.number_of_quotes?.toString() || '',
+    proportional: office.proportional ?? true,
 
     phones_attributes:
       office.phones?.length > 0

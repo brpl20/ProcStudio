@@ -9,7 +9,7 @@ import type {
   OfficeFormData,
   PartnerFormData,
   UserOfficeAttributes,
-  CompensationAttributes
+  CompensationFormData
 } from '../schemas/office-form';
 import api from '../api';
 
@@ -53,6 +53,10 @@ export function processOfficeFormData(
     // Financial fields
     quote_value: formData.quote_value ? parseFloat(formData.quote_value) : undefined,
     number_of_quotes: formData.number_of_quotes ? parseInt(formData.number_of_quotes) : undefined,
+    proportional: formData.proportional,
+
+    // CEP field (if present)
+    ...(formData.zip_code && { zip_code: formData.zip_code }),
 
     // Partnership metadata
     profit_distribution: profitDistribution,
@@ -114,12 +118,13 @@ export function processOfficeFormData(
       };
 
       // Add compensations_attributes if pro_labore_amount is set
-      if (p.pro_labore_amount && p.pro_labore_amount > 0) {
-        const compensation: CompensationAttributes = {
+      if (partnersWithProLabore && p.pro_labore_amount && p.pro_labore_amount > 0) {
+        const compensation: CompensationFormData = {
           compensation_type: 'pro_labore',
           amount: p.pro_labore_amount,
           effective_date: new Date().toISOString().split('T')[0], // Current date in YYYY-MM-DD format
-          payment_frequency: 'monthly'
+          payment_frequency: 'monthly',
+          notes: `Pro-labore para ${p.lawyer_name || 'sócio'}`
         };
         userOffice.compensations_attributes = [compensation];
       }

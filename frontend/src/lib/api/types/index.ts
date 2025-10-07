@@ -55,6 +55,7 @@ export type {
   OfficeWithLawyers,
   Lawyer,
   UserOffice,
+  Compensation,
   CreateOfficeRequest,
   UpdateOfficeRequest,
   OfficesListResponse,

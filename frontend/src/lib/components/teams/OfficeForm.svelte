@@ -228,6 +228,13 @@
     }
   });
 
+  // Keep zip_code in sync between CEP field and first address
+  $effect(() => {
+    if (formData.zip_code && formData.addresses_attributes.length > 0) {
+      formData.addresses_attributes[0].zip_code = formData.zip_code;
+    }
+  });
+
   const addBankAccount = createAddFunction('bank_accounts_attributes', {
     bank_name: '',
     type_account: '',
@@ -463,8 +470,9 @@
         bind:value={formData.zip_code}
         id="office-zip_code"
         labelText={'CEP'}
-        useAPIValidation={true}
+        useAPIValidation={false}
         showAddressInfo={false}
+        required={false}
         on:address-found={handleAddressFound}
       />
 
