@@ -8,6 +8,8 @@
   import AccountingType from '../forms_commons/AccountingType.svelte';
   import FoundationDate from '../forms_commons/FoundationDate.svelte';
   import Site from '../forms_commons/Site.svelte';
+  import type { FormValidationConfig } from '../../schemas/new-office-form';
+  import { validateCNPJOptional } from '../../validation/cnpj';
 
   type Props = {
     formData?: {
@@ -23,6 +25,8 @@
     cnpjRequired?: boolean;
     cnpjDisabled?: boolean;
     cnpjValidate?: boolean;
+    foundationRequired?: boolean;
+    onValidationConfigChange?: (config: FormValidationConfig) => void;
   };
 
   let {
@@ -38,8 +42,37 @@
     showSite = true,
     cnpjRequired = false,
     cnpjDisabled = false,
-    cnpjValidate = true
+    cnpjValidate = true,
+    foundationRequired = false,
+    onValidationConfigChange
   }: Props = $props();
+
+  // Auto-generate validation configuration based on props
+  // Track previous values to prevent infinite loops
+  let previousConfig = $state<string>('');
+
+  $effect(() => {
+    if (onValidationConfigChange) {
+      const validationConfig: FormValidationConfig = {
+        name: { required: true }, // Name is always required
+        cnpj: {
+          required: cnpjRequired,
+          customValidator: cnpjValidate ? validateCNPJOptional : undefined
+        },
+        society: { required: false },
+        accounting_type: { required: false },
+        foundation: { required: foundationRequired },
+        site: { required: false }
+      };
+
+      // Only call if config actually changed
+      const configString = JSON.stringify(validationConfig);
+      if (configString !== previousConfig) {
+        previousConfig = configString;
+        onValidationConfigChange(validationConfig);
+      }
+    }
+  });
 </script>
 
 <FormSection {title}>

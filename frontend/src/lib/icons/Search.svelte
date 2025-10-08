@@ -3,7 +3,7 @@
     className?: string;
   }
 
-  const { className = ''}: Props = $props();
+  const { className = '' }: Props = $props();
 </script>
 
 <svg

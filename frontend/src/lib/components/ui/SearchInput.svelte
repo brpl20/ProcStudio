@@ -1,7 +1,6 @@
 <!-- components/ui/SearchInput.svelte -->
 <script lang="ts">
-  import Icon from '../../icons/icons.svelte'
-
+  import Icon from '../../icons/icons.svelte';
 
   interface Props {
     value?: string;

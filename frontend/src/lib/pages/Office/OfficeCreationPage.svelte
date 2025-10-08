@@ -2,6 +2,7 @@
   import { RenderScan } from 'svelte-render-scan';
   import BasicInformation from '../../components/forms_commons_wrappers/BasicInformation.svelte';
   import { newOfficeStore } from '../../stores/newOfficeStore.svelte';
+  import type { FormValidationConfig } from '../../schemas/new-office-form';
 
   // Debug tracking with derived state (no effects to avoid loops)
   let renderCount = $state(0);
@@ -31,6 +32,12 @@
     newOfficeStore.resetForm();
     updateRenderInfo();
   }
+
+  // Handle validation configuration changes from wrapper
+  function handleValidationConfigChange(config: FormValidationConfig) {
+    newOfficeStore.setValidationConfig(config);
+    updateRenderInfo();
+  }
 </script>
 
 <RenderScan />
@@ -44,7 +51,12 @@
       handleSubmit();
     }}
   >
-    <BasicInformation bind:formData={newOfficeStore.formData} cnpjRequired={true} />
+    <BasicInformation
+      bind:formData={newOfficeStore.formData}
+      cnpjRequired={false}
+      foundationRequired={true}
+      onValidationConfigChange={handleValidationConfigChange}
+    />
 
     <!-- Form actions -->
     <div class="flex gap-4 mt-6">

@@ -98,7 +98,7 @@
   </div>
 {:else}
   <div class="mb-4 flex gap-2">
-    
+
     <SearchInput bind:value={searchTerm} placeholder="Insira palavras chaves..." />
     <FilterButton
       bind:value={priorityFilter}

@@ -5,12 +5,13 @@
 
 import api from '../api';
 import type { Office, CreateOfficeRequest } from '../api/types/office.types';
-import type { NewOfficeFormData, NewOfficeFormState } from '../schemas/new-office-form';
-import { 
-  createDefaultNewOfficeFormData, 
+import type { NewOfficeFormData, NewOfficeFormState, FormValidationConfig } from '../schemas/new-office-form';
+import {
+  createDefaultNewOfficeFormData,
   transformNewOfficeFormToApiRequest,
   hasNewOfficeFormData,
-  validateNewOfficeForm
+  validateNewOfficeForm,
+  createDefaultValidationConfig
 } from '../schemas/new-office-form';
 
 class NewOfficeStore {
@@ -24,7 +25,8 @@ class NewOfficeStore {
       success: null,
       isDirty: false
     } as NewOfficeFormState,
-    currentOffice: null as Office | null
+    currentOffice: null as Office | null,
+    validationConfig: createDefaultValidationConfig()
   });
 
   // Public getters
@@ -40,19 +42,23 @@ class NewOfficeStore {
     return this.state.currentOffice;
   }
 
+  get validationConfig() {
+    return this.state.validationConfig;
+  }
+
   // Derived state
   isDirty = $derived(hasNewOfficeFormData(this.state.formData));
-  isValid = $derived(validateNewOfficeForm(this.state.formData).length === 0);
+  isValid = $derived(validateNewOfficeForm(this.state.formData, this.state.validationConfig).length === 0);
   canSubmit = $derived(
-    this.isDirty && 
+    this.isDirty &&
     this.isValid &&
-    !this.state.formState.loading && 
+    !this.state.formState.loading &&
     !this.state.formState.saving
   );
 
   // Update form field
   updateField<K extends keyof NewOfficeFormData>(
-    field: K, 
+    field: K,
     value: NewOfficeFormData[K]
   ) {
     this.state.formData[field] = value;
@@ -80,6 +86,11 @@ class NewOfficeStore {
     this.state.currentOffice = null;
   }
 
+  // Set validation configuration
+  setValidationConfig(config: FormValidationConfig) {
+    this.state.validationConfig = config;
+  }
+
   // Clear messages
   clearMessages() {
     this.state.formState.error = null;
@@ -99,7 +110,7 @@ class NewOfficeStore {
     try {
       // Transform form data to API format
       const apiData = transformNewOfficeFormToApiRequest(this.state.formData);
-      
+
       // Call API
       const response = await api.offices.createOffice(apiData as CreateOfficeRequest);
 
@@ -113,8 +124,8 @@ class NewOfficeStore {
         return null;
       }
     } catch (error) {
-      this.state.formState.error = error instanceof Error 
-        ? error.message 
+      this.state.formState.error = error instanceof Error
+        ? error.message
         : 'Erro inesperado ao criar escritório';
       return null;
     } finally {
@@ -139,8 +150,8 @@ class NewOfficeStore {
         return false;
       }
     } catch (error) {
-      this.state.formState.error = error instanceof Error 
-        ? error.message 
+      this.state.formState.error = error instanceof Error
+        ? error.message
         : 'Erro inesperado ao carregar escritório';
       return false;
     } finally {
@@ -161,9 +172,9 @@ class NewOfficeStore {
     this.state.formState.isDirty = false;
   }
 
-  // Get validation errors
+  // Get validation errors with current config
   getValidationErrors(): string[] {
-    return validateNewOfficeForm(this.state.formData);
+    return validateNewOfficeForm(this.state.formData, this.state.validationConfig);
   }
 }
 

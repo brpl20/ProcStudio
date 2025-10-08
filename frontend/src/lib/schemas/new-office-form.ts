@@ -4,6 +4,7 @@
  */
 
 import type { CreateOfficeRequest, Society, AccountingType } from '../api/types/office.types';
+import { validateCNPJOptional } from '../validation/cnpj';
 
 // New office form data - matches BasicInformation component exactly
 export interface NewOfficeFormData {
@@ -13,6 +14,16 @@ export interface NewOfficeFormData {
   accounting_type: string;
   foundation: string;
   site?: string;
+}
+
+// Dynamic validation configuration
+export interface FieldValidationRule {
+  required?: boolean;
+  customValidator?: (value: any) => string | null;
+}
+
+export interface FormValidationConfig {
+  [fieldName: string]: FieldValidationRule;
 }
 
 // New office form state for UI feedback
@@ -86,21 +97,72 @@ export function hasNewOfficeFormData(formData: NewOfficeFormData): boolean {
 }
 
 /**
- * Validate new office form data
+ * Create default validation configuration
  */
-export function validateNewOfficeForm(formData: NewOfficeFormData): string[] {
+export function createDefaultValidationConfig(): FormValidationConfig {
+  return {
+    name: { required: true },
+    cnpj: { required: false, customValidator: validateCNPJOptional },
+    society: { required: false },
+    accounting_type: { required: false },
+    foundation: { required: false },
+    site: { required: false }
+  };
+}
+
+/**
+ * Validate new office form data with dynamic configuration
+ */
+export function validateNewOfficeForm(
+  formData: NewOfficeFormData,
+  validationConfig: FormValidationConfig = createDefaultValidationConfig()
+): string[] {
   const errors: string[] = [];
 
-  if (!formData.name?.trim()) {
-    errors.push('Nome do escritório é obrigatório');
+  // Iterate through all fields in the validation config
+  for (const [fieldName, rules] of Object.entries(validationConfig)) {
+    const fieldValue = formData[fieldName as keyof NewOfficeFormData];
+
+    // Check required validation
+    if (rules.required && (!fieldValue || !String(fieldValue).trim())) {
+      const fieldLabel = getFieldLabel(fieldName);
+      errors.push(`${fieldLabel} é obrigatório`);
+      continue; // Skip custom validation if field is empty and required
+    }
+
+    // Apply custom validator if provided and field has value
+    if (rules.customValidator && fieldValue) {
+      const customError = rules.customValidator(fieldValue);
+      if (customError) {
+        errors.push(customError);
+      }
+    }
   }
 
   return errors;
 }
 
 /**
- * Check if new office form is valid
+ * Get user-friendly field labels
  */
-export function isNewOfficeFormValid(formData: NewOfficeFormData): boolean {
-  return validateNewOfficeForm(formData).length === 0;
+function getFieldLabel(fieldName: string): string {
+  const labels: Record<string, string> = {
+    name: 'Nome do escritório',
+    cnpj: 'CNPJ',
+    society: 'Tipo de sociedade',
+    accounting_type: 'Enquadramento contábil',
+    foundation: 'Data de fundação',
+    site: 'Site'
+  };
+  return labels[fieldName] || fieldName;
+}
+
+/**
+ * Check if new office form is valid with dynamic configuration
+ */
+export function isNewOfficeFormValid(
+  formData: NewOfficeFormData,
+  validationConfig?: FormValidationConfig
+): boolean {
+  return validateNewOfficeForm(formData, validationConfig).length === 0;
 }

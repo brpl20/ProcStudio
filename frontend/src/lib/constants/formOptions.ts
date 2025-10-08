@@ -11,7 +11,6 @@ export interface BadgeFormOption extends FormOption {
   dotClass?: string;
 }
 
-
 export const SOCIETY_OPTIONS: FormOption[] = [
   { value: 'individual', label: 'Individual' },
   { value: 'company', label: 'Sociedade' }

@@ -126,7 +126,7 @@
 
 <div class="container mx-auto p-6 max-w-7xl">
   <h1 class="text-3xl font-bold mb-8 text-center">🐛 Office Creation Debug Page</h1>
-  
+
   <!-- Debug Info Panel -->
   <div class="bg-gray-100 p-4 rounded-lg mb-8">
     <h2 class="text-xl font-semibold mb-4">Debug Information</h2>
@@ -138,7 +138,7 @@
         <strong>Last Update:</strong> {lastUpdate}
       </div>
       <div class="bg-white p-3 rounded">
-        <strong>Store State:</strong> 
+        <strong>Store State:</strong>
         <div>Saving: {newOfficeStore.formState.saving}</div>
         <div>Loading: {newOfficeStore.formState.loading}</div>
         <div>Can Submit: {newOfficeStore.canSubmit}</div>
@@ -148,7 +148,7 @@
 
   <!-- Side by Side Forms -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-    
+
     <!-- Form 1 - Empty Form -->
     <div class="border-2 border-blue-300 rounded-lg p-6">
       <div class="flex justify-between items-center mb-4">
@@ -158,14 +158,14 @@
           <button class="btn btn-sm btn-primary" onclick={copyForm1ToForm2}>Copy to Form 2</button>
         </div>
       </div>
-      
+
       <!-- Form 1 Debug Info -->
       <div class="bg-blue-50 p-3 rounded mb-4 text-sm">
         <div class="grid grid-cols-2 gap-2">
           <div><strong>Valid:</strong> {isValid1 ? '✅' : '❌'}</div>
           <div><strong>Dirty:</strong> {isDirty1 ? '✅' : '❌'}</div>
           <div class="col-span-2">
-            <strong>Errors:</strong> 
+            <strong>Errors:</strong>
             {#if validationErrors1.length > 0}
               <ul class="list-disc list-inside text-red-600">
                 {#each validationErrors1 as error}
@@ -180,9 +180,9 @@
       </div>
 
       <BasicInformation bind:formData={formData1} title="Empty Form Test" />
-      
+
       <div class="mt-4">
-        <button 
+        <button
           class="btn btn-primary w-full"
           onclick={handleSubmitForm1}
           disabled={!isValid1}
@@ -207,14 +207,14 @@
           <button class="btn btn-sm btn-success" onclick={copyForm2ToForm1}>Copy to Form 1</button>
         </div>
       </div>
-      
+
       <!-- Form 2 Debug Info -->
       <div class="bg-green-50 p-3 rounded mb-4 text-sm">
         <div class="grid grid-cols-2 gap-2">
           <div><strong>Valid:</strong> {isValid2 ? '✅' : '❌'}</div>
           <div><strong>Dirty:</strong> {isDirty2 ? '✅' : '❌'}</div>
           <div class="col-span-2">
-            <strong>Errors:</strong> 
+            <strong>Errors:</strong>
             {#if validationErrors2.length > 0}
               <ul class="list-disc list-inside text-red-600">
                 {#each validationErrors2 as error}
@@ -229,9 +229,9 @@
       </div>
 
       <BasicInformation bind:formData={formData2} title="Pre-filled Form Test" />
-      
+
       <div class="mt-4">
-        <button 
+        <button
           class="btn btn-success w-full"
           onclick={handleSubmitForm2}
           disabled={!isValid2}
@@ -251,13 +251,13 @@
   <!-- Store Debug Section -->
   <div class="mt-8 bg-yellow-50 border-2 border-yellow-300 rounded-lg p-6">
     <h2 class="text-xl font-semibold text-yellow-700 mb-4">Store Debug Information</h2>
-    
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <h3 class="font-semibold mb-2">Store Form Data:</h3>
         <pre class="text-xs bg-white p-3 rounded overflow-auto">{JSON.stringify(newOfficeStore.formData, null, 2)}</pre>
       </div>
-      
+
       <div>
         <h3 class="font-semibold mb-2">Store State:</h3>
         <pre class="text-xs bg-white p-3 rounded overflow-auto">{JSON.stringify(newOfficeStore.formState, null, 2)}</pre>
@@ -280,7 +280,7 @@
   <!-- Test Actions -->
   <div class="mt-8 bg-purple-50 border-2 border-purple-300 rounded-lg p-6">
     <h2 class="text-xl font-semibold text-purple-700 mb-4">Test Actions</h2>
-    
+
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <button class="btn btn-outline" onclick={() => console.log('Current Debug State:', { renderCount, lastUpdate, isValid1, isValid2, isDirty1, isDirty2, validationErrors1, validationErrors2 })}>
         Log Debug State
