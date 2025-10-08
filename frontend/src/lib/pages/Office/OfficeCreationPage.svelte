@@ -1,357 +1,93 @@
 <script lang="ts">
-  // Office Creation Page - Clean modular implementation
-  import { onMount } from 'svelte';
-  
-  // Components
+  import { RenderScan } from 'svelte-render-scan';
   import BasicInformation from '../../components/forms_commons_wrappers/BasicInformation.svelte';
-  import OabInformation from '../../components/forms_commons_wrappers/OabInformation.svelte';
-  import AddressCepWrapper from '../../components/forms_commons_wrappers/AddressCepWrapper.svelte';
-  import ParnershipManagement from '../../components/forms_offices_wrappers/PartnershipManagement.svelte';
-  import SocialContractCheckbox from '../../components/forms_offices/SocialContractCheckbox.svelte';
-  import FileAttachments from '../../components/forms_offices/FileAttachments.svelte';
-  import FormSection from '../../components/ui/FormSection.svelte';
-  import Phone from '../../components/forms_commons/Phone.svelte';
-  import Email from '../../components/forms_commons/Email.svelte';
-  import Bank from '../../components/forms_commons/Bank.svelte';
+  import { newOfficeStore } from '../../stores/newOfficeStore.svelte';
 
-  // Schema and utilities
-  import { 
-    createDefaultOfficeFormData, 
-    createDefaultPartner,
-    validateOfficeForm,
-    type OfficeFormData,
-    type PartnerFormData 
-  } from '../../schemas/office-form';
-  import { 
-    submitOfficeForm, 
-    validatePartners,
-    adjustPartnerPercentages 
-  } from '../../utils/office-form-processor';
-  import { officeFormLawyersStore } from '../../stores/officeFormStore.svelte';
-
-  // Form state using schema
-  let formData = $state<OfficeFormData>(createDefaultOfficeFormData());
-  let partners = $state<PartnerFormData[]>([createDefaultPartner(true)]);
-  let profitDistribution = $state<'proportional' | 'disproportional'>('proportional');
-  let createSocialContract = $state(false);
-  let partnersWithProLabore = $state(true);
-
-  // File handling
-  let logoFile = $state<File | null>(null);
-  let contractFiles = $state<File[]>([]);
-
-  // UI state
-  let loading = $state(false);
-  let error = $state<string | null>(null);
-  let success = $state<string | null>(null);
-
-  // Store access
-  const store = officeFormLawyersStore;
-
-  // Generic add/remove functions for arrays
-  function createAddFunction<T>(attributeName: keyof OfficeFormData, defaultValue: T) {
-    return () => {
-      const currentArray = formData[attributeName] as T[];
-      formData[attributeName] = [...currentArray, defaultValue] as any;
-    };
-  }
-
-  function createRemoveFunction<T>(attributeName: keyof OfficeFormData) {
-    return (index: number) => {
-      const currentArray = formData[attributeName] as T[];
-      if (currentArray.length > 1) {
-        formData[attributeName] = currentArray.filter((_, i) => i !== index) as any;
-      }
-    };
-  }
-
-  // Specific add/remove functions
-  const addPhone = createAddFunction('phones_attributes', { phone_number: '' });
-  const removePhone = createRemoveFunction('phones_attributes');
-
-  const addEmail = createAddFunction('emails_attributes', { email: '' });
-  const removeEmail = createRemoveFunction('emails_attributes');
-
-  const addBankAccount = createAddFunction('bank_accounts_attributes', {
-    bank_name: '',
-    type_account: 'Corrente',
-    agency: '',
-    account: '',
-    operation: '',
-    pix: ''
-  });
-  const removeBankAccount = createRemoveFunction('bank_accounts_attributes');
-
-  // CEP address handler
-  function handleAddressFound(event: { detail: any; mappedAddress: any }) {
-    const { mappedAddress } = event;
-    if (formData.addresses_attributes.length > 0) {
-      formData.addresses_attributes[0] = {
-        ...formData.addresses_attributes[0],
-        ...mappedAddress
-      };
-    }
-  }
-
-  // Keep zip_code in sync between CEP field and first address
-  $effect(() => {
-    if (formData.zip_code && formData.addresses_attributes.length > 0) {
-      formData.addresses_attributes[0].zip_code = formData.zip_code;
-    }
-  });
-
-  // Form submission
+  // Handle form submission
   async function handleSubmit() {
     try {
-      loading = true;
-      error = null;
-      success = null;
-
-      // Validate form
-      const validationErrors = validateOfficeForm(formData, partners);
-      if (validationErrors.length > 0) {
-        error = validationErrors.join(', ');
-        return;
+      const result = await newOfficeStore.saveNewOffice();
+      if (result) {
+        console.log('Office created successfully:', result);
       }
-
-      // Validate partners
-      const partnerValidation = validatePartners(partners);
-      if (!partnerValidation.isValid) {
-        error = partnerValidation.errors.join(', ');
-        return;
-      }
-
-      // Submit form using the processor
-      const response = await submitOfficeForm(
-        formData,
-        partners,
-        profitDistribution,
-        createSocialContract,
-        partnersWithProLabore,
-        logoFile,
-        contractFiles
-      );
-
-      if (response.success) {
-        success = response.message || 'Escritório criado com sucesso!';
-        // Reset form after successful creation
-        setTimeout(() => {
-          formData = createDefaultOfficeFormData();
-          partners = [createDefaultPartner(true)];
-          logoFile = null;
-          contractFiles = [];
-          success = null;
-        }, 2000);
-      } else {
-        error = response.message || 'Erro ao criar escritório';
-      }
-    } catch (err: any) {
-      error = err.message || 'Erro ao criar escritório';
-    } finally {
-      loading = false;
+    } catch (error) {
+      console.error('Error creating office:', error);
     }
   }
-
-  // Load lawyers on mount
-  onMount(async () => {
-    try {
-      await store.loadLawyers();
-    } catch (err) {
-      console.error('Error loading lawyers:', err);
-    }
-  });
 </script>
 
-<div class="container mx-auto p-6 max-w-4xl">
-  <div class="card bg-base-100 shadow-xl">
-    <!-- Header -->
-    <div class="card-body">
-      <h1 class="card-title text-2xl font-bold mb-6">Criar Novo Escritório</h1>
+<RenderScan />
 
-      <!-- Success/Error Messages -->
-      {#if success}
-        <div class="alert alert-success mb-4">
-          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span>{success}</span>
-        </div>
-      {/if}
+<div class="container mx-auto p-6">
+  <h1 class="text-2xl font-bold mb-6">Criar Escritório</h1>
+  
+  <form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+    <BasicInformation bind:formData={newOfficeStore.formData} />
+    
+    <!-- Form actions -->
+    <div class="flex gap-4 mt-6">
+      <button 
+        type="submit" 
+        class="btn btn-primary"
+        disabled={!newOfficeStore.canSubmit}
+        class:loading={newOfficeStore.formState.saving}
+      >
+        {newOfficeStore.formState.saving ? 'Salvando...' : 'Criar Escritório'}
+      </button>
+      
+      <button 
+        type="button" 
+        class="btn btn-outline"
+        onclick={(() => newOfficeStore.resetForm())}
+      >
+        Limpar
+      </button>
+    </div>
 
-      {#if error}
-        <div class="alert alert-error mb-4">
-          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span>{error}</span>
-        </div>
-      {/if}
+    <!-- Success/Error messages -->
+    {#if newOfficeStore.formState.success}
+      <div class="alert alert-success mt-4">
+        {newOfficeStore.formState.success}
+      </div>
+    {/if}
 
-      <form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="space-y-8">
-        <!-- Basic Information -->
-        <BasicInformation bind:formData title="Informações Básicas" showSite={true} />
+    {#if newOfficeStore.formState.error}
+      <div class="alert alert-error mt-4">
+        {newOfficeStore.formState.error}
+      </div>
+    {/if}
+  </form>
 
-        <!-- OAB Information -->
-        <OabInformation bind:formData />
+  <!-- Debug Section -->
+  <div class="mt-8 bg-gray-50 border rounded-lg p-4">
+    <h3 class="text-lg font-semibold mb-3">Debug Information</h3>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+      <div class="bg-white p-3 rounded">
+        <strong>Form Valid:</strong> {newOfficeStore.isValid ? '✅' : '❌'}
+      </div>
+      <div class="bg-white p-3 rounded">
+        <strong>Form Dirty:</strong> {newOfficeStore.isDirty ? '✅' : '❌'}
+      </div>
+      <div class="bg-white p-3 rounded">
+        <strong>Can Submit:</strong> {newOfficeStore.canSubmit ? '✅' : '❌'}
+      </div>
+    </div>
+    
+    {#if newOfficeStore.getValidationErrors().length > 0}
+      <div class="mt-3 bg-red-50 border border-red-200 rounded p-3">
+        <strong class="text-red-700">Validation Errors:</strong>
+        <ul class="list-disc list-inside text-red-600 mt-1">
+          {#each newOfficeStore.getValidationErrors() as error}
+            <li>{error}</li>
+          {/each}
+        </ul>
+      </div>
+    {/if}
 
-        <!-- Financial Information -->
-        <FormSection title="Informações Financeiras">
-          {#snippet children()}
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div class="form-control">
-                <label class="label" for="quote-value">
-                  <span class="label-text">Valor da Cota</span>
-                </label>
-                <input
-                  id="quote-value"
-                  type="number"
-                  class="input input-bordered"
-                  bind:value={formData.quote_value}
-                  placeholder="0.00"
-                  step="0.01"
-                  min="0"
-                />
-              </div>
-
-              <div class="form-control">
-                <label class="label" for="number-quotes">
-                  <span class="label-text">Número de Cotas</span>
-                </label>
-                <input
-                  id="number-quotes"
-                  type="number"
-                  class="input input-bordered"
-                  bind:value={formData.number_of_quotes}
-                  placeholder="0"
-                  min="0"
-                />
-              </div>
-
-              <div class="form-control">
-                <label class="label cursor-pointer">
-                  <span class="label-text">Distribuição Proporcional</span>
-                  <input
-                    type="checkbox"
-                    class="checkbox checkbox-primary"
-                    bind:checked={formData.proportional}
-                  />
-                </label>
-              </div>
-            </div>
-          {/snippet}
-        </FormSection>
-
-        <!-- Contact Information -->
-        <FormSection title="Telefones">
-          {#snippet children()}
-            <div class="flex justify-end mb-4">
-              <button type="button" class="btn btn-outline btn-sm" onclick={addPhone}>➕ Adicionar</button>
-            </div>
-
-            {#each formData.phones_attributes as phone, index (index)}
-              <div class="flex gap-2 mb-2">
-                <div class="flex-1">
-                  <Phone bind:value={phone.phone_number} />
-                </div>
-                {#if formData.phones_attributes.length > 1}
-                  <button type="button" class="btn btn-error btn-sm" onclick={() => removePhone(index)}>🗑️</button>
-                {/if}
-              </div>
-            {/each}
-          {/snippet}
-        </FormSection>
-
-        <FormSection title="E-mails">
-          {#snippet children()}
-            <div class="flex justify-end mb-4">
-              <button type="button" class="btn btn-outline btn-sm" onclick={addEmail}>➕ Adicionar</button>
-            </div>
-
-            {#each formData.emails_attributes as email, index (index)}
-              <div class="flex gap-2 mb-2">
-                <div class="flex-1">
-                  <Email bind:value={email.email} />
-                </div>
-                {#if formData.emails_attributes.length > 1}
-                  <button type="button" class="btn btn-error btn-sm" onclick={() => removeEmail(index)}>🗑️</button>
-                {/if}
-              </div>
-            {/each}
-          {/snippet}
-        </FormSection>
-
-        <!-- Address -->
-        <FormSection title="Endereço">
-          {#snippet children()}
-            <AddressCepWrapper
-              bind:cepValue={formData.zip_code}
-              bind:address={formData.addresses_attributes[0]}
-              useAPIValidation={false}
-              required={false}
-              onaddressfound={handleAddressFound}
-            />
-          {/snippet}
-        </FormSection>
-
-        <!-- Bank Accounts -->
-        <FormSection title="Contas Bancárias">
-          {#snippet children()}
-            <div class="flex justify-end mb-4">
-              <button type="button" class="btn btn-outline btn-sm" onclick={addBankAccount}>➕ Adicionar</button>
-            </div>
-
-            {#each formData.bank_accounts_attributes as bankAccount, index (index)}
-              <Bank
-                bind:bankAccount={formData.bank_accounts_attributes[index]}
-                {index}
-                showRemoveButton={formData.bank_accounts_attributes.length > 1}
-                showPixHelpers={true}
-                pixDocumentType="cnpj"
-                pixHelperData={{
-                  email: formData.emails_attributes[0]?.email || '',
-                  cpf: '',
-                  cnpj: formData.cnpj,
-                  phone: formData.phones_attributes[0]?.phone_number || ''
-                }}
-                labelPrefix="office-bank"
-                onremove={() => removeBankAccount(index)}
-              />
-            {/each}
-          {/snippet}
-        </FormSection>
-
-        <!-- Partnership Management -->
-        <ParnershipManagement
-          bind:partners
-          bind:profitDistribution
-          bind:partnersWithProLabore
-          {store}
-          {adjustPartnerPercentages}
-        />
-
-        <!-- Social Contract -->
-        <SocialContractCheckbox
-          bind:createSocialContract
-          bind:profitDistribution
-          {partners}
-        />
-
-        <!-- File Attachments -->
-        <FileAttachments
-          bind:logoFile
-          bind:contractFiles
-        />
-
-        <!-- Submit Button -->
-        <div class="card-actions justify-end pt-6">
-          <button type="submit" class="btn btn-primary" disabled={loading}>
-            {#if loading}
-              <span class="loading loading-spinner loading-sm"></span>
-            {/if}
-            Criar Escritório
-          </button>
-        </div>
-      </form>
+    <div class="mt-4">
+      <a href="/lawyers-test-debug" class="btn btn-info btn-sm">
+        🐛 Go to Debug Page
+      </a>
     </div>
   </div>
 </div>

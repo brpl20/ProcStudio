@@ -9,7 +9,7 @@
   import FoundationDate from '../forms_commons/FoundationDate.svelte';
 
   type Props = {
-    formData: {
+    formData?: {
       name: string;
       cnpj: string;
       society: string;
