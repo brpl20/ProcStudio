@@ -2,11 +2,12 @@
   /* Move to: forms_office_wrappers
    */
   import FormSection from '../ui/FormSection.svelte';
-  import OfficeName from '../forms_commons/OfficeName.svelte';
+  import SocietyName from '../forms_commons/SocietyName.svelte';
   import Cnpj from '../forms_commons/Cnpj.svelte';
   import SocietyType from '../forms_commons/SocietyType.svelte';
   import AccountingType from '../forms_commons/AccountingType.svelte';
   import FoundationDate from '../forms_commons/FoundationDate.svelte';
+  import Site from '../forms_commons/Site.svelte';
 
   type Props = {
     formData?: {
@@ -19,6 +20,9 @@
     };
     title?: string;
     showSite?: boolean;
+    cnpjRequired?: boolean;
+    cnpjDisabled?: boolean;
+    cnpjValidate?: boolean;
   };
 
   let {
@@ -31,14 +35,17 @@
       site: ''
     }),
     title = 'Informações Básicas',
-    showSite = true
+    showSite = true,
+    cnpjRequired = false,
+    cnpjDisabled = false,
+    cnpjValidate = true
   }: Props = $props();
 </script>
 
 <FormSection {title}>
   {#snippet children()}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <OfficeName
+      <SocietyName
         bind:value={formData.name}
         id="office-name"
         labelText="Nome do Escritório"
@@ -50,8 +57,9 @@
         bind:value={formData.cnpj}
         id="office-cnpj"
         labelText="CNPJ"
-        required={false}
-        validate={true}
+        required={cnpjRequired}
+        disabled={cnpjDisabled}
+        validate={cnpjValidate}
       />
 
       <SocietyType
@@ -72,20 +80,7 @@
         labelText="Data de Fundação"
       />
 
-      {#if showSite}
-        <div class="form-control flex flex-col">
-          <label class="label pb-1" for="office-site">
-            <span class="label-text">Site</span>
-          </label>
-          <input
-            id="office-site"
-            type="url"
-            class="input input-bordered w-full"
-            bind:value={formData.site}
-            placeholder="https://exemplo.com"
-          />
-        </div>
-      {/if}
+      <Site bind:value={formData.site} id="office-site" labelText="Site" />
     </div>
   {/snippet}
 </FormSection>

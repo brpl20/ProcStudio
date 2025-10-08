@@ -1,75 +1,89 @@
-<!-- CPF.svelte -->
-<script>
-  import { createEventDispatcher } from 'svelte';
+<script lang="ts">
+  import type { TextFieldProps } from '../../types/form-field-contract';
   import { validateCPFRequired, formatCPF } from '../../validation/cpf';
 
-  // Props with defaults
-  export let value = '';
-  export let errors = null;
-  export let touched = false;
-  export let disabled = false;
-  export let validateFn = validateCPFRequired; // Default to built-in validation
-  export let formatFn = formatCPF; // Default to built-in formatting
-  export let id = 'cpf'; // Allow customizing the ID
-  export let required = true;
-  export let labelText = 'CPF';
-  export let placeholder = '000.000.000-00';
-  export let testId = undefined; // Can be overridden, otherwise uses id
-  export let inputClass = ''; // Additional classes for the input
-  export let wrapperClass = ''; // Additional classes for the wrapper
+  interface CpfProps extends TextFieldProps {
+    validateFn?: (value: string) => string | null;
+    formatFn?: (value: string) => string;
+  }
 
-  // Set up event dispatcher
-  const dispatch = createEventDispatcher();
+  let {
+    value = $bindable(''),
+    id = 'cpf',
+    labelText = 'CPF',
+    placeholder = '000.000.000-00',
+    required = true,
+    disabled = false,
+    errors = $bindable(null),
+    touched = $bindable(false),
+    wrapperClass = '',
+    inputClass = '',
+    testId = undefined,
+    validateFn = validateCPFRequired,
+    formatFn = formatCPF
+  }: CpfProps = $props();
+
+  const finalId = id;
+  const finalLabelText = labelText;
+  const finalPlaceholder = placeholder;
+  const finalRequired = required;
+  const finalDisabled = disabled;
+  const finalWrapperClass = wrapperClass;
+  const finalInputClass = inputClass;
+  const finalTestId = testId;
+  const finalValidateFn = validateFn;
+  const finalFormatFn = formatFn;
 
   // Handle input with optional formatting
-  function handleInput(event) {
-    let newValue = event.target.value;
+  function handleInput(event: Event) {
+    const target = event.target as HTMLInputElement;
+    let newValue = target.value;
 
     // Apply formatting if provided
-    if (formatFn) {
-      newValue = formatFn(newValue);
+    if (finalFormatFn) {
+      newValue = finalFormatFn(newValue);
     }
 
-    value = newValue; // Update the bound value
-    dispatch('input', { value: newValue, id });
+    value = newValue;
   }
 
   // Handle blur with validation
   function handleBlur() {
-    touched = true; // Mark as touched on blur
-    dispatch('blur', { id, value });
+    touched = true;
 
     // If validation function provided, validate on blur
-    if (validateFn && required) {
-      const error = validateFn(value);
+    if (finalValidateFn && finalRequired) {
+      const error = finalValidateFn(value);
       if (error) {
         errors = error;
       }
-      dispatch('validate', { id, value, error });
     }
   }
 </script>
 
-<div class="form-control w-full {wrapperClass}">
-  <label for={id} class="label justify-start">
-    <span class="label-text font-medium">{labelText} {required ? '*' : ''}</span>
+<div class="form-control w-full {finalWrapperClass}">
+  <label for={finalId} class="label justify-start pb-1">
+    <span class="label-text font-medium">
+      {finalLabelText}
+      {#if finalRequired}<span class="text-error">*</span>{/if}
+    </span>
   </label>
   <input
-    {id}
+    id={finalId}
     type="text"
-    class="input input-bordered w-full {errors && touched ? 'input-error' : ''} {inputClass}"
+    class="input input-bordered w-full {errors && touched ? 'input-error' : ''} {finalInputClass}"
     bind:value
-    on:input={handleInput}
-    on:blur={handleBlur}
-    {disabled}
-    {placeholder}
+    oninput={handleInput}
+    onblur={handleBlur}
+    disabled={finalDisabled}
+    placeholder={finalPlaceholder}
     maxlength="14"
-    aria-required={required ? 'true' : 'false'}
+    aria-required={finalRequired ? 'true' : 'false'}
     aria-invalid={errors && touched ? 'true' : 'false'}
-    aria-describedby={errors && touched ? `${id}-error` : undefined}
-    data-testid={testId || `${id}-input`}
+    aria-describedby={errors && touched ? `${finalId}-error` : undefined}
+    data-testid={finalTestId || `${finalId}-input`}
   />
   {#if errors && touched}
-    <div id="{id}-error" class="text-error text-sm mt-1">{errors}</div>
+    <div id="{finalId}-error" class="text-error text-sm mt-1">{errors}</div>
   {/if}
 </div>

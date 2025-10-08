@@ -147,6 +147,27 @@ export const validateCNPJWithFormat: ValidationRule = (value) => {
 };
 
 /**
+ * CNPJ validation for optional fields with character validation
+ * Validates characters even when field is not required
+ */
+export const validateCNPJOptional: ValidationRule = (value) => {
+  if (!value) {
+    return null; // Empty is valid for optional fields
+  }
+
+  const originalValue = value as string;
+  const cleanedValue = cleanCNPJ(originalValue);
+
+  // If original has content but cleaned is empty, user typed invalid characters
+  if (originalValue.trim() && !cleanedValue) {
+    return 'CNPJ inválido: caracteres não permitidos';
+  }
+
+  // If we have cleaned content, validate the CNPJ
+  return validateCNPJ(value);
+};
+
+/**
  * Check if CNPJ is valid (boolean return)
  */
 export const isCNPJValid = (cnpj: string): boolean => {

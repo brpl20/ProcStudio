@@ -3,9 +3,20 @@
   import BasicInformation from '../../components/forms_commons_wrappers/BasicInformation.svelte';
   import { newOfficeStore } from '../../stores/newOfficeStore.svelte';
 
+  // Debug tracking with derived state (no effects to avoid loops)
+  let renderCount = $state(0);
+  let lastUpdate = $state('');
+
+  // Simple render tracking without effects
+  function updateRenderInfo() {
+    renderCount++;
+    lastUpdate = new Date().toISOString();
+  }
+
   // Handle form submission
   async function handleSubmit() {
     try {
+      updateRenderInfo();
       const result = await newOfficeStore.saveNewOffice();
       if (result) {
         console.log('Office created successfully:', result);
@@ -14,34 +25,39 @@
       console.error('Error creating office:', error);
     }
   }
+
+  // Reset function with render tracking
+  function resetForm() {
+    newOfficeStore.resetForm();
+    updateRenderInfo();
+  }
 </script>
 
 <RenderScan />
 
 <div class="container mx-auto p-6">
   <h1 class="text-2xl font-bold mb-6">Criar Escritório</h1>
-  
-  <form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
-    <BasicInformation bind:formData={newOfficeStore.formData} />
-    
+
+  <form
+    onsubmit={(e) => {
+      e.preventDefault();
+      handleSubmit();
+    }}
+  >
+    <BasicInformation bind:formData={newOfficeStore.formData} cnpjRequired={true} />
+
     <!-- Form actions -->
     <div class="flex gap-4 mt-6">
-      <button 
-        type="submit" 
+      <button
+        type="submit"
         class="btn btn-primary"
         disabled={!newOfficeStore.canSubmit}
         class:loading={newOfficeStore.formState.saving}
       >
         {newOfficeStore.formState.saving ? 'Salvando...' : 'Criar Escritório'}
       </button>
-      
-      <button 
-        type="button" 
-        class="btn btn-outline"
-        onclick={(() => newOfficeStore.resetForm())}
-      >
-        Limpar
-      </button>
+
+      <button type="button" class="btn btn-outline" onclick={resetForm}> Limpar </button>
     </div>
 
     <!-- Success/Error messages -->
@@ -61,33 +77,110 @@
   <!-- Debug Section -->
   <div class="mt-8 bg-gray-50 border rounded-lg p-4">
     <h3 class="text-lg font-semibold mb-3">Debug Information</h3>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-      <div class="bg-white p-3 rounded">
-        <strong>Form Valid:</strong> {newOfficeStore.isValid ? '✅' : '❌'}
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Basic Debug Info -->
+      <div class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div class="bg-white p-3 rounded">
+            <strong>Form Valid:</strong>
+            {newOfficeStore.isValid ? '✅' : '❌'}
+          </div>
+          <div class="bg-white p-3 rounded">
+            <strong>Form Dirty:</strong>
+            {newOfficeStore.isDirty ? '✅' : '❌'}
+          </div>
+          <div class="bg-white p-3 rounded">
+            <strong>Can Submit:</strong>
+            {newOfficeStore.canSubmit ? '✅' : '❌'}
+          </div>
+        </div>
+
+        {#if newOfficeStore.getValidationErrors().length > 0}
+          <div class="bg-red-50 border border-red-200 rounded p-3">
+            <strong class="text-red-700">Validation Errors:</strong>
+            <ul class="list-disc list-inside text-red-600 mt-1">
+              {#each newOfficeStore.getValidationErrors() as error}
+                <li>{error}</li>
+              {/each}
+            </ul>
+          </div>
+        {/if}
       </div>
-      <div class="bg-white p-3 rounded">
-        <strong>Form Dirty:</strong> {newOfficeStore.isDirty ? '✅' : '❌'}
-      </div>
-      <div class="bg-white p-3 rounded">
-        <strong>Can Submit:</strong> {newOfficeStore.canSubmit ? '✅' : '❌'}
+
+      <!-- Enhanced Debug Info -->
+      <div class="space-y-4">
+        <!-- Form Data -->
+        <div class="bg-blue-50 border border-blue-200 rounded p-3">
+          <h4 class="font-semibold text-blue-700 mb-2">1. Form Data</h4>
+          <pre class="text-xs bg-white p-2 rounded overflow-auto max-h-32">{JSON.stringify(
+              newOfficeStore.formData,
+              null,
+              2
+            )}</pre>
+        </div>
+
+        <!-- Store Form Data -->
+        <div class="bg-indigo-50 border border-indigo-200 rounded p-3">
+          <h4 class="font-semibold text-indigo-700 mb-2">2. Store Form Data</h4>
+          <pre class="text-xs bg-white p-2 rounded overflow-auto max-h-32">{JSON.stringify(
+              newOfficeStore.formData,
+              null,
+              2
+            )}</pre>
+        </div>
+
+        <!-- Store Debug Information -->
+        <div class="bg-green-50 border border-green-200 rounded p-3">
+          <h4 class="font-semibold text-green-700 mb-2">3. Store Debug Information</h4>
+          <div class="text-xs space-y-1">
+            <div><strong>Valid:</strong> {newOfficeStore.isValid ? 'true' : 'false'}</div>
+            <div><strong>Dirty:</strong> {newOfficeStore.isDirty ? 'true' : 'false'}</div>
+            <div><strong>Errors Count:</strong> {newOfficeStore.getValidationErrors().length}</div>
+          </div>
+        </div>
+
+        <!-- Render Count -->
+        <div class="bg-yellow-50 border border-yellow-200 rounded p-3">
+          <h4 class="font-semibold text-yellow-700 mb-2">4. Render Count:</h4>
+          <div class="text-sm font-mono">{renderCount}</div>
+        </div>
+
+        <!-- Last Update -->
+        <div class="bg-purple-50 border border-purple-200 rounded p-3">
+          <h4 class="font-semibold text-purple-700 mb-2">5. Last Update:</h4>
+          <div class="text-xs font-mono">{lastUpdate}</div>
+        </div>
+
+        <!-- Store State -->
+        <div class="bg-gray-50 border border-gray-200 rounded p-3">
+          <h4 class="font-semibold text-gray-700 mb-2">Store State:</h4>
+          <div class="text-xs space-y-1">
+            <div><strong>Saving:</strong> {newOfficeStore.formState.saving}</div>
+            <div><strong>Loading:</strong> {newOfficeStore.formState.loading}</div>
+            <div><strong>Can Submit:</strong> {newOfficeStore.canSubmit}</div>
+          </div>
+        </div>
       </div>
     </div>
-    
-    {#if newOfficeStore.getValidationErrors().length > 0}
-      <div class="mt-3 bg-red-50 border border-red-200 rounded p-3">
-        <strong class="text-red-700">Validation Errors:</strong>
-        <ul class="list-disc list-inside text-red-600 mt-1">
-          {#each newOfficeStore.getValidationErrors() as error}
-            <li>{error}</li>
-          {/each}
-        </ul>
-      </div>
-    {/if}
 
-    <div class="mt-4">
-      <a href="/lawyers-test-debug" class="btn btn-info btn-sm">
-        🐛 Go to Debug Page
-      </a>
+    <div class="mt-4 flex gap-2">
+      <a href="/lawyers-test-debug" class="btn btn-info btn-sm"> 🐛 Go to Debug Page </a>
+      <button class="btn btn-outline btn-sm" onclick={updateRenderInfo}>
+        Update Render Count
+      </button>
+      <button
+        class="btn btn-outline btn-sm"
+        onclick={() =>
+          console.log('Debug State:', {
+            renderCount,
+            lastUpdate,
+            formData: newOfficeStore.formData,
+            formState: newOfficeStore.formState
+          })}
+      >
+        Log Debug State
+      </button>
     </div>
   </div>
 </div>

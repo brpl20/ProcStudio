@@ -10,9 +10,9 @@
 
   let {
     value = $bindable(''),
-    id = 'office-name',
-    labelText = 'Nome do Escritório',
-    placeholder = 'Nome do escritório',
+    id = 'society-name',
+    labelText = 'Nome da Sociedade',
+    placeholder = 'Nome da sociedade',
     required = false,
     disabled = false
   }: Props = $props();
