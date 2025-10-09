@@ -1,8 +1,37 @@
 <script lang="ts">
   import { RenderScan } from 'svelte-render-scan';
-  import BasicInformation from '../../components/forms_commons_wrappers/BasicInformation.svelte';
+  import OfficeBasicInformation from '../../components/forms_commons_wrappers/OfficeBasicInformation.svelte';
+  import OabInformation from '../../components/forms_commons_wrappers/OabInformation.svelte';
+
   import { newOfficeStore } from '../../stores/newOfficeStore.svelte';
+  import { lawyerStore } from '../../stores/lawyerStore.svelte';
   import type { FormValidationConfig } from '../../schemas/new-office-form';
+
+  // URL parameter handling
+  let newOfficeParam = $state(false);
+  let urlParams = $state({});
+
+  // Initialize URL parameters
+  function initializeUrlParams() {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      newOfficeParam = params.get('new_office') === 'true';
+
+      // Store all URL parameters for debug
+      urlParams = {};
+      for (const [key, value] of params.entries()) {
+        urlParams[key] = value;
+      }
+    }
+  }
+
+  // Initialize on component mount
+  initializeUrlParams();
+  
+  // Initialize lawyer store
+  if (!lawyerStore.initialized) {
+    lawyerStore.init();
+  }
 
   // Debug tracking with derived state (no effects to avoid loops)
   let renderCount = $state(0);
@@ -43,7 +72,12 @@
 <RenderScan />
 
 <div class="container mx-auto p-6">
-  <h1 class="text-2xl font-bold mb-6">Criar Escritório</h1>
+  <h1 class="text-2xl font-bold mb-6">
+    {newOfficeParam ? 'Criar Novo Escritório' : 'Criar Escritório'}
+    {#if newOfficeParam}
+      <span class="badge badge-primary ml-2">Novo</span>
+    {/if}
+  </h1>
 
   <form
     onsubmit={(e) => {
@@ -51,12 +85,16 @@
       handleSubmit();
     }}
   >
-    <BasicInformation
+    <!-- Basic Information -->
+    <OfficeBasicInformation
       bind:formData={newOfficeStore.formData}
-      cnpjRequired={false}
-      foundationRequired={true}
+      cnpjDisabled={newOfficeParam}
+      cnpjRequired={!newOfficeParam}
+      foundationDisabled={newOfficeParam}
       onValidationConfigChange={handleValidationConfigChange}
     />
+
+    <!-- OAB Information -->
 
     <!-- Form actions -->
     <div class="flex gap-4 mt-6">
@@ -93,7 +131,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- Basic Debug Info -->
       <div class="space-y-4">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
           <div class="bg-white p-3 rounded">
             <strong>Form Valid:</strong>
             {newOfficeStore.isValid ? '✅' : '❌'}
@@ -105,6 +143,35 @@
           <div class="bg-white p-3 rounded">
             <strong>Can Submit:</strong>
             {newOfficeStore.canSubmit ? '✅' : '❌'}
+          </div>
+          <div class="bg-white p-3 rounded">
+            <strong>New Office:</strong>
+            {newOfficeParam ? '✅' : '❌'}
+          </div>
+        </div>
+
+        <!-- URL Parameters Debug -->
+        <div class="bg-blue-50 border border-blue-200 rounded p-3">
+          <strong class="text-blue-700">URL Parameters:</strong>
+          <div class="mt-2 space-y-1">
+            <div class="text-sm">
+              <strong>new_office:</strong>
+              <span class="font-mono bg-white px-2 py-1 rounded">
+                {newOfficeParam ? 'true' : 'false'}
+              </span>
+            </div>
+            {#if Object.keys(urlParams).length > 0}
+              <div class="text-sm">
+                <strong>All Parameters:</strong>
+                <pre class="text-xs bg-white p-2 rounded mt-1 overflow-auto">{JSON.stringify(
+                    urlParams,
+                    null,
+                    2
+                  )}</pre>
+              </div>
+            {:else}
+              <div class="text-sm text-gray-500">No URL parameters found</div>
+            {/if}
           </div>
         </div>
 
@@ -173,6 +240,18 @@
             <div><strong>Can Submit:</strong> {newOfficeStore.canSubmit}</div>
           </div>
         </div>
+
+        <!-- Lawyer Store Info -->
+        <div class="bg-green-50 border border-green-200 rounded p-3">
+          <h4 class="font-semibold text-green-700 mb-2">Lawyer Store:</h4>
+          <div class="text-xs space-y-1">
+            <div><strong>Total Lawyers:</strong> {lawyerStore.lawyersCount}</div>
+            <div><strong>Active Lawyers:</strong> {lawyerStore.activeLawyers.length}</div>
+            <div><strong>Selected:</strong> {lawyerStore.selectedLawyers.length}</div>
+            <div><strong>Loading:</strong> {lawyerStore.loading ? 'Yes' : 'No'}</div>
+            <div><strong>Initialized:</strong> {lawyerStore.initialized ? 'Yes' : 'No'}</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -187,8 +266,17 @@
           console.log('Debug State:', {
             renderCount,
             lastUpdate,
+            newOfficeParam,
+            urlParams,
             formData: newOfficeStore.formData,
-            formState: newOfficeStore.formState
+            formState: newOfficeStore.formState,
+            lawyerStore: {
+              total: lawyerStore.lawyersCount,
+              active: lawyerStore.activeLawyers.length,
+              selected: lawyerStore.selectedLawyers.length,
+              loading: lawyerStore.loading,
+              initialized: lawyerStore.initialized
+            }
           })}
       >
         Log Debug State

@@ -11,6 +11,7 @@
   let showForm = false;
   let editingOffice = null;
   let showDeleted = false;
+  let showOfficeSelection = false;
 
   // Check for active lawyers
   $: hasActiveLawyers = lawyerStore.activeLawyers.length > 0;
@@ -27,7 +28,9 @@
       hasActiveLawyers,
       canCreateOffice,
       loading: lawyerStore.loading,
-      initialized: lawyerStore.initialized
+      initialized: lawyerStore.initialized,
+      showOfficeSelection,
+      showForm
     });
     if (lawyerStore.lawyers.length > 0) {
       console.log('First lawyer:', lawyerStore.lawyers[0]);
@@ -53,8 +56,34 @@
   }
 
   function handleCreate() {
+    console.log('handleCreate called - before:', { showOfficeSelection, showForm });
     editingOffice = null;
-    showForm = true;
+    showOfficeSelection = true;
+    console.log('handleCreate called - after:', { showOfficeSelection, showForm });
+  }
+
+  function handleOfficeSelection(newOffice) {
+    showOfficeSelection = false;
+    if (newOffice) {
+      // Navigate to new office creation page
+      window.location.href = '/lawyers-test?new_office=true';
+    } else {
+      // Navigate to existing office creation page
+      window.location.href = '/lawyers-test?new_office=false';
+    }
+  }
+
+  function handleCloseSelection() {
+    console.log('handleCloseSelection called');
+    showOfficeSelection = false;
+  }
+
+  // Debug function to reset all states
+  function resetAllStates() {
+    console.log('Resetting all states');
+    showOfficeSelection = false;
+    showForm = false;
+    editingOffice = null;
   }
 
   function handleEdit(office) {
@@ -118,7 +147,59 @@
 </script>
 
 <div class="p-6">
-  {#if showForm}
+  {#if showOfficeSelection}
+    <!-- Office Selection Modal -->
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg p-8 max-w-2xl w-full mx-4">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-gray-900">Selecionar Tipo de Escritório</h2>
+          <button class="btn btn-ghost btn-sm" on:click={handleCloseSelection}>✕</button>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Existing Office Option -->
+          <div 
+            class="card bg-base-100 shadow-xl cursor-pointer hover:shadow-2xl transition-shadow"
+            on:click={() => handleOfficeSelection(false)}
+            on:keydown={(e) => e.key === 'Enter' && handleOfficeSelection(false)}
+            tabindex="0"
+            role="button"
+          >
+            <div class="card-body items-center text-center">
+              <div class="text-4xl mb-4">🏢</div>
+              <h3 class="card-title text-lg mb-2">Escritório Existente</h3>
+              <p class="text-sm text-gray-600">
+                Cadastre um escritório seu que já existe
+              </p>
+              <div class="card-actions justify-end mt-4">
+                <button class="btn btn-primary">Selecionar</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- New Office Option -->
+          <div 
+            class="card bg-base-100 shadow-xl cursor-pointer hover:shadow-2xl transition-shadow"
+            on:click={() => handleOfficeSelection(true)}
+            on:keydown={(e) => e.key === 'Enter' && handleOfficeSelection(true)}
+            tabindex="0"
+            role="button"
+          >
+            <div class="card-body items-center text-center">
+              <div class="text-4xl mb-4">✨</div>
+              <h3 class="card-title text-lg mb-2">Novo Escritório</h3>
+              <p class="text-sm text-gray-600">
+                Utilize nosso sistema para ajudar a criação de um novo escritório
+              </p>
+              <div class="card-actions justify-end mt-4">
+                <button class="btn btn-primary">Selecionar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {:else if showForm}
     <OfficeForm office={editingOffice} on:close={handleCloseForm} on:success={handleFormSuccess} />
   {:else}
     <div class="mb-6">
