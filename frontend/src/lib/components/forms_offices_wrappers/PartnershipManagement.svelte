@@ -11,9 +11,10 @@
   import ProLaboreCheckbox from '../forms_offices/ProLaboreCheckbox.svelte';
   import ProLaboreInfo from '../forms_offices/ProLaboreInfo.svelte';
   import ProLaboreInput from '../forms_offices/ProLaboreInput.svelte';
+  import ProLaboreSummary from '../forms_offices/ProLaboreSummary.svelte';
   import type { Lawyer } from '../../api/types/user.lawyer';
   import { validateProLaboreAmount } from '../../validation';
-  import { getFullName } from '../../utils/lawyer.utils';
+  import { getFullName, toLawyerId } from '../../utils/lawyer.utils';
   import { lawyerStore } from '../../stores/lawyerStore.svelte';
 
   interface Partner {
@@ -91,16 +92,8 @@
   $effect(() => {
     // Extract lawyer_id and ensure it's a string
     const selectedIds = partners
-      .map(p => {
-        const id = p.lawyer_id;
-        // Handle case where lawyer_id might be an object instead of string
-        if (typeof id === 'object' && id !== null && 'id' in id) {
-          console.warn('⚠️ lawyer_id is an object, extracting id:', id);
-          return (id as any).id;
-        }
-        return id;
-      })
-      .filter(id => typeof id === 'string' && id.length > 0);
+      .map(p => toLawyerId(p.lawyer_id))
+      .filter(id => id.length > 0);
     
     // Only update if the IDs actually changed
     const idsChanged = JSON.stringify(selectedIds.sort()) !== JSON.stringify(lastSyncedIds.sort());
@@ -146,40 +139,31 @@
   function getSelectedLawyerIds(excludeIndex: number = -1): string[] {
     return partners
       .filter((_, i) => i !== excludeIndex)
-      .map((p) => {
-        const id = p.lawyer_id;
-        // Extract string ID if it's an object
-        if (typeof id === 'object' && id !== null && 'id' in id) {
-          return (id as any).id;
-        }
-        return id;
-      })
-      .filter((id): id is string => typeof id === 'string' && id.length > 0);
+      .map((p) => toLawyerId(p.lawyer_id))
+      .filter(id => id.length > 0);
   }
 
   // Handle partner field changes
-  function handlePartnerFieldChange(index: number, field: string, value: any) {
+  function handlePartnerFieldChange<K extends keyof Partner>(index: number, field: K, value: Partner[K]) {
     console.log('🟡 [handlePartnerFieldChange] Called:', { index, field, value });
     
     if (field === 'lawyer_id' && value) {
-      const lawyer = value as Lawyer;
+      const lawyer = value as any as Lawyer;
       const lawyerId = typeof lawyer === 'string' ? lawyer : lawyer.id;
-      const lawyerName = typeof lawyer === 'string' 
-        ? '' 
-        : `${lawyer.attributes.name} ${lawyer.attributes.last_name || ''}`.trim();
+      const lawyerName = typeof lawyer === 'string' ? '' : getFullName(lawyer);
       
       console.log('🟡 [handlePartnerFieldChange] Extracting - ID:', lawyerId, 'Name:', lawyerName);
       
       const updatedPartner = {
         ...partners[index],
-        lawyer_id: lawyerId,  // Ensure it's always a string
+        lawyer_id: lawyerId,
         lawyer_name: lawyerName
       };
       partners = [...partners.slice(0, index), updatedPartner, ...partners.slice(index + 1)];
       console.log('🟡 [handlePartnerFieldChange] Updated partner:', updatedPartner);
     } else if (field === 'ownership_percentage' && partners.length === 2) {
       // For 2 partners, automatically adjust the other's percentage
-      const newValue = parseFloat(value) || 0;
+      const newValue = parseFloat(String(value)) || 0;
       const updated = [...partners];
       updated[index] = { ...updated[index], ownership_percentage: newValue };
       updated[1 - index] = {
@@ -248,14 +232,6 @@
   // Calculate total pro-labore
   function getTotalProLabore(): number {
     return partners.reduce((sum, p) => sum + (p.pro_labore_amount || 0), 0);
-  }
-  
-  // Format currency
-  function formatCurrency(val: number): string {
-    return val.toLocaleString('pt-BR', { 
-      minimumFractionDigits: 2, 
-      maximumFractionDigits: 2 
-    });
   }
 </script>
 
@@ -330,11 +306,11 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <PartnerLawyerSelect
-                value={typeof partner.lawyer_id === 'string' ? partner.lawyer_id : (partner.lawyer_id?.id || '')}
+                value={toLawyerId(partner.lawyer_id)}
                 allLawyers={lawyers}
                 selectedByOthers={getSelectedLawyerIds(index)}
                 id="partner-lawyer-{index}"
-                onchange={(lawyer) => handlePartnerFieldChange(index, 'lawyer_id', lawyer)}
+                onchange={(lawyer) => handlePartnerFieldChange(index, 'lawyer_id', lawyer as any)}
                 required
               />
 
@@ -547,22 +523,7 @@
           {/if}
           
           <!-- Pro-Labore Summary -->
-          {#if partners.filter((p) => p.lawyer_name && p.pro_labore_amount > 0).length > 0}
-            <div class="mt-4 p-4 bg-base-200 rounded-lg">
-              <div class="flex justify-between items-center">
-                <span class="font-semibold">Total Pro-Labore Mensal:</span>
-                <span class="text-lg font-bold text-primary">
-                  R$ {formatCurrency(getTotalProLabore())}
-                </span>
-              </div>
-              {#if getTotalProLabore() > 0}
-                <div class="text-sm text-gray-600 mt-2">
-                  Custo anual estimado: R$ {formatCurrency(getTotalProLabore() * 13.33)}
-                  <span class="text-xs">(incluindo 13º e férias)</span>
-                </div>
-              {/if}
-            </div>
-          {/if}
+          <ProLaboreSummary totalMonthly={getTotalProLabore()} />
         </div>
       {:else if singleLawyer}
         <SingleLawyerProLabore
@@ -574,22 +535,9 @@
             }
           }}
         />
-        
+
         <!-- Pro-Labore Summary for Single Lawyer -->
-        {#if partners[0]?.pro_labore_amount > 0}
-          <div class="mt-4 p-4 bg-base-200 rounded-lg">
-            <div class="flex justify-between items-center">
-              <span class="font-semibold">Total Pro-Labore Mensal:</span>
-              <span class="text-lg font-bold text-primary">
-                R$ {formatCurrency(partners[0].pro_labore_amount)}
-              </span>
-            </div>
-            <div class="text-sm text-gray-600 mt-2">
-              Custo anual estimado: R$ {formatCurrency(partners[0].pro_labore_amount * 13.33)}
-              <span class="text-xs">(incluindo 13º e férias)</span>
-            </div>
-          </div>
-        {/if}
+        <ProLaboreSummary totalMonthly={partners[0]?.pro_labore_amount || 0} />
       {/if}
     {/if}
   {/snippet}

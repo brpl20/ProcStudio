@@ -49,7 +49,7 @@ export function getAvailableLawyers(
  * @returns True if lawyer is active
  */
 export function isActiveLawyer(lawyer: Lawyer): boolean {
-  return lawyer.attributes?.active === true;
+  return lawyer.attributes?.status === 'active';
 }
 
 /**
@@ -68,5 +68,28 @@ export function sortLawyersByName(lawyers: Lawyer[], order: 'asc' | 'desc' = 'as
     } else {
       return nameB.localeCompare(nameA);
     }
+  });
+}
+
+/**
+ * Normalize lawyer_id to string from various input formats
+ * @param val - Lawyer ID as string, object with id, or null/undefined
+ * @returns Normalized string ID or empty string
+ */
+export function toLawyerId(val: string | { id: string } | null | undefined): string {
+  if (typeof val === 'string') return val;
+  if (val && typeof val === 'object' && 'id' in val) return (val as any).id;
+  return '';
+}
+
+/**
+ * Format currency in Brazilian Real format
+ * @param val - Number to format
+ * @returns Formatted currency string
+ */
+export function formatCurrency(val: number): string {
+  return val.toLocaleString('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
   });
 }
