@@ -3,27 +3,48 @@
   import OfficeBasicInformation from '../../components/forms_commons_wrappers/OfficeBasicInformation.svelte';
   import AddressCepWrapper from '../../components/forms_commons_wrappers/AddressCepWrapper.svelte';
   import OabInformation from '../../components/forms_commons_wrappers/OabInformation.svelte';
-
+  import PartnershipManagement from '../../components/forms_offices_wrappers/PartnershipManagement.svelte';
+  import OfficeQuotesWrapper from '../../components/forms_offices_wrappers/OfficeQuotesWrapper.svelte';
+  import SocialContractCheckbox from '../../components/forms_offices/SocialContractCheckbox.svelte';
+  import FormSection from '../../components/ui/FormSection.svelte';
+  import Phone from '../../components/forms_commons/Phone.svelte';
+  import Email from '../../components/forms_commons/Email.svelte';
+  import Bank from '../../components/forms_commons/Bank.svelte';
   import { newOfficeStore } from '../../stores/newOfficeStore.svelte';
   import { lawyerStore } from '../../stores/lawyerStore.svelte';
   import type { FormValidationConfig } from '../../schemas/new-office-form';
+  import type { PartnerFormData } from '../../api/types/office.types';
 
   // URL parameter handling
   let newOfficeParam = $state(false);
   let urlParams = $state({});
-  
+
   // OAB data that syncs with the store
   let oabData = $state({
     oab_id: newOfficeStore.formData.oab_id || '',
     oab_status: newOfficeStore.formData.oab_status || '',
     oab_link: newOfficeStore.formData.oab_link || ''
   });
+
+  // Partnership data - synced with store
+  let partners = $state<PartnerFormData[]>(newOfficeStore.formData.partners || []);
+  let partnersWithProLabore = $state(newOfficeStore.formData.partnersWithProLabore);
+  let proLaboreErrors = $state({});
   
+  // Sync partners back to store
+  $effect(() => {
+    newOfficeStore.updatePartners(partners);
+  });
+  
+  $effect(() => {
+    newOfficeStore.updateField('partnersWithProLabore', partnersWithProLabore);
+  });
+
   // Sync OAB data changes back to the store
   $effect(() => {
-    newOfficeStore.formData.oab_id = oabData.oab_id;
-    newOfficeStore.formData.oab_status = oabData.oab_status;
-    newOfficeStore.formData.oab_link = oabData.oab_link;
+    newOfficeStore.updateField('oab_id', oabData.oab_id);
+    newOfficeStore.updateField('oab_status', oabData.oab_status);
+    newOfficeStore.updateField('oab_link', oabData.oab_link);
   });
 
   // Initialize URL parameters
@@ -43,10 +64,17 @@
   // Initialize on component mount
   initializeUrlParams();
 
-  // Initialize lawyer store
-  if (!lawyerStore.initialized) {
-    lawyerStore.init();
-  }
+  // Initialize lawyer store once for all child components
+  $effect(() => {
+    if (!lawyerStore.initialized) {
+      lawyerStore.init();
+    }
+    
+    return () => {
+      // Cleanup on unmount if needed
+      lawyerStore.cancel();
+    };
+  });
 
   // Debug tracking with derived state (no effects to avoid loops)
   let renderCount = $state(0);
@@ -109,6 +137,16 @@
       onValidationConfigChange={handleValidationConfigChange}
     />
 
+    <!-- Quote Configuration (Required for Partners) -->
+    <OfficeQuotesWrapper
+      bind:proportional={newOfficeStore.formData.proportional}
+      bind:quoteValue={newOfficeStore.formData.quote_value}
+      bind:numberOfQuotes={newOfficeStore.formData.number_of_quotes}
+      onProportionalChange={(value) => newOfficeStore.updateField('proportional', value)}
+      onQuoteValueChange={(value) => newOfficeStore.updateField('quote_value', value)}
+      onNumberOfQuotesChange={(value) => newOfficeStore.updateField('number_of_quotes', value)}
+    />
+    
     <!-- Address Information -->
     <AddressCepWrapper
       bind:address={newOfficeStore.formData.address}
@@ -131,10 +169,117 @@
     />
 
     <!-- OAB Information -->
-    <OabInformation
-      bind:formData={oabData}
-      title="Informações da OAB"
-    />
+    <OabInformation bind:formData={oabData} title="Informações da OAB" />
+    
+    <!-- Contact Information -->
+    <FormSection title="Informações de Contato">
+      {#snippet children()}
+        <!-- Email -->
+        <div class="mb-4">
+          <Email
+            bind:value={newOfficeStore.formData.email}
+            labelText="E-mail do Escritório"
+            placeholder="contato@escritorio.com"
+            id="office-email"
+          />
+        </div>
+        
+        <!-- Phone -->
+        <div class="mb-4">
+          <label class="label pb-1">
+            <span class="label-text">Telefone</span>
+          </label>
+          {#each newOfficeStore.formData.phones as phone, index}
+            <div class="flex gap-2 mb-2">
+              <Phone bind:value={newOfficeStore.formData.phones[index]} />
+              {#if newOfficeStore.formData.phones.length > 1}
+                <button
+                  type="button"
+                  class="btn btn-sm btn-error"
+                  onclick={() => {
+                    newOfficeStore.formData.phones = newOfficeStore.formData.phones.filter((_, i) => i !== index);
+                  }}
+                >
+                  Remover
+                </button>
+              {/if}
+            </div>
+          {/each}
+          <button
+            type="button"
+            class="btn btn-sm btn-outline"
+            onclick={() => {
+              newOfficeStore.formData.phones = [...newOfficeStore.formData.phones, ''];
+            }}
+          >
+            + Adicionar Telefone
+          </button>
+        </div>
+      {/snippet}
+    </FormSection>
+    
+    <!-- Bank Information -->
+    <FormSection title="Informações Bancárias">
+      {#snippet children()}
+        <Bank
+          bind:bankAccount={newOfficeStore.formData.bank_account}
+          index={0}
+          showRemoveButton={false}
+          showPixHelpers={true}
+          pixHelperData={{
+            email: newOfficeStore.formData.email || '',
+            cpf: '',
+            cnpj: newOfficeStore.formData.cnpj || '',
+            phone: newOfficeStore.formData.phones[0] || ''
+          }}
+          pixDocumentType="cnpj"
+          on:remove={() => {
+            // Bank is not removable for office
+          }}
+        />
+      {/snippet}
+    </FormSection>
+
+    <!-- Partnership Management (Only enabled after quote configuration) -->
+    {#if newOfficeStore.isQuoteConfigValid}
+      <PartnershipManagement 
+        bind:partners={partners}
+        bind:partnersWithProLabore={partnersWithProLabore}
+        bind:proLaboreErrors={proLaboreErrors}
+        lawyers={lawyerStore.activeLawyers}
+        lawyersLoading={lawyerStore.loading}
+        lawyersError={lawyerStore.error}
+        officeProportional={newOfficeStore.formData.proportional}
+        officeQuoteValue={newOfficeStore.formData.quote_value}
+        officeNumberOfQuotes={newOfficeStore.formData.number_of_quotes}
+        officeSocietyType={newOfficeStore.formData.society}
+        onPartnerChange={(index, field, value) => {
+          if (partners[index]) {
+            partners[index] = { ...partners[index], [field]: value };
+          }
+        }}
+        onAddPartner={() => {
+          const newPartner: PartnerFormData = {
+            lawyer_id: '',
+            lawyer_name: '',
+            partnership_type: '',
+            ownership_percentage: 0,
+            is_managing_partner: false
+          };
+          partners = [...partners, newPartner];
+        }}
+        onRemovePartner={(index) => {
+          partners = partners.filter((_, i) => i !== index);
+        }}
+      />
+    {/if}
+    
+    <!-- Social Contract -->
+    <FormSection title="Contrato Social">
+      {#snippet children()}
+        <SocialContractCheckbox bind:checked={newOfficeStore.formData.create_social_contract} />
+      {/snippet}
+    </FormSection>
 
     <!-- Form actions -->
     <div class="flex gap-4 mt-6">
@@ -160,6 +305,22 @@
     {#if newOfficeStore.formState.error}
       <div class="alert alert-error mt-4">
         {newOfficeStore.formState.error}
+      </div>
+    {/if}
+    
+    {#if !newOfficeStore.isValid && newOfficeStore.isDirty}
+      <div class="alert alert-warning mt-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.732 15.5c-.77.833.192 2.5 1.732 2.5z" />
+        </svg>
+        <div>
+          <div class="font-bold">Erros de Validação:</div>
+          <ul class="list-disc list-inside text-sm mt-1">
+            {#each newOfficeStore.getValidationErrors() as error}
+              <li>{error}</li>
+            {/each}
+          </ul>
+        </div>
       </div>
     {/if}
   </form>
@@ -283,13 +444,29 @@
 
         <!-- Lawyer Store Info -->
         <div class="bg-green-50 border border-green-200 rounded p-3">
-          <h4 class="font-semibold text-green-700 mb-2">Lawyer Store:</h4>
-          <div class="text-xs space-y-1">
+          <h4 class="font-semibold text-green-700 mb-2">🔍 Lawyer Store (Single Source of Truth):</h4>
+          <div class="text-xs space-y-2">
             <div><strong>Total Lawyers:</strong> {lawyerStore.lawyersCount}</div>
             <div><strong>Active Lawyers:</strong> {lawyerStore.activeLawyers.length}</div>
-            <div><strong>Selected:</strong> {lawyerStore.selectedLawyers.length}</div>
+            <div><strong>Available Lawyers:</strong> {lawyerStore.availableLawyers.length}</div>
+            <div><strong>Selected Lawyers:</strong> {lawyerStore.selectedLawyers.length}</div>
             <div><strong>Loading:</strong> {lawyerStore.loading ? 'Yes' : 'No'}</div>
             <div><strong>Initialized:</strong> {lawyerStore.initialized ? 'Yes' : 'No'}</div>
+            
+            {#if lawyerStore.selectedLawyers.length > 0}
+              <div class="mt-2 pt-2 border-t border-green-300">
+                <strong>Selected Lawyers Details:</strong>
+                <div class="mt-1 space-y-1">
+                  {#each lawyerStore.selectedLawyers as lawyer, idx}
+                    <div class="bg-white p-2 rounded text-xs">
+                      <div><strong>#{idx + 1}:</strong> {lawyer.attributes.name} {lawyer.attributes.last_name || ''}</div>
+                      <div class="text-gray-600">ID: {lawyer.id}</div>
+                      <div class="text-gray-600">Status: {lawyer.attributes.status}</div>
+                    </div>
+                  {/each}
+                </div>
+              </div>
+            {/if}
           </div>
         </div>
       </div>

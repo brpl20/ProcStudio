@@ -29,6 +29,13 @@
     value = newValue;
     onchange?.(newValue);
   }
+  
+  function formatCurrency(val: number): string {
+    return val.toLocaleString('pt-BR', { 
+      minimumFractionDigits: 2, 
+      maximumFractionDigits: 2 
+    });
+  }
 
   const partnershipLabel = PARTNERSHIP_TYPES.find((t) => t.value === partnershipType)?.label || partnershipType;
 </script>
@@ -39,20 +46,29 @@
     <span class="text-sm text-gray-500">{partnershipLabel}</span>
   </div>
 
-  <div class="flex items-center gap-2">
-    <span class="w-20">Pro-Labore:</span>
-    <span class="text-lg">R$</span>
-    <input
-      {id}
-      type="number"
-      class="input input-bordered input-sm w-32"
-      class:input-error={error}
-      min="0"
-      step="0.01"
-      bind:value
-      oninput={handleInputChange}
-      {disabled}
-    />
+  <div class="space-y-2">
+    <div class="flex items-center gap-2">
+      <span class="w-24 text-sm font-medium">Pro-Labore:</span>
+      <div class="flex items-center gap-2">
+        <span class="text-lg">R$</span>
+        <input
+          {id}
+          type="number"
+          class="input input-bordered input-sm w-40"
+          class:input-error={error}
+          min="0"
+          step="0.01"
+          value={value || 0}
+          oninput={handleInputChange}
+          {disabled}
+        />
+        {#if value > 0}
+          <span class="text-sm font-semibold text-primary">
+            = R$ {formatCurrency(value)}
+          </span>
+        {/if}
+      </div>
+    </div>
   </div>
 
   {#if tip}
@@ -74,11 +90,15 @@
     </div>
   {/if}
 
-  {#if error}
-    <div class="text-error text-sm mt-1">⚠️ {error}</div>
-  {:else if value === 0}
-    <div class="text-success text-sm mt-1">✓ Este sócio não receberá pro-labore</div>
-  {:else if value > 0}
-    <div class="text-success text-sm mt-1">✓ Valor válido</div>
-  {/if}
+  <div class="mt-2">
+    {#if error}
+      <div class="text-error text-sm">⚠️ {error}</div>
+    {:else if value === 0 || !value}
+      <div class="text-info text-sm">ℹ️ Este sócio não receberá pro-labore</div>
+    {:else if value > 0}
+      <div class="text-success text-sm">
+        ✓ Pro-labore mensal: R$ {formatCurrency(value)}
+      </div>
+    {/if}
+  </div>
 </div>

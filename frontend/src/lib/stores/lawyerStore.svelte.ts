@@ -180,21 +180,29 @@ class LawyerStore {
 
   // Select a lawyer
   selectLawyer(lawyer: Lawyer) {
+    console.log('🟢 [LawyerStore.selectLawyer] Called with:', lawyer.attributes.name, lawyer.id);
     if (!this.state.selectedLawyers.some((selected) => selected.id === lawyer.id)) {
-      this.state.selectedLawyers.push(lawyer);
+      this.state.selectedLawyers = [...this.state.selectedLawyers, lawyer];
+      console.log('🟢 [LawyerStore.selectLawyer] Added. Total selected:', this.state.selectedLawyers.length);
+    } else {
+      console.log('🟢 [LawyerStore.selectLawyer] Already selected, skipping');
     }
   }
 
   // Unselect a lawyer
   unselectLawyer(lawyerId: string) {
+    console.log('🟢 [LawyerStore.unselectLawyer] Called with ID:', lawyerId);
     this.state.selectedLawyers = this.state.selectedLawyers.filter(
       (lawyer) => lawyer.id !== lawyerId
     );
+    console.log('🟢 [LawyerStore.unselectLawyer] Total selected:', this.state.selectedLawyers.length);
   }
 
   // Clear all selected lawyers
   clearSelectedLawyers() {
+    console.log('🟢 [LawyerStore.clearSelectedLawyers] Called. Was:', this.state.selectedLawyers.length);
     this.state.selectedLawyers = [];
+    console.log('🟢 [LawyerStore.clearSelectedLawyers] Now:', this.state.selectedLawyers.length);
   }
 
   // Cleanup and cancellation methods

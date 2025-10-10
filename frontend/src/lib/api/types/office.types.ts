@@ -48,12 +48,16 @@ export interface BankAccount {
 }
 
 // Compensation interface
+export type CompensationType = 'pro_labore' | 'salary';
+export type PaymentFrequency = 'monthly' | 'quarterly' | 'semi_annually' | 'annually';
+
 export interface Compensation {
   id?: number;
-  compensation_type: 'pro_labore' | 'salary';
+  compensation_type: CompensationType;
   amount: number;
-  payment_frequency: 'monthly' | 'weekly' | 'annually';
+  payment_frequency: PaymentFrequency;
   effective_date: string; // YYYY-MM-DD format
+  end_date?: string; // YYYY-MM-DD format
   notes?: string;
   _destroy?: boolean;
 }
@@ -62,7 +66,9 @@ export interface UserOffice {
   id?: number;
   user_id: number;
   partnership_type?: PartnershipType;
-  partnership_percentage?: string;
+  partnership_percentage?: number;
+  is_administrator?: boolean;
+  entry_date?: string; // YYYY-MM-DD format
   compensations_attributes?: Compensation[];
   _destroy?: boolean;
 }
@@ -161,7 +167,8 @@ export interface OfficeWithLawyers {
 // Request Types
 export interface CreateOfficeRequest {
   name: string;
-  cnpj: string;
+  cnpj?: string;
+  team_id?: number;
   oab_id?: string;
   oab_status?: string;
   oab_inscricao?: string;
@@ -173,6 +180,7 @@ export interface CreateOfficeRequest {
   quote_value?: number;
   number_of_quotes?: number;
   proportional?: boolean;
+  create_social_contract?: boolean;
   logo?: File | string;
   phones_attributes?: Omit<Phone, 'id'>[];
   addresses_attributes?: Omit<Address, 'id'>[];
@@ -184,6 +192,7 @@ export interface CreateOfficeRequest {
 export interface UpdateOfficeRequest {
   name?: string;
   cnpj?: string;
+  team_id?: number;
   oab_id?: string;
   oab_status?: string;
   oab_inscricao?: string;
@@ -195,6 +204,7 @@ export interface UpdateOfficeRequest {
   quote_value?: number;
   number_of_quotes?: number;
   proportional?: boolean;
+  create_social_contract?: boolean;
   logo?: File | string;
   phones_attributes?: Phone[];
   addresses_attributes?: Address[];
@@ -361,4 +371,56 @@ export interface AttachmentOperationResponse {
   message: string;
   data?: Record<string, unknown>;
   errors?: string[];
+}
+
+// Form Data Types for UI State Management
+export interface PartnerFormData {
+  lawyer_id: string;
+  lawyer_name?: string;
+  partnership_type: string;
+  ownership_percentage: number;
+  is_managing_partner: boolean;
+  pro_labore_amount?: number;
+  entry_date?: string;
+  // Additional compensation info
+  salary_amount?: number;
+  salary_start_date?: string;
+  salary_end_date?: string;
+  payment_frequency?: PaymentFrequency;
+}
+
+// Complete Office Form Data for UI
+export interface OfficeFormData {
+  // Basic Info
+  name: string;
+  cnpj: string;
+  society: string;
+  accounting_type: string;
+  foundation: string;
+  site: string;
+  
+  // Quote Configuration
+  proportional: boolean;
+  quote_value: number;
+  number_of_quotes: number;
+  
+  // OAB
+  oab_id: string;
+  oab_status: string;
+  oab_inscricao: string;
+  oab_link: string;
+  
+  // Address
+  address: Address;
+  
+  // Phones
+  phones: string[];
+  
+  // Partners
+  partners: PartnerFormData[];
+  partnersWithProLabore: boolean;
+  
+  // Options
+  create_social_contract: boolean;
+  team_id?: number;
 }

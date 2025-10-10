@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Checkbox from '../forms_commons/Checkbox.svelte';
+
   type Props = {
     checked?: boolean;
     id?: string;
@@ -14,15 +16,10 @@
   }: Props = $props();
 </script>
 
-<div class="form-control mb-4">
-  <label class="label cursor-pointer justify-start gap-2">
-    <input
-      {id}
-      type="checkbox"
-      class="checkbox checkbox-primary"
-      bind:checked
-      {disabled}
-    />
-    <span class="label-text">{labelText}</span>
-  </label>
-</div>
+<Checkbox
+  bind:checked
+  {id}
+  {labelText}
+  {disabled}
+  wrapperClass="form-control mb-4"
+/>

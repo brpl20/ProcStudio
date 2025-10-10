@@ -1,10 +1,10 @@
 /**
- * New Office Store - Clean implementation for basic office creation
- * Manages form state and API interactions without legacy conflicts
+ * New Office Store - Complete implementation for office creation
+ * Manages form state and API interactions with full data structure
  */
 
 import api from '../api';
-import type { Office, CreateOfficeRequest } from '../api/types/office.types';
+import type { Office, CreateOfficeRequest, PartnerFormData } from '../api/types/office.types';
 import type { NewOfficeFormData, NewOfficeFormState, FormValidationConfig } from '../schemas/new-office-form';
 import {
   createDefaultNewOfficeFormData,
@@ -56,6 +56,17 @@ class NewOfficeStore {
     !this.state.formState.saving
   );
 
+  // Check if quote configuration is valid
+  isQuoteConfigValid = $derived(
+    this.state.formData.quote_value > 0 && 
+    this.state.formData.number_of_quotes > 0
+  );
+
+  // Calculate total capital
+  totalCapital = $derived(
+    this.state.formData.quote_value * this.state.formData.number_of_quotes
+  );
+
   // Update form field
   updateField<K extends keyof NewOfficeFormData>(
     field: K,
@@ -71,6 +82,33 @@ class NewOfficeStore {
     Object.assign(this.state.formData, data);
     this.state.formState.isDirty = this.isDirty;
     this.clearMessages();
+  }
+
+  // Update partners array
+  updatePartners(partners: PartnerFormData[]) {
+    this.state.formData.partners = partners;
+    this.state.formState.isDirty = this.isDirty;
+    this.clearMessages();
+  }
+
+  // Add a partner
+  addPartner(partner: PartnerFormData) {
+    this.state.formData.partners = [...this.state.formData.partners, partner];
+    this.state.formState.isDirty = this.isDirty;
+  }
+
+  // Remove a partner
+  removePartner(index: number) {
+    this.state.formData.partners = this.state.formData.partners.filter((_, i) => i !== index);
+    this.state.formState.isDirty = this.isDirty;
+  }
+
+  // Update a specific partner
+  updatePartner(index: number, partner: PartnerFormData) {
+    if (index >= 0 && index < this.state.formData.partners.length) {
+      this.state.formData.partners[index] = partner;
+      this.state.formState.isDirty = this.isDirty;
+    }
   }
 
   // Reset form
@@ -100,6 +138,7 @@ class NewOfficeStore {
   // Save new office
   async saveNewOffice(): Promise<Office | null> {
     if (!this.canSubmit) {
+      this.state.formState.error = 'Formulário inválido ou incompleto';
       return null;
     }
 
@@ -111,8 +150,8 @@ class NewOfficeStore {
       // Transform form data to API format
       const apiData = transformNewOfficeFormToApiRequest(this.state.formData);
 
-      // Call API
-      const response = await api.offices.createOffice(apiData as CreateOfficeRequest);
+      // Call API with wrapped data
+      const response = await api.offices.createOffice(apiData);
 
       if (response.success && response.data) {
         this.state.currentOffice = response.data;
@@ -161,24 +200,76 @@ class NewOfficeStore {
 
   // Load office data into form
   private loadOfficeIntoForm(office: Office) {
-    this.state.formData = {
-      name: office.name || '',
-      cnpj: office.cnpj || '',
-      society: office.society || '',
-      accounting_type: office.accounting_type || '',
-      foundation: office.foundation || '',
-      site: office.site || '',
-      address: (office as any).address || {
-        street: '',
-        number: '',
-        complement: '',
-        neighborhood: '',
-        city: '',
-        state: '',
-        zip_code: '',
-        address_type: 'main'
-      }
-    };
+    // Basic information
+    this.state.formData.name = office.name || '';
+    this.state.formData.cnpj = office.cnpj || '';
+    this.state.formData.society = office.society || '';
+    this.state.formData.accounting_type = office.accounting_type || '';
+    this.state.formData.foundation = office.foundation || '';
+    this.state.formData.site = office.site || '';
+    
+    // Quote configuration
+    this.state.formData.proportional = office.proportional ?? true;
+    this.state.formData.quote_value = office.quote_value || 0;
+    this.state.formData.number_of_quotes = office.number_of_quotes || 0;
+    
+    // OAB information
+    this.state.formData.oab_id = office.oab_id || '';
+    this.state.formData.oab_status = office.oab_status || '';
+    this.state.formData.oab_inscricao = office.oab_inscricao || '';
+    this.state.formData.oab_link = office.oab_link || '';
+    
+    // Address
+    if (office.addresses && office.addresses.length > 0) {
+      const address = office.addresses[0];
+      this.state.formData.address = {
+        street: address.street || '',
+        number: address.number || '',
+        complement: address.complement || '',
+        neighborhood: address.neighborhood || '',
+        city: address.city || '',
+        state: address.state || '',
+        zip_code: address.zip_code || '',
+        address_type: address.address_type || 'main'
+      };
+    }
+    
+    // Phones
+    if (office.phones && office.phones.length > 0) {
+      this.state.formData.phones = office.phones.map(p => p.phone_number);
+    }
+    
+    // Partners (from user_offices)
+    if (office.user_offices && office.user_offices.length > 0) {
+      this.state.formData.partners = office.user_offices.map(uo => {
+        const partner: PartnerFormData = {
+          lawyer_id: String(uo.user_id),
+          partnership_type: uo.partnership_type || '',
+          ownership_percentage: uo.partnership_percentage || 0,
+          is_managing_partner: uo.is_administrator || false,
+          entry_date: uo.entry_date
+        };
+        
+        // Extract compensation data
+        if (uo.compensations_attributes && uo.compensations_attributes.length > 0) {
+          uo.compensations_attributes.forEach(comp => {
+            if (comp.compensation_type === 'pro_labore') {
+              partner.pro_labore_amount = comp.amount;
+            } else if (comp.compensation_type === 'salary') {
+              partner.salary_amount = comp.amount;
+              partner.salary_start_date = comp.effective_date;
+              partner.salary_end_date = comp.end_date;
+              partner.payment_frequency = comp.payment_frequency;
+            }
+          });
+          
+          this.state.formData.partnersWithProLabore = true;
+        }
+        
+        return partner;
+      });
+    }
+    
     this.state.formState.isDirty = false;
   }
 

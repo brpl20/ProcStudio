@@ -1,22 +1,31 @@
 <script lang="ts">
-  import { lawyerStore } from '../../stores/lawyerStore.svelte';
   import type { Lawyer } from '../../api/types/user.lawyer';
-  import { onMount } from 'svelte';
 
-  onMount(() => {
-    lawyerStore.init();
-  });
+  type Props = {
+    totalLawyers?: number;
+    activeLawyers?: Lawyer[];
+    selectedLawyers?: Lawyer[];
+  };
+
+  let {
+    totalLawyers = 0,
+    activeLawyers = [],
+    selectedLawyers = []
+  }: Props = $props();
+
+  const selectedLawyersCount = $derived(selectedLawyers.length);
+  const remainingLawyersCount = $derived(activeLawyers.length - selectedLawyers.length);
 </script>
 
 <div>
-  <p>Total lawyers: {lawyerStore.lawyersCount}</p>
+  <p>Total lawyers: {totalLawyers}</p>
 </div>
 <div>
-  <p>Active lawyers: {lawyerStore.activeLawyers.length}</p>
+  <p>Active lawyers: {activeLawyers.length}</p>
 </div>
 <div>
-  <p>Selected Lawyers: {lawyerStore.selectedLawyersCount}</p>
+  <p>Selected Lawyers: {selectedLawyersCount}</p>
 </div>
 <div>
-  <p>Remaining Lawyers: {lawyerStore.remainingLawyersCount}</p>
+  <p>Remaining Lawyers: {remainingLawyersCount}</p>
 </div>

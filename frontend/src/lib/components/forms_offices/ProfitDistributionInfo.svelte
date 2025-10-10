@@ -1,11 +1,13 @@
 <script lang="ts">
+  import type { ProfitDistributionType } from '../../constants/formOptions';
+
   type Partner = {
     lawyer_name?: string;
     ownership_percentage: number;
   };
 
   type Props = {
-    distributionType: 'proportional' | 'disproportional';
+    distributionType: ProfitDistributionType;
     partners?: Partner[];
   };
 

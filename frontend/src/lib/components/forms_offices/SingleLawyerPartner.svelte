@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Lawyer } from '../../api/types/user.lawyer';
+  import { getFullName } from '../../utils/lawyer.utils';
 
   type Props = {
     lawyer: Lawyer | null;
@@ -8,10 +9,6 @@
   const {
     lawyer = null
   }: Props = $props();
-
-  function getFullName(lawyer: Lawyer) {
-    return `${lawyer.attributes.name} ${lawyer.attributes.last_name || ''}`.trim();
-  }
 </script>
 
 {#if lawyer}

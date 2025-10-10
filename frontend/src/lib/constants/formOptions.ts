@@ -28,6 +28,13 @@ export const PARTNERSHIP_TYPES: FormOption[] = [
   { value: 'socio_de_servico', label: 'Sócio de Serviço' }
 ];
 
+export const PROFIT_DISTRIBUTION_TYPES: FormOption[] = [
+  { value: 'proportional', label: 'Proporcional à participação' },
+  { value: 'disproportional', label: 'Desproporcional' }
+];
+
+export type ProfitDistributionType = 'proportional' | 'disproportional';
+
 export const JOBSTATUS: BadgeFormOption[] = [
   { value: 'pending', label: 'Pendente', badgeClass: 'badge badge-pending' },
   { value: 'in_progress', label: 'Em Progresso', badgeClass: 'badge badge-in_progress' },

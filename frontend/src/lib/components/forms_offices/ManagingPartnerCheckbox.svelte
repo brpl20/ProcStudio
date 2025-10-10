@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Checkbox from '../forms_commons/Checkbox.svelte';
+
   type Props = {
     checked?: boolean;
     id?: string;
@@ -14,24 +16,12 @@
     disabled = false,
     onchange
   }: Props = $props();
-
-  function handleChange(e: Event) {
-    const target = e.target as HTMLInputElement;
-    checked = target.checked;
-    onchange?.(target.checked);
-  }
 </script>
 
-<div class="form-control">
-  <label class="label cursor-pointer justify-start gap-2">
-    <input
-      {id}
-      type="checkbox"
-      class="checkbox checkbox-primary"
-      bind:checked
-      onchange={handleChange}
-      {disabled}
-    />
-    <span class="label-text">{labelText}</span>
-  </label>
-</div>
+<Checkbox
+  bind:checked
+  {id}
+  {labelText}
+  {disabled}
+  {onchange}
+/>

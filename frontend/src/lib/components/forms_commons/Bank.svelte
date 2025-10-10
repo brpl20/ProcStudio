@@ -51,13 +51,17 @@
     }
   }
 
+  // Track if user has focused the input
+  let hasFocused = false;
+
   // Bank search handlers
   function handleBankSearch(event: Event) {
     const input = event.target as HTMLInputElement;
     bankSearchTerm = input.value;
     selectedDropdownIndex = -1;
 
-    if (bankSearchTerm.length > 0) {
+    // Only show dropdown if user has focused the field
+    if (hasFocused && bankSearchTerm.length > 0) {
       filteredBanks = searchBanks(bankSearchTerm).slice(0, 10);
       showBankDropdown = filteredBanks.length > 0;
     } else {
@@ -81,8 +85,14 @@
   }
 
   function handleBankInputFocus() {
+    hasFocused = true;
     if (!bankSearchTerm && bankAccount.bank_name) {
       bankSearchTerm = bankAccount.bank_name;
+    }
+    // Trigger search to show dropdown on focus
+    if (bankSearchTerm.length > 0) {
+      filteredBanks = searchBanks(bankSearchTerm).slice(0, 10);
+      showBankDropdown = filteredBanks.length > 0;
     }
   }
 

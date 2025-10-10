@@ -1,13 +1,15 @@
 <script lang="ts">
+  import { PROFIT_DISTRIBUTION_TYPES, type ProfitDistributionType } from '../../constants/formOptions';
+
   type Props = {
-    value?: 'proportional' | 'disproportional';
+    value?: ProfitDistributionType;
     id?: string;
     labelText?: string;
     disabled?: boolean;
   };
 
   let {
-    value = $bindable('proportional'),
+    value = $bindable<ProfitDistributionType>('proportional'),
     id = 'profit-distribution',
     labelText = 'Como será a distribuição de lucros?',
     disabled = false
@@ -21,27 +23,18 @@
     </legend>
 
     <div class="flex gap-6">
-      <label class="label cursor-pointer">
-        <input
-          type="radio"
-          class="radio radio-primary"
-          bind:group={value}
-          value="proportional"
-          {disabled}
-        />
-        <span class="label-text ml-2">Proporcional à participação</span>
-      </label>
-
-      <label class="label cursor-pointer">
-        <input
-          type="radio"
-          class="radio radio-primary"
-          bind:group={value}
-          value="disproportional"
-          {disabled}
-        />
-        <span class="label-text ml-2">Desproporcional</span>
-      </label>
+      {#each PROFIT_DISTRIBUTION_TYPES as type}
+        <label class="label cursor-pointer">
+          <input
+            type="radio"
+            class="radio radio-primary"
+            bind:group={value}
+            value={type.value}
+            {disabled}
+          />
+          <span class="label-text ml-2">{type.label}</span>
+        </label>
+      {/each}
     </div>
   </fieldset>
 </div>

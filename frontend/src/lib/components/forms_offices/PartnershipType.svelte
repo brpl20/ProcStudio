@@ -1,21 +1,28 @@
 <script lang="ts">
   import { PARTNERSHIP_TYPES } from '../../constants/formOptions';
+  import type { SelectFieldProps } from '../../types/form-field-contract';
 
-  type Props = {
-    value?: string;
-    id?: string;
-    labelText?: string;
-    required?: boolean;
-    disabled?: boolean;
+  interface PartnershipTypeProps extends Omit<SelectFieldProps<string>, 'options'> {
     onchange?: (value: string) => void;
-  };
+  }
+
+  type Props = PartnershipTypeProps;
 
   let {
     value = $bindable(''),
     id = 'partner-type',
     labelText = 'Função',
+    placeholder = 'Selecione a Função',
     required = false,
     disabled = false,
+    errors = null,
+    hint,
+    wrapperClass = 'form-control flex flex-col',
+    inputClass = 'select select-bordered w-full',
+    labelClass = 'label pb-1',
+    testId,
+    ariaLabel,
+    ariaDescribedBy,
     onchange
   }: Props = $props();
 
@@ -26,8 +33,8 @@
   }
 </script>
 
-<div class="form-control flex flex-col">
-  <label class="label pb-1" for={id}>
+<div class={wrapperClass}>
+  <label class={labelClass} for={id}>
     <span class="label-text">
       {labelText}
       {#if required}<span class="text-error">*</span>{/if}
@@ -35,14 +42,32 @@
   </label>
   <select
     {id}
-    class="select select-bordered w-full"
+    class={inputClass}
+    class:select-error={errors}
     bind:value
     {disabled}
+    {required}
     onchange={handleChange}
+    data-testid={testId}
+    aria-label={ariaLabel || labelText}
+    aria-describedby={ariaDescribedBy}
+    aria-invalid={!!errors}
   >
-    <option value="">Selecione a Função</option>
+    <option value="">{placeholder}</option>
     {#each PARTNERSHIP_TYPES as type}
       <option value={type.value}>{type.label}</option>
     {/each}
   </select>
+  
+  {#if hint && !errors}
+    <div class="label">
+      <span class="label-text-alt">{hint}</span>
+    </div>
+  {/if}
+  
+  {#if errors}
+    <div class="label">
+      <span class="label-text-alt text-error">{errors}</span>
+    </div>
+  {/if}
 </div>

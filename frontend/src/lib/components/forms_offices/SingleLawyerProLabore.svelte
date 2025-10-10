@@ -35,6 +35,13 @@
     error = validateProLaboreAmount(newValue);
     onchange?.(newValue);
   }
+  
+  function formatCurrency(val: number): string {
+    return val.toLocaleString('pt-BR', { 
+      minimumFractionDigits: 2, 
+      maximumFractionDigits: 2 
+    });
+  }
 </script>
 
 <div class="space-y-4">
@@ -66,18 +73,25 @@
 
     <div class="space-y-3">
       <div class="flex items-center gap-2">
-        <span class="w-20 text-sm">Pro-Labore:</span>
-        <span class="text-lg">R$</span>
-        <input
-          type="number"
-          class="input input-bordered input-sm w-40"
-          class:input-error={error}
-          min="0"
-          step="0.01"
-          bind:value
-          oninput={handleInputChange}
-          {disabled}
-        />
+        <span class="w-24 text-sm font-medium">Pro-Labore:</span>
+        <div class="flex items-center gap-2">
+          <span class="text-lg">R$</span>
+          <input
+            type="number"
+            class="input input-bordered input-sm w-40"
+            class:input-error={error}
+            min="0"
+            step="0.01"
+            bind:value
+            oninput={handleInputChange}
+            {disabled}
+          />
+          {#if value > 0}
+            <span class="text-sm font-semibold text-primary">
+              = R$ {formatCurrency(value)}
+            </span>
+          {/if}
+        </div>
       </div>
 
       <div class="space-y-2">

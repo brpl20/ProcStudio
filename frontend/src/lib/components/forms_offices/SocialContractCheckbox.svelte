@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Checkbox from '../forms_commons/Checkbox.svelte';
+
   type Props = {
     checked?: boolean;
     id?: string;
@@ -14,18 +16,7 @@
   }: Props = $props();
 </script>
 
-<div class="form-control">
-  <label class="label cursor-pointer justify-start gap-2">
-    <input
-      {id}
-      type="checkbox"
-      class="checkbox checkbox-primary"
-      bind:checked
-      {disabled}
-    />
-    <span class="label-text">{labelText}</span>
-  </label>
-</div>
+<Checkbox bind:checked {id} {labelText} {disabled} />
 
 {#if checked}
   <div class="alert alert-info mt-4">
@@ -42,6 +33,6 @@
         d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
       />
     </svg>
-    <span>A lógica para criação do contrato social será implementada posteriormente.</span>
+    <span>Esse comando irá gerar um contrato social.</span>
   </div>
 {/if}
