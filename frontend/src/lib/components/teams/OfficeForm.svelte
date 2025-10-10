@@ -8,7 +8,7 @@
   import Phone from '../forms_commons/Phone.svelte';
   import Email from '../forms_commons/Email.svelte';
   import Bank from '../forms_commons/Bank.svelte';
-  import BasicInformation from '../forms_commons_wrappers/BasicInformation.svelte';
+  import SocietyBasicInformation from '../forms_commons_wrappers/SocietyBasicInformation.svelte';
   import OabInformation from '../forms_commons_wrappers/OabInformation.svelte';
   import { createCepAddressHandler } from '../../utils/cep-address-mapper';
 

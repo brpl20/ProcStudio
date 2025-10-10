@@ -1,12 +1,12 @@
 <script>
   import { WebsiteName } from '../config.js';
   import { authStore } from '../stores/authStore';
-  import { router } from '../stores/routerStore.js';
+  import { router } from '../stores/routerStore';
 
   export let showFooter = true;
 
   $: isAuthenticated = $authStore.isAuthenticated;
-  $: currentPath = $router.currentPath;
+  $: currentPath = router.currentPath;
 
   function handleLogout() {
     authStore.logout();

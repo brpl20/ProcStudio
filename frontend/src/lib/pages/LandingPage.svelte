@@ -1,6 +1,6 @@
 <script>
   import MainLayout from '../components/MainLayout.svelte';
-  import { router } from '../stores/routerStore.js';
+  import { router } from '../stores/routerStore';
 </script>
 
 <MainLayout>

@@ -1,7 +1,7 @@
 <script>
   import AuthLayout from '../components/AuthLayout.svelte';
   import { authStore } from '../stores/authStore';
-  import { router } from '../stores/routerStore.js';
+  import { router } from '../stores/routerStore';
   import api from '../api/index';
   import { validateAndNormalizeOab } from '../validation/oabValidator';
 

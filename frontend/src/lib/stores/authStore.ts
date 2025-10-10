@@ -55,27 +55,29 @@ function createAuthStore() {
 
   // Initialize auth from stored data
   async function init(): Promise<void> {
+    api.auth.initializeAuth();
+    
     const isAuth = api.auth.isAuthenticated();
 
-    if (isAuth) {
-      const storedUserData = storage.getUserData();
-
-      update((state) => ({
-        ...state,
-        isAuthenticated: true,
-        user: storedUserData
-      }));
-
-      // Connect to WebSocket if user is authenticated
-      if (storedUserData?.token) {
-        notificationStore.connect(storedUserData.token);
-      }
-    } else {
+    if (!isAuth) {
       update((state) => ({
         ...state,
         isAuthenticated: false,
         user: null
       }));
+      return;
+    }
+
+    const storedUserData = storage.getUserData();
+
+    update((state) => ({
+      ...state,
+      isAuthenticated: true,
+      user: storedUserData
+    }));
+
+    if (storedUserData?.token) {
+      notificationStore.connect(storedUserData.token);
     }
   }
 
@@ -119,9 +121,11 @@ function createAuthStore() {
     try {
       await api.auth.logout();
     } finally {
-      // Disconnect from WebSocket before clearing auth data
       notificationStore.disconnect();
       storage.clearUserData();
+      sessionStorage.removeItem('redirectAfterLogin');
+      sessionStorage.removeItem('authMessage');
+      sessionStorage.removeItem('profileMessage');
       set(initialState);
     }
   }

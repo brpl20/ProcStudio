@@ -155,10 +155,10 @@
           <h2 class="text-2xl font-bold text-gray-900">Selecionar Tipo de Escritório</h2>
           <button class="btn btn-ghost btn-sm" on:click={handleCloseSelection}>✕</button>
         </div>
-        
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <!-- Existing Office Option -->
-          <div 
+          <div
             class="card bg-base-100 shadow-xl cursor-pointer hover:shadow-2xl transition-shadow"
             on:click={() => handleOfficeSelection(false)}
             on:keydown={(e) => e.key === 'Enter' && handleOfficeSelection(false)}
@@ -178,7 +178,7 @@
           </div>
 
           <!-- New Office Option -->
-          <div 
+          <div
             class="card bg-base-100 shadow-xl cursor-pointer hover:shadow-2xl transition-shadow"
             on:click={() => handleOfficeSelection(true)}
             on:keydown={(e) => e.key === 'Enter' && handleOfficeSelection(true)}

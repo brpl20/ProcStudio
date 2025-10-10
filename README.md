@@ -108,8 +108,11 @@ Svelte 5.0
 
 ### Frontend - Components and Forms
 - [Forms and Decoupling](./docs/frontend-forms-and-decoupling.md)
+- [Forms Dynamic Field Validation](./docs/frontend-forms-dynamic-field-validation.md)
+- [Forms Stores and Schemas](./docs/frontend-forms-stores-and-schemas.md)
 - Forms Specific:
   - [CNPJ](./docs/frontend-cnpj.md)
+  - [CEP and Address](./docs/frontend-forms-cep-address.md)
 
 ## Testes
 - [Tests](./docs/Test.md)

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { router } from '../stores/routerStore.js';
+  import { router } from '../stores/routerStore';
   import Icon from '../icons/icons.svelte';
 
   interface BreadcrumbItem {
@@ -15,7 +15,7 @@
   const { items = [] }: Props = $props();
 
   // Breadcrumb padrão baseado na rota atual
-  const currentPath = $derived($router.currentPath);
+  const currentPath = $derived(router.currentPath);
   const defaultBreadcrumbs = $derived(generateBreadcrumbs(currentPath));
   const displayItems = $derived(items.length > 0 ? items : defaultBreadcrumbs);
 

@@ -1,7 +1,7 @@
 <script>
   import { onMount, onDestroy } from 'svelte';
   import { authStore } from '../stores/authStore';
-  import { router } from '../stores/routerStore.js';
+  import { router } from '../stores/routerStore';
 
   export let timeoutMinutes = 30; // Default 30 minutes
   export let warningMinutes = 5; // Show warning 5 minutes before timeout

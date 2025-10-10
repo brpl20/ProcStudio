@@ -1,6 +1,7 @@
 <script lang="ts">
   import { RenderScan } from 'svelte-render-scan';
   import OfficeBasicInformation from '../../components/forms_commons_wrappers/OfficeBasicInformation.svelte';
+  import AddressCepWrapper from '../../components/forms_commons_wrappers/AddressCepWrapper.svelte';
   import OabInformation from '../../components/forms_commons_wrappers/OabInformation.svelte';
 
   import { newOfficeStore } from '../../stores/newOfficeStore.svelte';
@@ -10,6 +11,20 @@
   // URL parameter handling
   let newOfficeParam = $state(false);
   let urlParams = $state({});
+  
+  // OAB data that syncs with the store
+  let oabData = $state({
+    oab_id: newOfficeStore.formData.oab_id || '',
+    oab_status: newOfficeStore.formData.oab_status || '',
+    oab_link: newOfficeStore.formData.oab_link || ''
+  });
+  
+  // Sync OAB data changes back to the store
+  $effect(() => {
+    newOfficeStore.formData.oab_id = oabData.oab_id;
+    newOfficeStore.formData.oab_status = oabData.oab_status;
+    newOfficeStore.formData.oab_link = oabData.oab_link;
+  });
 
   // Initialize URL parameters
   function initializeUrlParams() {
@@ -27,7 +42,7 @@
 
   // Initialize on component mount
   initializeUrlParams();
-  
+
   // Initialize lawyer store
   if (!lawyerStore.initialized) {
     lawyerStore.init();
@@ -94,7 +109,32 @@
       onValidationConfigChange={handleValidationConfigChange}
     />
 
+    <!-- Address Information -->
+    <AddressCepWrapper
+      bind:address={newOfficeStore.formData.address}
+      bind:cepValue={newOfficeStore.formData.address.zip_code}
+      title="Endereço do Escritório"
+      config={{
+        cep: {
+          id: 'office-cep',
+          labelText: 'CEP',
+          required: false
+        },
+        address: {
+          id: 'office-address',
+          required: false,
+          showRemoveButton: false
+        }
+      }}
+      useAPIValidation={true}
+      showAddressInfo={false}
+    />
+
     <!-- OAB Information -->
+    <OabInformation
+      bind:formData={oabData}
+      title="Informações da OAB"
+    />
 
     <!-- Form actions -->
     <div class="flex gap-4 mt-6">

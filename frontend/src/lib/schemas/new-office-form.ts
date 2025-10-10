@@ -6,7 +6,19 @@
 import type { CreateOfficeRequest, Society, AccountingType } from '../api/types/office.types';
 import { validateCNPJOptional } from '../validation/cnpj';
 
-// New office form data - matches BasicInformation component exactly
+// Address data structure
+export interface AddressData {
+  street: string;
+  number: string;
+  complement: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  zip_code: string;
+  address_type: string;
+}
+
+// New office form data
 export interface NewOfficeFormData {
   name: string;
   cnpj: string;
@@ -14,6 +26,10 @@ export interface NewOfficeFormData {
   accounting_type: string;
   foundation: string;
   site?: string;
+  address?: AddressData;
+  oab_id?: string;
+  oab_status?: string;
+  oab_link?: string;
 }
 
 // Dynamic validation configuration
@@ -45,7 +61,20 @@ export function createDefaultNewOfficeFormData(): NewOfficeFormData {
     society: '',
     accounting_type: '',
     foundation: '',
-    site: ''
+    site: '',
+    address: {
+      street: '',
+      number: '',
+      complement: '',
+      neighborhood: '',
+      city: '',
+      state: '',
+      zip_code: '',
+      address_type: 'main'
+    },
+    oab_id: '',
+    oab_status: '',
+    oab_link: ''
   };
 }
 
@@ -79,6 +108,26 @@ export function transformNewOfficeFormToApiRequest(formData: NewOfficeFormData):
     apiData.site = formData.site.trim();
   }
 
+  if (formData.address) {
+    const hasAddressData = Object.values(formData.address).some((v) => v?.toString().trim());
+    if (hasAddressData) {
+      apiData.address = formData.address;
+    }
+  }
+
+  // Add OAB fields to API request
+  if (formData.oab_id?.trim()) {
+    apiData.oab_id = formData.oab_id.trim();
+  }
+
+  if (formData.oab_status?.trim()) {
+    apiData.oab_status = formData.oab_status.trim();
+  }
+
+  if (formData.oab_link?.trim()) {
+    apiData.oab_link = formData.oab_link.trim();
+  }
+
   return apiData;
 }
 
@@ -86,13 +135,18 @@ export function transformNewOfficeFormToApiRequest(formData: NewOfficeFormData):
  * Check if new office form has any data (for dirty state)
  */
 export function hasNewOfficeFormData(formData: NewOfficeFormData): boolean {
+  const hasAddressData = formData.address
+    ? Object.values(formData.address).some((v) => v?.toString().trim())
+    : false;
+
   return !!(
     formData.name?.trim() ||
     formData.cnpj?.trim() ||
     formData.society ||
     formData.accounting_type ||
     formData.foundation?.trim() ||
-    formData.site?.trim()
+    formData.site?.trim() ||
+    hasAddressData
   );
 }
 
@@ -152,7 +206,8 @@ function getFieldLabel(fieldName: string): string {
     society: 'Tipo de sociedade',
     accounting_type: 'Enquadramento contábil',
     foundation: 'Data de fundação',
-    site: 'Site'
+    site: 'Site',
+    address: 'Endereço'
   };
   return labels[fieldName] || fieldName;
 }

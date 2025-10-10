@@ -35,8 +35,8 @@
 
   // Filter society options based on lawyer count
   const availableOptions = $derived(
-    isSingleLawyer 
-      ? SOCIETY_OPTIONS.filter(option => option.value === 'individual')
+    isSingleLawyer
+      ? SOCIETY_OPTIONS.filter((option) => option.value === 'individual')
       : SOCIETY_OPTIONS
   );
 </script>

@@ -7,9 +7,9 @@
 
   let {
     value = $bindable(''),
-    id = 'oab-office-link',
-    labelText = 'Link OAB',
-    placeholder = 'Link do perfil na OAB',
+    id = 'link',
+    labelText = 'Link',
+    placeholder = 'https://example.com',
     required = false,
     disabled = false,
     errors = null,
@@ -43,4 +43,4 @@
   {#if errors && touched}
     <div id="{id}-error" class="text-error text-sm mt-1">{errors}</div>
   {/if}
-}</div>
+</div>

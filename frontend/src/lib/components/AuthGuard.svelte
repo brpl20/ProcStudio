@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import { authStore } from '../stores/authStore';
-  import { router } from '../stores/routerStore.js';
+  import { router } from '../stores/routerStore';
   import Icon from '../icons/icons.svelte';
 
   export let requireAuth = true;

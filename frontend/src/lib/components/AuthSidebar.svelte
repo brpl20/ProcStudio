@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { WebsiteName } from '../config.js';
   import { authStore } from '../stores/authStore';
-  import { router } from '../stores/routerStore.js';
+  import { router } from '../stores/routerStore';
   import api from '../api/index';
   import type { WhoAmIResponse } from '../api/types';
   import Icon from '../icons/icons.svelte';
@@ -14,7 +14,7 @@
   export const activeSection: string = '';
 
   $: isAuthenticated = $authStore.isAuthenticated;
-  $: currentPath = $router.currentPath;
+  $: currentPath = router.currentPath;
 
   // Drawer state management
   let isDrawerOpen = true; // Start open on desktop

@@ -1,6 +1,7 @@
 <script>
   import { createEventDispatcher } from 'svelte';
   import api from '../../api';
+  import OabId from '../forms_commons/OabId.svelte';
 
   export let isOpen = false;
   export let user = null;
@@ -407,19 +408,14 @@
             </select>
           </div>
 
-          <div class="form-control">
-            <label class="label" for="oab-input">
-              <span class="label-text font-medium">OAB</span>
-            </label>
-            <input
-              id="oab-input"
-              type="text"
-              bind:value={formData.oab}
-              class="input input-bordered w-full"
-              disabled={loading}
-              placeholder="Ex: 123456 OAB/SP"
-            />
-          </div>
+          <OabId
+            bind:value={formData.oab}
+            id="oab-input"
+            type="lawyer"
+            labelText="OAB"
+            placeholder="Ex: PR_54159"
+            disabled={loading}
+          />
 
           <div class="form-control">
             <label class="label" for="rg-input">

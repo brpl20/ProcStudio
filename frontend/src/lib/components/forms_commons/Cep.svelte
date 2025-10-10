@@ -1,6 +1,4 @@
-<!-- CEP.svelte -->
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
   import { CEPFormatter } from '../../validation/cep-formatter';
   import { CEPValidator } from '../../validation/cep-validator';
   import { cepService } from '../../api-external/services/cep-service';
@@ -19,97 +17,130 @@
     siafi?: string;
   }
 
-  // Props with defaults
-  export let value = '';
-  export let errors: string | null = null;
-  export let touched = false;
-  export let disabled = false;
-  export let validateFn = CEPValidator.validateRequired; // Default to built-in validation
-  export let formatFn = CEPFormatter.format; // Default to built-in formatting
-  export let id = 'cep'; // Allow customizing the ID
-  export let required = true;
-  export let labelText = 'CEP';
-  export let placeholder = '00000-000';
-  export let testId: string | undefined = undefined; // Can be overridden, otherwise uses id
-  export let inputClass = ''; // Additional classes for the input
-  export let wrapperClass = ''; // Additional classes for the wrapper
-  export let useAPIValidation = false; // Enable API validation
-  export let showAddressInfo = false; // Show address information when valid
+  type Props = {
+    value?: string;
+    errors?: string | null;
+    touched?: boolean;
+    disabled?: boolean;
+    validateFn?: (value: string) => string | null;
+    formatFn?: (value: string) => string;
+    id?: string;
+    required?: boolean;
+    labelText?: string;
+    placeholder?: string;
+    testId?: string;
+    inputClass?: string;
+    wrapperClass?: string;
+    useAPIValidation?: boolean;
+    showAddressInfo?: boolean;
+    oninput?: (event: CustomEvent) => void;
+    onblur?: (event: CustomEvent) => void;
+    onvalidate?: (event: CustomEvent) => void;
+    onaddressfound?: (event: CustomEvent) => void;
+  };
 
-  // Set up event dispatcher
-  const dispatch = createEventDispatcher();
+  let {
+    value = $bindable(''),
+    errors = $bindable(null),
+    touched = $bindable(false),
+    disabled = false,
+    validateFn = CEPValidator.validateRequired,
+    formatFn = CEPFormatter.format,
+    id = 'cep',
+    required = true,
+    labelText = 'CEP',
+    placeholder = '00000-000',
+    testId = undefined,
+    inputClass = '',
+    wrapperClass = '',
+    useAPIValidation = false,
+    showAddressInfo = false,
+    oninput,
+    onblur,
+    onvalidate,
+    onaddressfound
+  }: Props = $props();
 
-  // Address information from API
-  let addressInfo: AddressInfo | null = null;
-  let isValidating = false;
+  let addressInfo = $state<AddressInfo | null>(null);
+  let isValidating = $state(false);
+  let validationStatus = $state<'valid' | 'invalid' | null>(null);
 
-  // Handle input with optional formatting
   function handleInput(event: Event) {
     const target = event.target as HTMLInputElement;
     let newValue = target.value;
 
-    // Apply formatting if provided
     if (formatFn) {
       newValue = formatFn(newValue);
     }
 
-    value = newValue; // Update the bound value
-    addressInfo = null; // Clear previous address info
-    dispatch('input', { value: newValue, id });
+    value = newValue;
+    addressInfo = null;
+    validationStatus = null;
+    oninput?.(new CustomEvent('input', { detail: { value: newValue, id } }));
   }
 
-  // Handle blur with validation
   async function handleBlur() {
-    touched = true; // Mark as touched on blur
-    dispatch('blur', { id, value });
+    touched = true;
+    onblur?.(new CustomEvent('blur', { detail: { id, value } }));
 
-    // If validation function provided, validate on blur
-    if (validateFn && required) {
+    if (!value) {
+      if (required) {
+        errors = 'CEP é obrigatório';
+      } else {
+        errors = null;
+      }
+      onvalidate?.(new CustomEvent('validate', { detail: { id, value, error: errors, addressInfo } }));
+      return;
+    }
+
+    if (validateFn) {
       const error = validateFn(value);
       errors = error;
 
-      // If local validation passes and API validation is enabled
-      if (!error && useAPIValidation && value) {
+      if (!error && useAPIValidation) {
         isValidating = true;
         try {
           const apiResult = await cepService.validate(value);
 
-          if (!apiResult.isValid) {
-            errors = apiResult.message || 'Erro na validação do CEP';
-          } else if (apiResult.data) {
+          if (apiResult.isValid && apiResult.data) {
+            validationStatus = 'valid';
             if (showAddressInfo) {
               addressInfo = apiResult.data as AddressInfo;
             }
-            dispatch('address-found', {
-              id,
-              value,
-              address: apiResult.data as AddressInfo
-            });
+            onaddressfound?.(new CustomEvent('addressfound', {
+              detail: {
+                id,
+                value,
+                address: apiResult.data as AddressInfo
+              }
+            }));
+          } else {
+            validationStatus = 'invalid';
           }
         } catch (error) {
-          errors = 'Erro ao validar CEP';
+          validationStatus = 'invalid';
         } finally {
           isValidating = false;
         }
       }
-
-      dispatch('validate', { id, value, error: errors, addressInfo });
     }
+
+    onvalidate?.(new CustomEvent('validate', { detail: { id, value, error: errors, addressInfo } }));
   }
 </script>
 
 <div class="form-control w-full {wrapperClass}">
-  <label for={id} class="label justify-start">
-    <span class="label-text font-medium">{labelText} {required ? '*' : ''}</span>
+  <label for={id} class="label pb-1">
+    <span class="label-text">{labelText} {required ? '*' : ''}</span>
   </label>
   <div class="relative">
     <input
       {id}
       type="text"
-      class="input input-bordered w-full {errors && touched ? 'input-error' : ''} {inputClass}"
+      class="input input-bordered w-full {errors && touched ? 'input-error' : ''} {validationStatus === 'valid' ? 'border-success' : ''} {validationStatus === 'invalid' ? 'border-error' : ''} {inputClass}"
       bind:value
-      on:input={handleInput}
-      on:blur={handleBlur}
+      oninput={handleInput}
+      onblur={handleBlur}
       {disabled}
       {placeholder}
       maxlength="9"
@@ -129,18 +160,4 @@
     <div id="{id}-error" class="text-error text-sm mt-1">{errors}</div>
   {/if}
 
-  {#if showAddressInfo && addressInfo && !errors}
-    <div class="mt-2 p-3 bg-base-200 rounded-lg text-sm">
-      <div class="font-semibold text-base-content">{addressInfo.logradouro}</div>
-      {#if addressInfo.complemento}
-        <div class="text-base-content/70">{addressInfo.complemento}</div>
-      {/if}
-      <div class="text-base-content/70">
-        {addressInfo.bairro}, {addressInfo.localidade} - {addressInfo.uf}
-      </div>
-      {#if addressInfo.estado !== addressInfo.uf}
-        <div class="text-base-content/50">{addressInfo.estado}</div>
-      {/if}
-    </div>
-  {/if}
 </div>

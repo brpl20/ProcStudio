@@ -62,8 +62,14 @@ class CEPService {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), apiConfig.cep.timeout);
 
+      const headers: HeadersInit = {};
+      if (apiConfig.cep.apiKey) {
+        headers['X-API-Key'] = apiConfig.cep.apiKey;
+      }
+
       const response = await fetch(`${apiConfig.cep.baseUrl}/validate/${cleanedCEP}`, {
-        signal: controller.signal
+        signal: controller.signal,
+        headers
       });
 
       clearTimeout(timeoutId);

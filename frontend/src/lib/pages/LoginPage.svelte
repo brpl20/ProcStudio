@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import AuthLayout from '../components/AuthLayout.svelte';
   import { authStore } from '../stores/authStore';
-  import { router } from '../stores/routerStore.js';
+  import { router } from '../stores/routerStore';
   import api from '../api/index';
   import Icon from '../icons/icons.svelte';
 
@@ -13,12 +13,11 @@
   let successMessage = '';
 
   onMount(() => {
-    // Check for auth error from AuthGuard
     if (typeof window !== 'undefined') {
-      const authError = window.sessionStorage.getItem('authError');
-      if (authError) {
-        errorMessage = authError;
-        window.sessionStorage.removeItem('authError');
+      const authMessage = window.sessionStorage.getItem('authMessage');
+      if (authMessage) {
+        errorMessage = authMessage;
+        window.sessionStorage.removeItem('authMessage');
       }
     }
   });
@@ -38,26 +37,24 @@
       if (result.success) {
         successMessage = result.message || 'Login realizado com sucesso!';
 
-        // Limpa o formulário
         email = '';
         password = '';
 
-        // Pode precisar ajustar baseado na estrutura do authStore
         authStore.loginSuccess(result);
 
-        // Check if there's a redirect URL stored
+        await new Promise(resolve => setTimeout(resolve, 0));
+
         const redirectUrl = window.sessionStorage.getItem('redirectAfterLogin');
         if (redirectUrl) {
           window.sessionStorage.removeItem('redirectAfterLogin');
-          router.navigate(redirectUrl);
+          await router.navigate(redirectUrl, { skipGuards: true });
         } else {
-          router.navigate('/dashboard');
+          await router.navigate('/dashboard', { skipGuards: true });
         }
       } else {
         errorMessage = result.message || 'Erro no login';
       }
     } catch (error) {
-      // console.error('Login error:', error);
       errorMessage = error?.data?.message || error?.message || 'Erro no login. Tente novamente.';
     } finally {
       isLoading = false;

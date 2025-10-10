@@ -129,7 +129,7 @@ export const routes: Route[] = [
     path: '/customers/edit/:id',
     component: CustomersEditPage,
     guards: [
-      guards.auth(),
+      guards.auth()
       // Could add ownership check here
       // guards.resourceOwner('customer', async (id) => {
       //   const customer = await api.customers.get(id);
@@ -227,18 +227,24 @@ export const navigationGroups = {
 
 // Helper to get route by path
 export function getRouteByPath(path: string): Route | undefined {
-  return routes.find(route => {
+  return routes.find((route) => {
     // Check exact match first
-    if (route.path === path) return true;
-    
+    if (route.path === path) {
+return true;
+}
+
     // Check dynamic routes
     const routeParts = route.path.split('/');
     const pathParts = path.split('/');
-    
-    if (routeParts.length !== pathParts.length) return false;
-    
+
+    if (routeParts.length !== pathParts.length) {
+return false;
+}
+
     return routeParts.every((part, i) => {
-      if (part.startsWith(':')) return true;
+      if (part.startsWith(':')) {
+return true;
+}
       return part === pathParts[i];
     });
   });
@@ -247,14 +253,20 @@ export function getRouteByPath(path: string): Route | undefined {
 // Helper to check if user can access route
 export async function canAccessRoute(path: string): Promise<boolean> {
   const route = getRouteByPath(path);
-  if (!route) return false;
-  
-  if (!route.guards) return true;
-  
+  if (!route) {
+return false;
+}
+
+  if (!route.guards) {
+return true;
+}
+
   for (const guard of route.guards) {
     const canActivate = await guard.canActivate();
-    if (!canActivate) return false;
+    if (!canActivate) {
+return false;
+}
   }
-  
+
   return true;
 }

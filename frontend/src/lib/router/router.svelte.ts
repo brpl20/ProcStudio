@@ -1,5 +1,4 @@
 import type { Component } from 'svelte';
-import api from '../api';
 
 export interface RouteParams {
   [key: string]: string;
@@ -51,7 +50,7 @@ class Router {
   constructor() {
     // Listen to browser navigation
     window.addEventListener('popstate', this.handlePopState);
-    
+
     // Intercept link clicks for SPA navigation
     document.addEventListener('click', this.handleLinkClick);
   }
@@ -63,9 +62,15 @@ class Router {
   private handleLinkClick = (e: MouseEvent) => {
     // Check if it's a link click we should handle
     const target = (e.target as HTMLElement).closest('a');
-    if (!target || target.origin !== window.location.origin) return;
-    if (target.hasAttribute('data-native')) return;
-    if (e.ctrlKey || e.metaKey || e.shiftKey) return;
+    if (!target || target.origin !== window.location.origin) {
+return;
+}
+    if (target.hasAttribute('data-native')) {
+return;
+}
+    if (e.ctrlKey || e.metaKey || e.shiftKey) {
+return;
+}
 
     e.preventDefault();
     this.navigate(target.pathname + target.search);
@@ -136,8 +141,9 @@ class Router {
 
     // Find matching route
     const match = this.findMatchingRoute(pathname);
-    
+
     if (!match) {
+      // eslint-disable-next-line no-console
       console.error(`No route found for path: ${pathname}`);
       // Navigate to 404 or home
       if (pathname !== '/') {
@@ -154,23 +160,23 @@ class Router {
       if (match.route.guards) {
         for (const guard of match.route.guards) {
           const canActivate = await guard.canActivate(match.params);
-          
+
           if (!canActivate) {
             if (guard.onReject) {
               guard.onReject();
             }
-            
+
             if (guard.redirectTo) {
               // Store intended destination for post-login redirect
               if (match.route.meta?.requiresAuth) {
                 sessionStorage.setItem('redirectAfterLogin', fullPath);
               }
-              
+
               this.state.isNavigating = false;
               await this.navigate(guard.redirectTo, true);
               return;
             }
-            
+
             this.state.isNavigating = false;
             return;
           }
@@ -216,14 +222,14 @@ class Router {
   // Helper method to build URLs with params
   buildPath(pattern: string, params?: Record<string, string>, query?: Record<string, string>): string {
     let path = pattern;
-    
+
     // Replace params
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
         path = path.replace(`:${key}`, value);
       });
     }
-    
+
     // Add query string
     if (query) {
       const searchParams = new URLSearchParams(query);
@@ -232,7 +238,7 @@ class Router {
         path += `?${queryString}`;
       }
     }
-    
+
     return path;
   }
 

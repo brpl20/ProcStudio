@@ -167,7 +167,17 @@ class NewOfficeStore {
       society: office.society || '',
       accounting_type: office.accounting_type || '',
       foundation: office.foundation || '',
-      site: office.site || ''
+      site: office.site || '',
+      address: (office as any).address || {
+        street: '',
+        number: '',
+        complement: '',
+        neighborhood: '',
+        city: '',
+        state: '',
+        zip_code: '',
+        address_type: 'main'
+      }
     };
     this.state.formState.isDirty = false;
   }

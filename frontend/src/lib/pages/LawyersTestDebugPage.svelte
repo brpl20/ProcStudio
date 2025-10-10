@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { RenderScan } from 'svelte-render-scan';
-  import BasicInformation from '../components/forms_commons_wrappers/BasicInformation.svelte';
+  import OfficeBasicInformation from '../components/forms_commons_wrappers/OfficeBasicInformation.svelte';
   import { newOfficeStore } from '../stores/newOfficeStore.svelte';
   import type { NewOfficeFormData } from '../schemas/new-office-form';
   import { validateNewOfficeForm, isNewOfficeFormValid } from '../schemas/new-office-form';
@@ -179,7 +179,7 @@
         </div>
       </div>
 
-      <BasicInformation bind:formData={formData1} title="Empty Form Test" />
+      <OfficeBasicInformation bind:formData={formData1} title="Empty Form Test" />
 
       <div class="mt-4">
         <button
@@ -228,7 +228,7 @@
         </div>
       </div>
 
-      <BasicInformation bind:formData={formData2} title="Pre-filled Form Test" />
+      <OfficeBasicInformation bind:formData={formData2} title="Pre-filled Form Test" />
 
       <div class="mt-4">
         <button

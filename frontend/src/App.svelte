@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import { authStore } from './lib/stores/authStore';
   import { usersCacheStore } from './lib/stores/usersCacheStore';
-  import { router } from './lib/stores/routerStore.js';
+  import { router } from './lib/stores/routerStore';
   import SessionTimeout from './lib/components/SessionTimeout.svelte';
 
   // Pages
@@ -24,66 +24,14 @@
   import ProfileCompletionEnhanced from './lib/pages/ProfileCompletionEnhanced.svelte';
   import OfficeCreationPage from './lib/pages/Office/OfficeCreationPage.svelte';
   import LawyersTestDebugPage from './lib/pages/LawyersTestDebugPage.svelte';
+  import NotFoundPage from './lib/pages/NotFoundPage.svelte';
 
-  // Reactive stores
   $: ({ isAuthenticated, showProfileCompletion, profileData, missingFields } = $authStore);
-  $: ({ currentPath } = $router);
+  $: ({ currentPath, params } = $router);
 
-  // Route component logic
-  $: currentComponent = getComponent(currentPath, isAuthenticated);
-  $: routeParams = extractRouteParams(currentPath);
+  $: currentComponent = getComponent(currentPath);
 
-  function extractRouteParams(path) {
-    // Extract ID from paths like /customers/edit/123
-    const editMatch = path.match(/\/customers\/edit\/(\d+)/);
-    if (editMatch) {
-      return { id: editMatch[1] };
-    }
-
-    // Extract ID from paths like /customers/profile/123
-    const profileMatch = path.match(/\/customers\/profile\/(\d+)/);
-    if (profileMatch) {
-      return { customerId: parseInt(profileMatch[1]) };
-    }
-
-    // Extract ID from paths like /teams/advogados/123
-    const advogadoViewMatch = path.match(/\/teams\/advogados\/(\d+)/);
-    if (advogadoViewMatch) {
-      return { id: advogadoViewMatch[1] };
-    }
-
-    // Extract ID from paths like /teams/escritorios/123
-    const escritorioViewMatch = path.match(/\/teams\/escritorios\/(\d+)/);
-    if (escritorioViewMatch) {
-      return { id: escritorioViewMatch[1] };
-    }
-
-    return {};
-  }
-
-  function getComponent(path, isAuth) {
-    // Check for protected routes
-    const protectedPaths = [
-      '/dashboard',
-      '/teams',
-      '/admin',
-      '/settings',
-      '/reports',
-      '/jobs',
-      '/works',
-      '/customers',
-      '/documents',
-      '/user-config'
-    ];
-
-    const isProtected = protectedPaths.some((p) => path.startsWith(p));
-
-    if (!isAuth && isProtected) {
-      router.navigate('/login');
-      return LoginPage;
-    }
-
-    // Check for dynamic routes
+  function getComponent(path: string) {
     if (path.match(/\/customers\/edit\/\d+/)) {
       return CustomersEditPage;
     }
@@ -92,7 +40,7 @@
       return CustomerProfilePage;
     }
 
-    const routes = {
+    const routes: Record<string, any> = {
       '/': LandingPage,
       '/login': LoginPage,
       '/register': RegisterPage,
@@ -110,7 +58,7 @@
       '/lawyers-test-debug': LawyersTestDebugPage
     };
 
-    return routes[path] || LandingPage;
+    return routes[path] || NotFoundPage;
   }
 
   function handleProfileCompletion(completionResult) {
@@ -124,26 +72,15 @@
   onMount(async () => {
     await authStore.init();
 
-    // Initialize users cache if authenticated
     if ($authStore.isAuthenticated) {
-      // eslint-disable-next-line no-console
-      console.log('Initializing users cache...');
       usersCacheStore.initialize().catch((error) => {
-        // eslint-disable-next-line no-console
         console.error('Failed to initialize users cache:', error);
       });
-    }
 
-    // Redirecionar usuário autenticado para dashboard se estiver na landing
-    if ($authStore.isAuthenticated && $router.currentPath === '/') {
-      router.navigate('/dashboard');
+      if ($router.currentPath === '/' || $router.currentPath === '/login' || $router.currentPath === '/register') {
+        await router.navigate('/dashboard', { skipGuards: true });
+      }
     }
-
-    // Listen for browser navigation
-    window.addEventListener('popstate', () => {
-      // Force re-evaluation of the current component
-      router.navigate(window.location.pathname);
-    });
   });
 </script>
 
@@ -151,7 +88,7 @@
 <SessionTimeout timeoutMinutes={60} warningMinutes={5} />
 
 <!-- Renderização do componente atual -->
-<svelte:component this={currentComponent} {...routeParams} />
+<svelte:component this={currentComponent} {...params} />
 
 <!-- Modal de Completar Perfil -->
 {#if showProfileCompletion}

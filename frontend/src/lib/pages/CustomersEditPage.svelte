@@ -2,7 +2,7 @@
   import AuthSidebar from '../components/AuthSidebar.svelte';
   import CustomerForm from '../components/customers/CustomerForm.svelte';
   import { customerStore } from '../stores/customerStore';
-  import { router } from '../stores/routerStore.js';
+  import { router } from '../stores/routerStore';
   import { onMount } from 'svelte';
 
   export let id: string;

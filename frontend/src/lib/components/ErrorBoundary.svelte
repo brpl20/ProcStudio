@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { router } from '../stores/routerStore.js';
+  import { router } from '../stores/routerStore';
   import Icon from '../icons/icons.svelte';
 
   export let error = null;

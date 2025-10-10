@@ -2,7 +2,7 @@
   import { authStore } from '../stores/authStore';
   import { userProfileStore, currentUserProfile } from '../stores/userProfileStore';
   import { usersCacheStore } from '../stores/usersCacheStore';
-  import { router } from '../stores/routerStore.js';
+  import { router } from '../stores/routerStore';
   import Icon from '../icons/icons.svelte';
   import { WebsiteName } from '../config.js';
 

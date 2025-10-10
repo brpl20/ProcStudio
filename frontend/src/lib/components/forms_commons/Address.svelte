@@ -1,50 +1,72 @@
-<!-- Address.svelte -->
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
   import { BRAZILIAN_STATES } from '../../constants/brazilian-states';
   import type { BrazilianState } from '../../constants/brazilian-states';
 
-  // Brazilian states
   const states: BrazilianState[] = BRAZILIAN_STATES;
 
-  // Props with defaults
-  export let address = {
-    street: '',
-    number: '',
-    complement: '',
-    neighborhood: '',
-    city: '',
-    state: '',
-    zip_code: '',
-    address_type: 'main'
+  interface AddressData {
+    street: string;
+    number: string;
+    complement: string;
+    neighborhood: string;
+    city: string;
+    state: string;
+    zip_code: string;
+    address_type: string;
+  }
+
+  type Props = {
+    address?: AddressData;
+    index?: number;
+    showRemoveButton?: boolean;
+    disabled?: boolean;
+    id?: string;
+    wrapperClass?: string;
+    required?: boolean;
+    errors?: Record<string, string>;
+    touched?: Record<string, boolean>;
+    oninput?: (event: CustomEvent) => void;
+    onblur?: (event: CustomEvent) => void;
+    onremove?: (event: CustomEvent) => void;
   };
-  export let index = 0;
-  export let showRemoveButton = false;
-  export let disabled = false;
-  export let id = `address-${index}`; // Unique ID for form fields
-  export let wrapperClass = ''; // Additional classes for the wrapper
-  export let required = false; // Whether the address fields are required
-  export let errors = {}; // Object with field-specific errors
-  export let touched = {}; // Object tracking which fields have been touched
 
-  // Set up event dispatcher
-  const dispatch = createEventDispatcher();
+  let {
+    address = $bindable({
+      street: '',
+      number: '',
+      complement: '',
+      neighborhood: '',
+      city: '',
+      state: '',
+      zip_code: '',
+      address_type: 'main'
+    }),
+    errors = $bindable({}),
+    touched = $bindable({}),
+    index = 0,
+    showRemoveButton = false,
+    disabled = false,
+    id = `address-0`,
+    wrapperClass = '',
+    required = false,
+    oninput,
+    onblur,
+    onremove
+  }: Props = $props();
 
-  // Handle generic input for other fields
-  function handleInput(field, event) {
-    address[field] = event.target.value;
-    dispatch('input', { field, value: address[field], index });
+  function handleInput(field: string, event: Event) {
+    const target = event.target as HTMLInputElement;
+    address[field as keyof AddressData] = target.value;
+    oninput?.(new CustomEvent('input', { detail: { field, value: address[field as keyof AddressData], index } }));
   }
 
-  // Handle generic blur for validation
-  function handleBlur(field) {
+  function handleBlur(field: string) {
     touched[field] = true;
-    dispatch('blur', { field, value: address[field], index });
+    onblur?.(new CustomEvent('blur', { detail: { field, value: address[field as keyof AddressData], index } }));
   }
 
-  // Handle remove address
   function handleRemove() {
-    dispatch('remove', { index });
+    onremove?.(new CustomEvent('remove', { detail: { index } }));
   }
 </script>
 
@@ -62,8 +84,8 @@
           ? 'input-error'
           : ''}"
         bind:value={address.street}
-        on:input={(e) => handleInput('street', e)}
-        on:blur={() => handleBlur('street')}
+        oninput={(e) => handleInput('street', e)}
+        onblur={() => handleBlur('street')}
         placeholder="Nome da rua"
         {disabled}
         aria-required={required ? 'true' : 'false'}
@@ -85,8 +107,8 @@
           ? 'input-error'
           : ''}"
         bind:value={address.number}
-        on:input={(e) => handleInput('number', e)}
-        on:blur={() => handleBlur('number')}
+        oninput={(e) => handleInput('number', e)}
+        onblur={() => handleBlur('number')}
         placeholder="123"
         {disabled}
         aria-required={required ? 'true' : 'false'}
@@ -108,8 +130,8 @@
           ? 'input-error'
           : ''}"
         bind:value={address.neighborhood}
-        on:input={(e) => handleInput('neighborhood', e)}
-        on:blur={() => handleBlur('neighborhood')}
+        oninput={(e) => handleInput('neighborhood', e)}
+        onblur={() => handleBlur('neighborhood')}
         placeholder="Nome do bairro"
         {disabled}
         aria-required={required ? 'true' : 'false'}
@@ -131,8 +153,8 @@
           ? 'input-error'
           : ''}"
         bind:value={address.city}
-        on:input={(e) => handleInput('city', e)}
-        on:blur={() => handleBlur('city')}
+        oninput={(e) => handleInput('city', e)}
+        onblur={() => handleBlur('city')}
         placeholder="Nome da cidade"
         {disabled}
         aria-required={required ? 'true' : 'false'}
@@ -153,7 +175,7 @@
           ? 'select-error'
           : ''}"
         bind:value={address.state}
-        on:blur={() => handleBlur('state')}
+        onblur={() => handleBlur('state')}
         {disabled}
         aria-required={required ? 'true' : 'false'}
       >
@@ -177,8 +199,8 @@
         type="text"
         class="input input-bordered input-sm w-full"
         bind:value={address.complement}
-        on:input={(e) => handleInput('complement', e)}
-        on:blur={() => handleBlur('complement')}
+        oninput={(e) => handleInput('complement', e)}
+        onblur={() => handleBlur('complement')}
         placeholder="Apartamento, sala, etc."
         {disabled}
       />
@@ -187,7 +209,7 @@
 
   {#if showRemoveButton}
     <div class="flex justify-end mt-2">
-      <button class="btn btn-error btn-sm" on:click={handleRemove} type="button" {disabled}>
+      <button class="btn btn-error btn-sm" onclick={handleRemove} type="button" {disabled}>
         🗑️ Remover
       </button>
     </div>

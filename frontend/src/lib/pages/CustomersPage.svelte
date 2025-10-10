@@ -5,7 +5,7 @@
   import CustomerFilters from '../components/customers/CustomerFilters.svelte';
   import Pagination from '../components/ui/Pagination.svelte';
   import { customerStore } from '../stores/customerStore';
-  import { router } from '../stores/routerStore.js';
+  import { router } from '../stores/routerStore';
   import type { Customer, CustomerStatus } from '../api/types/customer.types';
 
   onMount(() => {
