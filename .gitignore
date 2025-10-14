@@ -39,6 +39,7 @@
 /config/master.key
 /config/database.yml
 /api/config/database.yml
+/api/config/application.yml
 
 .vscode/
 .env
@@ -61,3 +62,4 @@ swarm.log
 # Node modules in tests directory
 tests/node_modules/
 node_modules/
+
