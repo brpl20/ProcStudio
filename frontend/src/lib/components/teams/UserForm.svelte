@@ -23,7 +23,7 @@
     name: '',
     last_name: '',
     role: 'lawyer',
-    status: 'active',
+    status: 'active', // O status continua no formData do Svelte
     gender: '',
     oab: '',
     rg: '',
@@ -91,7 +91,7 @@
       name: user.attributes?.name || '',
       last_name: user.attributes?.last_name || '',
       role: user.attributes?.role || 'lawyer',
-      status: user.attributes?.status || 'active',
+      status: user.attributes?.status || 'active', // <--- Pode manter aqui para leitura, mas cuidado na escrita
       gender: user.attributes?.gender || '',
       oab: user.attributes?.oab || '',
       rg: user.attributes?.rg || '',
@@ -119,11 +119,11 @@
       if (mode === 'create') {
         // Create new user with profile
         const createData = {
-          user_profile: {
+          user_profile: { // Este é o objeto principal que o api.users.createUserProfile está enviando
             name: formData.name,
             last_name: formData.last_name,
             role: formData.role,
-            status: formData.status,
+            // REMOVER: status: formData.status, // Status NÃO pertence diretamente ao UserProfile
             gender: formData.gender,
             oab: formData.oab,
             rg: formData.rg,
@@ -132,10 +132,11 @@
             civil_status: formData.civil_status,
             birth: formData.birth,
             mother_name: formData.mother_name,
-            user_attributes: {
+            user_attributes: { // <--- User_attributes está dentro de user_profile
               email: formData.email,
               password: formData.password,
-              password_confirmation: formData.password_confirmation
+              password_confirmation: formData.password_confirmation,
+              status: formData.status // <--- COLOCAR O status AQUI!
             },
             phones_attributes: formData.phone_number
               ? [{ phone_number: formData.phone_number }]
@@ -170,11 +171,12 @@
       } else {
         // Update existing user profile
         const updateData = {
-          user_profile: {
+          user_profile: { // Este é o objeto principal que o api.users.updateUserProfile está enviando
+            id: user.attributes.user_profile_id, // ID do UserProfile que está sendo editado
             name: formData.name,
             last_name: formData.last_name,
             role: formData.role,
-            status: formData.status,
+            // REMOVER: status: formData.status, // Status NÃO pertence diretamente ao UserProfile
             gender: formData.gender,
             oab: formData.oab,
             rg: formData.rg,
@@ -182,11 +184,35 @@
             nationality: formData.nationality,
             civil_status: formData.civil_status,
             birth: formData.birth,
-            mother_name: formData.mother_name
+            mother_name: formData.mother_name,
+            user_attributes: { // <--- User_attributes está dentro de user_profile
+              id: user.id, // ID do User associado ao UserProfile
+              status: formData.status // <--- COLOCAR O status AQUI!
+            }
+            // Inclua aqui também os `phones_attributes` e `addresses_attributes`
+            // se o formulário permitir a edição de telefones e endereços no modo de edição
+            // phones_attributes: formData.phone_number
+            //   ? [{ phone_number: formData.phone_number, id: user.attributes.phones?.[0]?.id || null }]
+            //   : [],
+            // addresses_attributes:
+            //   formData.street && formData.city
+            //     ? [
+            //       {
+            //         street: formData.street,
+            //         number: formData.number,
+            //         complement: formData.complement,
+            //         neighborhood: formData.neighborhood,
+            //         city: formData.city,
+            //         state: formData.state,
+            //         zip_code: formData.zip_code,
+            //         id: user.attributes.addresses?.[0]?.id || null
+            //       }
+            //     ]
+            //     : []
           }
         };
 
-        await api.users.updateUserProfile(user.id, updateData);
+        await api.users.updateUserProfile(user.id, updateData); // user.id aqui provavelmente é o ID do User (não do UserProfile)
 
         dispatch('saved', {
           success: true,
@@ -240,7 +266,7 @@
   }
 </script>
 
-<!-- Modal -->
+<!-- Restante do template Svelte (HTML) permanece o mesmo -->
 {#if isOpen}
   <div class="modal modal-open">
     <div class="modal-box w-11/12 max-w-4xl max-h-[90vh] overflow-y-auto">
