@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte'; // 'effect' foi removido daqui
+  import { onMount } from 'svelte';
   import api from '../../api';
   import ConfirmDialog from '../ui/ConfirmDialog.svelte';
   import { userFormStore } from '../../stores/userFormStore.svelte.ts';
@@ -16,10 +16,10 @@
       role?: string;
       oab?: string;
       status?: string;
-      user_profile_id?: number; // Importante para a edição
+      user_profile_id?: number;
       phones?: any[];
       addresses?: any[];
-      bank_account?: any;
+      bank_accounts?: any[];
     };
   }
 
@@ -46,20 +46,15 @@
     }
   }
 
-  // REAÇÃO AO SUCESSO DO STORE (SINTAXE CORRETA)
-  $: if ($formState.success) {
-    success = $formState.mode === 'create' ? 'Usuário criado com sucesso!' : 'Usuário atualizado com sucesso!';
-    loadUsers();
-    
-    setTimeout(() => {
-      userFormStore.reset();
-      success = null;
-    }, 1500);
-  }
-
   function openCreateForm() {
     userFormStore.startCreate();
   }
+
+  // ============== ALTERAÇÃO: Chama o novo método startInvite ======================
+  function openInviteForm() {
+    userFormStore.startInvite(); // Agora chama a função correta para o fluxo de convite
+  }
+  // ==============================================================================
 
   function openEditForm(user: User) {
     userFormStore.startEdit(user);
@@ -93,6 +88,31 @@
     }
   }
 
+  // ====================== ALTERAÇÃO: Mensagem de sucesso diferenciada para convite ======================
+  async function handleSaveSuccess() {
+    if ($formState.mode === 'invite') {
+      success = 'Convite enviado com sucesso!'; // Mensagem específica para convite
+    } else {
+      success = $formState.mode === 'create' ? 'Usuário criado com sucesso!' : 'Usuário atualizado com sucesso!';
+    }
+    await loadUsers(); // Recarrega a lista de usuários
+
+    // Fecha o modal imediatamente resetando o store
+    userFormStore.reset(); 
+
+    // Mantém a mensagem de sucesso visível na tela principal por um tempo
+    setTimeout(() => {
+      success = null;
+    }, 1500);
+  }
+  // =====================================================================================================
+
+  $: {
+    if ($formState.success) {
+      handleSaveSuccess();
+    }
+  }
+
   function getRoleBadgeClass(role: string): string {
     const map: Record<string, string> = { lawyer: 'badge-primary', paralegal: 'badge-secondary', trainee: 'badge-accent', secretary: 'badge-info' };
     return map[role] || 'badge-ghost';
@@ -108,19 +128,26 @@
   });
 </script>
 
-<!-- TODO O SEU HTML PERMANECE EXATAMENTE IGUAL -->
 <div class="p-6">
   <div class="flex justify-between items-center mb-6">
     <div>
       <h2 class="text-2xl font-semibold text-gray-800">Gerenciar Usuários</h2>
       <p class="text-gray-600 text-sm mt-1">Crie, edite e gerencie usuários do sistema</p>
     </div>
-    <button class="btn btn-primary" on:click={openCreateForm} disabled={loading}>
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-      </svg>
-      Novo Usuário
-    </button>
+    <div class="flex space-x-4">
+      <button class="btn btn-secondary" on:click={openInviteForm} disabled={loading}>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        Convidar Usuário
+      </button>
+      <button class="btn btn-primary" on:click={openCreateForm} disabled={loading}>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+        </svg>
+        Novo Usuário
+      </button>
+    </div>
   </div>
 
   {#if success}<div class="alert alert-success mb-4"><span>{success}</span></div>{/if}
@@ -129,9 +156,14 @@
   <div class="card bg-base-100 border border-base-300">
     <div class="card-body">
       {#if loading}
-        <!-- ... (seu código de loading) ... -->
+        <div class="text-center p-10">
+          <span class="loading loading-lg loading-spinner text-primary"></span>
+          <p class="mt-4 text-gray-500">Carregando usuários...</p>
+        </div>
       {:else if users.length === 0}
-        <!-- ... (seu código de tabela vazia) ... -->
+         <div class="text-center p-10">
+          <p class="text-gray-500">Nenhum usuário encontrado.</p>
+        </div>
       {:else}
         <div class="overflow-x-auto">
           <table class="table table-zebra w-full">
