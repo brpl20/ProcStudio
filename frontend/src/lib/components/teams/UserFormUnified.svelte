@@ -9,6 +9,7 @@
   // import EmailInput from '$lib/components/forms_commons/Email.svelte'; 
 
   const state = userFormStore;
+  const formData = $state.formData
 
   function handleSubmit() {
     userFormStore.submit();
@@ -37,26 +38,26 @@
         type="email"
         placeholder="Digite o e-mail para convidar"
         class="input input-bordered w-full max-w-xs"
-        bind:value={$state.formData.credentials.email}
+        bind:value={formData.credentials.email}
         disabled={$state.loading}
         required
       />
       <!-- Se tivesse um componente EmailInput, usaria assim:
-      <EmailInput bind:value={$state.formData.credentials.email} disabled={$state.loading} />
+      <EmailInput bind:value={formData.credentials.email} disabled={$state.loading} />
       -->
     </div>
     <!-- ================================================================================== -->
   {:else}
     <!-- ====================== FORMULÁRIO COMPLETO PARA CRIAÇÃO/EDIÇÃO ====================== -->
-    <UserCredentials bind:credentials={$state.formData.credentials} isEditMode={$state.mode === 'edit'}/>
-    <UserBasicInfo bind:basicInfo={$state.formData.basicInfo} />
-    <UserPersonalInfo bind:personalInfo={$state.formData.personalInfo} />
-    <UserContactInfo bind:contactInfo={$state.formData.contactInfo} />
+    <UserCredentials bind:credentials={formData.credentials} isEditMode={$state.mode === 'edit'}/>
+    <UserBasicInfo bind:basicInfo={formData.basicInfo} />
+    <UserPersonalInfo bind:personalInfo={formData.personalInfo} />
+    <UserContactInfo bind:contactInfo={formData.contactInfo} />
 
     <div class="divider pt-2">Dados Bancários (Opcional)</div>
     
     <Bank
-      bind:bankAccount={$state.formData.bankAccount}
+      bind:bankAccount={formData.bankAccount}
       labelPrefix="user-bank"
       disabled={$state.loading}
     />
