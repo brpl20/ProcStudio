@@ -1,11 +1,9 @@
 <script lang="ts">
   import Phone from '../forms_commons/Phone.svelte';
-  // A importação do AddressCepWrapper foi um erro na orientação anterior,
-  // pois os campos de endereço já são individuais. Vamos remover.
-  // import AddressCepWrapper from './AddressCepWrapper.svelte'; 
+  // NOVO: Importar a lista de estados brasileiros
+  import { BRAZILIAN_STATES } from '$lib/constants/brazilian-states.ts';
 
-  // --- CORREÇÃO APLICADA AQUI ---
-  // Todas as props são declaradas dentro de $props()
+  // A estrutura de dados já está correta e não precisa de alteração
   let {
     contactInfo = $bindable({
       phone: '',
@@ -22,19 +20,14 @@
   } = $props();
 </script>
 
-<!-- O template (HTML) continua o mesmo -->
+<div class="divider pt-2">Informações de Contato</div>
+
+<!-- O template (HTML) continua o mesmo, exceto pelo campo de estado -->
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
   <div class="md:col-span-2">
     <Phone bind:value={contactInfo.phone} required={true} />
   </div>
 
-  <!-- 
-    Aqui usamos os componentes atômicos de endereço diretamente,
-    conectados ao objeto `contactInfo.address`.
-    Isto está correto e desacoplado.
-    (Assumindo que você tem os componentes atômicos como `Cep.svelte`, `Street.svelte`, etc.)
-    Se não, usamos inputs normais por enquanto. Vamos usar inputs para simplicidade.
-  -->
   <div class="md:col-span-2 mt-4 space-y-4">
     <h4 class="text-lg font-semibold border-b pb-2">Endereço</h4>
 
@@ -68,9 +61,18 @@
       <input id="city" type="text" class="input input-bordered" bind:value={contactInfo.address.city} />
     </div>
 
+    <!-- ======================= INÍCIO DA ALTERAÇÃO ======================= -->
+    <!-- Trocamos o input de texto por um select -->
     <div class="form-control">
       <label for="state" class="label"><span class="label-text">Estado</span></label>
-      <input id="state" type="text" class="input input-bordered" bind:value={contactInfo.address.state} />
+      <select id="state" class="select select-bordered" bind:value={contactInfo.address.state}>
+        <option value="" disabled selected>Selecione um estado</option>
+        {#each BRAZILIAN_STATES as state}
+            <option value={state.value}>{state.label}</option>
+        {/each}
+      </select>
     </div>
+    <!-- ======================== FIM DA ALTERAÇÃO ======================== -->
+    
   </div>
 </div>

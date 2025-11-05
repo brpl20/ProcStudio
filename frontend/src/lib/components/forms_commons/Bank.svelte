@@ -1,7 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import { BRAZILIAN_BANKS, searchBanks } from '../../constants/brazilian-banks';
-  import { BANK_ACCOUNT_TYPES } from '../../constants/bank-account-types';
   import type { BrazilianBank } from '../../constants/brazilian-banks';
 
   // Props
@@ -19,13 +18,11 @@
   export let showRemoveButton = false;
   export let labelPrefix = 'bank';
   export let className = '';
-  // As props de ajuda do PIX foram removidas
 
   const dispatch = createEventDispatcher<{
     remove: void;
   }>();
 
-  // Lógica de busca de banco
   let bankSearchTerm = '';
   let showBankDropdown = false;
   let selectedBankCode = '';
@@ -116,7 +113,6 @@
 
 <div class="border rounded p-4 mb-4 {className}">
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-    <!-- Nome do Banco com Busca -->
     <div class="form-control w-full relative">
       <label for="{labelPrefix}-name-{index}" class="label pb-1"><span class="label-text">Nome do Banco</span></label>
       <div class="relative">
@@ -145,14 +141,13 @@
       {#if selectedBankCode}<div class="text-sm text-base-content/60 mt-1">Código do banco: {selectedBankCode}</div>{/if}
     </div>
 
-    <!-- Tipo de Conta -->
+    
     <div class="form-control w-full">
       <label for="{labelPrefix}-type-{index}" class="label pb-1"><span class="label-text">Tipo de Conta</span></label>
       <select id="{labelPrefix}-type-{index}" class="select select-bordered select-sm w-full" bind:value={bankAccount.type_account} {disabled}>
-        <option value="">Selecione...</option>
-        {#each BANK_ACCOUNT_TYPES.filter((type) => type.value === 'Corrente' || type.value === 'Poupança') as accountType}
-          <option value={accountType.value}>{accountType.label}</option>
-        {/each}
+        <option value="" disabled>Selecione...</option>
+        <option value="checking">Conta Corrente</option>
+        <option value="savings">Conta Poupança</option>
       </select>
     </div>
 
@@ -179,7 +174,7 @@
       </div>
     {/if}
 
-    <!-- ====================== PIX (SIMPLIFICADO) ====================== -->
+    <!-- PIX (SIMPLIFICADO) -->
     <div class="form-control w-full">
       <label for="{labelPrefix}-pix-{index}" class="label pb-1">
         <span class="label-text">PIX</span>
@@ -193,13 +188,12 @@
         placeholder="Chave PIX"
       />
     </div>
-    <!-- ================================================================ -->
   </div>
 
   {#if showRemoveButton}
     <div class="flex justify-end mt-2">
       <button type="button" class="btn btn-error btn-sm" on:click={handleRemove} {disabled}>
-        🗑️ Remover
+        ��️ Remover
       </button>
     </div>
   {/if}
