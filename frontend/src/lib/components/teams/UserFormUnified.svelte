@@ -5,8 +5,7 @@
   import UserContactInfo from '$lib/components/forms_users_wrappers/UserContactInfo.svelte';
   import UserCredentials from '$lib/components/forms_users_wrappers/UserCredentials.svelte';
   import Bank from '$lib/components/forms_commons/Bank.svelte'; 
-  // Se você tiver um componente Email.svelte, pode importá-lo e usá-lo aqui:
-  // import EmailInput from '$lib/components/forms_commons/Email.svelte'; 
+
 
   const state = userFormStore;
   const formData = $state.formData
@@ -28,7 +27,7 @@
   </h3>
 
   {#if $state.mode === 'invite'}
-    <!-- ====================== FORMULÁRIO SIMPLIFICADO PARA CONVITE ====================== -->
+    <!-- ===================== FORMULÁRIO SIMPLIFICADO PARA CONVITE ====================== -->
     <div class="form-control w-full max-w-xs">
       <label class="label" for="invite-email">
         <span class="label-text">Email do Usuário</span>

@@ -13,7 +13,6 @@
   } = $props();
 </script>
 
-<!-- O template (HTML) não precisa de nenhuma alteração -->
 <div class="space-y-4">
   <Email bind:value={credentials.email} required={true} />
   <Password label="Senha" bind:value={credentials.password} required={true} />

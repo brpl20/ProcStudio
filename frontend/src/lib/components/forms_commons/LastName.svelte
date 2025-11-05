@@ -1,7 +1,5 @@
-<!-- /src/lib/components/forms_commons/LastName.svelte -->
 <script lang="ts">
-  // --- CORREÇÃO APLICADA AQUI ---
-  // Agora temos UMA ÚNICA chamada de $props() para pegar TODAS as propriedades.
+ 
   let { 
     value = $bindable(''), 
     required = false 

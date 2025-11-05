@@ -1,9 +1,7 @@
 <script lang="ts">
   import Phone from '../forms_commons/Phone.svelte';
-  // NOVO: Importar a lista de estados brasileiros
   import { BRAZILIAN_STATES } from '$lib/constants/brazilian-states.ts';
 
-  // A estrutura de dados já está correta e não precisa de alteração
   let {
     contactInfo = $bindable({
       phone: '',
@@ -22,7 +20,6 @@
 
 <div class="divider pt-2">Informações de Contato</div>
 
-<!-- O template (HTML) continua o mesmo, exceto pelo campo de estado -->
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
   <div class="md:col-span-2">
     <Phone bind:value={contactInfo.phone} required={true} />
@@ -61,8 +58,6 @@
       <input id="city" type="text" class="input input-bordered" bind:value={contactInfo.address.city} />
     </div>
 
-    <!-- ======================= INÍCIO DA ALTERAÇÃO ======================= -->
-    <!-- Trocamos o input de texto por um select -->
     <div class="form-control">
       <label for="state" class="label"><span class="label-text">Estado</span></label>
       <select id="state" class="select select-bordered" bind:value={contactInfo.address.state}>
@@ -72,7 +67,6 @@
         {/each}
       </select>
     </div>
-    <!-- ======================== FIM DA ALTERAÇÃO ======================== -->
     
   </div>
 </div>

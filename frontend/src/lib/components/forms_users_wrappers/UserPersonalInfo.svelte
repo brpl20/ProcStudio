@@ -1,5 +1,4 @@
 <script lang="ts">
-  // Não precisa importar nada novo aqui
   import Cpf from '../forms_commons/Cpf.svelte';
   import Rg from '../forms_commons/Rg.svelte';
   import Gender from '../forms_commons/Gender.svelte';

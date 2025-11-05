@@ -266,7 +266,6 @@
   }
 </script>
 
-<!-- Restante do template Svelte (HTML) permanece o mesmo -->
 {#if isOpen}
   <div class="modal modal-open">
     <div class="modal-box w-11/12 max-w-4xl max-h-[90vh] overflow-y-auto">
