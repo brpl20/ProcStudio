@@ -3,6 +3,23 @@
     "svelte-llm": {
       "type": "http",
       "url": "https://svelte-llm.stanislav.garden/mcp/mcp"
+    },
+    "svelte": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@sveltejs/mcp"
+      ],
+      "env": {}
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest"
+      ],
+      "env": {}
     }
   }
 }
