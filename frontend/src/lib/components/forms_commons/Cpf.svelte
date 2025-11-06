@@ -53,10 +53,10 @@
 
     // If validation function provided, validate on blur
     if (finalValidateFn && finalRequired) {
-      const error = finalValidateFn(value);
-      if (error) {
-        errors = error;
-      }
+      // CORREÇÃO: Atribui diretamente o resultado da validação.
+      // Se for válido, 'errors' receberá null e limpará a mensagem.
+      // Se for inválido, receberá a string de erro.
+      errors = finalValidateFn(value);
     }
   }
 </script>

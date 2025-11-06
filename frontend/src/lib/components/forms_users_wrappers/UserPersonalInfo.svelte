@@ -15,7 +15,7 @@
       civil_status: '',
       nationality: 'brazilian',
       birth: '',
-      mother_name: '' // NOVO: Adicionado mother_name à estrutura de dados
+      mother_name: ''
     })
   } = $props();
 </script>
@@ -31,7 +31,6 @@
   <Nationality bind:value={personalInfo.nationality} required={true} />
   <Birth bind:value={personalInfo.birth} required={true} />
 
-  <!-- NOVO: Adicionado o campo para o nome da mãe -->
   <div class="form-control md:col-span-2">
     <label class="label" for="user-mother_name">
       <span class="label-text">Nome da Mãe</span>

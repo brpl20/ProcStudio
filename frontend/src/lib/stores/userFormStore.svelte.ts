@@ -1,7 +1,6 @@
 import { writable } from 'svelte/store';
 import api from '../api';
 
-// Interfaces
 export interface UserFormData {
   basicInfo: { name: string; last_name: string; role: string; status: string; oab: string; };
   personalInfo: { cpf: string; rg: string; gender: string; civil_status: string; nationality: string; birth: string; mother_name: string; };

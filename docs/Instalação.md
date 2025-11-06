@@ -12,9 +12,16 @@
 
 #### 1. Instalar Ruby e dependências
 ```bash
+# instalar rbenv
+git clone https://github.com/rbenv/rbenv.git ~/.rbenv
+~/.rbenv/bin/rbenv init
+git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
+# reinicie a linha de comando para dar efeito
+
 # Instalar Ruby 3.2.7 (se usando rbenv)
 rbenv install 3.2.7
 rbenv global 3.2.7
+rbenv rehash
 
 # Instalar bundler
 gem install bundler

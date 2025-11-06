@@ -88,10 +88,10 @@
     }
   }
 
-  // ====================== ALTERAÇÃO: Mensagem de sucesso diferenciada para convite ======================
+  // ===================== Mensagem de sucesso diferenciada para convite ======================
   async function handleSaveSuccess() {
     if ($formState.mode === 'invite') {
-      success = 'Convite enviado com sucesso!'; // Mensagem específica para convite
+      success = 'Convite enviado com sucesso!';
     } else {
       success = $formState.mode === 'create' ? 'Usuário criado com sucesso!' : 'Usuário atualizado com sucesso!';
     }
@@ -129,12 +129,14 @@
 </script>
 
 <div class="p-6">
-  <div class="flex justify-between items-center mb-6">
+  <!-- Classes para uma responsividade fluida com flex-wrap e gap -->
+  <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
     <div>
       <h2 class="text-2xl font-semibold text-gray-800">Gerenciar Usuários</h2>
       <p class="text-gray-600 text-sm mt-1">Crie, edite e gerencie usuários do sistema</p>
     </div>
-    <div class="flex space-x-4">
+    <!-- Contêiner de botões também com flex-wrap e gap -->
+    <div class="flex flex-wrap gap-4">
       <button class="btn btn-secondary" on:click={openInviteForm} disabled={loading}>
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12a9 9 0 11-18 0 9 9 0 0118 0z" />

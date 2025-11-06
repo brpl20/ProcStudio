@@ -2,7 +2,6 @@
   import Email from '../forms_commons/Email.svelte';
   import Password from '../forms_commons/Password.svelte';
 
-  // --- CORREÇÃO APLICADA AQUI ---
   // A prop 'credentials' agora está dentro da declaração $props()
   let {
     credentials = $bindable({

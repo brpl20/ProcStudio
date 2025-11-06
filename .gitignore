@@ -20,24 +20,26 @@
 /api/tmp/*
 !/api/log/.keep
 !/api/tmp/.keep
+/api/tmp/local_secret.txt
 
 # Ignore pidfiles, but keep the directory.
-/tmp/pids/*
-!/tmp/pids/
-!/tmp/pids/.keep
+/api/tmp/pids/*
+!/api/tmp/pids/
+!/api/tmp/pids/.keep
 
 # Ignore uploaded files in development.
-/storage/*
-!/storage/.keep
-/tmp/storage/*
-!/tmp/storage/
-!/tmp/storage/.keep
+/api/storage/*
+!/api/storage/.keep
+/api/tmp/storage/*
+!/api/tmp/storage/
+!/api/tmp/storage/.keep
 
 /public/assets
 
 # Ignore master key for decrypting credentials and more.
-/config/master.key
-/config/database.yml
+/api/config/master.key
+/api/config/database.yml
+/api/config/application.yml
 /api/config/database.yml
 /api/config/application.yml
 
