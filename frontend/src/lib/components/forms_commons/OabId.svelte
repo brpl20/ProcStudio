@@ -31,7 +31,7 @@
     // Only validate for lawyer type
     if (type === 'lawyer' && value && touched) {
       const validationResult = validateAndNormalizeOab(value);
-      
+
       if (!validationResult.isValid) {
         internalErrors = validationResult.error || 'OAB inválida';
         errors = internalErrors;
@@ -74,7 +74,7 @@
   // For office type, allow special characters
   function handleInput(e: Event) {
     const target = e.target as HTMLInputElement;
-    
+
     if (type === 'lawyer') {
       // For lawyer, restrict to alphanumeric and common separators
       target.value = target.value.replace(/[^A-Za-z0-9\s_/]/g, '');

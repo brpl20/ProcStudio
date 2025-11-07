@@ -439,6 +439,7 @@ module Api
           :name, :cnpj, :oab_id, :oab_status, :oab_inscricao, :oab_link,
           :society, :foundation, :site, :accounting_type,
           :quote_value, :number_of_quotes, :create_social_contract,
+          :proportional,
           { phones_attributes: [:id, :phone_number, :_destroy],
             addresses_attributes: address_permitted_attributes,
             emails_attributes: [:id, :email, :email_type, :_destroy],

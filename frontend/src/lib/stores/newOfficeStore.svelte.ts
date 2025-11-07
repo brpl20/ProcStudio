@@ -58,7 +58,7 @@ class NewOfficeStore {
 
   // Check if quote configuration is valid
   isQuoteConfigValid = $derived(
-    this.state.formData.quote_value > 0 && 
+    this.state.formData.quote_value > 0 &&
     this.state.formData.number_of_quotes > 0
   );
 
@@ -207,18 +207,18 @@ class NewOfficeStore {
     this.state.formData.accounting_type = office.accounting_type || '';
     this.state.formData.foundation = office.foundation || '';
     this.state.formData.site = office.site || '';
-    
+
     // Quote configuration
     this.state.formData.proportional = office.proportional ?? true;
     this.state.formData.quote_value = office.quote_value || 0;
     this.state.formData.number_of_quotes = office.number_of_quotes || 0;
-    
+
     // OAB information
     this.state.formData.oab_id = office.oab_id || '';
     this.state.formData.oab_status = office.oab_status || '';
     this.state.formData.oab_inscricao = office.oab_inscricao || '';
     this.state.formData.oab_link = office.oab_link || '';
-    
+
     // Address
     if (office.addresses && office.addresses.length > 0) {
       const address = office.addresses[0];
@@ -233,15 +233,15 @@ class NewOfficeStore {
         address_type: address.address_type || 'main'
       };
     }
-    
+
     // Phones
     if (office.phones && office.phones.length > 0) {
-      this.state.formData.phones = office.phones.map(p => p.phone_number);
+      this.state.formData.phones = office.phones.map((p) => p.phone_number);
     }
-    
+
     // Partners (from user_offices)
     if (office.user_offices && office.user_offices.length > 0) {
-      this.state.formData.partners = office.user_offices.map(uo => {
+      this.state.formData.partners = office.user_offices.map((uo) => {
         const partner: PartnerFormData = {
           lawyer_id: String(uo.user_id),
           partnership_type: uo.partnership_type || '',
@@ -249,10 +249,10 @@ class NewOfficeStore {
           is_managing_partner: uo.is_administrator || false,
           entry_date: uo.entry_date
         };
-        
+
         // Extract compensation data
         if (uo.compensations_attributes && uo.compensations_attributes.length > 0) {
-          uo.compensations_attributes.forEach(comp => {
+          uo.compensations_attributes.forEach((comp) => {
             if (comp.compensation_type === 'pro_labore') {
               partner.pro_labore_amount = comp.amount;
             } else if (comp.compensation_type === 'salary') {
@@ -262,14 +262,14 @@ class NewOfficeStore {
               partner.payment_frequency = comp.payment_frequency;
             }
           });
-          
+
           this.state.formData.partnersWithProLabore = true;
         }
-        
+
         return partner;
       });
     }
-    
+
     this.state.formState.isDirty = false;
   }
 

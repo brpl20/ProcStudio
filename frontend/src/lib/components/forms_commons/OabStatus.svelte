@@ -41,7 +41,7 @@
       {#if required}<span class="text-error">*</span>{/if}
     </span>
   </label>
-  
+
   {#if type === 'office'}
     <!-- Office status: use select dropdown -->
     <select
@@ -79,7 +79,7 @@
       </div>
     {/if}
   {/if}
-  
+
   {#if errors && touched}
     <div id="{id}-error" class="text-error text-sm mt-1">{errors}</div>
   {/if}

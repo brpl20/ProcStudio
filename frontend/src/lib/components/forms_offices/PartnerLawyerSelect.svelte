@@ -25,8 +25,9 @@
   }: Props = $props();
 
   const isSelected = $derived(!!value);
+  // Find lawyer by UserProfile ID (backward compatibility)
   const selectedLawyer = $derived(allLawyers.find((l) => l.id === value));
-  
+
   // Show ALL lawyers in dropdown, but mark which ones are selected by others
   // Don't filter out the current selection
   const dropdownLawyers = $derived(allLawyers);
@@ -65,12 +66,12 @@
       {#if required}<span class="text-error">*</span>{/if}
     </span>
   </label>
-  
+
   <!-- Debug info -->
   <div class="text-xs bg-purple-100 p-1 rounded mb-1">
     Value: {value || 'empty'} | Selected: {selectedLawyer?.attributes.name || 'none'} | All: {allLawyers.length} | Blocked: [{selectedByOthers.join(', ')}]
   </div>
-  
+
   <select
     {id}
     class="select select-bordered w-full"
@@ -82,8 +83,8 @@
     {#each dropdownLawyers as lawyer}
       {@const isCurrentSelection = lawyer.id === value}
       {@const isSelectedByOther = selectedByOthers.includes(lawyer.id)}
-      <option 
-        value={lawyer.id} 
+      <option
+        value={lawyer.id}
         selected={isCurrentSelection}
         disabled={isSelectedByOther && !isCurrentSelection}
       >
@@ -91,7 +92,7 @@
       </option>
     {/each}
   </select>
-  
+
   {#if value && selectedByOthers.includes(value)}
     <div class="text-warning text-sm mt-1">
       ⚠️ Este advogado já foi selecionado em outro campo

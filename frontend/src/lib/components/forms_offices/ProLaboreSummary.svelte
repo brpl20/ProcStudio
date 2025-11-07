@@ -5,7 +5,7 @@
     totalMonthly: number;
   };
 
-  let { totalMonthly }: Props = $props();
+  const { totalMonthly }: Props = $props();
 
   const totalAnnual = $derived(totalMonthly * 13.33);
 </script>

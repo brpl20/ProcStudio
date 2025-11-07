@@ -18,7 +18,8 @@
   import { lawyerStore } from '../../stores/lawyerStore.svelte';
 
   interface Partner {
-    lawyer_id: string;
+    lawyer_id: string; // This stores the UserProfile ID for backward compatibility
+    user_id?: string; // This stores the actual User ID we need for the backend
     lawyer_name?: string;
     partnership_type: string;
     ownership_percentage: number;
@@ -60,11 +61,10 @@
     onRemovePartner
   }: Props = $props();
 
-
   // Derived state for single lawyer scenario
   const isSingleLawyer = $derived(lawyers.length === 1);
   const singleLawyer = $derived(isSingleLawyer ? lawyers[0] : null);
-  
+
   // Check if society type is individual
   const isIndividualSociety = $derived(officeSocietyType === 'individual');
   const maxPartnersAllowed = $derived(isIndividualSociety ? 1 : Infinity);
@@ -73,7 +73,8 @@
   $effect(() => {
     if (isSingleLawyer && singleLawyer && partners.length === 0) {
       const newPartner: Partner = {
-        lawyer_id: singleLawyer.id,
+        lawyer_id: singleLawyer.id, // Keep UserProfile ID for backward compatibility
+        user_id: String(singleLawyer.attributes?.user_id || ''), // Store actual User ID
         lawyer_name:
           `${singleLawyer.attributes.name} ${singleLawyer.attributes.last_name || ''}`.trim(),
         partnership_type: 'socio',
@@ -84,43 +85,33 @@
       partners = [newPartner];
     }
   });
-  
+
   // Sync LawyerStore with partner selections
   // Track only partners array changes, not store changes
   let lastSyncedIds = $state<string[]>([]);
-  
+
   $effect(() => {
     // Extract lawyer_id and ensure it's a string
     const selectedIds = partners
-      .map(p => toLawyerId(p.lawyer_id))
-      .filter(id => id.length > 0);
-    
+      .map((p) => toLawyerId(p.lawyer_id))
+      .filter((id) => id.length > 0);
+
     // Only update if the IDs actually changed
     const idsChanged = JSON.stringify(selectedIds.sort()) !== JSON.stringify(lastSyncedIds.sort());
-    
+
     if (idsChanged) {
-      console.log('🔵 [PartnershipManagement] $effect running - selectedIds:', selectedIds);
-      console.log('🔵 [PartnershipManagement] partners:', partners.map(p => ({ lawyer_id: p.lawyer_id, lawyer_name: p.lawyer_name })));
-      
       lastSyncedIds = [...selectedIds];
-      
+
       // Use untrack to prevent reading from store triggering this effect
       untrack(() => {
         lawyerStore.clearSelectedLawyers();
-        
-        selectedIds.forEach(lawyerId => {
-          console.log('🔍 Looking for lawyer with ID:', lawyerId, 'Type:', typeof lawyerId);
-          const lawyer = lawyers.find(l => l.id === lawyerId);
+
+        selectedIds.forEach((lawyerId) => {
+          const lawyer = lawyers.find((l) => l.id === lawyerId);
           if (lawyer) {
-            console.log('✅ [PartnershipManagement] Selecting lawyer:', lawyer.attributes.name, lawyer.id);
             lawyerStore.selectLawyer(lawyer);
-          } else {
-            console.log('❌ [PartnershipManagement] Lawyer NOT FOUND for ID:', lawyerId);
-            console.log('❌ Available lawyer IDs:', lawyers.map(l => l.id));
           }
         });
-        
-        console.log('🔵 [PartnershipManagement] Sync complete');
       });
     }
   });
@@ -140,27 +131,25 @@
     return partners
       .filter((_, i) => i !== excludeIndex)
       .map((p) => toLawyerId(p.lawyer_id))
-      .filter(id => id.length > 0);
+      .filter((id) => id.length > 0);
   }
 
   // Handle partner field changes
   function handlePartnerFieldChange<K extends keyof Partner>(index: number, field: K, value: Partner[K]) {
-    console.log('🟡 [handlePartnerFieldChange] Called:', { index, field, value });
-    
     if (field === 'lawyer_id' && value) {
       const lawyer = value as any as Lawyer;
-      const lawyerId = typeof lawyer === 'string' ? lawyer : lawyer.id;
+      // Store BOTH IDs - UserProfile ID for UI consistency, User ID for backend
+      const profileId = typeof lawyer === 'string' ? lawyer : lawyer.id;
+      const actualUserId = typeof lawyer === 'string' ? '' : String(lawyer.attributes?.user_id || '');
       const lawyerName = typeof lawyer === 'string' ? '' : getFullName(lawyer);
-      
-      console.log('🟡 [handlePartnerFieldChange] Extracting - ID:', lawyerId, 'Name:', lawyerName);
-      
+
       const updatedPartner = {
         ...partners[index],
-        lawyer_id: lawyerId,
+        lawyer_id: profileId, // Keep using UserProfile ID for backward compatibility
+        user_id: actualUserId, // Store the actual User ID separately
         lawyer_name: lawyerName
       };
       partners = [...partners.slice(0, index), updatedPartner, ...partners.slice(index + 1)];
-      console.log('🟡 [handlePartnerFieldChange] Updated partner:', updatedPartner);
     } else if (field === 'ownership_percentage' && partners.length === 2) {
       // For 2 partners, automatically adjust the other's percentage
       const newValue = parseFloat(String(value)) || 0;
@@ -194,6 +183,11 @@
 
   // Add new partner
   function addPartner() {
+    // For individual society, only allow one partner total
+    if (isIndividualSociety && partners.length >= 1) {
+      return;
+    }
+
     const newPartner: Partner = {
       lawyer_id: '',
       lawyer_name: '',
@@ -212,51 +206,25 @@
       lawyers.length > partners.filter((p) => p.lawyer_id).length &&
       partners.length < maxPartnersAllowed
   );
-  
+
   // Calculate quotas for each partner based on percentage
   function calculatePartnerQuotas(percentage: number): number {
-    if (officeNumberOfQuotes === 0) return 0;
+    if (officeNumberOfQuotes === 0) {
+return 0;
+}
     return Math.floor((percentage / 100) * officeNumberOfQuotes);
   }
-  
+
   // Check if office is configured
   const isOfficeConfigured = $derived(
     officeQuoteValue > 0 && officeNumberOfQuotes > 0
   );
-  
-  // Debug pro-labore changes
-  $effect(() => {
-    console.log('🟠 [PartnershipManagement] partnersWithProLabore changed:', partnersWithProLabore);
-  });
-  
+
   // Calculate total pro-labore
   function getTotalProLabore(): number {
     return partners.reduce((sum, p) => sum + (p.pro_labore_amount || 0), 0);
   }
 </script>
-
-<!-- DEBUG PANEL -->
-<div class="bg-yellow-100 border-2 border-yellow-500 rounded p-4 mb-4">
-  <h3 class="font-bold text-yellow-800 mb-2">🔍 Partnership Management Debug</h3>
-  <div class="grid grid-cols-2 gap-4 text-xs">
-    <div class="bg-white p-2 rounded">
-      <strong>Partners Array ({partners.length}):</strong>
-      <pre class="mt-1 text-xs overflow-auto max-h-32">{JSON.stringify(partners.map(p => ({ lawyer_id: p.lawyer_id, lawyer_name: p.lawyer_name, raw: p })), null, 2)}</pre>
-    </div>
-    <div class="bg-white p-2 rounded">
-      <strong>Lawyers Prop ({lawyers.length}):</strong>
-      <pre class="mt-1 text-xs overflow-auto max-h-32">{JSON.stringify(lawyers.map(l => ({ id: l.id, name: l.attributes.name })), null, 2)}</pre>
-    </div>
-    <div class="bg-white p-2 rounded">
-      <strong>LawyerStore Selected ({lawyerStore.selectedLawyers.length}):</strong>
-      <pre class="mt-1 text-xs overflow-auto max-h-32">{JSON.stringify(lawyerStore.selectedLawyers.map(l => ({ id: l.id, name: l.attributes.name })), null, 2)}</pre>
-    </div>
-    <div class="bg-white p-2 rounded">
-      <strong>LawyerStore Available ({lawyerStore.availableLawyers.length}):</strong>
-      <pre class="mt-1 text-xs overflow-auto max-h-32">{JSON.stringify(lawyerStore.availableLawyers.map(l => ({ id: l.id, name: l.attributes.name })), null, 2)}</pre>
-    </div>
-  </div>
-</div>
 
 <!-- Partnership Section -->
 <FormSection title="Quadro Societário">
@@ -429,7 +397,7 @@
           </div>
         </div>
       </div>
-      
+
       {#if partners.length > 0}
         <div class="space-y-2">
           <h4 class="font-semibold">Distribuição de Cotas por Sócio:</h4>
@@ -472,11 +440,6 @@
 <!-- Pro-Labore Section -->
 <FormSection title="Pro-Labore">
   {#snippet children()}
-    <!-- Debug -->
-    <div class="text-xs bg-orange-100 p-2 rounded mb-2">
-      partnersWithProLabore: {partnersWithProLabore ? 'true' : 'false'}
-    </div>
-    
     <ProLaboreCheckbox bind:checked={partnersWithProLabore} />
 
     {#if partnersWithProLabore}
@@ -521,7 +484,7 @@
               <span>Adicione e selecione sócios para definir os valores de pro-labore.</span>
             </div>
           {/if}
-          
+
           <!-- Pro-Labore Summary -->
           <ProLaboreSummary totalMonthly={getTotalProLabore()} />
         </div>

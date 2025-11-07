@@ -157,27 +157,11 @@ Vite proxy configuration routes `/api/*` requests to `http://localhost:3000` wit
 #### External API Services
 - **`cep-service.ts`** - Brazilian postal code (CEP) validation and address lookup
 
-## Documentation and MCP Server Svelte Instructions
-When connected to the svelte-llm MCP server, you have access to comprehensive Svelte 5 and SvelteKit documentation. Here's how to use the available tools effectively:
+## Documentation Resources
 
-### Available MCP Tools:
-
-#### 1. list_sections
-Use this FIRST to discover all available documentation sections. Returns a structured list with titles and paths.
-When asked about Svelte or SvelteKit topics, ALWAYS use this tool at the start of the chat to find relevant sections.
-
-#### 2. get_documentation
-Retrieves full documentation content for specific sections. Accepts single or multiple sections.
-After calling the list_sections tool, you MUST analyze the returned documentation sections and then use the get_documentation tool to fetch ALL documentation sections that are relevant for the users task.
-
-### Documentation Resources
-
-#### Local Documentation
-In case you don't find you documentation into MCP server for Svelte, please refer to local documentation:
+### Local Documentation
 Reference files in `/frontend/ai-docs/`:
 - `svelte-*.txt` - Svelte framework documentation at different detail levels
-
-#### Local Documentationfor CSS and Style (Daisy and Tailwind)
 - `daisy.txt` - DaisyUI component reference
 - `tailwind.txt` - Tailwind CSS utilities reference
 

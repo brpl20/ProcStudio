@@ -30,12 +30,12 @@ export class AuthGuard implements RouteGuard {
     // Skip backend validation for now to avoid async issues
     // In production, you'd want to validate occasionally, not on every navigation
     return true;
-    
+
     /* Future implementation with caching:
     // Only validate with backend occasionally (e.g., every 5 minutes)
     const lastValidation = sessionStorage.getItem('lastAuthValidation');
     const now = Date.now();
-    
+
     if (lastValidation && (now - parseInt(lastValidation)) < 5 * 60 * 1000) {
       return true; // Skip validation if recently validated
     }
@@ -91,7 +91,7 @@ export class RoleGuard implements RouteGuard {
     }
 
     const userRole = authState.user.data?.role;
-    
+
     if (!userRole) {
       return false;
     }

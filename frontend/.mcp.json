@@ -1,9 +1,5 @@
 {
   "mcpServers": {
-    "svelte-llm": {
-      "type": "http",
-      "url": "https://svelte-llm.stanislav.garden/mcp/mcp"
-    },
     "svelte": {
       "type": "stdio",
       "command": "npx",

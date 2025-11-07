@@ -46,7 +46,8 @@ export interface BankAccountFormData {
 
 // Partner/Lawyer association structure
 export interface PartnerFormData {
-  lawyer_id: string | number;
+  lawyer_id: string | number; // UserProfile ID (for backward compatibility)
+  user_id?: string | number; // Actual User ID (for backend)
   lawyer_name: string;
   partnership_type: string;
   ownership_percentage: number;

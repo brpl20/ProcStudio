@@ -7,7 +7,7 @@
     selectedLawyers?: Lawyer[];
   };
 
-  let {
+  const {
     totalLawyers = 0,
     activeLawyers = [],
     selectedLawyers = []
