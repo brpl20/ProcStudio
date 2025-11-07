@@ -109,8 +109,12 @@ export function processOfficeFormData(
   const processedUserOffices: UserOfficeAttributes[] = partners
     .filter((p) => p.lawyer_id && p.partnership_type)
     .map((p) => {
+      // IMPORTANT: Use the actual user_id, not the lawyer_id (which is UserProfile ID)
+      // If user_id is available, use it. Otherwise fall back to lawyer_id for backward compatibility
+      const userIdToUse = p.user_id || p.lawyer_id;
+
       const userOffice: UserOfficeAttributes = {
-        user_id: typeof p.lawyer_id === 'string' ? parseInt(p.lawyer_id) : p.lawyer_id,
+        user_id: typeof userIdToUse === 'string' ? parseInt(userIdToUse) : userIdToUse,
         partnership_type: p.partnership_type,
         partnership_percentage: p.ownership_percentage.toString(),
         is_administrator: p.is_managing_partner,

@@ -6,7 +6,9 @@ import type { Lawyer } from '../api/types/user.lawyer';
  * @returns The full name as a string
  */
 export function getFullName(lawyer: Lawyer): string {
-  if (!lawyer?.attributes) return '';
+  if (!lawyer?.attributes) {
+return '';
+}
   return `${lawyer.attributes.name} ${lawyer.attributes.last_name || ''}`.trim();
 }
 
@@ -32,15 +34,15 @@ export function getLawyerDisplayName(lawyer: Lawyer, includeOab = false): string
  * @returns Filtered list of available lawyers
  */
 export function getAvailableLawyers(
-  allLawyers: Lawyer[], 
-  selectedIds: string[], 
+  allLawyers: Lawyer[],
+  selectedIds: string[],
   excludeCurrentId?: string
 ): Lawyer[] {
-  const idsToExclude = excludeCurrentId 
-    ? selectedIds.filter(id => id !== excludeCurrentId)
+  const idsToExclude = excludeCurrentId
+    ? selectedIds.filter((id) => id !== excludeCurrentId)
     : selectedIds;
-    
-  return allLawyers.filter(lawyer => !idsToExclude.includes(lawyer.id));
+
+  return allLawyers.filter((lawyer) => !idsToExclude.includes(lawyer.id));
 }
 
 /**
@@ -62,7 +64,7 @@ export function sortLawyersByName(lawyers: Lawyer[], order: 'asc' | 'desc' = 'as
   return [...lawyers].sort((a, b) => {
     const nameA = getFullName(a).toLowerCase();
     const nameB = getFullName(b).toLowerCase();
-    
+
     if (order === 'asc') {
       return nameA.localeCompare(nameB);
     } else {
@@ -77,8 +79,12 @@ export function sortLawyersByName(lawyers: Lawyer[], order: 'asc' | 'desc' = 'as
  * @returns Normalized string ID or empty string
  */
 export function toLawyerId(val: string | { id: string } | null | undefined): string {
-  if (typeof val === 'string') return val;
-  if (val && typeof val === 'object' && 'id' in val) return (val as any).id;
+  if (typeof val === 'string') {
+return val;
+}
+  if (val && typeof val === 'object' && 'id' in val) {
+return (val as any).id;
+}
   return '';
 }
 

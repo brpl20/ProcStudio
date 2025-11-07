@@ -21,7 +21,7 @@
   <label class="label">
     <span class="label-text font-semibold">Distribuição de Lucros do Escritório</span>
   </label>
-  
+
   <div class="space-y-3">
     <!-- Proportional Option -->
     <label class="label cursor-pointer justify-start gap-3 p-4 border rounded-lg hover:bg-base-100"

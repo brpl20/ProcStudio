@@ -46,7 +46,7 @@
     index = 0,
     showRemoveButton = false,
     disabled = false,
-    id = `address-0`,
+    id = 'address-0',
     wrapperClass = '',
     required = false,
     oninput,

@@ -375,7 +375,8 @@ export interface AttachmentOperationResponse {
 
 // Form Data Types for UI State Management
 export interface PartnerFormData {
-  lawyer_id: string;
+  lawyer_id: string; // UserProfile ID (for backward compatibility)
+  user_id?: string | number; // Actual User ID (for backend)
   lawyer_name?: string;
   partnership_type: string;
   ownership_percentage: number;
@@ -398,28 +399,28 @@ export interface OfficeFormData {
   accounting_type: string;
   foundation: string;
   site: string;
-  
+
   // Quote Configuration
   proportional: boolean;
   quote_value: number;
   number_of_quotes: number;
-  
+
   // OAB
   oab_id: string;
   oab_status: string;
   oab_inscricao: string;
   oab_link: string;
-  
+
   // Address
   address: Address;
-  
+
   // Phones
   phones: string[];
-  
+
   // Partners
   partners: PartnerFormData[];
   partnersWithProLabore: boolean;
-  
+
   // Options
   create_social_contract: boolean;
   team_id?: number;

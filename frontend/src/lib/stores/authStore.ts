@@ -56,7 +56,7 @@ function createAuthStore() {
   // Initialize auth from stored data
   async function init(): Promise<void> {
     api.auth.initializeAuth();
-    
+
     const isAuth = api.auth.isAuthenticated();
 
     if (!isAuth) {

@@ -38,7 +38,7 @@ class SecureRouter {
   constructor() {
     const initialPath = typeof window !== 'undefined' ? window.location.pathname : '/';
     const initialSearch = typeof window !== 'undefined' ? window.location.search : '';
-    
+
     this.store = writable<RouterState>({
       currentPath: initialPath,
       params: {},
@@ -50,13 +50,13 @@ class SecureRouter {
     this.handlePopState = async (event: PopStateEvent) => {
       const path = event.state?.path ?? (window.location.pathname + window.location.search);
       const [pathname, search] = path.split('?');
-      
+
       let params: Record<string, string> = {};
       const route = this.findRoute(pathname);
       if (route) {
         params = this.extractParams(pathname, route.path);
       }
-      
+
       const canNavigate = await this.checkGuards(pathname, params);
       if (!canNavigate) {
         const current = this.getCurrentPath();
@@ -206,7 +206,7 @@ class SecureRouter {
 
     // Check if it's a protected path prefix
     const protectedPrefixes = ['/customers', '/teams', '/admin', '/lawyers'];
-    if (protectedPrefixes.some(prefix => path.startsWith(prefix))) {
+    if (protectedPrefixes.some((prefix) => path.startsWith(prefix))) {
       // Return a default protected route
       return {
         path,
@@ -280,15 +280,15 @@ class SecureRouter {
     if (!path || typeof path !== 'string') {
       return '/';
     }
-    
+
     // Ensure path starts with /
     if (!path.startsWith('/')) {
       path = '/' + path;
     }
-    
+
     // Remove any potentially dangerous characters
     path = path.replace(/[<>\"']/g, '');
-    
+
     // Validate against javascript: protocol
     if (path.toLowerCase().includes('javascript:')) {
       console.warn('[Router Security] Blocked navigation to javascript: URL');
@@ -297,14 +297,14 @@ class SecureRouter {
 
     // Remove duplicate slashes
     path = path.replace(/\/+/g, '/');
-    
+
     return path;
   }
 
   // Check route guards
   private async checkGuards(path: string, params?: Record<string, string>): Promise<boolean> {
     const route = this.findRoute(path);
-    
+
     // If no route found, allow navigation (will show 404 in App.svelte)
     if (!route) {
       // Only log in development mode
@@ -319,31 +319,31 @@ class SecureRouter {
       for (const guard of route.guards) {
         try {
           const canActivate = await guard.canActivate(params);
-          
+
           if (!canActivate) {
             // Only log in development mode
             if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
               console.log(`[Router] Guard blocked navigation to: ${path}`);
             }
-            
+
             // Call guard's rejection handler
             if (guard.onReject) {
               guard.onReject();
             }
-            
+
             // Navigate to redirect path if specified
             if (guard.redirectTo) {
               // Store intended destination for post-login redirect
               if (route.meta?.requiresAuth) {
                 sessionStorage.setItem('redirectAfterLogin', path);
               }
-              
+
               // Navigate to redirect (skip guards to avoid infinite loop)
               setTimeout(() => {
                 this.navigate(guard.redirectTo!, { skipGuards: true });
               }, 0);
             }
-            
+
             return false;
           }
         } catch (error) {
@@ -376,10 +376,10 @@ class SecureRouter {
 
     try {
       path = this.sanitizePath(path);
-      
+
       const [pathname, search] = path.split('?');
       const query = this.parseQuery(search);
-      
+
       let params: Record<string, string> = {};
       const route = this.findRoute(pathname);
       if (route) {

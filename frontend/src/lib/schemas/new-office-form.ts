@@ -3,15 +3,15 @@
  * Includes all fields required for the API request
  */
 
-import type { 
-  CreateOfficeRequest, 
-  Society, 
+import type {
+  CreateOfficeRequest,
+  Society,
   AccountingType,
   PartnerFormData,
   UserOffice,
   Compensation,
   CompensationType,
-  PaymentFrequency 
+  PaymentFrequency
 } from '../api/types/office.types';
 import { validateCNPJOptional } from '../validation/cnpj';
 
@@ -47,34 +47,34 @@ export interface NewOfficeFormData {
   accounting_type: string;
   foundation: string;
   site?: string;
-  
+
   // Quote Configuration
   proportional: boolean;
   quote_value: number;
   number_of_quotes: number;
-  
+
   // OAB Information
   oab_id?: string;
   oab_status?: string;
   oab_inscricao?: string;
   oab_link?: string;
-  
+
   // Address
   address?: AddressData;
-  
+
   // Email (separate from site)
   email?: string;
-  
+
   // Phones
   phones: string[];
-  
+
   // Bank Account
   bank_account?: BankAccountData;
-  
+
   // Partners
   partners: PartnerFormData[];
   partnersWithProLabore: boolean;
-  
+
   // Options
   create_social_contract: boolean;
   team_id?: number;
@@ -149,19 +149,21 @@ export function createDefaultNewOfficeFormData(): NewOfficeFormData {
  * Transform partner form data to user office attributes for API
  */
 function transformPartnerToUserOffice(partner: PartnerFormData): Omit<UserOffice, 'id'> {
-  console.log('🔄 [transformPartnerToUserOffice] Input partner:', partner);
-  
-  // Extract user_id from lawyer_id (handle both string and object cases)
+  // IMPORTANT: Use the actual user_id if available, otherwise fallback to lawyer_id
   let userId: number;
-  if (typeof partner.lawyer_id === 'string') {
+
+  // First check if we have a user_id (the actual User ID we need)
+  if (partner.user_id) {
+    userId = typeof partner.user_id === 'string' ? parseInt(partner.user_id) : partner.user_id;
+  } else if (typeof partner.lawyer_id === 'string') {
+    // Fallback to lawyer_id (which might be UserProfile ID)
     userId = parseInt(partner.lawyer_id);
   } else if (typeof partner.lawyer_id === 'object' && partner.lawyer_id !== null && 'id' in partner.lawyer_id) {
     userId = parseInt((partner.lawyer_id as any).id);
   } else {
-    console.error('❌ Invalid lawyer_id format:', partner.lawyer_id);
     throw new Error('Invalid lawyer_id format in partner data');
   }
-  
+
   const userOffice: Omit<UserOffice, 'id'> = {
     user_id: userId,
     partnership_type: partner.partnership_type as any,
@@ -172,7 +174,7 @@ function transformPartnerToUserOffice(partner: PartnerFormData): Omit<UserOffice
 
   // Add compensations if any
   const compensations: Omit<Compensation, 'id'>[] = [];
-  
+
   // Add pro-labore if exists
   if (partner.pro_labore_amount && partner.pro_labore_amount > 0) {
     compensations.push({
@@ -183,7 +185,7 @@ function transformPartnerToUserOffice(partner: PartnerFormData): Omit<UserOffice
       notes: 'Pró-labore do sócio administrador'
     });
   }
-  
+
   // Add salary if exists
   if (partner.salary_amount && partner.salary_amount > 0) {
     compensations.push({
@@ -195,12 +197,11 @@ function transformPartnerToUserOffice(partner: PartnerFormData): Omit<UserOffice
       notes: 'Salário do sócio'
     });
   }
-  
+
   if (compensations.length > 0) {
     userOffice.compensations_attributes = compensations;
   }
-  
-  console.log('✅ [transformPartnerToUserOffice] Output userOffice:', userOffice);
+
   return userOffice;
 }
 
@@ -278,15 +279,13 @@ export function transformNewOfficeFormToApiRequest(formData: NewOfficeFormData):
   // Add phones
   if (formData.phones && formData.phones.length > 0) {
     apiData.phones_attributes = formData.phones
-      .filter(phone => phone.trim())
-      .map(phone => ({ phone_number: phone.trim() }));
+      .filter((phone) => phone.trim())
+      .map((phone) => ({ phone_number: phone.trim() }));
   }
 
   // Add partners as user offices
   if (formData.partners && formData.partners.length > 0) {
-    console.log('🔄 [transformNewOfficeFormToApiRequest] Transforming partners:', formData.partners);
     apiData.user_offices_attributes = formData.partners.map(transformPartnerToUserOffice);
-    console.log('✅ [transformNewOfficeFormToApiRequest] user_offices_attributes:', apiData.user_offices_attributes);
   }
 
   return apiData;
@@ -378,11 +377,11 @@ export function validateNewOfficeForm(
         (sum, partner) => sum + (partner.ownership_percentage || 0),
         0
       );
-      
+
       if (totalPercentage !== 100) {
         errors.push(`A soma das participações deve ser 100% (atual: ${totalPercentage}%)`);
       }
-      
+
       // Validate each partner
       formData.partners.forEach((partner, index) => {
         if (!partner.lawyer_id) {

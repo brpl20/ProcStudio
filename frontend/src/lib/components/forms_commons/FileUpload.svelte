@@ -45,7 +45,9 @@
   }
 
   function formatFileSize(bytes: number): string {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) {
+return '0 Bytes';
+}
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -62,7 +64,7 @@
       </span>
     </label>
   {/if}
-  
+
   <input
     {id}
     type="file"
@@ -78,17 +80,17 @@
     aria-describedby={ariaDescribedBy}
     aria-invalid={!!errors}
   />
-  
+
   {#if preview && previewUrl}
     <div class="mt-2">
-      <img 
-        src={previewUrl} 
-        alt="Preview" 
+      <img
+        src={previewUrl}
+        alt="Preview"
         class="w-24 h-24 object-cover rounded"
       />
     </div>
   {/if}
-  
+
   {#if files.length > 0}
     <div class="mt-2 space-y-1">
       {#each files as file}
@@ -101,7 +103,7 @@
       {/each}
     </div>
   {/if}
-  
+
   {#if hint && !errors}
     <div class="label">
       <span class="label-text-alt">{hint}</span>
@@ -112,7 +114,7 @@
       {/if}
     </div>
   {/if}
-  
+
   {#if errors}
     <div class="label">
       <span class="label-text-alt text-error">{errors}</span>

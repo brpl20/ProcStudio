@@ -55,13 +55,13 @@
       </span>
     {/if}
   </label>
-  
+
   {#if hint && !errors}
     <div class="label">
       <span class="label-text-alt">{hint}</span>
     </div>
   {/if}
-  
+
   {#if errors}
     <div class="label">
       <span class="label-text-alt text-error">{errors}</span>

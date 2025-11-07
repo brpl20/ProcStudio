@@ -28,13 +28,23 @@
   let {
     formData = $bindable({
       oab_id: '',
-      oab_status: '',
-      oab_link: ''
+      oab_status: 'active', // Default to active
+      oab_link: '' // Default to empty
     }),
     title = 'Informações da OAB',
     errors = {},
     touched = {}
   }: Props = $props();
+
+  // Ensure defaults are always set
+  $effect(() => {
+    if (!formData.oab_status) {
+      formData.oab_status = 'active';
+    }
+    if (formData.oab_link === undefined) {
+      formData.oab_link = '';
+    }
+  });
 </script>
 
 <FormSection {title}>
@@ -44,30 +54,14 @@
         bind:value={formData.oab_id}
         id="office-oab-id"
         type="office"
-        labelText="Identificação OAB"
+        labelText="Identificação OAB do Escritório"
         placeholder="ID do escritório na OAB"
         errors={errors?.oab_id}
         touched={touched?.oab_id}
       />
 
-      <OabStatus
-        bind:value={formData.oab_status}
-        id="office-oab-status"
-        type="office"
-        labelText="Status na OAB"
-        placeholder="Status na OAB"
-        errors={errors?.oab_status}
-        touched={touched?.oab_status}
-      />
-
-      <Link
-        bind:value={formData.oab_link}
-        id="office-oab-link"
-        labelText="Link OAB"
-        placeholder="Link do perfil na OAB"
-        errors={errors?.oab_link}
-        touched={touched?.oab_link}
-      />
+      <!-- Hidden: Status OAB (always active for new offices) -->
+      <!-- Hidden: Link OAB (not used for now) -->
     </div>
   {/snippet}
 </FormSection>
