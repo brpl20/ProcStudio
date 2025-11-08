@@ -1,10 +1,12 @@
+Assistir: https://www.youtube.com/watch?v=YGNH71KPIes&t=60s
+
 # Value Object Implementation Strategy for ProcStudio API
 
 ## Current State Analysis
 
 Your codebase heavily relies on **primitive string types** for critical business domains:
 - **Brazilian Documents**: CPF, CNPJ, RG stored as strings
-- **Contact Information**: Email, Phone stored as strings  
+- **Contact Information**: Email, Phone stored as strings
 - **Addresses**: All fields (street, city, zip_code) stored as strings
 
 While you have good validation logic (concerns like `CnpjValidatable`, validators like `CpfValidator`), the code violates the **Primitive Obsession** anti-pattern.
@@ -79,7 +81,7 @@ end
 module ValueObjects
   class Cpf < Base
     CPF_FORMAT = /\A\d{11}\z/
-    
+
     def formatted
       return nil if blank?
       "#{@value[0..2]}.#{@value[3..5]}.#{@value[6..8]}-#{@value[9..10]}"
@@ -98,7 +100,7 @@ module ValueObjects
 
     def validate!
       return if @value.blank?
-      
+
       unless @value.match?(CPF_FORMAT)
         raise ArgumentError, "Invalid CPF format"
       end
@@ -147,7 +149,7 @@ module ValueObjects
       parts = @value.split('@')
       local = parts[0]
       domain = parts[1]
-      
+
       if local.length <= 3
         "***@#{domain}"
       else
@@ -163,7 +165,7 @@ module ValueObjects
 
     def validate!
       return if @value.blank?
-      
+
       unless @value.match?(EMAIL_REGEX)
         raise ArgumentError, "Invalid email format"
       end
@@ -178,7 +180,7 @@ end
 # app/models/value_objects/address.rb
 module ValueObjects
   class Address < Base
-    attr_reader :street, :number, :complement, :neighborhood, 
+    attr_reader :street, :number, :complement, :neighborhood,
                 :city, :state, :zip_code, :country
 
     def initialize(attributes = {})
@@ -209,7 +211,7 @@ module ValueObjects
     end
 
     def complete?
-      street.present? && number.present? && city.present? && 
+      street.present? && number.present? && city.present? &&
       state.present? && zip_code.present?
     end
 
@@ -247,7 +249,7 @@ module Types
     def cast(value)
       return nil if value.nil?
       return value if value.is_a?(ValueObjects::Cpf)
-      
+
       ValueObjects::Cpf.new(value)
     rescue ArgumentError => e
       raise ActiveRecord::RecordInvalid, e.message
@@ -274,7 +276,7 @@ class ProfileCustomer < ApplicationRecord
   # Register custom types
   attribute :cpf, Types::CpfType.new
   attribute :cnpj, Types::CnpjType.new
-  
+
   # Or use composed_of for complex value objects
   composed_of :primary_address,
               class_name: 'ValueObjects::Address',
@@ -408,7 +410,7 @@ customer = ProfileCustomer.new(cpf: "invalid")
 # spec/models/value_objects/cpf_spec.rb
 RSpec.describe ValueObjects::Cpf do
   it_behaves_like 'a value object'
-  
+
   describe 'validation' do
     it 'accepts valid CPF' do
       expect { described_class.new('11144477735') }.not_to raise_error
@@ -422,7 +424,7 @@ RSpec.describe ValueObjects::Cpf do
 
   describe '#formatted' do
     subject { described_class.new('11144477735') }
-    
+
     it 'returns formatted CPF' do
       expect(subject.formatted).to eq('111.444.777-35')
     end
@@ -441,8 +443,8 @@ While value objects are Ruby constructs, consider these database optimizations:
 
 ```sql
 -- Example PostgreSQL constraint
-ALTER TABLE profile_customers 
-ADD CONSTRAINT valid_cpf_format 
+ALTER TABLE profile_customers
+ADD CONSTRAINT valid_cpf_format
 CHECK (cpf ~ '^\d{11}$');
 ```
 
@@ -460,7 +462,7 @@ class ProfileCustomer < ApplicationRecord
   else
     validates :cpf, cpf: true
   end
-  
+
   # Backward compatibility
   def cpf_formatted
     cpf.is_a?(ValueObjects::Cpf) ? cpf.formatted : format_legacy_cpf
