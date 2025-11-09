@@ -56,8 +56,8 @@
     type="text"
     class="input input-bordered w-full {errors && touched ? 'input-error' : ''} {inputClass}"
     bind:value
-    on:input={handleInput}
-    on:blur={handleBlur}
+    oninput={handleInput}
+    onblur={handleBlur}
     disabled={disabled}
     placeholder={placeholder}
     aria-required={required ? 'true' : 'false'}

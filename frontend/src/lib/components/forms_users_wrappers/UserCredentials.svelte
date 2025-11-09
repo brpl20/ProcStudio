@@ -14,6 +14,16 @@
 
 <div class="space-y-4">
   <Email bind:value={credentials.email} required={true} />
-  <Password label="Senha" bind:value={credentials.password} required={true} />
-  <Password label="Confirmação de Senha" bind:value={credentials.password_confirmation} required={true} />
+  <Password
+    id="password"
+    labelText="Senha"
+    bind:value={credentials.password}
+    required={true}
+  />
+  <Password
+    id="password_confirmation"
+    labelText="Confirmação de Senha"
+    bind:value={credentials.password_confirmation}
+    required={true}
+  />
 </div>

@@ -4,11 +4,7 @@
   import UserPersonalInfo from '$lib/components/forms_users_wrappers/UserPersonalInfo.svelte';
   import UserContactInfo from '$lib/components/forms_users_wrappers/UserContactInfo.svelte';
   import UserCredentials from '$lib/components/forms_users_wrappers/UserCredentials.svelte';
-  import Bank from '$lib/components/forms_commons/Bank.svelte'; 
-
-
-  const state = userFormStore;
-  const formData = $state.formData
+  import Bank from '$lib/components/forms_commons/Bank.svelte';
 
   function handleSubmit() {
     userFormStore.submit();
@@ -17,16 +13,16 @@
 
 <div class="space-y-6">
   <h3 class="font-bold text-lg">
-    {#if $state.mode === 'create'}
+    {#if $userFormStore.mode === 'create'}
       Criar Novo Usuário
-    {:else if $state.mode === 'invite'}
+    {:else if $userFormStore.mode === 'invite'}
       Convidar Usuário por Email
     {:else}
       Editar Usuário
     {/if}
   </h3>
 
-  {#if $state.mode === 'invite'}
+  {#if $userFormStore.mode === 'invite'}
     <!-- ===================== FORMULÁRIO SIMPLIFICADO PARA CONVITE ====================== -->
     <div class="form-control w-full max-w-xs">
       <label class="label" for="invite-email">
@@ -37,41 +33,41 @@
         type="email"
         placeholder="Digite o e-mail para convidar"
         class="input input-bordered w-full max-w-xs"
-        bind:value={formData.credentials.email}
-        disabled={$state.loading}
+        bind:value={$userFormStore.formData.credentials.email}
+        disabled={$userFormStore.loading}
         required
       />
       <!-- Se tivesse um componente EmailInput, usaria assim:
-      <EmailInput bind:value={formData.credentials.email} disabled={$state.loading} />
+      <EmailInput bind:value={$userFormStore.formData.credentials.email} disabled={$userFormStore.loading} />
       -->
     </div>
     <!-- ================================================================================== -->
   {:else}
     <!-- ====================== FORMULÁRIO COMPLETO PARA CRIAÇÃO/EDIÇÃO ====================== -->
-    <UserCredentials bind:credentials={formData.credentials} isEditMode={$state.mode === 'edit'}/>
-    <UserBasicInfo bind:basicInfo={formData.basicInfo} />
-    <UserPersonalInfo bind:personalInfo={formData.personalInfo} />
-    <UserContactInfo bind:contactInfo={formData.contactInfo} />
+    <UserCredentials bind:credentials={$userFormStore.formData.credentials} isEditMode={$userFormStore.mode === 'edit'}/>
+    <UserBasicInfo bind:basicInfo={$userFormStore.formData.basicInfo} />
+    <UserPersonalInfo bind:personalInfo={$userFormStore.formData.personalInfo} />
+    <UserContactInfo bind:contactInfo={$userFormStore.formData.contactInfo} />
 
     <div class="divider pt-2">Dados Bancários (Opcional)</div>
     
     <Bank
-      bind:bankAccount={formData.bankAccount}
+      bind:bankAccount={$userFormStore.formData.bankAccount}
       labelPrefix="user-bank"
-      disabled={$state.loading}
+      disabled={$userFormStore.loading}
     />
     <!-- ===================================================================================== -->
   {/if}
 
   <div class="modal-action mt-8">
-    <button type="button" class="btn btn-ghost" on:click={() => userFormStore.reset()} disabled={$state.loading}>Cancelar</button>
-    <button type="submit" class="btn btn-primary" on:click={handleSubmit} disabled={$state.loading}>
-      {#if $state.loading}
+    <button type="button" class="btn btn-ghost" onclick={() => userFormStore.reset()} disabled={$userFormStore.loading}>Cancelar</button>
+    <button type="submit" class="btn btn-primary" onclick={handleSubmit} disabled={$userFormStore.loading}>
+      {#if $userFormStore.loading}
         <span class="loading loading-spinner"></span>
       {/if}
-      {#if $state.mode === 'create'}
+      {#if $userFormStore.mode === 'create'}
         Criar Usuário
-      {:else if $state.mode === 'invite'}
+      {:else if $userFormStore.mode === 'invite'}
         Enviar Convite
       {:else}
         Salvar Alterações
@@ -79,9 +75,9 @@
     </button>
   </div>
 
-  {#if $state.error}
+  {#if $userFormStore.error}
     <div class="alert alert-error mt-4">
-      <span>Erro: {$state.error}</span>
+      <span>Erro: {$userFormStore.error}</span>
     </div>
   {/if}
 </div>

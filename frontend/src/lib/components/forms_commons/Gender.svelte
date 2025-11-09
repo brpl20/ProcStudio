@@ -46,8 +46,8 @@
     id={id}
     class="select select-bordered w-full {errors && touched ? 'select-error' : ''} {inputClass}"
     bind:value
-    on:blur={handleBlur}
-    on:change={handleChange}
+    onblur={handleBlur}
+    onchange={handleChange}
     disabled={disabled}
     aria-required={required ? 'true' : 'false'}
     aria-invalid={errors && touched ? 'true' : 'false'}
