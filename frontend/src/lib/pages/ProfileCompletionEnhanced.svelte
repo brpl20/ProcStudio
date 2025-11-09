@@ -255,8 +255,6 @@
                 bind:value={formData.name}
                 required={true}
                 disabled={loading}
-                bind:errors={errors.name}
-                bind:touched={touched.name}
               />
             {/if}
 
@@ -266,8 +264,6 @@
                 bind:value={formData.last_name}
                 required={true}
                 disabled={loading}
-                bind:errors={errors.last_name}
-                bind:touched={touched.last_name}
               />
             {/if}
 
@@ -300,8 +296,6 @@
                 type="lawyer"
                 required={formData.role === 'lawyer'}
                 disabled={loading}
-                bind:errors={errors.oab}
-                bind:touched={touched.oab}
               />
             {/if}
 
@@ -311,8 +305,6 @@
                 bind:value={formData.cpf}
                 required={true}
                 disabled={loading}
-                bind:errors={errors.cpf}
-                bind:touched={touched.cpf}
               />
             {/if}
 
@@ -322,8 +314,6 @@
                 bind:value={formData.rg}
                 required={true}
                 disabled={loading}
-                bind:errors={errors.rg}
-                bind:touched={touched.rg}
               />
             {/if}
 
@@ -333,8 +323,6 @@
                 bind:value={formData.gender}
                 required={true}
                 disabled={loading}
-                bind:errors={errors.gender}
-                bind:touched={touched.gender}
               />
             {/if}
 
@@ -344,8 +332,6 @@
                 bind:value={formData.civil_status}
                 required={true}
                 disabled={loading}
-                bind:errors={errors.civil_status}
-                bind:touched={touched.civil_status}
               />
             {/if}
 
@@ -355,8 +341,6 @@
                 bind:value={formData.nationality}
                 required={true}
                 disabled={loading}
-                bind:errors={errors.nationality}
-                bind:touched={touched.nationality}
               />
             {/if}
 
@@ -366,8 +350,6 @@
                 bind:value={formData.birth}
                 required={true}
                 disabled={loading}
-                bind:errors={errors.birth}
-                bind:touched={touched.birth}
               />
             {/if}
 
