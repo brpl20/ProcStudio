@@ -4,6 +4,9 @@
   import { router } from '../stores/routerStore';
   import api from '../api/index';
   import { validateAndNormalizeOab } from '../validation/oabValidator';
+  import PasswordWithValidation from '../components/forms_commons/PasswordWithValidation.svelte';
+  import PasswordConfirmation from '../components/forms_commons/PasswordConfirmation.svelte';
+  import { validatePassword, DEFAULT_PASSWORD_CONFIG } from '../validation/password-config';
 
   let email = '';
   let password = '';
@@ -24,8 +27,10 @@
       return;
     }
 
-    if (password.length < 6) {
-      errorMessage = 'A senha deve ter pelo menos 6 caracteres';
+    // Validate password with the configured requirements
+    const passwordValidation = validatePassword(password, DEFAULT_PASSWORD_CONFIG);
+    if (!passwordValidation.isValid) {
+      errorMessage = passwordValidation.errors.join('. ');
       return;
     }
 
@@ -140,37 +145,25 @@
         </div>
 
         <!-- Senha -->
-        <div class="form-control">
-          <label class="label" for="password">
-            <span class="label-text font-semibold">Senha</span>
-          </label>
-          <input
-            id="password"
-            type="password"
-            placeholder="Digite sua senha (mín. 6 caracteres)"
-            class="input input-bordered w-full"
-            bind:value={password}
-            required
-            disabled={isLoading}
-            minlength="6"
-          />
-        </div>
+        <PasswordWithValidation
+          bind:value={password}
+          name="password"
+          placeholder="Digite sua senha"
+          required={true}
+          showRequirements={true}
+          showStrength={true}
+          disabled={isLoading}
+        />
 
         <!-- Confirmar senha -->
-        <div class="form-control">
-          <label class="label" for="passwordConfirmation">
-            <span class="label-text font-semibold">Confirmar senha</span>
-          </label>
-          <input
-            id="passwordConfirmation"
-            type="password"
-            placeholder="Confirme sua senha"
-            class="input input-bordered w-full"
-            bind:value={passwordConfirmation}
-            required
-            disabled={isLoading}
-          />
-        </div>
+        <PasswordConfirmation
+          password={password}
+          bind:value={passwordConfirmation}
+          name="passwordConfirmation"
+          placeholder="Confirme sua senha"
+          required={true}
+          disabled={isLoading}
+        />
 
         <!-- Mensagens -->
         {#if errorMessage}

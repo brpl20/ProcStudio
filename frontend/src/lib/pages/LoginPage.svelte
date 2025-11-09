@@ -5,6 +5,7 @@
   import { router } from '../stores/routerStore';
   import api from '../api/index';
   import Icon from '../icons/icons.svelte';
+  import PasswordWithValidation from '../components/forms_commons/PasswordWithValidation.svelte';
 
   let email = '';
   let password = '';
@@ -105,20 +106,15 @@
         </div>
 
         <!-- Senha -->
-        <div class="form-control">
-          <label class="label" for="password">
-            <span class="label-text font-semibold">Senha</span>
-          </label>
-          <input
-            id="password"
-            type="password"
-            placeholder="Digite sua senha"
-            class="input input-bordered w-full"
-            bind:value={password}
-            required
-            disabled={isLoading}
-          />
-        </div>
+        <PasswordWithValidation
+          bind:value={password}
+          name="password"
+          placeholder="Digite sua senha"
+          required={true}
+          showRequirements={false}
+          showStrength={false}
+          disabled={isLoading}
+        />
 
         <!-- Mensagens -->
         {#if errorMessage}
