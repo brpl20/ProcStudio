@@ -1,6 +1,19 @@
 <script lang="ts">
   import api from '../api/index';
+
+  // Import the new form components
+  import Name from '../components/forms_commons/Name.svelte';
+  import LastName from '../components/forms_commons/LastName.svelte';
+  import Cpf from '../components/forms_commons/Cpf.svelte';
+  import Rg from '../components/forms_commons/Rg.svelte';
+  import Gender from '../components/forms_commons/Gender.svelte';
+  import Nationality from '../components/forms_commons/Nationality.svelte';
+  import CivilStatus from '../components/forms_commons/CivilStatus.svelte';
+  import Birth from '../components/forms_commons/Birth.svelte';
   import Phone from '../components/forms_commons/Phone.svelte';
+  import Address from '../components/forms_commons/Address.svelte';
+  import OabId from '../components/forms_commons/OabId.svelte';
+
   import { BRAZILIAN_STATES } from '../constants/brazilian-states';
 
   export let isOpen = false;
@@ -29,25 +42,20 @@
     nationality: 'brazilian',
     birth: '',
     phone: '',
-    // Address fields
+    // Address object for the Address component
     address: {
-      street: '',
-      number: '',
-      neighborhood: '',
-      city: '',
-      state: '',
-      zip_code: '',
-      description: 'Principal'
+      street: userData.address?.street || '',
+      number: userData.address?.number || '',
+      complement: '',
+      neighborhood: userData.address?.neighborhood || '',
+      city: userData.address?.city || '',
+      state: userData.address?.state || '',
+      zip_code: userData.address?.zip_code || '',
+      address_type: 'main'
     }
   };
 
-  // Pre-populate with OAB data if available
-  if (userData.address) {
-    formData.address.street = userData.address.street || '';
-    formData.address.city = userData.address.city || '';
-    formData.address.state = userData.address.state || '';
-    formData.address.zip_code = userData.address.zip_code || '';
-  }
+  // Pre-populate phone if available
   if (userData.phone) {
     formData.phone = userData.phone;
   }
@@ -56,24 +64,9 @@
   let message = '';
   let isSuccess = false;
 
-  // Opções para os selects
-  const genderOptions = [
-    { value: 'male', label: 'Masculino' },
-    { value: 'female', label: 'Feminino' }
-  ];
-
-  const civilStatusOptions = [
-    { value: 'single', labelMale: 'Solteiro', labelFemale: 'Solteira' },
-    { value: 'married', labelMale: 'Casado', labelFemale: 'Casada' },
-    { value: 'divorced', labelMale: 'Divorciado', labelFemale: 'Divorciada' },
-    { value: 'widower', labelMale: 'Viúvo', labelFemale: 'Viúva' },
-    { value: 'union', labelMale: 'União Estável', labelFemale: 'União Estável' }
-  ];
-
-  const nationalityOptions = [
-    { value: 'brazilian', label: 'Brasileira' },
-    { value: 'foreigner', label: 'Estrangeira' }
-  ];
+  // Track errors for each field
+  let errors: Record<string, string | null> = {};
+  let touched: Record<string, boolean> = {};
 
   const roleOptions = [
     { value: 'lawyer', label: 'Advogado(a)' },
@@ -85,27 +78,6 @@
 
   function isFieldRequired(fieldName: string): boolean {
     return missingFields.includes(fieldName);
-  }
-
-  function formatZipCode(event: Event) {
-    const input = event.target as HTMLInputElement;
-    let value = input.value.replace(/\D/g, '');
-
-    if (value.length <= 8) {
-      if (value.length >= 5) {
-        value = value.replace(/(\d{5})(\d*)/, '$1-$2');
-      }
-    }
-
-    formData.address.zip_code = value;
-  }
-
-  function getCivilStatusLabel(option: any): string {
-    const currentGender = userData?.gender || formData.gender;
-    if (currentGender === 'female') {
-      return option.labelFemale;
-    }
-    return option.labelMale;
   }
 
   function closeModal() {
@@ -150,29 +122,6 @@
       return;
     }
 
-    // CPF validation
-    if (isFieldRequired('cpf') && formData.cpf) {
-      const cpfPattern = /^\d{3}\.\d{3}\.\d{3}-\d{2}$|^\d{11}$/;
-      if (!cpfPattern.test(formData.cpf)) {
-        message = 'CPF deve estar no formato: 000.000.000-00 ou 00000000000';
-        isSuccess = false;
-        return;
-      }
-    }
-
-    // Birth date validation
-    if (isFieldRequired('birth') && formData.birth) {
-      const birthDate = new Date(formData.birth);
-      const today = new Date();
-      if (birthDate >= today) {
-        message = 'Data de nascimento deve ser anterior à data atual';
-        isSuccess = false;
-        return;
-      }
-    }
-
-    // Phone validation - handled by Phone component formatting
-
     loading = true;
     message = '';
 
@@ -192,15 +141,17 @@
 
       // Add address as nested attributes if needed
       if (isFieldRequired('address') && formData.address.street) {
+        // Use 'description' instead of 'address_type' for the API
         dataToSend.addresses_attributes = [
           {
             street: formData.address.street,
             number: formData.address.number,
+            complement: formData.address.complement || '',
             neighborhood: formData.address.neighborhood || '',
             city: formData.address.city,
             state: formData.address.state,
             zip_code: formData.address.zip_code,
-            description: formData.address.description
+            description: 'Principal' // Use 'description' for API compatibility
           }
         ];
       }
@@ -235,10 +186,10 @@
 {#if isOpen}
   <div
     class="modal modal-open"
-    on:click={handleBackdropClick}
+    onclick={handleBackdropClick}
     role="button"
     tabindex="0"
-    on:keydown={(e) => e.key === 'Escape' && closeModal()}
+    onkeydown={(e) => e.key === 'Escape' && closeModal()}
   >
     <div class="modal-box max-w-5xl max-h-[90vh] overflow-y-auto" role="dialog" aria-modal="true">
       <div class="flex justify-between items-center mb-6">
@@ -248,7 +199,7 @@
         <button
           type="button"
           class="btn btn-circle btn-ghost"
-          on:click={closeModal}
+          onclick={closeModal}
           disabled={loading}
         >
           ✕
@@ -297,44 +248,28 @@
           </div>
         {/if}
 
-        <form on:submit|preventDefault={handleSubmit}>
+        <form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- Name field (shown if missing) -->
             {#if isFieldRequired('name')}
-              <div class="form-control">
-                <label class="label" for="name">
-                  <span class="label-text font-semibold">Nome *</span>
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  class="input input-bordered"
-                  class:input-disabled={loading}
-                  bind:value={formData.name}
-                  placeholder="João"
-                  required
-                  disabled={loading}
-                />
-              </div>
+              <Name
+                bind:value={formData.name}
+                required={true}
+                disabled={loading}
+                bind:errors={errors.name}
+                bind:touched={touched.name}
+              />
             {/if}
 
             <!-- Last name field (shown if missing) -->
             {#if isFieldRequired('last_name')}
-              <div class="form-control">
-                <label class="label" for="last_name">
-                  <span class="label-text font-semibold">Sobrenome *</span>
-                </label>
-                <input
-                  type="text"
-                  id="last_name"
-                  class="input input-bordered"
-                  class:input-disabled={loading}
-                  bind:value={formData.last_name}
-                  placeholder="Silva"
-                  required
-                  disabled={loading}
-                />
-              </div>
+              <LastName
+                bind:value={formData.last_name}
+                required={true}
+                disabled={loading}
+                bind:errors={errors.last_name}
+                bind:touched={touched.last_name}
+              />
             {/if}
 
             <!-- Role field (shown if missing) -->
@@ -361,283 +296,149 @@
 
             <!-- OAB field (shown for lawyers or when missing) -->
             {#if (formData.role === 'lawyer' || userData.role === 'lawyer') && (isFieldRequired('oab') || !userData.oab)}
-              <div class="form-control">
-                <label class="label" for="oab">
-                  <span class="label-text font-semibold">OAB *</span>
-                </label>
-                <input
-                  type="text"
-                  id="oab"
-                  class="input input-bordered"
-                  class:input-disabled={loading}
-                  bind:value={formData.oab}
-                  placeholder="PR123456 ou 123456"
-                  required={formData.role === 'lawyer'}
-                  disabled={loading}
-                />
-                <div class="label">
-                  <span class="label-text-alt"
-                    >Digite apenas os números ou o formato completo (ex: PR123456)</span
-                  >
-                </div>
-              </div>
+              <OabId
+                bind:value={formData.oab}
+                type="lawyer"
+                required={formData.role === 'lawyer'}
+                disabled={loading}
+                bind:errors={errors.oab}
+                bind:touched={touched.oab}
+              />
             {/if}
 
             <!-- CPF field -->
             {#if isFieldRequired('cpf')}
-              <div class="form-control">
-                <label class="label" for="cpf">
-                  <span class="label-text font-semibold">CPF *</span>
-                </label>
-                <input
-                  type="text"
-                  id="cpf"
-                  class="input input-bordered"
-                  class:input-disabled={loading}
-                  bind:value={formData.cpf}
-                  placeholder="000.000.000-00"
-                  required
-                  disabled={loading}
-                />
-              </div>
+              <Cpf
+                bind:value={formData.cpf}
+                required={true}
+                disabled={loading}
+                bind:errors={errors.cpf}
+                bind:touched={touched.cpf}
+              />
             {/if}
 
             <!-- RG field -->
             {#if isFieldRequired('rg')}
-              <div class="form-control">
-                <label class="label" for="rg">
-                  <span class="label-text font-semibold">RG *</span>
-                </label>
-                <input
-                  type="text"
-                  id="rg"
-                  class="input input-bordered"
-                  class:input-disabled={loading}
-                  bind:value={formData.rg}
-                  placeholder="00.000.000-0"
-                  required
-                  disabled={loading}
-                />
-              </div>
+              <Rg
+                bind:value={formData.rg}
+                required={true}
+                disabled={loading}
+                bind:errors={errors.rg}
+                bind:touched={touched.rg}
+              />
             {/if}
 
             <!-- Gender field -->
             {#if isFieldRequired('gender')}
-              <div class="form-control">
-                <label class="label" for="gender">
-                  <span class="label-text font-semibold">Gênero *</span>
-                </label>
-                <select
-                  id="gender"
-                  class="select select-bordered"
-                  class:select-disabled={loading}
-                  bind:value={formData.gender}
-                  required
-                  disabled={loading}
-                >
-                  <option value="">Selecione...</option>
-                  {#each genderOptions as option}
-                    <option value={option.value}>{option.label}</option>
-                  {/each}
-                </select>
-              </div>
+              <Gender
+                bind:value={formData.gender}
+                required={true}
+                disabled={loading}
+                bind:errors={errors.gender}
+                bind:touched={touched.gender}
+              />
             {/if}
 
             <!-- Civil Status field -->
             {#if isFieldRequired('civil_status')}
-              <div class="form-control">
-                <label class="label" for="civil_status">
-                  <span class="label-text font-semibold">Estado Civil *</span>
-                </label>
-                <select
-                  id="civil_status"
-                  class="select select-bordered"
-                  class:select-disabled={loading}
-                  bind:value={formData.civil_status}
-                  required
-                  disabled={loading}
-                >
-                  <option value="">Selecione...</option>
-                  {#each civilStatusOptions as option}
-                    <option value={option.value}>{getCivilStatusLabel(option)}</option>
-                  {/each}
-                </select>
-              </div>
+              <CivilStatus
+                bind:value={formData.civil_status}
+                required={true}
+                disabled={loading}
+                bind:errors={errors.civil_status}
+                bind:touched={touched.civil_status}
+              />
             {/if}
 
             <!-- Nationality field -->
             {#if isFieldRequired('nationality')}
-              <div class="form-control">
-                <label class="label" for="nationality">
-                  <span class="label-text font-semibold">Nacionalidade *</span>
-                </label>
-                <select
-                  id="nationality"
-                  class="select select-bordered"
-                  class:select-disabled={loading}
-                  bind:value={formData.nationality}
-                  required
-                  disabled={loading}
-                >
-                  <option value="">Selecione...</option>
-                  {#each nationalityOptions as option}
-                    <option value={option.value}>{option.label}</option>
-                  {/each}
-                </select>
-              </div>
+              <Nationality
+                bind:value={formData.nationality}
+                required={true}
+                disabled={loading}
+                bind:errors={errors.nationality}
+                bind:touched={touched.nationality}
+              />
             {/if}
 
-            <!-- Birth date field -->
+            <!-- Birth field -->
             {#if isFieldRequired('birth')}
-              <div class="form-control">
-                <label class="label" for="birth">
-                  <span class="label-text font-semibold">Data de Nascimento *</span>
-                </label>
-                <input
-                  type="date"
-                  id="birth"
-                  class="input input-bordered"
-                  class:input-disabled={loading}
-                  bind:value={formData.birth}
-                  required
+              <Birth
+                bind:value={formData.birth}
+                required={true}
+                disabled={loading}
+                bind:errors={errors.birth}
+                bind:touched={touched.birth}
+              />
+            {/if}
+
+            <!-- Phone field -->
+            {#if isFieldRequired('phone') || !userData.phone}
+              <div class="md:col-span-2">
+                <Phone
+                  bind:value={formData.phone}
+                  required={isFieldRequired('phone')}
                   disabled={loading}
                 />
               </div>
             {/if}
 
-            <!-- Phone field -->
-            {#if isFieldRequired('phone')}
-              <div class="form-control">
-                <label class="label" for="phone">
-                  <span class="label-text font-semibold">Telefone *</span>
-                </label>
-                <Phone bind:value={formData.phone} placeholder="(45) 98405-5504" />
+            <!-- Address fields -->
+            {#if isFieldRequired('address')}
+              <div class="md:col-span-2">
+                <h3 class="text-lg font-semibold mb-3">Endereço *</h3>
+                <Address
+                  bind:address={formData.address}
+                  required={true}
+                  disabled={loading}
+                  bind:errors={errors}
+                  bind:touched={touched}
+                />
               </div>
             {/if}
           </div>
 
-          <!-- Address Section (shown if address is missing) -->
-          {#if isFieldRequired('address')}
-            <div class="divider mt-6">Endereço</div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div class="form-control">
-                <label class="label" for="zip_code">
-                  <span class="label-text font-semibold">CEP *</span>
-                </label>
-                <input
-                  type="text"
-                  id="zip_code"
-                  class="input input-bordered"
-                  class:input-disabled={loading}
-                  bind:value={formData.address.zip_code}
-                  placeholder="00000-000"
-                  required
-                  disabled={loading}
-                  on:input={formatZipCode}
-                  maxlength="9"
-                />
-              </div>
-
-              <div class="form-control">
-                <label class="label" for="street">
-                  <span class="label-text font-semibold">Rua/Avenida *</span>
-                </label>
-                <input
-                  type="text"
-                  id="street"
-                  class="input input-bordered"
-                  class:input-disabled={loading}
-                  bind:value={formData.address.street}
-                  placeholder="Rua das Flores"
-                  required
-                  disabled={loading}
-                />
-              </div>
-
-              <div class="form-control">
-                <label class="label" for="number">
-                  <span class="label-text font-semibold">Número *</span>
-                </label>
-                <input
-                  type="text"
-                  id="number"
-                  class="input input-bordered"
-                  class:input-disabled={loading}
-                  bind:value={formData.address.number}
-                  placeholder="123"
-                  required
-                  disabled={loading}
-                />
-              </div>
-
-              <div class="form-control">
-                <label class="label" for="neighborhood">
-                  <span class="label-text font-semibold">Bairro</span>
-                </label>
-                <input
-                  type="text"
-                  id="neighborhood"
-                  class="input input-bordered"
-                  class:input-disabled={loading}
-                  bind:value={formData.address.neighborhood}
-                  placeholder="Centro"
-                  disabled={loading}
-                />
-              </div>
-
-              <div class="form-control">
-                <label class="label" for="city">
-                  <span class="label-text font-semibold">Cidade *</span>
-                </label>
-                <input
-                  type="text"
-                  id="city"
-                  class="input input-bordered"
-                  class:input-disabled={loading}
-                  bind:value={formData.address.city}
-                  placeholder="São Paulo"
-                  required
-                  disabled={loading}
-                />
-              </div>
-
-              <div class="form-control">
-                <label class="label" for="state">
-                  <span class="label-text font-semibold">Estado *</span>
-                </label>
-                <select
-                  id="state"
-                  class="select select-bordered"
-                  class:select-disabled={loading}
-                  bind:value={formData.address.state}
-                  required
-                  disabled={loading}
-                >
-                  <option value="">Selecione...</option>
-                  {#each BRAZILIAN_STATES as state}
-                    <option value={state.value}>{state.label}</option>
-                  {/each}
-                </select>
-              </div>
-            </div>
-          {/if}
-
-          {#if message}
-            <div class="alert mt-6" class:alert-success={isSuccess} class:alert-error={!isSuccess}>
-              <span>{message}</span>
-            </div>
-          {/if}
-
+          <!-- Action buttons -->
           <div class="modal-action">
-            <button type="button" class="btn btn-outline" on:click={closeModal} disabled={loading}>
-              Cancelar
-            </button>
-            <button type="submit" class="btn btn-primary" class:loading disabled={loading}>
-              {loading ? 'Salvando...' : 'Completar Cadastro'}
-            </button>
+            {#if message}
+              <div class="flex-1">
+                <div class="alert {isSuccess ? 'alert-success' : 'alert-error'}">
+                  <span>{message}</span>
+                </div>
+              </div>
+            {/if}
+
+            {#if !isSuccess}
+              <button
+                type="button"
+                class="btn btn-ghost"
+                onclick={closeModal}
+                disabled={loading}
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                class="btn btn-primary"
+                disabled={loading}
+              >
+                {#if loading}
+                  <span class="loading loading-spinner"></span>
+                  Salvando...
+                {:else}
+                  Completar Cadastro
+                {/if}
+              </button>
+            {/if}
           </div>
         </form>
       </div>
     </div>
   </div>
 {/if}
+
+<style>
+  .modal {
+    @apply fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50;
+  }
+</style>
