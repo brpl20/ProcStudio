@@ -1,18 +1,18 @@
 <script lang="ts">
-  import api from '../api/index';
+  import api from '../../api/index';
 
   // Import the new form components
-  import Name from '../components/forms_commons/Name.svelte';
-  import LastName from '../components/forms_commons/LastName.svelte';
-  import Cpf from '../components/forms_commons/Cpf.svelte';
-  import Rg from '../components/forms_commons/Rg.svelte';
-  import Gender from '../components/forms_commons/Gender.svelte';
-  import Nationality from '../components/forms_commons/Nationality.svelte';
-  import CivilStatus from '../components/forms_commons/CivilStatus.svelte';
-  import Birth from '../components/forms_commons/Birth.svelte';
-  import Phone from '../components/forms_commons/Phone.svelte';
-  import AddressCepWrapper from '../components/forms_commons_wrappers/AddressCepWrapper.svelte';
-  import OabId from '../components/forms_commons/OabId.svelte';
+  import Name from '../../components/forms_commons/Name.svelte';
+  import LastName from '../../components/forms_commons/LastName.svelte';
+  import Cpf from '../../components/forms_commons/Cpf.svelte';
+  import Rg from '../../components/forms_commons/Rg.svelte';
+  import Gender from '../../components/forms_commons/Gender.svelte';
+  import Nationality from '../../components/forms_commons/Nationality.svelte';
+  import CivilStatus from '../../components/forms_commons/CivilStatus.svelte';
+  import Birth from '../../components/forms_commons/Birth.svelte';
+  import Phone from '../../components/forms_commons/Phone.svelte';
+  import AddressCepWrapper from '../../components/forms_commons_wrappers/AddressCepWrapper.svelte';
+  import OabId from '../../components/forms_commons/OabId.svelte';
 
   export let isOpen = false;
   export let userData: any = {};
