@@ -367,11 +367,13 @@
             {#if isFieldRequired('address')}
               <div class="md:col-span-2">
                 <AddressCepWrapper
-                  bind:addresses={[formData.address]}
-                  required={true}
+                  bind:address={formData.address}
+                  config={{
+                    cep: { show: true, required: true },
+                    address: { required: true, disabled: loading }
+                  }}
+                  title="Endereço"
                   disabled={loading}
-                  showTitle={true}
-                  singleMode={true}
                 />
               </div>
             {/if}
