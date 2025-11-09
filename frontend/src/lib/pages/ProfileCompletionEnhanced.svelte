@@ -184,7 +184,7 @@
 <!-- Modal Backdrop -->
 {#if isOpen}
   <div
-    class="modal modal-open"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 modal modal-open"
     onclick={handleBackdropClick}
     role="button"
     tabindex="0"
@@ -435,9 +435,3 @@
     </div>
   </div>
 {/if}
-
-<style>
-  .modal {
-    @apply fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50;
-  }
-</style>
