@@ -40,9 +40,10 @@
   function handleInput(e: Event) {
     const target = e.target as HTMLInputElement;
     value = target.value;
-    if (!touched) {
-      touched = true;
-    }
+  }
+
+  function handleBlur() {
+    touched = true;
   }
 
   function togglePasswordVisibility() {
@@ -73,6 +74,7 @@
       {placeholder}
       {value}
       oninput={handleInput}
+      onblur={handleBlur}
       class="input input-bordered w-full pr-10 {className} {!isMatch ? 'input-error' : ''} {errorClass}"
     />
 

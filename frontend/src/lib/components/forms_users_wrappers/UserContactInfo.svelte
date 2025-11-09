@@ -1,6 +1,6 @@
 <script lang="ts">
   import Phone from '../forms_commons/Phone.svelte';
-  import { BRAZILIAN_STATES } from '$lib/constants/brazilian-states.ts';
+  import AddressCepWrapper from '../forms_commons_wrappers/AddressCepWrapper.svelte';
 
   let {
     contactInfo = $bindable({
@@ -16,6 +16,8 @@
       }
     })
   } = $props();
+
+  let cepValue = $state(contactInfo.address.zip_code || '');
 </script>
 
 <div class="divider pt-2">Informações de Contato</div>
@@ -24,49 +26,27 @@
   <div class="md:col-span-2">
     <Phone bind:value={contactInfo.phone} required={true} />
   </div>
-
-  <div class="md:col-span-2 mt-4 space-y-4">
-    <h4 class="text-lg font-semibold border-b pb-2">Endereço</h4>
-
-    <div class="form-control">
-      <label for="zip_code" class="label"><span class="label-text">CEP</span></label>
-      <input id="zip_code" type="text" class="input input-bordered" bind:value={contactInfo.address.zip_code} />
-    </div>
-    
-    <div class="form-control">
-      <label for="street" class="label"><span class="label-text">Logradouro</span></label>
-      <input id="street" type="text" class="input input-bordered" bind:value={contactInfo.address.street} />
-    </div>
-    
-    <div class="form-control">
-      <label for="number" class="label"><span class="label-text">Número</span></label>
-      <input id="number" type="text" class="input input-bordered" bind:value={contactInfo.address.number} />
-    </div>
-    
-    <div class="form-control">
-      <label for="complement" class="label"><span class="label-text">Complemento</span></label>
-      <input id="complement" type="text" class="input input-bordered" bind:value={contactInfo.address.complement} />
-    </div>
-
-     <div class="form-control">
-      <label for="neighborhood" class="label"><span class="label-text">Bairro</span></label>
-      <input id="neighborhood" type="text" class="input input-bordered" bind:value={contactInfo.address.neighborhood} />
-    </div>
-    
-    <div class="form-control">
-      <label for="city" class="label"><span class="label-text">Cidade</span></label>
-      <input id="city" type="text" class="input input-bordered" bind:value={contactInfo.address.city} />
-    </div>
-
-    <div class="form-control">
-      <label for="state" class="label"><span class="label-text">Estado</span></label>
-      <select id="state" class="select select-bordered" bind:value={contactInfo.address.state}>
-        <option value="" disabled selected>Selecione um estado</option>
-        {#each BRAZILIAN_STATES as state}
-            <option value={state.value}>{state.label}</option>
-        {/each}
-      </select>
-    </div>
-    
-  </div>
 </div>
+
+<AddressCepWrapper
+  bind:address={contactInfo.address}
+  bind:cepValue
+  title="Endereço"
+  useAPIValidation={true}
+  showAddressInfo={false}
+  config={{
+    cep: {
+      id: 'user-cep',
+      labelText: 'CEP',
+      placeholder: '00000-000',
+      required: false,
+      show: true
+    },
+    address: {
+      id: 'user-address',
+      required: false,
+      show: true,
+      showRemoveButton: false
+    }
+  }}
+/>

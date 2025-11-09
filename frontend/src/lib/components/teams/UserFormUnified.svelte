@@ -55,6 +55,14 @@
       bind:bankAccount={userFormStore.formData.bankAccount}
       labelPrefix="user-bank"
       disabled={userFormStore.loading}
+      showPixHelpers={true}
+      pixHelperData={{
+        email: userFormStore.formData.credentials.email,
+        cpf: userFormStore.formData.personalInfo.cpf,
+        cnpj: '',
+        phone: userFormStore.formData.contactInfo.phone
+      }}
+      pixDocumentType="cpf"
     />
     <!-- ===================================================================================== -->
   {/if}

@@ -40,19 +40,18 @@
 
   // Update feedback whenever value changes
   $effect(() => {
-    if (instantValidation && value) {
+    if (!touched) {
+      // Clear errors when not touched
+      errors = null;
+    } else if (instantValidation && value) {
       feedback = getPasswordFeedback(value, config);
-
-      // Update errors if instant validation is enabled
-      if (touched || value.length > 0) {
-        const validation = validatePassword(value, config);
-        if (!validation.isValid) {
-          errors = validation.errors[0]; // Show first error
-        } else {
-          errors = null;
-        }
+      const validation = validatePassword(value, config);
+      if (!validation.isValid) {
+        errors = validation.errors[0]; // Show first error
+      } else {
+        errors = null;
       }
-    } else if (!value && touched && required) {
+    } else if (!value && required) {
       errors = 'Senha é obrigatória';
     }
   });
