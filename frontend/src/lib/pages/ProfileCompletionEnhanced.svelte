@@ -51,7 +51,7 @@
       city: userData.address?.city || '',
       state: userData.address?.state || '',
       zip_code: userData.address?.zip_code || '',
-      address_type: 'main'
+      address_type: 'main' // Used internally by Address component
     }
   };
 
@@ -141,7 +141,6 @@
 
       // Add address as nested attributes if needed
       if (isFieldRequired('address') && formData.address.street) {
-        // Use 'description' instead of 'address_type' for the API
         dataToSend.addresses_attributes = [
           {
             street: formData.address.street,
@@ -150,8 +149,8 @@
             neighborhood: formData.address.neighborhood || '',
             city: formData.address.city,
             state: formData.address.state,
-            zip_code: formData.address.zip_code,
-            description: 'Principal' // Use 'description' for API compatibility
+            zip_code: formData.address.zip_code
+            // Removed description field - backend might not have it
           }
         ];
       }

@@ -143,7 +143,15 @@ function createUnifiedUserFormStore() {
                   status: formData.basicInfo.status
                 },
                 phones_attributes: formData.contactInfo.phone ? [{ phone_number: formData.contactInfo.phone }] : [],
-                addresses_attributes: formData.contactInfo.address.street ? [formData.contactInfo.address] : [],
+                addresses_attributes: formData.contactInfo.address.street ? [{
+                  street: formData.contactInfo.address.street,
+                  number: formData.contactInfo.address.number,
+                  complement: formData.contactInfo.address.complement || '',
+                  neighborhood: formData.contactInfo.address.neighborhood || '',
+                  city: formData.contactInfo.address.city,
+                  state: formData.contactInfo.address.state,
+                  zip_code: formData.contactInfo.address.zip_code
+                }] : [],
                 bank_accounts_attributes: hasBankData ? [formattedBankData] : []
               }
             };
@@ -169,7 +177,15 @@ function createUnifiedUserFormStore() {
                   status: formData.basicInfo.status
                 },
                 phones_attributes: formData.contactInfo.phone ? [{ phone_number: formData.contactInfo.phone }] : [],
-                addresses_attributes: formData.contactInfo.address.street ? [formData.contactInfo.address] : [],
+                addresses_attributes: formData.contactInfo.address.street ? [{
+                  street: formData.contactInfo.address.street,
+                  number: formData.contactInfo.address.number,
+                  complement: formData.contactInfo.address.complement || '',
+                  neighborhood: formData.contactInfo.address.neighborhood || '',
+                  city: formData.contactInfo.address.city,
+                  state: formData.contactInfo.address.state,
+                  zip_code: formData.contactInfo.address.zip_code
+                }] : [],
                 bank_accounts_attributes: hasBankData ? [formattedBankData] : []
               }
             };
