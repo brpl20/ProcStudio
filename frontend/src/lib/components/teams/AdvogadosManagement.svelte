@@ -23,15 +23,13 @@
     };
   }
 
-  let users: User[] = [];
-  let loading = false;
-  let error: string | null = null;
-  let success: string | null = null;
+  let users = $state<User[]>([]);
+  let loading = $state(false);
+  let error = $state<string | null>(null);
+  let success = $state<string | null>(null);
 
-  const formState = userFormStore;
-
-  let showDeleteDialog = false;
-  let deletingUser: User | null = null;
+  let showDeleteDialog = $state(false);
+  let deletingUser = $state<User | null>(null);
 
   async function loadUsers() {
     loading = true;
@@ -90,15 +88,15 @@
 
   // ===================== Mensagem de sucesso diferenciada para convite ======================
   async function handleSaveSuccess() {
-    if ($formState.mode === 'invite') {
+    if (userFormStore.mode === 'invite') {
       success = 'Convite enviado com sucesso!';
     } else {
-      success = $formState.mode === 'create' ? 'Usuário criado com sucesso!' : 'Usuário atualizado com sucesso!';
+      success = userFormStore.mode === 'create' ? 'Usuário criado com sucesso!' : 'Usuário atualizado com sucesso!';
     }
     await loadUsers(); // Recarrega a lista de usuários
 
     // Fecha o modal imediatamente resetando o store
-    userFormStore.reset(); 
+    userFormStore.reset();
 
     // Mantém a mensagem de sucesso visível na tela principal por um tempo
     setTimeout(() => {
@@ -107,11 +105,11 @@
   }
   // =====================================================================================================
 
-  $: {
-    if ($formState.success) {
+  $effect(() => {
+    if (userFormStore.success) {
       handleSaveSuccess();
     }
-  }
+  });
 
   function getRoleBadgeClass(role: string): string {
     const map: Record<string, string> = { lawyer: 'badge-primary', paralegal: 'badge-secondary', trainee: 'badge-accent', secretary: 'badge-info' };
@@ -219,7 +217,7 @@
   </div>
 </div>
 
-<dialog class="modal" open={$formState.mode !== null}>
+<dialog class="modal" open={userFormStore.mode !== null}>
   <div class="modal-box w-11/12 max-w-4xl">
     <UserFormUnified />
   </div>
