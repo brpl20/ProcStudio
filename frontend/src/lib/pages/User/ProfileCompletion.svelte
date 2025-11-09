@@ -11,10 +11,8 @@
   import CivilStatus from '../components/forms_commons/CivilStatus.svelte';
   import Birth from '../components/forms_commons/Birth.svelte';
   import Phone from '../components/forms_commons/Phone.svelte';
-  import Address from '../components/forms_commons/Address.svelte';
+  import AddressCepWrapper from '../components/forms_commons_wrappers/AddressCepWrapper.svelte';
   import OabId from '../components/forms_commons/OabId.svelte';
-
-  import { BRAZILIAN_STATES } from '../constants/brazilian-states';
 
   export let isOpen = false;
   export let userData: any = {};
@@ -70,10 +68,11 @@
 
   const roleOptions = [
     { value: 'lawyer', label: 'Advogado(a)' },
-    { value: 'secretary', label: 'Secretário(a)' },
-    { value: 'intern', label: 'Estagiário(a)' },
-    { value: 'paralegal', label: 'Paralegal' },
-    { value: 'accountant', label: 'Contador(a)' }
+    // Keep these for future use:
+    // { value: 'secretary', label: 'Secretário(a)' },
+    // { value: 'intern', label: 'Estagiário(a)' },
+    // { value: 'paralegal', label: 'Paralegal' },
+    // { value: 'accountant', label: 'Contador(a)' }
   ];
 
   function isFieldRequired(fieldName: string): boolean {
@@ -367,13 +366,12 @@
             <!-- Address fields -->
             {#if isFieldRequired('address')}
               <div class="md:col-span-2">
-                <h3 class="text-lg font-semibold mb-3">Endereço *</h3>
-                <Address
-                  bind:address={formData.address}
+                <AddressCepWrapper
+                  bind:addresses={[formData.address]}
                   required={true}
                   disabled={loading}
-                  bind:errors={errors}
-                  bind:touched={touched}
+                  showTitle={true}
+                  singleMode={true}
                 />
               </div>
             {/if}

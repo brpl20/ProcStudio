@@ -21,7 +21,7 @@
   import CustomersEditPage from './lib/pages/CustomersEditPage.svelte';
   import CustomerProfilePage from './lib/pages/CustomerProfilePage.svelte';
   import UserConfigPage from './lib/pages/UserConfigPage.svelte';
-  import ProfileCompletionEnhanced from './lib/pages/ProfileCompletionEnhanced.svelte';
+  import ProfileCompletion from './lib/pages/User/ProfileCompletion.svelte';
   import OfficeCreationPage from './lib/pages/Office/OfficeCreationPage.svelte';
   import LawyersTestDebugPage from './lib/pages/LawyersTestDebugPage.svelte';
   import NotFoundPage from './lib/pages/NotFoundPage.svelte';
@@ -92,7 +92,7 @@
 
 <!-- Modal de Completar Perfil -->
 {#if showProfileCompletion}
-  <ProfileCompletionEnhanced
+  <ProfileCompletion
     isOpen={showProfileCompletion}
     userData={profileData}
     {missingFields}
