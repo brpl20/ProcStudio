@@ -2,17 +2,13 @@
 <script lang="ts">
   import type { SelectFieldProps } from '../../types/form-field-contract';
 
-  // Opções de Estado Civil
-  const civilStatusOptions = [
-    { value: 'single', label: 'Solteiro(a)' },
-    { value: 'married', label: 'Casado(a)' },
-    { value: 'divorced', label: 'Divorciado(a)' },
-    { value: 'widower', label: 'Viúvo(a)' },
-    { value: 'union', label: 'União Estável' }
-  ];
+  interface CivilStatusProps extends SelectFieldProps {
+    gender?: 'male' | 'female' | '';
+  }
 
   let {
     value = $bindable(''),
+    gender = '',
     id = 'civil-status',
     labelText = 'Estado Civil',
     required = false,
@@ -22,7 +18,26 @@
     wrapperClass = '',
     inputClass = '',
     testId = undefined
-  }: SelectFieldProps = $props();
+  }: CivilStatusProps = $props();
+
+  // Dynamically generate options based on gender
+  const civilStatusOptions = $derived(
+    gender === 'female'
+      ? [
+          { value: 'single', label: 'Solteira' },
+          { value: 'married', label: 'Casada' },
+          { value: 'divorced', label: 'Divorciada' },
+          { value: 'widower', label: 'Viúva' },
+          { value: 'union', label: 'União Estável' }
+        ]
+      : [
+          { value: 'single', label: 'Solteiro' },
+          { value: 'married', label: 'Casado' },
+          { value: 'divorced', label: 'Divorciado' },
+          { value: 'widower', label: 'Viúvo' },
+          { value: 'union', label: 'União Estável' }
+        ]
+  );
 
   function handleBlur() {
     touched = true;
@@ -49,8 +64,8 @@
     id={id}
     class="select select-bordered w-full {errors && touched ? 'select-error' : ''} {inputClass}"
     bind:value
-    on:blur={handleBlur}
-    on:change={handleChange}
+    onblur={handleBlur}
+    onchange={handleChange}
     disabled={disabled}
     aria-required={required ? 'true' : 'false'}
     aria-invalid={errors && touched ? 'true' : 'false'}

@@ -27,8 +27,8 @@
   <Cpf bind:value={personalInfo.cpf} required={true} />
   <Rg bind:value={personalInfo.rg} required={true} />
   <Gender bind:value={personalInfo.gender} required={true} />
-  <CivilStatus bind:value={personalInfo.civil_status} required={true} />
-  <Nationality bind:value={personalInfo.nationality} required={true} />
+  <CivilStatus bind:value={personalInfo.civil_status} gender={personalInfo.gender} required={true} />
+  <Nationality bind:value={personalInfo.nationality} gender={personalInfo.gender} required={true} />
   <Birth bind:value={personalInfo.birth} required={true} />
 
   <div class="form-control md:col-span-2">

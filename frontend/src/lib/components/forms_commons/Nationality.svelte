@@ -2,14 +2,13 @@
 <script lang="ts">
   import type { SelectFieldProps } from '../../types/form-field-contract';
 
-  // Opções de Nacionalidade
-  const nationalityOptions = [
-    { value: 'brazilian', label: 'Brasileiro(a)' },
-    { value: 'foreigner', label: 'Estrangeiro(a)' }
-  ];
+  interface NationalityProps extends SelectFieldProps {
+    gender?: 'male' | 'female' | '';
+  }
 
   let {
     value = $bindable('brazilian'), // Default para 'brazilian'
+    gender = '',
     id = 'nationality',
     labelText = 'Nacionalidade',
     required = false,
@@ -19,7 +18,20 @@
     wrapperClass = '',
     inputClass = '',
     testId = undefined
-  }: SelectFieldProps = $props();
+  }: NationalityProps = $props();
+
+  // Dynamically generate options based on gender
+  const nationalityOptions = $derived(
+    gender === 'female'
+      ? [
+          { value: 'brazilian', label: 'Brasileira' },
+          { value: 'foreigner', label: 'Estrangeira' }
+        ]
+      : [
+          { value: 'brazilian', label: 'Brasileiro' },
+          { value: 'foreigner', label: 'Estrangeiro' }
+        ]
+  );
 
   function handleBlur() {
     touched = true;

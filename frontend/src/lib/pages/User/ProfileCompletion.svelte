@@ -329,6 +329,7 @@
             {#if isFieldRequired('civil_status')}
               <CivilStatus
                 bind:value={formData.civil_status}
+                gender={formData.gender}
                 required={true}
                 disabled={loading}
               />
@@ -338,6 +339,7 @@
             {#if isFieldRequired('nationality')}
               <Nationality
                 bind:value={formData.nationality}
+                gender={formData.gender}
                 required={true}
                 disabled={loading}
               />

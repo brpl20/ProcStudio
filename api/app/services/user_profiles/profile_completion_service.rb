@@ -72,7 +72,14 @@ module UserProfiles
       addresses_attrs = params[:addresses_attributes]
       return if addresses_attrs.blank?
 
-      addresses_attrs.each do |address_attr|
+      # Handle both array and hash formats (Rails converts arrays to hashes with numeric keys)
+      addresses_to_process = if addresses_attrs.is_a?(Hash)
+                               addresses_attrs.values
+                             else
+                               addresses_attrs
+                             end
+
+      addresses_to_process.each do |address_attr|
         create_address(user_profile, address_attr)
       end
     end
@@ -85,7 +92,7 @@ module UserProfiles
         city: address_attr[:city],
         state: address_attr[:state],
         zip_code: address_attr[:zip_code],
-        complement: address_attr[:description],
+        complement: address_attr[:complement],
         address_type: 'main'
       )
     end
