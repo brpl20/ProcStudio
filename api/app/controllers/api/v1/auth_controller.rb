@@ -117,6 +117,7 @@ module Api
       def build_incomplete_profile_response(response, user)
         response[:needs_profile_completion] = true
         response[:missing_fields] = required_profile_fields
+        response[:email] = user.email if user.email.present?
         response[:oab] = user.oab if user.oab.present?
         response[:message] = I18n.t('errors.messages.profile.incomplete')
       end
@@ -140,6 +141,7 @@ module Api
         response[:role] = user_profile.role
         response[:name] = user_profile.name
         response[:last_name] = user_profile.last_name
+        response[:email] = user_profile.user.email if user_profile.user.email.present?
         response[:oab] = user_profile.oab if user_profile.lawyer? && user_profile.oab.present?
         response[:gender] = user_profile.gender if user_profile.gender.present?
       end

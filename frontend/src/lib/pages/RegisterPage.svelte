@@ -4,9 +4,7 @@
   import { router } from '../stores/routerStore';
   import api from '../api/index';
   import { validateAndNormalizeOab } from '../validation/oabValidator';
-  import PasswordWithValidation from '../components/forms_commons/PasswordWithValidation.svelte';
-  import PasswordConfirmation from '../components/forms_commons/PasswordConfirmation.svelte';
-  import { validatePassword, DEFAULT_PASSWORD_CONFIG } from '../validation/password-config';
+  import Password from '../components/forms_commons/Password.svelte';
 
   let email = '';
   let password = '';
@@ -24,13 +22,6 @@
 
     if (password !== passwordConfirmation) {
       errorMessage = 'As senhas não coincidem';
-      return;
-    }
-
-    // Validate password with the configured requirements
-    const passwordValidation = validatePassword(password, DEFAULT_PASSWORD_CONFIG);
-    if (!passwordValidation.isValid) {
-      errorMessage = passwordValidation.errors.join('. ');
       return;
     }
 
@@ -145,23 +136,22 @@
         </div>
 
         <!-- Senha -->
-        <PasswordWithValidation
+        <Password
           bind:value={password}
-          name="password"
+          id="password"
+          labelText="Senha"
           placeholder="Digite sua senha"
-          required={true}
-          showRequirements={true}
-          showStrength={true}
+          required={false}
           disabled={isLoading}
         />
 
         <!-- Confirmar senha -->
-        <PasswordConfirmation
-          password={password}
+        <Password
           bind:value={passwordConfirmation}
-          name="passwordConfirmation"
+          id="passwordConfirmation"
+          labelText="Confirmar Senha"
           placeholder="Confirme sua senha"
-          required={true}
+          required={false}
           disabled={isLoading}
         />
 

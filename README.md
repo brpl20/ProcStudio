@@ -46,6 +46,7 @@ Svelte 5.0
   - [Users](./docs/User.md)
   - [User Registration](./docs/User-Registration.md)
   - [User Profile Completion](./docs/User-Profile-Completion.md)
+  - [User Password Components](./docs/User-Password.md)
   - [Avatar Upload Backend](./docs/User-Avatar-Upload-Backend.md)
 
 - Políticas de Autorização de Usuário
@@ -113,6 +114,7 @@ Svelte 5.0
 - Forms Specific:
   - [CNPJ](./docs/frontend-cnpj.md)
   - [CEP and Address](./docs/frontend-forms-cep-address.md)
+  - [Password Components](./docs/User-Password.md)
 
 ## Testes
 - [Tests](./docs/Test.md)

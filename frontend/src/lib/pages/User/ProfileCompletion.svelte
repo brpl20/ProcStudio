@@ -13,6 +13,7 @@
   import Phone from '../../components/forms_commons/Phone.svelte';
   import AddressCepWrapper from '../../components/forms_commons_wrappers/AddressCepWrapper.svelte';
   import OabId from '../../components/forms_commons/OabId.svelte';
+  import Bank from '../../components/forms_commons/Bank.svelte';
 
   export let isOpen = false;
   export let userData: any = {};
@@ -50,6 +51,16 @@
       state: userData.address?.state || '',
       zip_code: userData.address?.zip_code || '',
       address_type: 'main' // Used internally by Address component
+    },
+    // Bank account
+    bank_account: {
+      bank_name: '',
+      bank_number: '',
+      type_account: '',
+      agency: '',
+      account: '',
+      operation: '',
+      pix: ''
     }
   };
 
@@ -163,6 +174,21 @@
         ];
       }
 
+      // Add bank account as nested attribute
+      if (formData.bank_account.bank_name && formData.bank_account.agency && formData.bank_account.account) {
+        dataToSend.bank_accounts_attributes = [
+          {
+            bank_name: formData.bank_account.bank_name,
+            bank_number: formData.bank_account.bank_number,
+            account_type: formData.bank_account.type_account,
+            agency: formData.bank_account.agency,
+            account: formData.bank_account.account,
+            operation: formData.bank_account.operation || '',
+            pix: formData.bank_account.pix || ''
+          }
+        ];
+      }
+
       const result = await api.auth.completeProfile(dataToSend);
       message = 'Perfil completado com sucesso!';
       isSuccess = true;
@@ -205,7 +231,7 @@
       </div>
 
       <div>
-        {#if userData.oab || userData.name}
+        {#if userData.oab || userData.name || userData.email}
           <div class="alert alert-info mb-6">
             <div>
               <div class="font-semibold">Informações do Usuário</div>
@@ -214,6 +240,9 @@
                   <strong>Nome:</strong> {userData.name} {userData.last_name || ''}
                 {/if}
               </p>
+              {#if userData.email}
+                <p class="text-sm"><strong>E-mail:</strong> {userData.email}</p>
+              {/if}
               {#if userData.oab}
                 <p class="text-sm"><strong>OAB:</strong> {userData.oab}</p>
               {/if}
@@ -364,6 +393,29 @@
                 />
               </div>
             {/if}
+
+            <!-- Bank Account field -->
+            <div class="md:col-span-2">
+              <div class="mb-2">
+                <h3 class="text-lg font-semibold">Dados Bancários (Opcional)</h3>
+                <p class="text-sm text-base-content/60">
+                  Cadastre sua conta bancária para recebimento de honorários
+                </p>
+              </div>
+              <Bank
+                bind:bankAccount={formData.bank_account}
+                index={0}
+                disabled={loading}
+                showPixHelpers={true}
+                pixHelperData={{
+                  email: userData.email || '',
+                  cpf: formData.cpf,
+                  cnpj: '',
+                  phone: formData.phone
+                }}
+                pixDocumentType="cpf"
+              />
+            </div>
 
             <!-- Address fields -->
             {#if isFieldRequired('address')}

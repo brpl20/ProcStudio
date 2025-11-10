@@ -1,7 +1,6 @@
 <script lang="ts">
   import Email from '../forms_commons/Email.svelte';
-  import PasswordWithValidation from '../forms_commons/PasswordWithValidation.svelte';
-  import PasswordConfirmation from '../forms_commons/PasswordConfirmation.svelte';
+  import Password from '../forms_commons/Password.svelte';
 
   // A prop 'credentials' agora está dentro da declaração $props()
   let {
@@ -15,18 +14,18 @@
 
 <div class="space-y-4">
   <Email bind:value={credentials.email} required={true} />
-  <PasswordWithValidation
+  <Password
     bind:value={credentials.password}
-    name="password"
+    id="password"
+    labelText="Senha"
     placeholder="Digite sua senha"
-    required={true}
-    showRequirements={true}
+    required={false}
   />
-  <PasswordConfirmation
-    password={credentials.password}
+  <Password
     bind:value={credentials.password_confirmation}
-    name="password_confirmation"
+    id="password_confirmation"
+    labelText="Confirmar Senha"
     placeholder="Confirme sua senha"
-    required={true}
+    required={false}
   />
 </div>
