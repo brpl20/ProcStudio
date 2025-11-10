@@ -4,56 +4,323 @@
 </script>
 
 <MainLayout>
-  <div class="hero min-h-[60vh]">
-    <div class="hero-content text-center">
-      <div class="max-w-md">
-        <h1 class="text-5xl font-bold text-primary mb-6">ProcStudio</h1>
-        <h2 class="text-2xl text-base-content opacity-70 mb-8">Sistema em Desenvolvimento</h2>
+  <div class="relative overflow-hidden">
+    <!-- Hero Section -->
+    <div class="relative min-h-[80vh] flex items-center">
+      <!-- Background decorative elements -->
+      <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-20 right-10 w-72 h-72 bg-[#0277EE] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
+        <div class="absolute top-40 left-10 w-96 h-96 bg-[#0277EE] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
+        <div class="absolute bottom-20 left-1/2 w-80 h-80 bg-[#01013D] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000"></div>
+      </div>
 
-        <div class="flex gap-4 justify-center">
-          <button class="btn btn-primary btn-lg" on:click={() => router.navigate('/register')}>
-            Começar agora
-          </button>
-          <button class="btn btn-outline btn-lg" on:click={() => router.navigate('/login')}>
-            Fazer login
-          </button>
+      <div class="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+          <h1 class="text-6xl sm:text-7xl lg:text-8xl font-bold mb-6 bg-gradient-to-r from-[#01013D] via-[#0277EE] to-[#01013D] bg-clip-text text-transparent animate-fade-in">
+            ProcStudio
+          </h1>
+          <p class="text-2xl sm:text-3xl lg:text-4xl text-[#01013D] opacity-80 mb-4 font-light animate-fade-in-delay-1">
+            Sistema em Desenvolvimento
+          </p>
+          <p class="text-lg sm:text-xl text-gray-600 mb-12 max-w-2xl mx-auto animate-fade-in-delay-2">
+            Gerencie seus processos jurídicos de forma eficiente e moderna
+          </p>
+
+          <div class="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in-delay-3">
+            <button 
+              class="group relative px-8 py-4 bg-[#0277EE] text-white text-lg font-semibold rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-[#0277EE]/30 w-full sm:w-auto"
+              on:click={() => router.navigate('/register')}
+            >
+              <span class="relative z-10">Começar agora</span>
+              <div class="absolute inset-0 bg-gradient-to-r from-[#0277EE] to-[#01013D] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </button>
+            <button 
+              class="px-8 py-4 bg-transparent text-[#01013D] text-lg font-semibold rounded-xl border-2 border-[#01013D] transition-all duration-300 hover:bg-[#01013D] hover:text-white hover:scale-105 hover:shadow-xl w-full sm:w-auto"
+              on:click={() => router.navigate('/login')}
+            >
+              Fazer login
+            </button>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- Features Section -->
+    <section class="relative py-24 bg-gradient-to-b from-white to-[#eef0ef]/30">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <h3 class="text-4xl sm:text-5xl font-bold text-[#01013D] mb-4">
+            Funcionalidades
+          </h3>
+          <div class="w-24 h-1 bg-gradient-to-r from-[#0277EE] to-[#01013D] mx-auto rounded-full"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <!-- Card 1 -->
+          <div class="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
+            <div class="absolute inset-0 bg-gradient-to-br from-[#0277EE]/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div class="relative">
+              <div class="w-16 h-16 bg-gradient-to-br from-[#0277EE] to-[#01013D] rounded-xl flex items-center justify-center mb-6 text-3xl transform group-hover:scale-110 transition-transform duration-300">
+                ⚖️
+              </div>
+              <h4 class="text-2xl font-bold text-[#01013D] mb-3">Gestão Jurídica</h4>
+              <p class="text-gray-600 leading-relaxed">
+                Controle completo de processos, prazos e documentos em uma única plataforma integrada.
+              </p>
+              <div class="mt-6 inline-flex items-center text-[#0277EE] font-semibold">
+                <span>Em desenvolvimento</span>
+                <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
+            <div class="absolute inset-0 bg-gradient-to-br from-[#0277EE]/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div class="relative">
+              <div class="w-16 h-16 bg-gradient-to-br from-[#0277EE] to-[#01013D] rounded-xl flex items-center justify-center mb-6 text-3xl transform group-hover:scale-110 transition-transform duration-300">
+                👥
+              </div>
+              <h4 class="text-2xl font-bold text-[#01013D] mb-3">Equipes</h4>
+              <p class="text-gray-600 leading-relaxed">
+                Colaboração eficiente com gestão de times, permissões e fluxos de trabalho personalizados.
+              </p>
+              <div class="mt-6 inline-flex items-center text-[#0277EE] font-semibold">
+                <span>Em desenvolvimento</span>
+                <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
+            <div class="absolute inset-0 bg-gradient-to-br from-[#0277EE]/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div class="relative">
+              <div class="w-16 h-16 bg-gradient-to-br from-[#0277EE] to-[#01013D] rounded-xl flex items-center justify-center mb-6 text-3xl transform group-hover:scale-110 transition-transform duration-300">
+                📊
+              </div>
+              <h4 class="text-2xl font-bold text-[#01013D] mb-3">Relatórios</h4>
+              <p class="text-gray-600 leading-relaxed">
+                Analytics avançados e relatórios personalizáveis para tomada de decisões estratégicas.
+              </p>
+              <div class="mt-6 inline-flex items-center text-[#0277EE] font-semibold">
+                <span>Em desenvolvimento</span>
+                <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="relative py-24 bg-gradient-to-b from-[#eef0ef]/30 to-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <h3 class="text-4xl sm:text-5xl font-bold text-[#01013D] mb-4">
+            Nossos Planos
+          </h3>
+          <p class="text-xl text-gray-600 mb-8">
+            Encontre o melhor plano de acordo com a necessidade do seu escritório.
+          </p>
+          <div class="w-24 h-1 bg-gradient-to-r from-[#0277EE] to-[#01013D] mx-auto rounded-full"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+          <!-- Individual Plan -->
+          <div class="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
+            <div class="absolute inset-0 bg-gradient-to-br from-[#0277EE]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            
+            <div class="relative p-8 md:p-10">
+              <div class="mb-6">
+                <h4 class="text-3xl font-bold text-[#01013D] mb-2">Individual</h4>
+                <p class="text-gray-600 mb-4">Advogado iniciante</p>
+                <div class="flex items-baseline gap-2">
+                  <span class="text-5xl font-bold text-[#0277EE]">Grátis</span>
+                </div>
+              </div>
+
+              <div class="border-t border-b border-gray-200 py-8 mb-8 space-y-4">
+                <div class="flex items-center gap-3">
+                  <svg class="w-6 h-6 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span class="text-gray-700 font-medium">Geração de Documentos</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <svg class="w-6 h-6 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span class="text-gray-700 font-medium">Gestão de Clientes</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <svg class="w-6 h-6 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span class="text-gray-700 font-medium">Gestão de Tarefas</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <svg class="w-6 h-6 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span class="text-gray-700 font-medium">Gestão de Trabalhos</span>
+                </div>
+              </div>
+
+              <button
+                class="w-full py-4 bg-gradient-to-r from-[#0277EE] to-[#01013D] text-white font-bold rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg transform"
+                on:click={() => router.navigate('/register')}
+              >
+                Selecionar este plano
+              </button>
+            </div>
+          </div>
+
+          <!-- CNPJ Plan -->
+          <div class="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border-2 border-[#0277EE]">
+            <div class="absolute top-0 right-0 bg-gradient-to-br from-[#0277EE] to-[#01013D] text-white px-4 py-2 rounded-bl-lg">
+              <span class="text-sm font-bold">Popular</span>
+            </div>
+            
+            <div class="absolute inset-0 bg-gradient-to-br from-[#0277EE]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            
+            <div class="relative p-8 md:p-10">
+              <div class="mb-6">
+                <h4 class="text-3xl font-bold text-[#01013D] mb-2">CNPJ</h4>
+                <p class="text-gray-600 mb-4">Advogado com CNPJ</p>
+                <div class="flex items-baseline gap-2">
+                  <span class="text-5xl font-bold text-[#0277EE]">R$ 70</span>
+                  <span class="text-gray-600 text-lg">/mês</span>
+                </div>
+              </div>
+
+              <div class="border-t border-b border-gray-200 py-8 mb-8 space-y-4">
+                <div class="flex items-center gap-3">
+                  <svg class="w-6 h-6 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span class="text-gray-700 font-medium">Inclusão de uma sociedade</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <svg class="w-6 h-6 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span class="text-gray-700 font-medium">Acesso de Dois Advogados</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <svg class="w-6 h-6 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span class="text-gray-700 font-medium">Acesso de um membro equipe</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <svg class="w-6 h-6 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span class="text-gray-700 font-medium">Membros Adicionais <span class="text-[#0277EE] font-bold">R$ 15,00</span></span>
+                </div>
+              </div>
+
+              <button
+                class="w-full py-4 bg-gradient-to-r from-[#0277EE] to-[#01013D] text-white font-bold rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg transform"
+                on:click={() => router.navigate('/register')}
+              >
+                Selecionar este plano
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-12 text-center">
+          <p class="text-gray-600 text-lg">
+            Precisa de um plano customizado?
+            <a href="mailto:contato@procstudio.com" class="text-[#0277EE] font-semibold hover:text-[#01013D] transition-colors duration-300">
+              Entre em contato
+            </a>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="relative py-20 bg-gradient-to-r from-[#01013D] to-[#0277EE] overflow-hidden">
+      <div class="absolute inset-0 opacity-10">
+        <div class="absolute transform rotate-45 -right-20 top-10 w-96 h-96 bg-white rounded-full"></div>
+        <div class="absolute transform -rotate-45 -left-20 bottom-10 w-80 h-80 bg-white rounded-full"></div>
+      </div>
+      <div class="relative max-w-4xl mx-auto text-center px-4">
+        <h3 class="text-4xl font-bold text-white mb-6">
+          Pronto para transformar sua gestão jurídica?
+        </h3>
+        <p class="text-xl text-white/90 mb-8">
+          Junte-se a nós e experimente uma nova forma de gerenciar processos
+        </p>
+        <button 
+          class="px-10 py-4 bg-white text-[#0277EE] text-lg font-bold rounded-xl hover:bg-[#eef0ef] transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+          on:click={() => router.navigate('/register')}
+        >
+          Começar gratuitamente
+        </button>
+      </div>
+    </section>
   </div>
-
-  <div class="divider"></div>
-
-  <!-- Features em desenvolvimento -->
-  <section class="py-16">
-    <div class="container mx-auto px-4">
-      <h3 class="text-3xl font-bold text-center mb-12">Funcionalidades</h3>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div class="card bg-base-200 shadow-lg">
-          <div class="card-body text-center">
-            <div class="text-4xl mb-4">⚖️</div>
-            <h4 class="card-title justify-center">Gestão Jurídica</h4>
-            <p class="opacity-70">Em desenvolvimento...</p>
-          </div>
-        </div>
-
-        <div class="card bg-base-200 shadow-lg">
-          <div class="card-body text-center">
-            <div class="text-4xl mb-4">👥</div>
-            <h4 class="card-title justify-center">Equipes</h4>
-            <p class="opacity-70">Em desenvolvimento...</p>
-          </div>
-        </div>
-
-        <div class="card bg-base-200 shadow-lg">
-          <div class="card-body text-center">
-            <div class="text-4xl mb-4">📊</div>
-            <h4 class="card-title justify-center">Relatórios</h4>
-            <p class="opacity-70">Em desenvolvimento...</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
 </MainLayout>
+
+<style>
+  @keyframes blob {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+    }
+    33% {
+      transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+      transform: translate(-20px, 20px) scale(0.9);
+    }
+  }
+
+  .animate-blob {
+    animation: blob 7s infinite;
+  }
+
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.8s ease-out;
+  }
+
+  .animate-fade-in-delay-1 {
+    animation: fade-in 0.8s ease-out 0.2s both;
+  }
+
+  .animate-fade-in-delay-2 {
+    animation: fade-in 0.8s ease-out 0.4s both;
+  }
+
+  .animate-fade-in-delay-3 {
+    animation: fade-in 0.8s ease-out 0.6s both;
+  }
+</style>

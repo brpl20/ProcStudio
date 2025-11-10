@@ -12,153 +12,261 @@
     authStore.logout();
     router.navigate('/');
   }
+
+  let mobileMenuOpen = false;
+
+  function toggleMobileMenu() {
+    mobileMenuOpen = !mobileMenuOpen;
+  }
+
+  function closeMobileMenu() {
+    mobileMenuOpen = false;
+  }
 </script>
 
-<div class="min-h-screen flex flex-col">
+<div class="min-h-screen flex flex-col bg-[#eef0ef]">
   <!-- Navbar -->
-  <div class="navbar bg-base-100 container mx-auto">
-    <div class="flex-1">
-      <a
-        class="btn btn-ghost normal-case text-xl"
-        href="/"
-        on:click|preventDefault={() => router.navigate('/')}
-      >
-        {WebsiteName}
-      </a>
-    </div>
-    <div class="flex-none">
-      <ul class="menu menu-horizontal px-1 hidden sm:flex font-bold text-lg">
-        {#if !isAuthenticated}
-          <li class="md:mx-2">
+  <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-20">
+        <!-- Logo -->
+        <div class="flex-shrink-0">
+          <a
+            href="/"
+            on:click|preventDefault={() => { router.navigate('/'); closeMobileMenu(); }}
+            class="flex items-center group"
+          >
+            <div class="text-3xl font-bold bg-gradient-to-r from-[#01013D] to-[#0277EE] bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300">
+              {WebsiteName}
+            </div>
+          </a>
+        </div>
+
+        <!-- Desktop Navigation -->
+        <div class="hidden md:flex items-center space-x-1">
+          {#if !isAuthenticated}
             <a
               href="/login"
               on:click|preventDefault={() => router.navigate('/login')}
-              class:active={currentPath === '/login'}>Login</a
+              class="px-6 py-2.5 text-[#01013D] font-semibold rounded-lg hover:bg-[#eef0ef] transition-all duration-300 {currentPath === '/login' ? 'bg-[#eef0ef]' : ''}"
             >
-          </li>
-          <li class="md:mx-2">
+              Login
+            </a>
             <a
               href="/register"
               on:click|preventDefault={() => router.navigate('/register')}
-              class:active={currentPath === '/register'}>Register</a
+              class="ml-2 px-6 py-2.5 bg-gradient-to-r from-[#0277EE] to-[#01013D] text-white font-semibold rounded-lg hover:shadow-lg hover:scale-105 transition-all duration-300"
             >
-          </li>
-        {:else}
-          <li class="md:mx-2">
+              Cadastrar
+            </a>
+          {:else}
             <a
               href="/dashboard"
               on:click|preventDefault={() => router.navigate('/dashboard')}
-              class:active={currentPath === '/dashboard'}>Dashboard</a
+              class="px-6 py-2.5 text-[#01013D] font-semibold rounded-lg hover:bg-[#eef0ef] transition-all duration-300 {currentPath === '/dashboard' ? 'bg-[#eef0ef]' : ''}"
             >
-          </li>
-          <li class="md:mx-2">
+              Dashboard
+            </a>
             <a
               href="/teams"
               on:click|preventDefault={() => router.navigate('/teams')}
-              class:active={currentPath === '/teams'}>Teams</a
+              class="px-6 py-2.5 text-[#01013D] font-semibold rounded-lg hover:bg-[#eef0ef] transition-all duration-300 {currentPath === '/teams' ? 'bg-[#eef0ef]' : ''}"
             >
-          </li>
-          <li class="md:mx-2">
-            <button class="btn btn-ghost" on:click={handleLogout}>Logout</button>
-          </li>
-        {/if}
-      </ul>
+              Teams
+            </a>
+            <button
+              class="ml-2 px-6 py-2.5 text-[#01013D] font-semibold rounded-lg border-2 border-[#01013D] hover:bg-[#01013D] hover:text-white transition-all duration-300"
+              on:click={handleLogout}
+            >
+              Logout
+            </button>
+          {/if}
+        </div>
+
+        <!-- Mobile menu button -->
+        <div class="md:hidden">
+          <button
+            on:click={toggleMobileMenu}
+            class="inline-flex items-center justify-center p-2 rounded-lg text-[#01013D] hover:bg-[#eef0ef] transition-colors duration-300"
+            aria-expanded={mobileMenuOpen}
+          >
+            <svg
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              {#if mobileMenuOpen}
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              {:else}
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              {/if}
+            </svg>
+          </button>
+        </div>
+      </div>
 
       <!-- Mobile menu -->
-      <div class="dropdown dropdown-end sm:hidden">
-        <!-- svelte-ignore a11y_label_has_associated_control -->
-        <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-        <label tabindex="0" class="btn btn-ghost btn-circle">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 6h16M4 12h16M4 18h7"
-            />
-          </svg>
-        </label>
-        <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-        <ul
-          tabindex="0"
-          class="menu menu-lg dropdown-content mt-3 z-[1] p-2 shadow-sm bg-base-100 rounded-box w-52 font-bold"
-        >
-          {#if !isAuthenticated}
-            <li>
-              <a href="/login" on:click|preventDefault={() => router.navigate('/login')}>Login</a>
-            </li>
-            <li>
-              <a href="/register" on:click|preventDefault={() => router.navigate('/register')}
-                >Register</a
+      {#if mobileMenuOpen}
+        <div class="md:hidden pb-4 animate-slide-down">
+          <div class="flex flex-col space-y-2">
+            {#if !isAuthenticated}
+              <a
+                href="/login"
+                on:click|preventDefault={() => { router.navigate('/login'); closeMobileMenu(); }}
+                class="px-4 py-3 text-[#01013D] font-semibold rounded-lg hover:bg-[#eef0ef] transition-all duration-300 {currentPath === '/login' ? 'bg-[#eef0ef]' : ''}"
               >
-            </li>
-          {:else}
-            <li>
-              <a href="/dashboard" on:click|preventDefault={() => router.navigate('/dashboard')}
-                >Dashboard</a
+                Login
+              </a>
+              <a
+                href="/register"
+                on:click|preventDefault={() => { router.navigate('/register'); closeMobileMenu(); }}
+                class="px-4 py-3 bg-gradient-to-r from-[#0277EE] to-[#01013D] text-white font-semibold rounded-lg text-center hover:shadow-lg transition-all duration-300"
               >
-            </li>
-            <li>
-              <a href="/teams" on:click|preventDefault={() => router.navigate('/teams')}>Teams</a>
-            </li>
-            <li><button on:click={handleLogout}>Logout</button></li>
-          {/if}
-        </ul>
-      </div>
+                Cadastrar
+              </a>
+            {:else}
+              <a
+                href="/dashboard"
+                on:click|preventDefault={() => { router.navigate('/dashboard'); closeMobileMenu(); }}
+                class="px-4 py-3 text-[#01013D] font-semibold rounded-lg hover:bg-[#eef0ef] transition-all duration-300 {currentPath === '/dashboard' ? 'bg-[#eef0ef]' : ''}"
+              >
+                Dashboard
+              </a>
+              <a
+                href="/teams"
+                on:click|preventDefault={() => { router.navigate('/teams'); closeMobileMenu(); }}
+                class="px-4 py-3 text-[#01013D] font-semibold rounded-lg hover:bg-[#eef0ef] transition-all duration-300 {currentPath === '/teams' ? 'bg-[#eef0ef]' : ''}"
+              >
+                Teams
+              </a>
+              <button
+                class="px-4 py-3 text-[#01013D] font-semibold rounded-lg border-2 border-[#01013D] hover:bg-[#01013D] hover:text-white transition-all duration-300 text-left"
+                on:click={() => { handleLogout(); closeMobileMenu(); }}
+              >
+                Logout
+              </button>
+            {/if}
+          </div>
+        </div>
+      {/if}
     </div>
-  </div>
+  </nav>
 
   <!-- Main content -->
-  <div class="flex-1 container mx-auto px-4 py-8">
+  <main class="flex-1">
     <slot />
-  </div>
+  </main>
 
   <!-- Footer -->
   {#if showFooter}
-    <div class="mt-auto">
-      <div class="border-t max-w-[1000px] mx-auto"></div>
-      <footer
-        class="footer md:footer-horizontal p-10 gap-x-48 lg:gap-x-64 xl:gap-x-96 place-content-center text-base"
-      >
-        <nav>
-          <span class="footer-title opacity-80">Navigation</span>
-          <a
-            class="link link-hover mb-1"
-            href="/"
-            on:click|preventDefault={() => router.navigate('/')}>Home</a
-          >
-          <a
-            class="link link-hover my-1"
-            href="/dashboard"
-            on:click|preventDefault={() => router.navigate('/dashboard')}>Dashboard</a
-          >
-          <a
-            class="link link-hover my-1"
-            href="/teams"
-            on:click|preventDefault={() => router.navigate('/teams')}>Teams</a
-          >
-        </nav>
-        <aside>
-          <span class="footer-title opacity-80">About</span>
-          <div class="max-w-[260px]">
-            <div class="font-bold text-2xl mb-1">{WebsiteName}</div>
-            <div class="font-light">Professional Resource Center API Platform</div>
+    <footer class="bg-white border-t border-gray-100 mt-auto">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <!-- Brand -->
+          <div class="space-y-4">
+            <h3 class="text-3xl font-bold bg-gradient-to-r from-[#01013D] to-[#0277EE] bg-clip-text text-transparent">
+              {WebsiteName}
+            </h3>
+            <p class="text-gray-600 text-lg leading-relaxed">
+              Professional Resource Center API Platform
+            </p>
+            <p class="text-sm text-gray-500">
+              Transformando a gestão jurídica com tecnologia de ponta
+            </p>
           </div>
-        </aside>
-      </footer>
-    </div>
+
+          <!-- Navigation -->
+          <div>
+            <h4 class="text-lg font-bold text-[#01013D] mb-4">Navegação</h4>
+            <ul class="space-y-3">
+              <li>
+                <a
+                  href="/"
+                  on:click|preventDefault={() => router.navigate('/')}
+                  class="text-gray-600 hover:text-[#0277EE] transition-colors duration-300 flex items-center group"
+                >
+                  <span class="w-1.5 h-1.5 bg-[#0277EE] rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                  Home
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/dashboard"
+                  on:click|preventDefault={() => router.navigate('/dashboard')}
+                  class="text-gray-600 hover:text-[#0277EE] transition-colors duration-300 flex items-center group"
+                >
+                  <span class="w-1.5 h-1.5 bg-[#0277EE] rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                  Dashboard
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/teams"
+                  on:click|preventDefault={() => router.navigate('/teams')}
+                  class="text-gray-600 hover:text-[#0277EE] transition-colors duration-300 flex items-center group"
+                >
+                  <span class="w-1.5 h-1.5 bg-[#0277EE] rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                  Teams
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Contact/Info -->
+          <div>
+            <h4 class="text-lg font-bold text-[#01013D] mb-4">Contato</h4>
+            <ul class="space-y-3 text-gray-600">
+              <li class="flex items-center">
+                <svg class="w-5 h-5 mr-2 text-[#0277EE]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+                contato@procstudio.com
+              </li>
+              <li class="flex items-center">
+                <svg class="w-5 h-5 mr-2 text-[#0277EE]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                Brasil
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="border-t border-gray-200 mt-12 pt-8 text-center">
+          <p class="text-gray-500 text-sm">
+            © {new Date().getFullYear()} {WebsiteName}. Todos os direitos reservados.
+          </p>
+        </div>
+      </div>
+    </footer>
   {/if}
 </div>
 
 <style>
-  .active {
-    background-color: var(--color-primary, #180042);
-    color: var(--color-primary-content, #fefbf6);
+  @keyframes slide-down {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-slide-down {
+    animation: slide-down 0.3s ease-out;
   }
 </style>
