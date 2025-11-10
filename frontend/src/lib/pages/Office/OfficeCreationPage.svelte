@@ -234,9 +234,6 @@
             phone: newOfficeStore.formData.phones[0] || ''
           }}
           pixDocumentType="cnpj"
-          on:remove={() => {
-            // Bank is not removable for office
-          }}
         />
       {/snippet}
     </FormSection>

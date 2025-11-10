@@ -93,7 +93,8 @@ export const currentUserProfile: Readable<UserProfileData | null> = derived(
   ([$authStore, $userProfileStore], set) => {
     if ($authStore.isAuthenticated && $authStore.user?.data?.id && !$userProfileStore.profile) {
       userProfileStore.fetchCurrentUser($authStore.user.data.id);
-    } else if (!$authStore.isAuthenticated) {
+    } else if (!$authStore.isAuthenticated && $userProfileStore.profile) {
+      // Only clear profile if it exists to prevent recursive updates
       userProfileStore.clearProfile();
     }
     set($userProfileStore.profile);

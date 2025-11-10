@@ -105,8 +105,8 @@ module Api
       def users_params
         params.expect(
           user: [
-            :email, :access_email, :password, :password_confirmation, :status,
-            { user_profile_attributes: user_profile_attributes }
+            :email, :access_email, :password, :password_confirmation, :status, # <= Status do User
+            { user_profile_attributes: user_profile_permitted_attributes } # <= Atributos do UserProfile
           ]
         )
       end
@@ -119,11 +119,20 @@ module Api
         authorize [:admin, :user], :"#{action_name}?"
       end
 
-      def user_profile_attributes
+      
+      def user_profile_permitted_attributes
         [
-          :role, :status, :user_id, :office_id, :name, :last_name,
+          :id, # Importante para atualizar um UserProfile existente
+          :role, # :status FOI REMOVIDO DAQUI
+          :office_id, :name, :last_name,
           :gender, :oab, :rg, :cpf, :nationality, :civil_status,
-          :birth, :mother_name
+          :birth, :mother_name,
+          # Permitir atributos aninhados para User, incluindo o 'status' e o 'id' do User
+          # Aqui permitimos todos os campos que podem vir de 'user_attributes' dentro de 'user_profile_attributes'
+          { user_attributes: %i[id status email password password_confirmation] },
+          # Permitir outros nested attributes de UserProfile
+          { phones_attributes: %i[id phone_number _destroy] },
+          { addresses_attributes: %i[id street number complement neighborhood city state zip_code _destroy] }
         ]
       end
 

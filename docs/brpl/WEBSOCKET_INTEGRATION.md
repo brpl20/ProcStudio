@@ -22,8 +22,6 @@ const wsUrl = `ws://localhost:3000/cable?token=${jwtToken}`;
 ### 1. Install Action Cable Client
 ```bash
 npm install @rails/actioncable
-# or
-yarn add @rails/actioncable
 ```
 
 ### 2. Create Connection
