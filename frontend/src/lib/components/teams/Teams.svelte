@@ -21,10 +21,8 @@
       loading = true;
       const response = await api.teams.getMyTeam();
       myTeam = response.data.team;
-      // console.log('Loaded team data:', myTeam);
     } catch (err) {
       error = err.message || 'Erro ao carregar dados da equipe';
-      // console.error('Error loading team:', err);
     } finally {
       loading = false;
     }

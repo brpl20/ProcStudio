@@ -1,73 +1,66 @@
-<script>
-  import { createEventDispatcher } from 'svelte';
+<script lang="ts">
+  import type { TextFieldProps } from '../../types/form-field-contract';
   import { validateEmail, validateEmailRequired } from '../../validation';
 
-  export let value = '';
-  export let placeholder = 'email@exemplo.com';
-  export let id = 'email';
-  export let labelText = 'Email';
-  export let required = false;
-  export let disabled = false;
-  export let errors = '';
-  export let touched = false;
-  export let testId = 'email-input';
+  let {
+    value = $bindable(''),
+    id = 'email',
+    labelText = 'Email',
+    placeholder = 'email@exemplo.com',
+    required = false,
+    disabled = false,
+    errors = $bindable(null),
+    touched = $bindable(false),
+    wrapperClass = '',
+    inputClass = '',
+    testId = undefined
+  }: TextFieldProps = $props();
 
-  const dispatch = createEventDispatcher();
+  function handleBlur() {
+    touched = true;
 
-  let error = '';
-
-  // Reactive validation
-  $: {
-    if (touched && value !== undefined) {
-      if (required) {
-        error = validateEmailRequired(value);
-      } else {
-        error = validateEmail(value);
-      }
+    // Validate email format
+    if (required) {
+      const validationError = validateEmailRequired(value);
+      errors = validationError || null;
+    } else if (value) {
+      const validationError = validateEmail(value);
+      errors = validationError || null;
+    } else {
+      errors = null;
     }
   }
 
-  // Use external error if provided, otherwise use internal validation
-  $: displayError = errors || error;
-  $: hasError = touched && displayError;
-
-  function handleInput(event) {
-    value = event.target.value;
-    dispatch('input', { value, target: event.target });
-  }
-
-  function handleBlur(event) {
-    touched = true;
-    dispatch('blur', { value, target: event.target });
+  function handleInput() {
+    // Clear errors on input if already touched
+    if (touched && errors) {
+      errors = null;
+    }
   }
 </script>
 
-<div class="form-control w-full">
-  <label for={id} class="label justify-start">
+<div class="form-control w-full {wrapperClass}">
+  <label for={id} class="label justify-start pb-1">
     <span class="label-text font-medium">
       {labelText}
-      {required ? '*' : ''}
+      {#if required}<span class="text-error">*</span>{/if}
     </span>
   </label>
-
   <input
     {id}
     type="email"
-    class="input input-bordered w-full {hasError ? 'input-error' : ''}"
-    {value}
-    on:input={handleInput}
-    on:blur={handleBlur}
+    class="input input-bordered w-full {errors && touched ? 'input-error' : ''} {inputClass}"
+    bind:value
+    oninput={handleInput}
+    onblur={handleBlur}
     {disabled}
     {placeholder}
     aria-required={required ? 'true' : 'false'}
-    aria-invalid={hasError ? 'true' : 'false'}
-    aria-describedby={hasError ? `${id}-error` : undefined}
-    data-testid={testId}
+    aria-invalid={errors && touched ? 'true' : 'false'}
+    aria-describedby={errors && touched ? `${id}-error` : undefined}
+    data-testid={testId || `${id}-input`}
   />
-
-  {#if hasError}
-    <div id="{id}-error" class="text-error text-sm mt-1">
-      {displayError}
-    </div>
+  {#if errors && touched}
+    <div id="{id}-error" class="text-error text-sm mt-1">{errors}</div>
   {/if}
 </div>

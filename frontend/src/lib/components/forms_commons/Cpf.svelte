@@ -23,25 +23,14 @@
     formatFn = formatCPF
   }: CpfProps = $props();
 
-  const finalId = id;
-  const finalLabelText = labelText;
-  const finalPlaceholder = placeholder;
-  const finalRequired = required;
-  const finalDisabled = disabled;
-  const finalWrapperClass = wrapperClass;
-  const finalInputClass = inputClass;
-  const finalTestId = testId;
-  const finalValidateFn = validateFn;
-  const finalFormatFn = formatFn;
-
   // Handle input with optional formatting
   function handleInput(event: Event) {
     const target = event.target as HTMLInputElement;
     let newValue = target.value;
 
     // Apply formatting if provided
-    if (finalFormatFn) {
-      newValue = finalFormatFn(newValue);
+    if (formatFn) {
+      newValue = formatFn(newValue);
     }
 
     value = newValue;
@@ -52,38 +41,35 @@
     touched = true;
 
     // If validation function provided, validate on blur
-    if (finalValidateFn && finalRequired) {
-      const error = finalValidateFn(value);
-      if (error) {
-        errors = error;
-      }
+    if (validateFn && required) {
+      errors = validateFn(value);
     }
   }
 </script>
 
-<div class="form-control w-full {finalWrapperClass}">
-  <label for={finalId} class="label justify-start pb-1">
+<div class="form-control w-full {wrapperClass}">
+  <label for={id} class="label justify-start pb-1">
     <span class="label-text font-medium">
-      {finalLabelText}
-      {#if finalRequired}<span class="text-error">*</span>{/if}
+      {labelText}
+      {#if required}<span class="text-error">*</span>{/if}
     </span>
   </label>
   <input
-    id={finalId}
+    {id}
     type="text"
-    class="input input-bordered w-full {errors && touched ? 'input-error' : ''} {finalInputClass}"
+    class="input input-bordered w-full {errors && touched ? 'input-error' : ''} {inputClass}"
     bind:value
     oninput={handleInput}
     onblur={handleBlur}
-    disabled={finalDisabled}
-    placeholder={finalPlaceholder}
+    {disabled}
+    {placeholder}
     maxlength="14"
-    aria-required={finalRequired ? 'true' : 'false'}
+    aria-required={required ? 'true' : 'false'}
     aria-invalid={errors && touched ? 'true' : 'false'}
-    aria-describedby={errors && touched ? `${finalId}-error` : undefined}
-    data-testid={finalTestId || `${finalId}-input`}
+    aria-describedby={errors && touched ? `${id}-error` : undefined}
+    data-testid={testId || `${id}-input`}
   />
   {#if errors && touched}
-    <div id="{finalId}-error" class="text-error text-sm mt-1">{errors}</div>
+    <div id="{id}-error" class="text-error text-sm mt-1">{errors}</div>
   {/if}
 </div>

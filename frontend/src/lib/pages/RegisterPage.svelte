@@ -4,6 +4,7 @@
   import { router } from '../stores/routerStore';
   import api from '../api/index';
   import { validateAndNormalizeOab } from '../validation/oabValidator';
+  import Password from '../components/forms_commons/Password.svelte';
 
   let email = '';
   let password = '';
@@ -21,11 +22,6 @@
 
     if (password !== passwordConfirmation) {
       errorMessage = 'As senhas não coincidem';
-      return;
-    }
-
-    if (password.length < 6) {
-      errorMessage = 'A senha deve ter pelo menos 6 caracteres';
       return;
     }
 
@@ -140,37 +136,24 @@
         </div>
 
         <!-- Senha -->
-        <div class="form-control">
-          <label class="label" for="password">
-            <span class="label-text font-semibold">Senha</span>
-          </label>
-          <input
-            id="password"
-            type="password"
-            placeholder="Digite sua senha (mín. 6 caracteres)"
-            class="input input-bordered w-full"
-            bind:value={password}
-            required
-            disabled={isLoading}
-            minlength="6"
-          />
-        </div>
+        <Password
+          bind:value={password}
+          id="password"
+          labelText="Senha"
+          placeholder="Digite sua senha"
+          required={false}
+          disabled={isLoading}
+        />
 
         <!-- Confirmar senha -->
-        <div class="form-control">
-          <label class="label" for="passwordConfirmation">
-            <span class="label-text font-semibold">Confirmar senha</span>
-          </label>
-          <input
-            id="passwordConfirmation"
-            type="password"
-            placeholder="Confirme sua senha"
-            class="input input-bordered w-full"
-            bind:value={passwordConfirmation}
-            required
-            disabled={isLoading}
-          />
-        </div>
+        <Password
+          bind:value={passwordConfirmation}
+          id="passwordConfirmation"
+          labelText="Confirmar Senha"
+          placeholder="Confirme sua senha"
+          required={false}
+          disabled={isLoading}
+        />
 
         <!-- Mensagens -->
         {#if errorMessage}

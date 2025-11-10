@@ -148,11 +148,12 @@ module Api
       end
 
       def profile_completion_params
-        params.expect(user_profile: [:name, :last_name, :role, :oab, :cpf, :rg, :gender, :civil_status,
-                                     :nationality, :birth, :phone,
-                                     { addresses_attributes: [:description, :zip_code, :street, :number,
-                                                              :neighborhood, :city, :state],
-                                       phones_attributes: [:phone_number] }])
+        params.require(:user_profile).permit(
+          :name, :last_name, :role, :oab, :cpf, :rg, :gender, :civil_status,
+          :nationality, :birth, :phone,
+          addresses_attributes: [:complement, :zip_code, :street, :number, :neighborhood, :city, :state],
+          phones_attributes: [:phone_number]
+        )
       end
 
       def create_or_update_phone(user_profile, phone_number)

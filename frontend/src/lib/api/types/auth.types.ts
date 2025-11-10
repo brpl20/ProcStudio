@@ -29,6 +29,7 @@ export interface LoginResponseData {
   role?: string;
   name?: string;
   last_name?: string;
+  email?: string;
   oab?: string;
   gender?: string;
   message?: string;

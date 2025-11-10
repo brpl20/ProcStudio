@@ -1,9 +1,18 @@
-<script>
-  export let value = '';
-  export let placeholder = '(00) 00000-0000';
+<script lang="ts">
+  let {
+    value = $bindable(''),
+    id = 'phone',
+    labelText = 'Telefone',
+    placeholder = '(00) 00000-0000',
+    required = false,
+    disabled = false,
+    showLabel = true,
+    wrapperClass = '',
+    inputClass = ''
+  } = $props();
 
-  function formatPhone(value) {
-    const digits = value.replace(/\D/g, '');
+  function formatPhone(phoneValue: string): string {
+    const digits = phoneValue.replace(/\D/g, '');
 
     // Handle different phone number lengths
     if (digits.length <= 10) {
@@ -20,13 +29,31 @@
         .substring(0, 15);
     }
   }
+
+  function handleInput(event: Event) {
+    const target = event.target as HTMLInputElement;
+    value = formatPhone(target.value);
+  }
 </script>
 
-<input
-  type="tel"
-  class="input input-bordered w-full"
-  {value}
-  on:input={(e) => (value = formatPhone(e.target.value))}
-  {placeholder}
-  maxlength="15"
-/>
+<div class="form-control w-full {wrapperClass}">
+  {#if showLabel}
+    <label for={id} class="label justify-start pb-1">
+      <span class="label-text font-medium">
+        {labelText}
+        {#if required}<span class="text-error">*</span>{/if}
+      </span>
+    </label>
+  {/if}
+  <input
+    {id}
+    type="tel"
+    class="input input-bordered w-full {inputClass}"
+    {value}
+    oninput={handleInput}
+    {placeholder}
+    {disabled}
+    maxlength="15"
+    aria-required={required ? 'true' : 'false'}
+  />
+</div>

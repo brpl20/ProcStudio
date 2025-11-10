@@ -37,7 +37,7 @@ export default [
       'no-console': 'warn',
       'no-debugger': 'error',
       'no-unused-vars': 'off',
-      'prefer-const': 'error',
+      'prefer-const': 'off',
       'no-var': 'error',
       eqeqeq: ['error', 'always'],
       curly: ['error', 'all'],

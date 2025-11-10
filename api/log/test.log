@@ -18107,3 +18107,5 @@ DEPRECATION WARNING: `to_time` will always preserve the full timezone rather tha
 DEPRECATION WARNING: `to_time` will always preserve the full timezone rather than offset of the receiver in Rails 8.1. To opt in to the new behavior, set `config.active_support.to_time_preserves_timezone = :zone`. (called from <top (required)> at /Users/brpl/code/ProcStudio/api/config/environment.rb:7)
 [dotenv] Set [36mLEGAL_DATA_API_KEY[0m, [36mLEGAL_DATA_ENDPOINT[0m, [36mAWS_ACCESS_KEY_ID[0m, [36mAWS_SECRET_ACCESS_KEY[0m, [36mAWS_BUCKET_MAIN[0m, [36mAWS_DEFAULT_REGION[0m, [36mGITHUB_TOKEN[0m, [36mANTHROPIC_API_KEY[0m, [36mOPENAI_API_KEY[0m, [36mGEMINI_API_KEY[0m, [36mOPENROUTER_API_KEY[0m, [36mDEEPSEEK_API_KEY[0m, and [36mMISTRAL_API_KEY[0m
 [dotenv] Loaded [33m.env[0m
+DEPRECATION WARNING: `to_time` will always preserve the full timezone rather than offset of the receiver in Rails 8.1. To opt in to the new behavior, set `config.active_support.to_time_preserves_timezone = :zone`. (called from <top (required)> at /Users/brpl/code/ProcStudio/api/config/environment.rb:7)
+[dotenv] Loaded [33m.env[0m
