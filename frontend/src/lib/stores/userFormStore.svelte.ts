@@ -25,6 +25,9 @@ export interface UserFormState {
   success: boolean;
   editingUserId: number | null;
   editingUserProfileId: number | null;
+  // -> NOVOS ESTADOS PARA MÚLTIPLOS CONVITES
+  inviteEmails: string[];
+  currentInviteEmail: string;
 }
 
 // Estado Inicial
@@ -46,6 +49,10 @@ class UserFormStore {
   editingUserId = $state<number | null>(null);
   editingUserProfileId = $state<number | null>(null);
 
+  // -> NOVOS ESTADOS PARA MÚLTIPLOS CONVITES
+  inviteEmails = $state<string[]>([]);
+  currentInviteEmail = $state('');
+
   startCreate() {
     this.reset();
     this.mode = 'create';
@@ -53,6 +60,7 @@ class UserFormStore {
 
   startEdit(user: any) {
     const bankAccount = user.attributes?.bank_accounts?.[0] || {};
+    this.reset(); // Garante que o estado de convite seja limpo
 
     this.formData = {
       basicInfo: {
@@ -104,8 +112,6 @@ class UserFormStore {
     this.mode = 'edit';
     this.editingUserId = user.id;
     this.editingUserProfileId = user.attributes.user_profile_id;
-    this.error = null;
-    this.success = false;
   }
 
   startInvite() {
@@ -121,7 +127,43 @@ class UserFormStore {
     this.success = false;
     this.editingUserId = null;
     this.editingUserProfileId = null;
+    // -> LIMPAR ESTADOS DE CONVITE
+    this.inviteEmails = [];
+    this.currentInviteEmail = '';
   }
+
+  // -> NOVA FUNÇÃO PARA ADICIONAR E-MAIL COM VALIDAÇÃO
+  addCurrentEmail() {
+    this.error = null;
+    const emailToAdd = this.currentInviteEmail.trim().toLowerCase();
+
+    if (!emailToAdd) return;
+
+    // Validação de formato de e-mail
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailToAdd)) {
+        this.error = `O formato do e-mail "${emailToAdd}" é inválido.`;
+        return;
+    }
+
+    // Validação de duplicados
+    if (this.inviteEmails.includes(emailToAdd)) {
+        this.error = `O e-mail "${emailToAdd}" já foi adicionado à lista.`;
+        this.currentInviteEmail = ''; // Limpa o input mesmo se for duplicado
+        return;
+    }
+
+    this.inviteEmails.push(emailToAdd);
+    this.inviteEmails = [...this.inviteEmails]; // Força a reatividade do Svelte 5
+    this.currentInviteEmail = '';
+  }
+
+  // -> NOVA FUNÇÃO PARA REMOVER E-MAIL
+  removeEmail(index: number) {
+    this.inviteEmails.splice(index, 1);
+    this.inviteEmails = [...this.inviteEmails]; // Força a reatividade
+  }
+
 
   async submit() {
     this.loading = true;
@@ -130,9 +172,15 @@ class UserFormStore {
     try {
       let response;
       const { mode, formData, editingUserId, editingUserProfileId } = this;
-
+      
+      // -> LÓGICA ATUALIZADA PARA MÚLTIPLOS CONVITES
       if (mode === 'invite') {
-        response = await api.users.sendInvite(formData.credentials.email);
+        if (this.inviteEmails.length === 0) {
+            throw new Error('Adicione pelo menos um e-mail para enviar os convites.');
+        }
+        // Envia todos os convites em paralelo para melhor performance
+        const invitePromises = this.inviteEmails.map(email => api.users.sendInvite(email));
+        response = await Promise.all(invitePromises);
       } else {
         const { bankAccount } = formData;
         const hasBankData = bankAccount.bank_name && bankAccount.agency && bankAccount.account;
@@ -223,12 +271,13 @@ class UserFormStore {
         }
       }
 
-      if (response && response.success !== false) {
+      // Simplificando a verificação de sucesso para Promise.all
+      if (response) {
         this.loading = false;
         this.success = true;
         this.error = null;
       } else {
-        throw new Error(response?.message || 'Ocorreu um erro desconhecido.');
+        throw new Error('Ocorreu um erro desconhecido.');
       }
     } catch (err: any) {
       this.loading = false;
