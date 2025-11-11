@@ -47,7 +47,10 @@
 <div>
   <h3>Login</h3>
 
-  <form on:submit|preventDefault={handleSubmit}>
+  <form onsubmit={(e) => {
+    e.preventDefault();
+    handleSubmit(e);
+  }}>
     <div>
       <label for="login-email">E-mail:</label>
       <input type="email" id="login-email" bind:value={email} required disabled={loading} />

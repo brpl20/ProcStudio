@@ -63,7 +63,7 @@
               id="customer-search"
               bind:this={searchInput}
               bind:value={searchTerm}
-              on:input={handleSearchInput}
+              oninput={handleSearchInput}
               type="text"
               placeholder="Nome, CPF, CNPJ ou email..."
               class="input input-bordered w-full pr-10"
@@ -73,7 +73,7 @@
             {#if searchTerm}
               <button
                 class="absolute right-3 top-1/2 transform -translate-y-1/2 btn btn-ghost btn-xs"
-                on:click={() => {
+                onclick={() => {
                   searchTerm = '';
                   handleSearchInput();
                 }}
@@ -97,7 +97,7 @@
           <select
             id="status-filter"
             bind:value={statusFilter}
-            on:change={handleFilterChange}
+            onchange={handleFilterChange}
             class="select select-bordered select-sm"
             class:select-disabled={isLoading}
             disabled={isLoading}
@@ -117,7 +117,7 @@
           <select
             id="capacity-filter"
             bind:value={capacityFilter}
-            on:change={handleFilterChange}
+            onchange={handleFilterChange}
             class="select select-bordered select-sm"
             class:select-disabled={isLoading}
             disabled={isLoading}
@@ -137,7 +137,7 @@
           <select
             id="type-filter"
             bind:value={customerTypeFilter}
-            on:change={handleFilterChange}
+            onchange={handleFilterChange}
             class="select select-bordered select-sm"
             class:select-disabled={isLoading}
             disabled={isLoading}
@@ -158,7 +158,7 @@
             </div>
             <button
               class="btn btn-outline btn-sm"
-              on:click={clearAllFilters}
+              onclick={clearAllFilters}
               disabled={isLoading}
               title="Limpar todos os filtros"
             >
@@ -179,7 +179,7 @@
             🔍 "{searchTerm}"
             <button
               class="btn btn-ghost btn-xs p-0 min-h-0 h-auto"
-              on:click={() => {
+              onclick={() => {
                 searchTerm = '';
                 handleSearchInput();
               }}
@@ -199,7 +199,7 @@
                 : 'Falecido'}
             <button
               class="btn btn-ghost btn-xs p-0 min-h-0 h-auto"
-              on:click={() => {
+              onclick={() => {
                 statusFilter = '';
                 handleFilterChange();
               }}
@@ -219,7 +219,7 @@
                 : 'Incapaz'}
             <button
               class="btn btn-ghost btn-xs p-0 min-h-0 h-auto"
-              on:click={() => {
+              onclick={() => {
                 capacityFilter = '';
                 handleFilterChange();
               }}
@@ -241,7 +241,7 @@
                   : 'Contador'}
             <button
               class="btn btn-ghost btn-xs p-0 min-h-0 h-auto"
-              on:click={() => {
+              onclick={() => {
                 customerTypeFilter = '';
                 handleFilterChange();
               }}

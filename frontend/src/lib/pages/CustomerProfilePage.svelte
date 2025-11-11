@@ -94,7 +94,7 @@
       </div>
 
       <div class="text-center mt-6">
-        <button class="btn btn-primary" on:click={handleClose}>
+        <button class="btn btn-primary" onclick={handleClose}>
           ← Voltar à lista de clientes
         </button>
       </div>
@@ -124,7 +124,7 @@
       </div>
 
       <div class="text-center mt-6">
-        <button class="btn btn-primary" on:click={handleClose}>
+        <button class="btn btn-primary" onclick={handleClose}>
           ← Voltar à lista de clientes
         </button>
       </div>

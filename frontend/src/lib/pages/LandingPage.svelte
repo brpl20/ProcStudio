@@ -11,10 +11,10 @@
         <h2 class="text-2xl text-base-content opacity-70 mb-8">Sistema em Desenvolvimento</h2>
 
         <div class="flex gap-4 justify-center">
-          <button class="btn btn-primary btn-lg" on:click={() => router.navigate('/register')}>
+          <button class="btn btn-primary btn-lg" onclick={() => router.navigate('/register')}>
             Começar agora
           </button>
-          <button class="btn btn-outline btn-lg" on:click={() => router.navigate('/login')}>
+          <button class="btn btn-outline btn-lg" onclick={() => router.navigate('/login')}>
             Fazer login
           </button>
         </div>

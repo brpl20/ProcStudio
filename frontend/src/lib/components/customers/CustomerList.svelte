@@ -11,8 +11,7 @@
     phoneMask
   } from '../../utils/profileCustomerUtils';
 
-  export let customers: Customer[] = [];
-  export let isLoading: boolean = false;
+  let { customers = [], isLoading = false }: { customers?: Customer[]; isLoading?: boolean } = $props();
 
   const dispatch = createEventDispatcher<{
     edit: Customer;
@@ -26,9 +25,9 @@
     restoreProfile: string;
   }>();
 
-  let customerToDelete: Customer | null = null;
-  let profileToDelete: ProfileCustomer | null = null;
-  let showDeleteConfirm: boolean = false;
+  let customerToDelete = $state<Customer | null>(null);
+  let profileToDelete = $state<ProfileCustomer | null>(null);
+  let showDeleteConfirm = $state(false);
 
   function formatDate(dateString?: string | null): string {
     if (!dateString) {
@@ -198,7 +197,7 @@
                     <li>
                       <button
                         class="flex items-center gap-3 px-4 py-2 hover:bg-primary/5 rounded-lg transition-colors"
-                        on:click={() => handleViewProfileClick(customer)}
+                        onclick={() => handleViewProfileClick(customer)}
                         disabled={isLoading}
                       >
                         <svg class="w-4 h-4 text-info" fill="currentColor" viewBox="0 0 20 20">
@@ -215,7 +214,7 @@
                     <li>
                       <button
                         class="flex items-center gap-3 px-4 py-2 hover:bg-primary/5 rounded-lg transition-colors"
-                        on:click={() => handleEditClick(customer)}
+                        onclick={() => handleEditClick(customer)}
                         disabled={isLoading}
                       >
                         <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
@@ -230,7 +229,7 @@
                     <li>
                       <button
                         class="flex items-center gap-3 px-4 py-2 hover:bg-error/5 text-error rounded-lg transition-colors"
-                        on:click={() => confirmDelete(customer)}
+                        onclick={() => confirmDelete(customer)}
                         disabled={isLoading}
                       >
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -314,7 +313,7 @@
               <select
                 class="select select-sm select-bordered bg-base-100 hover:bg-base-200 transition-colors"
                 value={customer.status}
-                on:change={(e) => handleStatusChange(customer.id, e.currentTarget.value)}
+                onchange={(e) => handleStatusChange(customer.id, e.currentTarget.value)}
                 disabled={isLoading}
               >
                 <option value="active">Ativo</option>
@@ -406,7 +405,7 @@
                   {#if cpfOrCnpj !== 'Não possui'}
                     <button
                       class="btn btn-xs btn-ghost"
-                      on:click={() => {
+                      onclick={() => {
                         if (window.navigator && window.navigator.clipboard) {
                           window.navigator.clipboard.writeText(cpfOrCnpj);
                         }
@@ -428,7 +427,7 @@
                 <select
                   class="select select-sm select-bordered"
                   value={customer.status}
-                  on:change={(e) =>
+                  onchange={(e) =>
                     handleStatusChange(customer.id, e.currentTarget.value as CustomerStatus)}
                   disabled={isLoading}
                 >
@@ -444,7 +443,7 @@
                   {#if !customer.confirmed_at}
                     <button
                       class="btn btn-xs btn-outline"
-                      on:click={() => handleResendConfirmation(customer.id)}
+                      onclick={() => handleResendConfirmation(customer.id)}
                       disabled={isLoading}
                     >
                       Reenviar
@@ -472,7 +471,7 @@
                       <li>
                         <button
                           class="flex items-center gap-3 px-3 py-2 hover:bg-primary/5 rounded-lg transition-colors"
-                          on:click={() => handleViewProfileClick(customer)}
+                          onclick={() => handleViewProfileClick(customer)}
                           disabled={isLoading}
                         >
                           <svg class="w-4 h-4 text-info" fill="currentColor" viewBox="0 0 20 20">
@@ -489,7 +488,7 @@
                       <li>
                         <button
                           class="flex items-center gap-3 px-3 py-2 hover:bg-primary/5 rounded-lg transition-colors"
-                          on:click={() => handleEditClick(customer)}
+                          onclick={() => handleEditClick(customer)}
                           disabled={isLoading}
                         >
                           <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
@@ -504,7 +503,7 @@
                         <li>
                           <button
                             class="flex items-center gap-3 px-3 py-2 hover:bg-warning/5 text-warning rounded-lg transition-colors"
-                            on:click={() => handleInactivateProfile(profileCustomer)}
+                            onclick={() => handleInactivateProfile(profileCustomer)}
                             disabled={isLoading}
                           >
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -522,7 +521,7 @@
                       <li>
                         <button
                           class="flex items-center gap-3 px-3 py-2 hover:bg-error/5 text-error rounded-lg transition-colors"
-                          on:click={() => confirmDelete(customer)}
+                          onclick={() => confirmDelete(customer)}
                           disabled={isLoading}
                         >
                           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -540,7 +539,7 @@
                         <li>
                           <button
                             class="flex items-center gap-3 px-3 py-2 hover:bg-success/5 text-success rounded-lg transition-colors"
-                            on:click={() => handleRestoreProfile(profileCustomer)}
+                            onclick={() => handleRestoreProfile(profileCustomer)}
                             disabled={isLoading}
                           >
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -558,7 +557,7 @@
                       <li>
                         <button
                           class="flex items-center gap-3 px-3 py-2 hover:bg-error/5 text-error rounded-lg transition-colors"
-                          on:click={() => confirmDelete(customer)}
+                          onclick={() => confirmDelete(customer)}
                           disabled={isLoading}
                         >
                           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">

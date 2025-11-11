@@ -5,23 +5,28 @@
   import OfficeList from './OfficeList.svelte';
   import { lawyerStore } from '../../stores/lawyerStore.svelte';
 
-  let offices = [];
-  let loading = true;
-  let error = null;
-  let showForm = false;
-  let editingOffice = null;
-  let showDeleted = false;
-  let showOfficeSelection = false;
+  let offices = $state([]);
+  let loading = $state(true);
+  let error = $state(null);
+  let showForm = $state(false);
+  let editingOffice = $state(null);
+  let showDeleted = $state(false);
+  let showOfficeSelection = $state(false);
 
-  // Check for active lawyers
-  $: hasActiveLawyers = lawyerStore.activeLawyers.length > 0;
-  $: canCreateOffice = hasActiveLawyers;
-  $: tooltipMessage = !hasActiveLawyers
-    ? 'É necessário ter pelo menos um advogado ativo no sistema para criar um escritório'
-    : '';
+  // Check for active lawyers - using Svelte 5 runes
+  let isStoreReady = $derived(lawyerStore.initialized);
+  let hasActiveLawyers = $derived(lawyerStore.activeLawyers.length > 0);
+  let canCreateOffice = $derived(isStoreReady && hasActiveLawyers);
+  let tooltipMessage = $derived(
+    !isStoreReady
+      ? 'Carregando informações dos advogados...'
+      : !hasActiveLawyers
+        ? 'É necessário ter pelo menos um advogado ativo no sistema para criar um escritório'
+        : ''
+  );
 
-  // Debug logging
-  $: {
+  // Debug logging - using $effect for side effects
+  $effect(() => {
     console.log('OfficeManagement - Debug:', {
       totalLawyers: lawyerStore.lawyers.length,
       activeLawyers: lawyerStore.activeLawyers.length,
@@ -29,13 +34,14 @@
       canCreateOffice,
       loading: lawyerStore.loading,
       initialized: lawyerStore.initialized,
+      isStoreReady,
       showOfficeSelection,
       showForm
     });
     if (lawyerStore.lawyers.length > 0) {
       console.log('First lawyer:', lawyerStore.lawyers[0]);
     }
-  }
+  });
 
   async function loadOffices() {
     try {
@@ -153,15 +159,15 @@
       <div class="bg-white rounded-lg p-8 max-w-2xl w-full mx-4">
         <div class="flex justify-between items-center mb-6">
           <h2 class="text-2xl font-bold text-gray-900">Selecionar Tipo de Escritório</h2>
-          <button class="btn btn-ghost btn-sm" on:click={handleCloseSelection}>✕</button>
+          <button class="btn btn-ghost btn-sm" onclick={handleCloseSelection}>✕</button>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <!-- Existing Office Option -->
           <div
             class="card bg-base-100 shadow-xl cursor-pointer hover:shadow-2xl transition-shadow"
-            on:click={() => handleOfficeSelection(false)}
-            on:keydown={(e) => e.key === 'Enter' && handleOfficeSelection(false)}
+            onclick={() => handleOfficeSelection(false)}
+            onkeydown={(e) => e.key === 'Enter' && handleOfficeSelection(false)}
             tabindex="0"
             role="button"
           >
@@ -180,8 +186,8 @@
           <!-- New Office Option -->
           <div
             class="card bg-base-100 shadow-xl cursor-pointer hover:shadow-2xl transition-shadow"
-            on:click={() => handleOfficeSelection(true)}
-            on:keydown={(e) => e.key === 'Enter' && handleOfficeSelection(true)}
+            onclick={() => handleOfficeSelection(true)}
+            onkeydown={(e) => e.key === 'Enter' && handleOfficeSelection(true)}
             tabindex="0"
             role="button"
           >
@@ -210,7 +216,7 @@
             class="btn btn-primary"
             class:btn-disabled={!canCreateOffice}
             disabled={!canCreateOffice}
-            on:click={handleCreate}
+            onclick={handleCreate}
           >
             <span class="mr-2">➕</span>
             Novo Escritório
@@ -225,7 +231,7 @@
               type="checkbox"
               class="checkbox checkbox-primary"
               bind:checked={showDeleted}
-              on:change={toggleShowDeleted}
+              onchange={toggleShowDeleted}
             />
             <span class="label-text ml-2">Mostrar arquivados</span>
           </label>

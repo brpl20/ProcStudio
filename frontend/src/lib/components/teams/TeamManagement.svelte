@@ -90,7 +90,7 @@
 <div class="p-6">
   <div class="flex justify-between items-center mb-6">
     <h2 class="text-2xl font-semibold text-gray-800">Informações da Equipe</h2>
-    <button class="btn btn-primary btn-sm" on:click={toggleEdit} disabled={loading}>
+    <button class="btn btn-primary btn-sm" onclick={toggleEdit} disabled={loading}>
       {editMode ? 'Cancelar' : 'Editar'}
     </button>
   </div>
@@ -142,7 +142,7 @@
         <div class="card-body">
           <h3 class="card-title text-lg mb-4">Dados da Equipe</h3>
 
-          <form on:submit|preventDefault={handleSave}>
+          <form onsubmit={(e) => { e.preventDefault(); handleSave(e); }}>
             <div class="form-control mb-4">
               <label class="label" for="team-name">
                 <span class="label-text font-medium">Nome da Equipe</span>
@@ -197,7 +197,7 @@
                 <button
                   type="button"
                   class="btn btn-ghost"
-                  on:click={handleCancel}
+                  onclick={handleCancel}
                   disabled={loading}
                 >
                   Cancelar

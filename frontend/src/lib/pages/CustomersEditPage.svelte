@@ -60,7 +60,7 @@
             <button
               type="button"
               class="link link-hover"
-              on:click={() => router.navigate('/customers')}>Clientes</button
+              onclick={() => router.navigate('/customers')}>Clientes</button
             >
           </li>
           <li>Editar Cliente</li>
@@ -86,7 +86,7 @@
       <CustomerForm
         {customer}
         isLoading={$customerStore.isLoading}
-        on:submit={handleSubmit}
+        onsubmit={handleSubmit}
         on:cancel={handleCancel}
       />
     {:else}

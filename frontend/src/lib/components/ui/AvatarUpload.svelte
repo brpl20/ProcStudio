@@ -193,7 +193,7 @@ return;
   }
 </script>
 
-<svelte:window on:mousemove={handleMouseMove} on:mouseup={stopDrag} />
+<svelte:window onmousemove={handleMouseMove} onmouseup={stopDrag} />
 
 <div class="space-y-4">
   <!-- Current Avatar Display -->
@@ -222,7 +222,7 @@ return;
       <div class="flex flex-wrap gap-2">
         <button
           class="btn btn-primary btn-sm"
-          on:click={() => fileInput?.click()}
+          onclick={() => fileInput?.click()}
           disabled={loading}
         >
           {#if loading}
@@ -234,7 +234,7 @@ return;
         {#if currentAvatarUrl || previewUrl}
           <button
             class="btn btn-error btn-outline btn-sm"
-            on:click={removeAvatar}
+            onclick={removeAvatar}
             disabled={loading}
           >
             Remover Foto
@@ -249,7 +249,7 @@ return;
     bind:this={fileInput}
     type="file"
     accept="image/*"
-    on:change={handleFileSelect}
+    onchange={handleFileSelect}
     class="hidden"
   />
 
@@ -259,11 +259,11 @@ return;
     tabindex="0"
     class="border-2 border-dashed rounded-lg p-8 text-center transition-colors
            {isDragging ? 'border-primary bg-primary/10' : 'border-base-300'}"
-    on:drop={handleDrop}
-    on:dragover={handleDragOver}
-    on:dragleave={handleDragLeave}
-    on:click={() => fileInput?.click()}
-    on:keydown={(e) => e.key === 'Enter' && fileInput?.click()}
+    ondrop={handleDrop}
+    ondragover={handleDragOver}
+    ondragleave={handleDragLeave}
+    onclick={() => fileInput?.click()}
+    onkeydown={(e) => e.key === 'Enter' && fileInput?.click()}
   >
     <svg class="w-12 h-12 mx-auto mb-3 text-base-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -285,7 +285,7 @@ return;
         {#each avatarColors as color}
           <button
             class="btn btn-circle btn-sm {color}"
-            on:click={() => selectCustomColor(color)}
+            onclick={() => selectCustomColor(color)}
             class:ring-2={selectedColor === color && useCustomColor}
             class:ring-offset-2={selectedColor === color && useCustomColor}
           >
@@ -330,8 +330,8 @@ return;
               top: 50%;
               transform: translate(-50%, -50%);
             "
-            on:mousedown={startDrag}
-            on:keydown={(e) => e.key === 'Enter' && startDrag(e)}
+            onmousedown={startDrag}
+            onkeydown={(e) => e.key === 'Enter' && startDrag(e)}
           >
             <div class="absolute inset-0 border border-white/30"></div>
             <div class="absolute inset-0 grid grid-cols-3 grid-rows-3">
@@ -380,8 +380,8 @@ return;
       </div>
 
       <div class="modal-action">
-        <button class="btn btn-ghost" on:click={cancelCrop}>Cancelar</button>
-        <button class="btn btn-primary" on:click={cropAndUpload}>
+        <button class="btn btn-ghost" onclick={cancelCrop}>Cancelar</button>
+        <button class="btn btn-primary" onclick={cropAndUpload}>
           Aplicar
         </button>
       </div>

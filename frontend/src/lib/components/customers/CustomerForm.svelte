@@ -681,7 +681,7 @@
 
 <!-- Add beforeunload event to warn about unsaved changes -->
 <svelte:window
-  on:beforeunload={(event) => {
+  onbeforeunload={(event) => {
     if (formIsDirty) {
       event.preventDefault();
       return (event.returnValue = 'Você tem alterações não salvas. Tem certeza que deseja sair?');
@@ -707,7 +707,10 @@
 
     <!-- Form with ARIA attributes -->
     <form
-      on:submit|preventDefault={handleSubmit}
+      onsubmit={(e) => {
+        e.preventDefault();
+        handleSubmit(e);
+      }}
       class="space-y-6"
       aria-labelledby="customer-form-title"
     >
@@ -790,7 +793,7 @@
           <button
             type="button"
             class="btn btn-ghost"
-            on:click={handlePreviousStep}
+            onclick={handlePreviousStep}
             disabled={isLoading}
             aria-label="Voltar"
             data-testid="customer-back-button"
@@ -801,7 +804,7 @@
         <button
           type="button"
           class="btn btn-ghost"
-          on:click={handleCancel}
+          onclick={handleCancel}
           disabled={isLoading}
           aria-label="Cancelar e voltar"
           data-testid="customer-cancel-button"

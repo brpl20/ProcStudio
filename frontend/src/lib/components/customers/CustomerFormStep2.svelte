@@ -167,7 +167,7 @@
       type="text"
       class="input input-bordered w-full {errors.name && touched.name ? 'input-error' : ''}"
       bind:value={formData.name}
-      on:blur={() => handleBlur('name', formData.name)}
+      onblur={() => handleBlur('name', formData.name)}
       disabled={isLoading}
       aria-required="true"
       aria-invalid={errors.name && touched.name ? 'true' : 'false'}
@@ -191,7 +191,7 @@
         ? 'input-error'
         : ''}"
       bind:value={formData.last_name}
-      on:blur={() => handleBlur('last_name', formData.last_name)}
+      onblur={() => handleBlur('last_name', formData.last_name)}
       disabled={isLoading}
       aria-required="true"
       aria-invalid={errors.last_name && touched.last_name ? 'true' : 'false'}
@@ -213,8 +213,8 @@
       type="text"
       class="input input-bordered w-full {errors.cpf && touched.cpf ? 'input-error' : ''}"
       bind:value={formData.cpf}
-      on:input={handleCPFInput}
-      on:blur={() => handleBlur('cpf', formData.cpf)}
+      oninput={handleCPFInput}
+      onblur={() => handleBlur('cpf', formData.cpf)}
       disabled={isLoading}
       placeholder="000.000.000-00"
       maxlength="14"
@@ -238,7 +238,7 @@
       type="text"
       class="input input-bordered w-full {errors.rg && touched.rg ? 'input-error' : ''}"
       bind:value={formData.rg}
-      on:blur={() => handleBlur('rg', formData.rg)}
+      onblur={() => handleBlur('rg', formData.rg)}
       disabled={isLoading}
       aria-required="true"
       aria-invalid={errors.rg && touched.rg ? 'true' : 'false'}
@@ -260,8 +260,8 @@
       type="date"
       class="input input-bordered w-full {errors.birth && touched.birth ? 'input-error' : ''}"
       bind:value={formData.birth}
-      on:change={handleBirthDateChange}
-      on:blur={() => handleBlur('birth', formData.birth)}
+      onchange={handleBirthDateChange}
+      onblur={() => handleBlur('birth', formData.birth)}
       disabled={isLoading}
       aria-required="true"
       aria-invalid={errors.birth && touched.birth ? 'true' : 'false'}
@@ -342,7 +342,7 @@
         ? 'input-error'
         : ''}"
       bind:value={formData.profession}
-      on:blur={() => handleBlur('profession', formData.profession)}
+      onblur={() => handleBlur('profession', formData.profession)}
       disabled={isLoading}
       aria-required="true"
       aria-invalid={errors.profession && touched.profession ? 'true' : 'false'}
@@ -366,7 +366,7 @@
         ? 'input-error'
         : ''}"
       bind:value={formData.mother_name}
-      on:blur={() => handleBlur('mother_name', formData.mother_name)}
+      onblur={() => handleBlur('mother_name', formData.mother_name)}
       disabled={isLoading}
       aria-required="true"
       aria-invalid={errors.mother_name && touched.mother_name ? 'true' : 'false'}
@@ -395,7 +395,7 @@
       type="email"
       class="input input-bordered w-full {errors.email && touched.email ? 'input-error' : ''}"
       bind:value={formData.customer_attributes.email}
-      on:blur={() => handleBlur('email', formData.customer_attributes.email)}
+      onblur={() => handleBlur('email', formData.customer_attributes.email)}
       disabled={isLoading}
       placeholder="responsavel@exemplo.com"
       aria-required="true"
@@ -434,7 +434,7 @@
       type="password"
       class="input input-bordered w-full {errors.password && touched.password ? 'input-error' : ''}"
       bind:value={formData.customer_attributes.password}
-      on:blur={() => handleBlur('password', formData.customer_attributes.password)}
+      onblur={() => handleBlur('password', formData.customer_attributes.password)}
       disabled={isLoading}
       placeholder="Mínimo 6 caracteres"
       aria-required="true"
@@ -460,7 +460,7 @@
         ? 'input-error'
         : ''}"
       bind:value={formData.customer_attributes.password_confirmation}
-      on:blur={() =>
+      onblur={() =>
         handleBlur('password_confirmation', formData.customer_attributes.password_confirmation)}
       disabled={isLoading}
       placeholder="Digite a senha novamente"
@@ -491,7 +491,7 @@
       type="checkbox"
       class="checkbox checkbox-primary"
       bind:checked={useSameAddress}
-      on:change={() => dispatch('useSameAddressChange', { checked: useSameAddress })}
+      onchange={() => dispatch('useSameAddressChange', { checked: useSameAddress })}
       disabled={isLoading}
     />
     <span class="label-text">Usar mesmo endereço do representado</span>
@@ -605,7 +605,7 @@
       type="checkbox"
       class="checkbox checkbox-primary"
       bind:checked={useSameBankAccount}
-      on:change={() => dispatch('useSameBankAccountChange', { checked: useSameBankAccount })}
+      onchange={() => dispatch('useSameBankAccountChange', { checked: useSameBankAccount })}
       disabled={isLoading}
     />
     <span class="label-text">Usar mesma conta bancária do representado</span>
@@ -624,10 +624,10 @@
         type="text"
         class="input input-bordered w-full"
         value={bankSearchTerm || formData.bank_accounts_attributes[0].bank_name}
-        on:input={handleBankSearch}
-        on:focus={handleBankInputFocus}
-        on:blur={handleBankInputBlur}
-        on:keydown={handleBankKeydown}
+        oninput={handleBankSearch}
+        onfocus={handleBankInputFocus}
+        onblur={handleBankInputBlur}
+        onkeydown={handleBankKeydown}
         disabled={isLoading || useSameBankAccount}
         placeholder="Digite para buscar o banco..."
         autocomplete="off"
@@ -645,8 +645,8 @@
               index
                 ? 'bg-primary/20'
                 : ''}"
-              on:click={() => selectBank(bank)}
-              on:mouseenter={() => (selectedDropdownIndex = index)}
+              onclick={() => selectBank(bank)}
+              onmouseenter={() => (selectedDropdownIndex = index)}
             >
               <div class="font-medium">{bank.label}</div>
               <div class="text-sm text-base-content/60">Código: {bank.value}</div>
@@ -742,7 +742,7 @@
         type="button"
         class="btn btn-sm btn-outline"
         disabled={!formData.customer_attributes.email || isLoading || useSameBankAccount}
-        on:click={() =>
+        onclick={() =>
           (formData.bank_accounts_attributes[0].pix = formData.customer_attributes.email)}
         aria-label="Usar e-mail como chave PIX"
         data-testid="guardian-pix-email-button"
@@ -754,7 +754,7 @@
         type="button"
         class="btn btn-sm btn-outline"
         disabled={!formData.cpf || isLoading || useSameBankAccount}
-        on:click={() => (formData.bank_accounts_attributes[0].pix = formatCpfForPix(formData.cpf))}
+        onclick={() => (formData.bank_accounts_attributes[0].pix = formatCpfForPix(formData.cpf))}
         aria-label="Usar CPF como chave PIX"
         data-testid="guardian-pix-cpf-button"
       >
@@ -765,7 +765,7 @@
         type="button"
         class="btn btn-sm btn-outline"
         disabled={!formData.phones_attributes[0].number || isLoading || useSameBankAccount}
-        on:click={() =>
+        onclick={() =>
           (formData.bank_accounts_attributes[0].pix = formatPhoneForPix(
             formData.phones_attributes[0].number
           ))}

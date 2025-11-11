@@ -256,7 +256,7 @@
           <h2 class="card-title text-3xl">📂 Trabalhos</h2>
           <button
             class="btn btn-primary"
-            on:click={() => (showNewWorkForm = !showNewWorkForm)}
+            onclick={() => (showNewWorkForm = !showNewWorkForm)}
             disabled={isLoading}
           >
             + Novo Trabalho
@@ -373,13 +373,13 @@
               </div>
 
               <div class="card-actions justify-end mt-4">
-                <button class="btn btn-ghost" on:click={resetNewWorkForm} disabled={isLoading}>
+                <button class="btn btn-ghost" onclick={resetNewWorkForm} disabled={isLoading}>
                   Cancelar
                 </button>
                 <button
                   class="btn btn-primary"
                   class:loading={isLoading}
-                  on:click={addWork}
+                  onclick={addWork}
                   disabled={isLoading}
                 >
                   Criar Trabalho
@@ -463,7 +463,7 @@
                       <select
                         class="select select-sm select-bordered"
                         value={work.status}
-                        on:change={(e) => updateWorkStatus(work.id, e.target.value)}
+                        onchange={(e) => updateWorkStatus(work.id, e.target.value)}
                         disabled={isLoading}
                       >
                         <option value="in_progress">Em Andamento</option>
@@ -490,14 +490,14 @@
                         <div class="flex gap-2">
                           <button
                             class="btn btn-sm btn-success"
-                            on:click={saveEditWork}
+                            onclick={saveEditWork}
                             disabled={isLoading}
                           >
                             Salvar
                           </button>
                           <button
                             class="btn btn-sm btn-ghost"
-                            on:click={cancelEdit}
+                            onclick={cancelEdit}
                             disabled={isLoading}
                           >
                             Cancelar
@@ -507,14 +507,14 @@
                         <div class="flex gap-2">
                           <button
                             class="btn btn-sm btn-ghost"
-                            on:click={() => startEdit(work)}
+                            onclick={() => startEdit(work)}
                             disabled={isLoading}
                           >
                             ✏️
                           </button>
                           <button
                             class="btn btn-sm btn-error"
-                            on:click={() => deleteWork(work.id)}
+                            onclick={() => deleteWork(work.id)}
                             disabled={isLoading}
                           >
                             🗑️
@@ -539,7 +539,7 @@
           <button
             class="btn btn-outline"
             class:loading={isLoading}
-            on:click={loadWorks}
+            onclick={loadWorks}
             disabled={isLoading}
           >
             🔄 Atualizar

@@ -158,7 +158,7 @@ return;
                 <div class="mt-3">
                   <button
                     class="btn btn-primary btn-sm"
-                    on:click={() => showAvatarEditor = true}
+                    onclick={() => showAvatarEditor = true}
                   >
                     Alterar Foto
                   </button>
@@ -354,7 +354,7 @@ return;
                   </button>
                   <button
                     class="btn btn-outline"
-                    on:click={() => showAvatarEditor = true}
+                    onclick={() => showAvatarEditor = true}
                   >
                     Alterar Foto
                   </button>
@@ -382,7 +382,7 @@ return;
       <div class="modal-box max-w-3xl">
         <button
           class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-          on:click={() => showAvatarEditor = false}
+          onclick={() => showAvatarEditor = false}
         >✕</button>
 
         <h3 class="font-bold text-lg mb-4">Editar Foto do Perfil</h3>
@@ -400,7 +400,7 @@ return;
         <div class="modal-action">
           <button
             class="btn"
-            on:click={() => showAvatarEditor = false}
+            onclick={() => showAvatarEditor = false}
           >
             Fechar
           </button>
@@ -410,8 +410,8 @@ return;
         role="button"
         tabindex="0"
         class="modal-backdrop"
-        on:click={() => showAvatarEditor = false}
-        on:keydown={(e) => e.key === 'Escape' && (showAvatarEditor = false)}
+        onclick={() => showAvatarEditor = false}
+        onkeydown={(e) => e.key === 'Escape' && (showAvatarEditor = false)}
         aria-label="Fechar editor de avatar"
       ></div>
     </div>

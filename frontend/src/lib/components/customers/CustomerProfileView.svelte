@@ -96,10 +96,10 @@
         {/if}
       </div>
       <div class="flex gap-2">
-        <button class="btn btn-primary btn-sm" on:click={handleEdit} disabled={isLoading}>
+        <button class="btn btn-primary btn-sm" onclick={handleEdit} disabled={isLoading}>
           ✏️ Editar
         </button>
-        <button class="btn btn-ghost btn-sm btn-circle" on:click={handleClose}> ✕ </button>
+        <button class="btn btn-ghost btn-sm btn-circle" onclick={handleClose}> ✕ </button>
       </div>
     </div>
 
@@ -153,7 +153,7 @@
                     {#if getProfileCustomerCpfOrCpnj(profileCustomer) !== 'Não possui'}
                       <button
                         class="btn btn-xs btn-ghost"
-                        on:click={() => {
+                        onclick={() => {
                           if (navigator?.clipboard) {
                             navigator.clipboard.writeText(
                               getProfileCustomerCpfOrCpnj(profileCustomer)
@@ -466,6 +466,6 @@
 
   <!-- Modal backdrop -->
   <form method="dialog" class="modal-backdrop">
-    <button on:click={handleClose}>close</button>
+    <button onclick={handleClose}>close</button>
   </form>
 </div>
