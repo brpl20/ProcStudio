@@ -1,6 +1,12 @@
-<script>
+<script lang="ts">
   import MainLayout from '../components/MainLayout.svelte';
   import { router } from '../stores/routerStore';
+
+  let openFaq: number | null = null;
+
+  const toggleFaq = (index: number) => {
+    openFaq = openFaq === index ? null : index;
+  };
 </script>
 
 <MainLayout>
@@ -248,6 +254,188 @@
       </div>
     </section>
 
+    <!-- FAQ Section -->
+    <section class="relative py-24 bg-white">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <h3 class="text-4xl sm:text-5xl font-bold text-[#01013D] mb-4">
+            Perguntas Frequentes
+          </h3>
+          <p class="text-xl text-gray-600 mb-8">
+            Tire suas dúvidas sobre o ProcStudio
+          </p>
+          <div class="w-24 h-1 bg-gradient-to-r from-[#0277EE] to-[#01013D] mx-auto rounded-full"></div>
+        </div>
+
+        <div class="space-y-4">
+          <!-- FAQ Item 1 -->
+          <div class="group border border-gray-200 rounded-xl overflow-hidden hover:border-[#0277EE] transition-all duration-300">
+            <button
+              class="w-full px-6 py-5 text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-colors duration-300"
+              on:click={() => toggleFaq(0)}
+            >
+              <span class="text-lg font-semibold text-[#01013D] pr-8">Lorem ipsum dolor sit amet consectetur?</span>
+              <svg
+                class="w-6 h-6 text-[#0277EE] flex-shrink-0 transform transition-transform duration-300 {openFaq === 0 ? 'rotate-180' : ''}"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div class="overflow-hidden transition-all duration-300 {openFaq === 0 ? 'max-h-96' : 'max-h-0'}">
+              <div class="px-6 py-5 bg-gray-50 border-t border-gray-200">
+                <p class="text-gray-700 leading-relaxed">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ Item 2 -->
+          <div class="group border border-gray-200 rounded-xl overflow-hidden hover:border-[#0277EE] transition-all duration-300">
+            <button
+              class="w-full px-6 py-5 text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-colors duration-300"
+              on:click={() => toggleFaq(1)}
+            >
+              <span class="text-lg font-semibold text-[#01013D] pr-8">Adipiscing elit sed do eiusmod tempor?</span>
+              <svg
+                class="w-6 h-6 text-[#0277EE] flex-shrink-0 transform transition-transform duration-300 {openFaq === 1 ? 'rotate-180' : ''}"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div class="overflow-hidden transition-all duration-300 {openFaq === 1 ? 'max-h-96' : 'max-h-0'}">
+              <div class="px-6 py-5 bg-gray-50 border-t border-gray-200">
+                <p class="text-gray-700 leading-relaxed">
+                  Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ Item 3 -->
+          <div class="group border border-gray-200 rounded-xl overflow-hidden hover:border-[#0277EE] transition-all duration-300">
+            <button
+              class="w-full px-6 py-5 text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-colors duration-300"
+              on:click={() => toggleFaq(2)}
+            >
+              <span class="text-lg font-semibold text-[#01013D] pr-8">Incididunt ut labore et dolore magna aliqua?</span>
+              <svg
+                class="w-6 h-6 text-[#0277EE] flex-shrink-0 transform transition-transform duration-300 {openFaq === 2 ? 'rotate-180' : ''}"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div class="overflow-hidden transition-all duration-300 {openFaq === 2 ? 'max-h-96' : 'max-h-0'}">
+              <div class="px-6 py-5 bg-gray-50 border-t border-gray-200">
+                <p class="text-gray-700 leading-relaxed">
+                  Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ Item 4 -->
+          <div class="group border border-gray-200 rounded-xl overflow-hidden hover:border-[#0277EE] transition-all duration-300">
+            <button
+              class="w-full px-6 py-5 text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-colors duration-300"
+              on:click={() => toggleFaq(3)}
+            >
+              <span class="text-lg font-semibold text-[#01013D] pr-8">Ut enim ad minim veniam quis nostrud?</span>
+              <svg
+                class="w-6 h-6 text-[#0277EE] flex-shrink-0 transform transition-transform duration-300 {openFaq === 3 ? 'rotate-180' : ''}"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div class="overflow-hidden transition-all duration-300 {openFaq === 3 ? 'max-h-96' : 'max-h-0'}">
+              <div class="px-6 py-5 bg-gray-50 border-t border-gray-200">
+                <p class="text-gray-700 leading-relaxed">
+                  Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ Item 5 -->
+          <div class="group border border-gray-200 rounded-xl overflow-hidden hover:border-[#0277EE] transition-all duration-300">
+            <button
+              class="w-full px-6 py-5 text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-colors duration-300"
+              on:click={() => toggleFaq(4)}
+            >
+              <span class="text-lg font-semibold text-[#01013D] pr-8">Exercitation ullamco laboris nisi aliquip?</span>
+              <svg
+                class="w-6 h-6 text-[#0277EE] flex-shrink-0 transform transition-transform duration-300 {openFaq === 4 ? 'rotate-180' : ''}"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div class="overflow-hidden transition-all duration-300 {openFaq === 4 ? 'max-h-96' : 'max-h-0'}">
+              <div class="px-6 py-5 bg-gray-50 border-t border-gray-200">
+                <p class="text-gray-700 leading-relaxed">
+                  Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ Item 6 -->
+          <div class="group border border-gray-200 rounded-xl overflow-hidden hover:border-[#0277EE] transition-all duration-300">
+            <button
+              class="w-full px-6 py-5 text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-colors duration-300"
+              on:click={() => toggleFaq(5)}
+            >
+              <span class="text-lg font-semibold text-[#01013D] pr-8">Duis aute irure dolor in reprehenderit?</span>
+              <svg
+                class="w-6 h-6 text-[#0277EE] flex-shrink-0 transform transition-transform duration-300 {openFaq === 5 ? 'rotate-180' : ''}"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div class="overflow-hidden transition-all duration-300 {openFaq === 5 ? 'max-h-96' : 'max-h-0'}">
+              <div class="px-6 py-5 bg-gray-50 border-t border-gray-200">
+                <p class="text-gray-700 leading-relaxed">
+                  At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-12 text-center">
+          <p class="text-gray-600 text-lg mb-4">
+            Não encontrou sua resposta?
+          </p>
+          <a
+            href="mailto:contato@procstudio.com"
+            class="inline-flex items-center gap-2 text-[#0277EE] font-semibold hover:text-[#01013D] transition-colors duration-300"
+          >
+            <span>Entre em contato conosco</span>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
     <!-- CTA Section -->
     <section class="relative py-20 bg-gradient-to-r from-[#01013D] to-[#0277EE] overflow-hidden">
       <div class="absolute inset-0 opacity-10">
@@ -261,7 +449,7 @@
         <p class="text-xl text-white/90 mb-8">
           Junte-se a nós e experimente uma nova forma de gerenciar processos
         </p>
-        <button 
+        <button
           class="px-10 py-4 bg-white text-[#0277EE] text-lg font-bold rounded-xl hover:bg-[#eef0ef] transition-all duration-300 hover:scale-105 hover:shadow-2xl"
           on:click={() => router.navigate('/register')}
         >

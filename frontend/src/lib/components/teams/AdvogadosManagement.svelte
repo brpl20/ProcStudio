@@ -50,11 +50,9 @@
     userFormStore.startCreate();
   }
 
-  // ============== ALTERAÇÃO: Chama o novo método startInvite ======================
   function openInviteForm() {
-    userFormStore.startInvite(); // Agora chama a função correta para o fluxo de convite
+    userFormStore.startInvite();
   }
-  // ==============================================================================
 
   function openEditForm(user: User) {
     userFormStore.startEdit(user);
@@ -88,24 +86,18 @@
     }
   }
 
-  // ===================== Mensagem de sucesso diferenciada para convite ======================
   async function handleSaveSuccess() {
     if ($formState.mode === 'invite') {
       success = 'Convite enviado com sucesso!';
     } else {
       success = $formState.mode === 'create' ? 'Usuário criado com sucesso!' : 'Usuário atualizado com sucesso!';
     }
-    await loadUsers(); // Recarrega a lista de usuários
-
-    // Fecha o modal imediatamente resetando o store
-    userFormStore.reset(); 
-
-    // Mantém a mensagem de sucesso visível na tela principal por um tempo
+    await loadUsers();
+    userFormStore.reset();
     setTimeout(() => {
       success = null;
     }, 1500);
   }
-  // =====================================================================================================
 
   $: {
     if ($formState.success) {
@@ -114,12 +106,25 @@
   }
 
   function getRoleBadgeClass(role: string): string {
-    const map: Record<string, string> = { lawyer: 'badge-primary', paralegal: 'badge-secondary', trainee: 'badge-accent', secretary: 'badge-info' };
-    return map[role] || 'badge-ghost';
+    const map: Record<string, string> = { 
+      lawyer: 'bg-blue-100 text-blue-900', 
+      paralegal: 'bg-indigo-100 text-indigo-900', 
+      trainee: 'bg-cyan-100 text-cyan-900', 
+      secretary: 'bg-sky-100 text-sky-900' 
+    };
+    return map[role] || 'bg-gray-100 text-gray-900';
   }
 
   function getRoleLabel(role: string): string {
-    const map: Record<string, string> = { lawyer: 'Advogado', paralegal: 'Paralegal', trainee: 'Estagiário', secretary: 'Secretário', counter: 'Contador', excounter: 'Ex-contador', representant: 'Representante' };
+    const map: Record<string, string> = { 
+      lawyer: 'Advogado', 
+      paralegal: 'Paralegal', 
+      trainee: 'Estagiário', 
+      secretary: 'Secretário', 
+      counter: 'Contador', 
+      excounter: 'Ex-contador', 
+      representant: 'Representante' 
+    };
     return map[role] || role;
   }
 
@@ -128,23 +133,34 @@
   });
 </script>
 
-<div class="p-6">
-  <!-- Classes para uma responsividade fluida com flex-wrap e gap -->
-  <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+<div class="w-full px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+  <!-- Header Section -->
+  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-6">
     <div>
-      <h2 class="text-2xl font-semibold text-gray-800">Gerenciar Usuários</h2>
-      <p class="text-gray-600 text-sm mt-1">Crie, edite e gerencie usuários do sistema</p>
+      <h2 class="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-[#01013D] to-[#0277EE] bg-clip-text text-transparent mb-2">
+        Gerenciar Usuários
+      </h2>
+      <p class="text-gray-600 text-sm">Crie, edite e gerencie usuários do sistema</p>
     </div>
-    <!-- Contêiner de botões também com flex-wrap e gap -->
-    <div class="flex flex-wrap gap-4">
-      <button class="btn btn-secondary" on:click={openInviteForm} disabled={loading}>
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    
+    <!-- Button Group -->
+    <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+      <button 
+        class="px-5 py-2.5 rounded-xl font-semibold bg-gray-100 text-[#01013D] hover:bg-gray-200 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        on:click={openInviteForm} 
+        disabled={loading}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        Convidar Usuário
+        Convidar
       </button>
-      <button class="btn btn-primary" on:click={openCreateForm} disabled={loading}>
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <button 
+        class="px-5 py-2.5 rounded-xl font-semibold bg-gradient-to-r from-[#0277EE] to-[#01013D] text-white hover:shadow-lg hover:shadow-[#0277EE]/30 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        on:click={openCreateForm} 
+        disabled={loading}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
         </svg>
         Novo Usuário
@@ -152,75 +168,124 @@
     </div>
   </div>
 
-  {#if success}<div class="alert alert-success mb-4"><span>{success}</span></div>{/if}
-  {#if error}<div class="alert alert-error mb-4"><span>{error}</span></div>{/if}
-
-  <div class="card bg-base-100 border border-base-300">
-    <div class="card-body">
-      {#if loading}
-        <div class="text-center p-10">
-          <span class="loading loading-lg loading-spinner text-primary"></span>
-          <p class="mt-4 text-gray-500">Carregando usuários...</p>
-        </div>
-      {:else if users.length === 0}
-         <div class="text-center p-10">
-          <p class="text-gray-500">Nenhum usuário encontrado.</p>
-        </div>
-      {:else}
-        <div class="overflow-x-auto">
-          <table class="table table-zebra w-full">
-            <thead>
-              <tr>
-                <th>Nome</th>
-                <th>Email</th>
-                <th>Função</th>
-                <th>Status</th>
-                <th>OAB</th>
-                <th class="text-center">Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {#each users as user}
-                <tr>
-                  <td>
-                    <div class="flex items-center space-x-3">
-                      <div class="avatar placeholder">
-                        <div class="bg-neutral-focus text-neutral-content rounded-full w-10">
-                          <span class="text-sm">{user.attributes?.name?.charAt(0) || '?'}</span>
-                        </div>
-                      </div>
-                      <div>
-                        <div class="font-bold">{user.attributes?.name || 'Nome não informado'} {user.attributes?.last_name || ''}</div>
-                        <div class="text-sm opacity-50">ID: #{user.id}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td><span class="text-sm">{user.attributes?.access_email || 'Email não informado'}</span></td>
-                  <td><span class="badge {getRoleBadgeClass(user.attributes?.role || '')}">{getRoleLabel(user.attributes?.role || '')}</span></td>
-                  <td><div class="badge {user.attributes?.status === 'active' ? 'badge-success' : 'badge-warning'} badge-sm">{user.attributes?.status === 'active' ? 'Ativo' : 'Inativo'}</div></td>
-                  <td><span class="text-sm font-mono">{user.attributes?.oab || '-'}</span></td>
-                  <td class="text-center">
-                    <div class="flex justify-center space-x-2">
-                      <button class="btn btn-ghost btn-xs" on:click={() => openEditForm(user)} title="Editar usuário">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                      </button>
-                      <button class="btn btn-ghost btn-xs text-error hover:bg-error hover:text-error-content" on:click={() => openDeleteDialog(user)} title="Remover usuário">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              {/each}
-            </tbody>
-          </table>
-        </div>
-      {/if}
+  <!-- Success Alert -->
+  {#if success}
+    <div class="bg-green-50 border-l-4 border-green-500 rounded-lg p-4 flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+      <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+      </svg>
+      <div>
+        <p class="text-green-900 font-semibold text-sm">{success}</p>
+      </div>
     </div>
+  {/if}
+
+  <!-- Error Alert -->
+  {#if error}
+    <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-4 flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+      <svg class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+      </svg>
+      <div>
+        <p class="text-red-900 font-semibold text-sm">Erro ao atualizar</p>
+        <p class="text-red-800 text-sm mt-1">{error}</p>
+      </div>
+    </div>
+  {/if}
+
+  <!-- Content Card -->
+  <div class="bg-white rounded-2xl shadow-lg border border-[#eef0ef] overflow-hidden">
+    {#if loading}
+      <div class="p-12 text-center">
+        <div class="inline-flex items-center justify-center">
+          <div class="w-12 h-12 border-4 border-[#eef0ef] border-t-[#0277EE] rounded-full animate-spin"></div>
+        </div>
+        <p class="mt-4 text-gray-600 font-medium">Carregando usuários...</p>
+      </div>
+    {:else if users.length === 0}
+      <div class="p-12 text-center">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-[#eef0ef] to-[#0277EE]/10 mb-4">
+          <svg class="w-8 h-8 text-[#0277EE]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+          </svg>
+        </div>
+        <p class="text-[#01013D] font-bold text-lg">Nenhum usuário encontrado</p>
+        <p class="text-gray-500 text-sm mt-1">Crie um novo usuário para começar</p>
+      </div>
+    {:else}
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gradient-to-r from-[#01013D]/5 to-[#0277EE]/5 border-b border-[#eef0ef]">
+            <tr>
+              <th class="px-6 py-4 text-left text-sm font-bold text-[#01013D]">Nome</th>
+              <th class="px-6 py-4 text-left text-sm font-bold text-[#01013D]">Email</th>
+              <th class="px-6 py-4 text-left text-sm font-bold text-[#01013D]">Função</th>
+              <th class="px-6 py-4 text-left text-sm font-bold text-[#01013D]">Status</th>
+              <th class="px-6 py-4 text-left text-sm font-bold text-[#01013D]">OAB</th>
+              <th class="px-6 py-4 text-center text-sm font-bold text-[#01013D]">Ações</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[#eef0ef]">
+            {#each users as user}
+              <tr class="hover:bg-gradient-to-r hover:from-[#eef0ef]/30 hover:to-[#0277EE]/5 transition-colors duration-200">
+                <td class="px-6 py-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#01013D] to-[#0277EE] flex items-center justify-center flex-shrink-0">
+                      <span class="text-white font-bold text-sm">{user.attributes?.name?.charAt(0) || '?'}</span>
+                    </div>
+                    <div>
+                      <p class="font-semibold text-[#01013D]">{user.attributes?.name || 'Nome não informado'} {user.attributes?.last_name || ''}</p>
+                      <p class="text-xs text-gray-500">ID: #{user.id}</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4">
+                  <p class="text-sm text-gray-700">{user.attributes?.access_email || 'Email não informado'}</p>
+                </td>
+                <td class="px-6 py-4">
+                  <span class="px-3 py-1 rounded-full text-xs font-semibold {getRoleBadgeClass(user.attributes?.role || '')}">
+                    {getRoleLabel(user.attributes?.role || '')}
+                  </span>
+                </td>
+                <td class="px-6 py-4">
+                  <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold {user.attributes?.status === 'active' ? 'bg-green-100 text-green-900' : 'bg-yellow-100 text-yellow-900'}">
+                    <div class="w-2 h-2 rounded-full {user.attributes?.status === 'active' ? 'bg-green-600' : 'bg-yellow-600'}"></div>
+                    {user.attributes?.status === 'active' ? 'Ativo' : 'Inativo'}
+                  </div>
+                </td>
+                <td class="px-6 py-4">
+                  <p class="text-sm font-mono text-gray-700">{user.attributes?.oab || '-'}</p>
+                </td>
+                <td class="px-6 py-4">
+                  <div class="flex justify-center gap-2">
+                    <button 
+                      class="p-2 rounded-lg text-[#0277EE] hover:bg-[#0277EE]/10 transition-colors duration-200"
+                      on:click={() => openEditForm(user)} 
+                      title="Editar usuário"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    </button>
+                    <button 
+                      class="p-2 rounded-lg text-red-600 hover:bg-red-100 transition-colors duration-200"
+                      on:click={() => openDeleteDialog(user)} 
+                      title="Remover usuário"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      </div>
+    {/if}
   </div>
 </div>
 
+<!-- Modal Dialog -->
 <dialog class="modal" open={$formState.mode !== null}>
-  <div class="modal-box w-11/12 max-w-4xl">
+  <div class="modal-box w-11/12 max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl">
     <UserFormUnified />
   </div>
   <form method="dialog" class="modal-backdrop" on:submit|preventDefault={() => userFormStore.reset()}>
@@ -228,6 +293,7 @@
   </form>
 </dialog>
 
+<!-- Delete Confirmation Dialog -->
 {#if showDeleteDialog && deletingUser}
   <ConfirmDialog
     show={showDeleteDialog}
