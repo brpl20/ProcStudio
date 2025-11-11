@@ -1,6 +1,5 @@
 <!-- components/customers/CustomerPersonalInfoStep.svelte -->
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
   import Cpf from '../forms_commons/Cpf.svelte';
   import Email from '../forms_commons/Email.svelte';
   import {
@@ -23,37 +22,45 @@
     formatPhoneForPix
   } from '../../utils/form-helpers';
 
-  export let formData: CustomerFormData;
-  export let errors: Record<string, string> = {};
-  export let touched: Record<string, boolean> = {};
-  export let isLoading: boolean = false;
-  export let customer: any = null;
-
-  const dispatch = createEventDispatcher<{
-    fieldBlur: { field: string; value: any };
-    cpfInput: Event;
-    birthDateChange: Event;
-  }>();
+  let {
+    formData,
+    errors = {},
+    touched = {},
+    isLoading = false,
+    customer = null,
+    onFieldBlur = () => {},
+    onCpfInput = () => {},
+    onBirthDateChange = () => {}
+  }: {
+    formData: CustomerFormData;
+    errors?: Record<string, string>;
+    touched?: Record<string, boolean>;
+    isLoading?: boolean;
+    customer?: any;
+    onFieldBlur?: (detail: { field: string; value: any }) => void;
+    onCpfInput?: (event: Event) => void;
+    onBirthDateChange?: (detail: { value: string }) => void;
+  } = $props();
 
   // Local reactive variables
-  $: capacityInfo = getCapacityFromBirthDate(formData.birth);
-  $: capacityMessage = capacityInfo?.message || '';
-  $: isProfessionRequired = formData.capacity !== 'unable';
-  $: isEmailRequired = formData.capacity !== 'unable';
-  $: isEmailDisabled = formData.capacity === 'unable';
+  let capacityInfo = $derived(getCapacityFromBirthDate(formData.birth));
+  let capacityMessage = $derived(capacityInfo?.message || '');
+  let isProfessionRequired = $derived(formData.capacity !== 'unable');
+  let isEmailRequired = $derived(formData.capacity !== 'unable');
+  let isEmailDisabled = $derived(formData.capacity === 'unable');
 
   // Brazilian states
   const states: BrazilianState[] = BRAZILIAN_STATES;
 
   // Event handlers
   function handleBlur(fieldName: string, value: any) {
-    dispatch('fieldBlur', { field: fieldName, value });
+    onFieldBlur({ field: fieldName, value });
   }
 
   function handleBirthDateChange(event: Event) {
     const input = event.target as HTMLInputElement;
     formData.birth = input.value;
-    dispatch('birthDateChange', { value: formData.birth });
+    onBirthDateChange({ value: formData.birth });
   }
 </script>
 
@@ -113,7 +120,7 @@
     errors={errors.cpf}
     touched={touched.cpf}
     disabled={isLoading}
-    oninput={(e) => dispatch('cpfInput', e.detail)}
+    oninput={(e) => onCpfInput(e)}
     onblur={(e) => handleBlur('cpf', e.detail.value)}
     testId="customer-cpf-input"
   />

@@ -1,23 +1,28 @@
 <!-- components/ui/Pagination.svelte -->
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
+  let {
+    currentPage = 1,
+    totalPages = 1,
+    totalRecords = 0,
+    perPage = 50,
+    isLoading = false,
+    onPageChange = () => {},
+    onPerPageChange = () => {}
+  }: {
+    currentPage?: number;
+    totalPages?: number;
+    totalRecords?: number;
+    perPage?: number;
+    isLoading?: boolean;
+    onPageChange?: (detail: { page: number }) => void;
+    onPerPageChange?: (detail: { perPage: number }) => void;
+  } = $props();
 
-  export let currentPage: number = 1;
-  export let totalPages: number = 1;
-  export let totalRecords: number = 0;
-  export let perPage: number = 50;
-  export let isLoading: boolean = false;
-
-  const dispatch = createEventDispatcher<{
-    pageChange: { page: number };
-    perPageChange: { perPage: number };
-  }>();
-
-  $: startRecord = totalRecords > 0 ? (currentPage - 1) * perPage + 1 : 0;
-  $: endRecord = Math.min(currentPage * perPage, totalRecords);
+  let startRecord = $derived(totalRecords > 0 ? (currentPage - 1) * perPage + 1 : 0);
+  let endRecord = $derived(Math.min(currentPage * perPage, totalRecords));
 
   // Generate page numbers to display
-  $: visiblePages = generateVisiblePages(currentPage, totalPages);
+  let visiblePages = $derived(generateVisiblePages(currentPage, totalPages));
 
   function generateVisiblePages(current: number, total: number): number[] {
     if (total <= 7) {
@@ -37,7 +42,7 @@
 
   function handlePageChange(page: number): void {
     if (page !== currentPage && page >= 1 && page <= totalPages && !isLoading) {
-      dispatch('pageChange', { page });
+      onPageChange({ page });
     }
   }
 
@@ -45,7 +50,7 @@
     const target = event.target as HTMLSelectElement;
     const newPerPage = parseInt(target.value);
     if (newPerPage !== perPage) {
-      dispatch('perPageChange', { perPage: newPerPage });
+      onPerPageChange({ perPage: newPerPage });
     }
   }
 

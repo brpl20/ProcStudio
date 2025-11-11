@@ -1,26 +1,32 @@
 <!-- components/ui/ConfirmDialog.svelte -->
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
-
-  export let show: boolean = false;
-  export let title: string = 'Confirmar';
-  export let message: string = 'Tem certeza?';
-  export let confirmText: string = 'Confirmar';
-  export let cancelText: string = 'Cancelar';
-  export let type: 'warning' | 'danger' | 'info' = 'warning';
-
-  const dispatch = createEventDispatcher<{
-    confirm: void;
-    cancel: void;
-  }>();
+  let {
+    show = $bindable(false),
+    title = 'Confirmar',
+    message = 'Tem certeza?',
+    confirmText = 'Confirmar',
+    cancelText = 'Cancelar',
+    type = 'warning' as 'warning' | 'danger' | 'info',
+    onConfirm = () => {},
+    onCancel = () => {}
+  }: {
+    show?: boolean;
+    title?: string;
+    message?: string;
+    confirmText?: string;
+    cancelText?: string;
+    type?: 'warning' | 'danger' | 'info';
+    onConfirm?: () => void;
+    onCancel?: () => void;
+  } = $props();
 
   function confirm(): void {
-    dispatch('confirm');
+    onConfirm();
     show = false;
   }
 
   function cancel(): void {
-    dispatch('cancel');
+    onCancel();
     show = false;
   }
 </script>

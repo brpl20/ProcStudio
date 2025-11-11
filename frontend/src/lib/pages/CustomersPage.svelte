@@ -103,20 +103,20 @@
           capacityFilter={$customerStore.filters.capacity}
           customerTypeFilter={$customerStore.filters.customerType}
           isLoading={$customerStore.isLoading}
-          on:search={handleSearch}
-          on:filterChange={handleFilterChange}
-          on:clearFilters={handleClearFilters}
+          onSearch={handleSearch}
+          onFilterChange={handleFilterChange}
+          onClearFilters={handleClearFilters}
         />
 
         <!-- Customers List -->
         <CustomerList
           customers={$customerStore.paginatedCustomers}
           isLoading={$customerStore.isLoading}
-          on:edit={handleEditCustomer}
-          on:viewProfile={handleViewProfile}
-          on:delete={handleDeleteCustomer}
-          on:updateStatus={handleUpdateStatus}
-          on:resendConfirmation={handleResendConfirmation}
+          onEdit={handleEditCustomer}
+          onViewProfile={handleViewProfile}
+          onDelete={handleDeleteCustomer}
+          onUpdateStatus={handleUpdateStatus}
+          onResendConfirmation={handleResendConfirmation}
         />
 
         <!-- Pagination -->
@@ -126,8 +126,8 @@
           totalRecords={$customerStore.pagination.totalRecords}
           perPage={$customerStore.pagination.perPage}
           isLoading={$customerStore.isLoading}
-          on:pageChange={handlePageChange}
-          on:perPageChange={handlePerPageChange}
+          onPageChange={handlePageChange}
+          onPerPageChange={handlePerPageChange}
         />
 
         <!-- Refresh Button -->

@@ -234,7 +234,7 @@
     confirmText="Remover"
     cancelText="Cancelar"
     type="danger"
-    on:confirm={handleDeleteConfirm}
-    on:cancel={closeDeleteDialog}
+    onConfirm={handleDeleteConfirm}
+    onCancel={closeDeleteDialog}
   />
 {/if}

@@ -30,7 +30,7 @@
           <Login onLoginSuccess={handleLoginSuccess} />
           <div class="text-center mt-4">
             <p class="mb-2">Não tem conta?</p>
-            <button class="btn btn-outline btn-primary" on:click={switchView}>
+            <button class="btn btn-outline btn-primary" onclick={switchView}>
               Registrar-se
             </button>
           </div>
@@ -38,7 +38,7 @@
           <Register onRegisterSuccess={handleRegisterSuccess} />
           <div class="text-center mt-4">
             <p class="mb-2">Já tem conta?</p>
-            <button class="btn btn-outline btn-primary" on:click={switchView}> Fazer login </button>
+            <button class="btn btn-outline btn-primary" onclick={switchView}> Fazer login </button>
           </div>
         {/if}
       </div>

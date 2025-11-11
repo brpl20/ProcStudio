@@ -63,7 +63,7 @@
           <button
             class="btn btn-secondary"
             class:loading={isTestingConnection}
-            on:click={testApiConnection}
+            onclick={testApiConnection}
             disabled={isTestingConnection}
           >
             {isTestingConnection ? 'Testando...' : 'Testar Conexão API'}
@@ -79,7 +79,7 @@
           <button
             class="btn btn-accent"
             class:loading={isTestingUsers}
-            on:click={testListUsers}
+            onclick={testListUsers}
             disabled={isTestingUsers}
           >
             {isTestingUsers ? 'Carregando...' : 'Listar Usuários'}

@@ -391,10 +391,10 @@ return;
           currentAvatarUrl={userProfile?.avatar_url}
           userName={userProfile?.name || ''}
           loading={uploadingAvatar}
-          on:upload={handleAvatarUpload}
-          on:remove={handleAvatarRemove}
-          on:colorChange={handleColorChange}
-          on:error={(e) => error = e.detail.message}
+          onUpload={handleAvatarUpload}
+          onRemove={handleAvatarRemove}
+          onColorChange={handleColorChange}
+          onError={(e) => error = e.message}
         />
 
         <div class="modal-action">
