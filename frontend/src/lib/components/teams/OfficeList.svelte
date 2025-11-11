@@ -110,23 +110,23 @@
                 <ul class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
                   {#if !office.deleted}
                     <li>
-                      <button on:click={() => handleEdit(office)} class="text-blue-600">
+                      <button onclick={() => handleEdit(office)} class="text-blue-600">
                         ✏️ Editar
                       </button>
                     </li>
                     <li>
-                      <button on:click={() => handleDelete(office)} class="text-orange-600">
+                      <button onclick={() => handleDelete(office)} class="text-orange-600">
                         📦 Arquivar
                       </button>
                     </li>
                   {:else}
                     <li>
-                      <button on:click={() => handleRestore(office)} class="text-green-600">
+                      <button onclick={() => handleRestore(office)} class="text-green-600">
                         🔄 Restaurar
                       </button>
                     </li>
                     <li>
-                      <button on:click={() => handleDelete(office)} class="text-red-600">
+                      <button onclick={() => handleDelete(office)} class="text-red-600">
                         🗑️ Excluir permanentemente
                       </button>
                     </li>

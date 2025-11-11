@@ -78,7 +78,10 @@
 <div>
   <h3>Registro</h3>
 
-  <form on:submit|preventDefault={handleSubmit}>
+  <form onsubmit={(e) => {
+    e.preventDefault();
+    handleSubmit(e);
+  }}>
     <div>
       <label for="email">E-mail:</label>
       <input type="email" id="email" bind:value={email} required disabled={loading} />

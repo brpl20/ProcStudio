@@ -83,7 +83,7 @@
         <select
           class="select select-sm select-bordered"
           value={perPage}
-          on:change={handlePerPageChange}
+          onchange={handlePerPageChange}
           disabled={isLoading}
         >
           <option value="10">10</option>
@@ -96,7 +96,7 @@
       <button
         class="btn btn-sm btn-outline"
         class:btn-disabled={currentPage <= 1 || isLoading}
-        on:click={handlePreviousPage}
+        onclick={handlePreviousPage}
         disabled={currentPage <= 1 || isLoading}
         aria-label="Página anterior"
       >
@@ -113,7 +113,7 @@
               class="join-item btn btn-sm"
               class:btn-active={page === currentPage}
               class:btn-disabled={isLoading}
-              on:click={() => handlePageChange(page)}
+              onclick={() => handlePageChange(page)}
               disabled={isLoading}
               aria-label="Página {page}"
               aria-current={page === currentPage ? 'page' : undefined}
@@ -128,7 +128,7 @@
       <button
         class="btn btn-sm btn-outline"
         class:btn-disabled={currentPage >= totalPages || isLoading}
-        on:click={handleNextPage}
+        onclick={handleNextPage}
         disabled={currentPage >= totalPages || isLoading}
         aria-label="Próxima página"
       >

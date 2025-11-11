@@ -81,7 +81,7 @@
   <div class="card bg-base-100 shadow-xl border">
     <div class="card-body">
       <!-- Botão voltar -->
-      <button class="btn btn-ghost btn-sm self-start mb-4" on:click={goHome}>
+      <button class="btn btn-ghost btn-sm self-start mb-4" onclick={goHome}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="h-4 w-4 mr-2"
@@ -102,7 +102,7 @@
       <h2 class="text-2xl font-bold text-center mb-6">Registrar-se</h2>
 
       <!-- Formulário de registro -->
-      <form on:submit|preventDefault={handleRegister} class="space-y-4">
+      <form onsubmit={(e) => { e.preventDefault(); handleRegister(e); }} class="space-y-4">
         <!-- OAB -->
         <div class="form-control">
           <label class="label" for="oab">
@@ -217,7 +217,7 @@
       <!-- Link para login -->
       <div class="text-center">
         <p class="text-sm text-base-content opacity-70 mb-3">Já tem uma conta?</p>
-        <button class="btn btn-outline btn-primary w-full" on:click={goToLogin}>
+        <button class="btn btn-outline btn-primary w-full" onclick={goToLogin}>
           Fazer login
         </button>
       </div>

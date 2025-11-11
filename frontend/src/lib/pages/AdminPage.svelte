@@ -88,12 +88,12 @@
         <div class="mt-4 flex gap-2">
           <button
             class="btn btn-sm btn-primary"
-            on:click={() => usersCacheStore.fetchAllProfiles()}
+            onclick={() => usersCacheStore.fetchAllProfiles()}
             disabled={cacheInfo.isLoading}
           >
             {cacheInfo.isLoading ? 'Loading...' : 'Refresh Cache'}
           </button>
-          <button class="btn btn-sm btn-outline" on:click={() => usersCacheStore.clearCache()}>
+          <button class="btn btn-sm btn-outline" onclick={() => usersCacheStore.clearCache()}>
             Clear Cache
           </button>
         </div>
@@ -318,7 +318,7 @@
         <div class="flex flex-wrap gap-2 mt-4">
           <button
             class="btn btn-sm btn-primary"
-            on:click={() => {
+            onclick={() => {
               const token = $authStore.user?.data?.token || '';
               console.log(
                 '🔑 Using token for WebSocket:',
@@ -333,7 +333,7 @@
 
           <button
             class="btn btn-sm btn-outline"
-            on:click={() => notificationStore.disconnect()}
+            onclick={() => notificationStore.disconnect()}
             disabled={!$isConnected}
           >
             Disconnect
@@ -341,7 +341,7 @@
 
           <button
             class="btn btn-sm btn-info"
-            on:click={() => notificationStore.requestUnreadCount()}
+            onclick={() => notificationStore.requestUnreadCount()}
             disabled={!$isConnected}
           >
             Request Unread Count
@@ -349,7 +349,7 @@
 
           <button
             class="btn btn-sm btn-warning"
-            on:click={() => notificationStore.markAllAsRead()}
+            onclick={() => notificationStore.markAllAsRead()}
             disabled={!$isConnected || $unreadCount === 0}
           >
             Mark All as Read
@@ -413,7 +413,7 @@
                         {#if !notification.read}
                           <button
                             class="btn btn-xs btn-outline"
-                            on:click={() => notificationStore.markAsRead(notification.id)}
+                            onclick={() => notificationStore.markAsRead(notification.id)}
                             disabled={!$isConnected}
                           >
                             Mark Read

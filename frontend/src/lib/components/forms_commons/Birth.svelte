@@ -57,8 +57,8 @@
     type="date"
     class="input input-bordered w-full {errors && touched ? 'input-error' : ''} {inputClass}"
     bind:value
-    on:input={handleInput}
-    on:blur={handleBlur}
+    oninput={handleInput}
+    onblur={handleBlur}
     disabled={disabled}
     aria-required={required ? 'true' : 'false'}
     aria-invalid={errors && touched ? 'true' : 'false'}

@@ -35,11 +35,11 @@
 
         <div class="flex gap-2 justify-center">
           {#if showRetry}
-            <button class="btn btn-primary" on:click={handleRetry}> Tentar Novamente </button>
+            <button class="btn btn-primary" onclick={handleRetry}> Tentar Novamente </button>
           {/if}
 
           {#if showHome}
-            <button class="btn btn-outline" on:click={handleGoHome}> Ir para Início </button>
+            <button class="btn btn-outline" onclick={handleGoHome}> Ir para Início </button>
           {/if}
         </div>
       </div>

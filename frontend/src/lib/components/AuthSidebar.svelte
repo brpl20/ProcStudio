@@ -11,29 +11,29 @@
   import Breadcrumbs from './Breadcrumbs.svelte';
   import AuthGuard from './AuthGuard.svelte';
 
-  export const activeSection: string = '';
+  let { activeSection = '' }: { activeSection?: string } = $props();
 
-  $: isAuthenticated = $authStore.isAuthenticated;
-  $: currentPath = router.currentPath;
+  let isAuthenticated = $derived($authStore.isAuthenticated);
+  let currentPath = $derived(router.currentPath);
 
   // Drawer state management
-  let isDrawerOpen = true; // Start open on desktop
-  let isUserToggled = false; // Track if user manually toggled
+  let isDrawerOpen = $state(true); // Start open on desktop
+  let isUserToggled = $state(false); // Track if user manually toggled
 
   // WhoAmI data
-  let currentUserData: WhoAmIResponse | null = null;
-  let isLoadingProfile = true;
+  let currentUserData = $state<WhoAmIResponse | null>(null);
+  let isLoadingProfile = $state(true);
 
   // Derived data from whoami
-  $: whoAmIUser = currentUserData?.data;
-  $: userProfile = whoAmIUser?.attributes?.profile;
+  let whoAmIUser = $derived(currentUserData?.data);
+  let userProfile = $derived(whoAmIUser?.attributes?.profile);
 
   // Computed user display properties using whoami data
-  $: userDisplayName = userProfile?.full_name || userProfile?.name || 'Usuário';
-  $: userRole = getUserRole(userProfile);
-  $: userEmail = whoAmIUser?.attributes?.email || '';
-  $: userInitials = getUserInitials(userDisplayName);
-  $: userAvatarUrl = userProfile?.avatar_url;
+  let userDisplayName = $derived(userProfile?.full_name || userProfile?.name || 'Usuário');
+  let userRole = $derived(getUserRole(userProfile));
+  let userEmail = $derived(whoAmIUser?.attributes?.email || '');
+  let userInitials = $derived(getUserInitials(userDisplayName));
+  let userAvatarUrl = $derived(userProfile?.avatar_url);
 
   function getUserRole(profile: any): string {
     const role = profile?.role || '';
@@ -124,7 +124,7 @@
       {#if !isDrawerOpen && isUserToggled}
         <button
           class="btn btn-circle btn-primary fixed top-4 left-4 z-50 hidden lg:flex"
-          on:click={toggleDrawer}
+          onclick={toggleDrawer}
           title="Abrir menu"
         >
           <Icon name="menu" className="w-5 h-5" />
@@ -154,14 +154,16 @@
         <li>
           <div class="normal-case menu-title text-xl font-bold text-primary flex flex-row items-center">
             {#if !(isUserToggled && !isDrawerOpen)}
-              <a href="/" class="grow" on:click|preventDefault={() => router.navigate('/')}>
+              <a href="/" class="grow" onclick={(e) => {
+ e.preventDefault(); router.navigate('/');
+}}>
                 {WebsiteName}
               </a>
             {/if}
             <!-- Desktop toggle button -->
             <button
               class="btn btn-ghost btn-sm hidden lg:flex"
-              on:click={toggleDrawer}
+              onclick={toggleDrawer}
               title={isDrawerOpen ? 'Recolher menu' : 'Expandir menu'}
             >
               <Icon name={isDrawerOpen ? 'chevron-left' : 'chevron-right'} className="w-5 h-5" />
@@ -178,7 +180,8 @@
           <a
             href="/dashboard"
             class={currentPath === '/dashboard' ? 'active bg-primary !text-white [&_svg]:!text-white' : 'text-base-content hover:text-base-content [&_svg]:text-primary'}
-            on:click|preventDefault={() => {
+            onclick={(e) => {
+              e.preventDefault();
               router.navigate('/dashboard');
               closeDrawer();
             }}
@@ -193,7 +196,8 @@
           <a
             href="/admin"
             class={currentPath === '/admin' ? 'active bg-primary !text-white [&_svg]:!text-white' : 'text-base-content hover:text-base-content [&_svg]:text-primary'}
-            on:click|preventDefault={() => {
+            onclick={(e) => {
+              e.preventDefault();
               router.navigate('/admin');
               closeDrawer();
             }}
@@ -208,7 +212,8 @@
           <a
             href="/settings"
             class={currentPath === '/settings' ? 'active bg-primary !text-white [&_svg]:!text-white' : 'text-base-content hover:text-base-content [&_svg]:text-primary'}
-            on:click|preventDefault={() => {
+            onclick={(e) => {
+              e.preventDefault();
               router.navigate('/settings');
               closeDrawer();
             }}
@@ -223,7 +228,8 @@
           <a
             href="/reports"
             class={currentPath === '/reports' ? 'active bg-primary !text-white [&_svg]:!text-white' : 'text-base-content hover:text-base-content [&_svg]:text-primary'}
-            on:click|preventDefault={() => {
+            onclick={(e) => {
+              e.preventDefault();
               router.navigate('/reports');
               closeDrawer();
             }}
@@ -238,7 +244,8 @@
           <a
             href="/jobs"
             class={currentPath === '/jobs' ? 'active bg-primary !text-white [&_svg]:!text-white' : 'text-base-content hover:text-base-content [&_svg]:text-primary'}
-            on:click|preventDefault={() => {
+            onclick={(e) => {
+              e.preventDefault();
               router.navigate('/jobs');
               closeDrawer();
             }}
@@ -253,7 +260,8 @@
           <a
             href="/teams"
             class={currentPath === '/teams' ? 'active bg-primary !text-white [&_svg]:!text-white' : 'text-base-content hover:text-base-content [&_svg]:text-primary'}
-            on:click|preventDefault={() => {
+            onclick={(e) => {
+              e.preventDefault();
               router.navigate('/teams');
               closeDrawer();
             }}
@@ -268,7 +276,8 @@
           <a
             href="/works"
             class={currentPath === '/works' ? 'active bg-primary !text-white [&_svg]:!text-white' : 'text-base-content hover:text-base-content [&_svg]:text-primary'}
-            on:click|preventDefault={() => {
+            onclick={(e) => {
+              e.preventDefault();
               router.navigate('/works');
               closeDrawer();
             }}
@@ -283,7 +292,8 @@
           <a
             href="/customers"
             class={currentPath === '/customers' ? 'active bg-primary !text-white [&_svg]:!text-white' : 'text-base-content hover:text-base-content [&_svg]:text-primary'}
-            on:click|preventDefault={() => {
+            onclick={(e) => {
+              e.preventDefault();
               router.navigate('/customers');
               closeDrawer();
             }}
@@ -373,7 +383,7 @@
 
                 <!-- Profile Configuration -->
                 <li>
-                  <button class="px-3 py-2" on:click={handleUserClick}>
+                  <button class="px-3 py-2" onclick={handleUserClick}>
                     <Icon name="user" className="w-4 h-4" strokeWidth="1.5" />
                     Meu Perfil
                   </button>
@@ -399,7 +409,7 @@
 
                 <!-- Logout -->
                 <li>
-                  <button class="px-3 py-2 text-error" on:click={handleLogout}>
+                  <button class="px-3 py-2 text-error" onclick={handleLogout}>
                     <Icon name="logout-alt" className="w-4 h-4" strokeWidth="1.5" />
                     Sair
                   </button>

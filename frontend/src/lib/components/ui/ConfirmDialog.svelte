@@ -31,14 +31,14 @@
       <h3 class="font-bold text-lg">{title}</h3>
       <p class="py-4">{message}</p>
       <div class="modal-action">
-        <button class="btn btn-ghost" on:click={cancel}>{cancelText}</button>
+        <button class="btn btn-ghost" onclick={cancel}>{cancelText}</button>
         <button
           class="btn {type === 'danger'
             ? 'btn-error'
             : type === 'info'
               ? 'btn-info'
               : 'btn-warning'}"
-          on:click={confirm}
+          onclick={confirm}
         >
           {confirmText}
         </button>

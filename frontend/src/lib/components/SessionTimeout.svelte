@@ -102,8 +102,8 @@
         {remainingTime === 1 ? 'minuto' : 'minutos'}. Deseja continuar?
       </p>
       <div class="modal-action">
-        <button class="btn btn-primary" on:click={extendSession}> Continuar Sessão </button>
-        <button class="btn btn-ghost" on:click={() => authStore.logout()}> Sair </button>
+        <button class="btn btn-primary" onclick={extendSession}> Continuar Sessão </button>
+        <button class="btn btn-ghost" onclick={() => authStore.logout()}> Sair </button>
       </div>
     </div>
   </div>

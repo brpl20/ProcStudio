@@ -71,7 +71,7 @@
       type="text"
       class="input input-bordered w-full {errors.name && touched.name ? 'input-error' : ''}"
       bind:value={formData.name}
-      on:blur={() => handleBlur('name', formData.name)}
+      onblur={() => handleBlur('name', formData.name)}
       disabled={isLoading}
       aria-required="true"
       aria-invalid={errors.name && touched.name ? 'true' : 'false'}
@@ -95,7 +95,7 @@
         ? 'input-error'
         : ''}"
       bind:value={formData.last_name}
-      on:blur={() => handleBlur('last_name', formData.last_name)}
+      onblur={() => handleBlur('last_name', formData.last_name)}
       disabled={isLoading}
       aria-required="true"
       aria-invalid={errors.last_name && touched.last_name ? 'true' : 'false'}
@@ -113,8 +113,8 @@
     errors={errors.cpf}
     touched={touched.cpf}
     disabled={isLoading}
-    on:input={(e) => dispatch('cpfInput', e.detail)}
-    on:blur={(e) => handleBlur('cpf', e.detail.value)}
+    oninput={(e) => dispatch('cpfInput', e.detail)}
+    onblur={(e) => handleBlur('cpf', e.detail.value)}
     testId="customer-cpf-input"
   />
 
@@ -128,7 +128,7 @@
       type="text"
       class="input input-bordered w-full {errors.rg && touched.rg ? 'input-error' : ''}"
       bind:value={formData.rg}
-      on:blur={() => handleBlur('rg', formData.rg)}
+      onblur={() => handleBlur('rg', formData.rg)}
       disabled={isLoading}
       aria-required="true"
       aria-invalid={errors.rg && touched.rg ? 'true' : 'false'}
@@ -150,8 +150,8 @@
       type="date"
       class="input input-bordered w-full {errors.birth && touched.birth ? 'input-error' : ''}"
       bind:value={formData.birth}
-      on:change={handleBirthDateChange}
-      on:blur={() => handleBlur('birth', formData.birth)}
+      onchange={handleBirthDateChange}
+      onblur={() => handleBlur('birth', formData.birth)}
       disabled={isLoading}
       aria-required="true"
       aria-invalid={errors.birth && touched.birth ? 'true' : 'false'}
@@ -243,7 +243,7 @@
         ? 'input-error'
         : ''}"
       bind:value={formData.profession}
-      on:blur={() => handleBlur('profession', formData.profession)}
+      onblur={() => handleBlur('profession', formData.profession)}
       disabled={isLoading || !isProfessionRequired}
       aria-required={isProfessionRequired ? 'true' : 'false'}
       aria-invalid={errors.profession && touched.profession && isProfessionRequired
@@ -274,7 +274,7 @@
         ? 'input-error'
         : ''}"
       bind:value={formData.mother_name}
-      on:blur={() => handleBlur('mother_name', formData.mother_name)}
+      onblur={() => handleBlur('mother_name', formData.mother_name)}
       disabled={isLoading}
       aria-required="true"
       aria-invalid={errors.mother_name && touched.mother_name ? 'true' : 'false'}
@@ -324,7 +324,7 @@
       errors={errors.email && touched.email && isEmailRequired ? errors.email : ''}
       touched={touched.email}
       testId="customer-email-input"
-      on:blur={() => handleBlur('email', formData.customer_attributes.email)}
+      onblur={() => handleBlur('email', formData.customer_attributes.email)}
     />
     {#if !isEmailRequired}
       <div class="text-sm text-gray-500 mt-1">
@@ -361,7 +361,7 @@
       type="password"
       class="input input-bordered w-full {errors.password && touched.password ? 'input-error' : ''}"
       bind:value={formData.customer_attributes.password}
-      on:blur={() => handleBlur('password', formData.customer_attributes.password)}
+      onblur={() => handleBlur('password', formData.customer_attributes.password)}
       disabled={isLoading}
       placeholder="Mínimo 6 caracteres"
       aria-required={customer ? 'false' : 'true'}
@@ -389,7 +389,7 @@
         ? 'input-error'
         : ''}"
       bind:value={formData.customer_attributes.password_confirmation}
-      on:blur={() =>
+      onblur={() =>
         handleBlur('password_confirmation', formData.customer_attributes.password_confirmation)}
       disabled={isLoading}
       placeholder="Digite a senha novamente"

@@ -48,7 +48,7 @@
     {#each tabs as tab}
       <button
         class="tab tab-lg {activeTab === tab.id ? 'tab-active' : ''}"
-        on:click={() => switchTab(tab.id)}
+        onclick={() => switchTab(tab.id)}
       >
         <span class="mr-2">{tab.icon}</span>
         {tab.label}

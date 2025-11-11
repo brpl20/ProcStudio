@@ -3,10 +3,10 @@
   import { authStore } from '../stores/authStore';
   import { router } from '../stores/routerStore';
 
-  export let showFooter = true;
+  let { showFooter = true } = $props();
 
-  $: isAuthenticated = $authStore.isAuthenticated;
-  $: currentPath = router.currentPath;
+  let isAuthenticated = $derived($authStore.isAuthenticated);
+  let currentPath = $derived(router.currentPath);
 
   function handleLogout() {
     authStore.logout();
@@ -21,7 +21,9 @@
       <a
         class="btn btn-ghost normal-case text-xl"
         href="/"
-        on:click|preventDefault={() => router.navigate('/')}
+        onclick={(e) => {
+ e.preventDefault(); router.navigate('/');
+}}
       >
         {WebsiteName}
       </a>
@@ -32,14 +34,18 @@
           <li class="md:mx-2">
             <a
               href="/login"
-              on:click|preventDefault={() => router.navigate('/login')}
+              onclick={(e) => {
+ e.preventDefault(); router.navigate('/login');
+}}
               class:active={currentPath === '/login'}>Login</a
             >
           </li>
           <li class="md:mx-2">
             <a
               href="/register"
-              on:click|preventDefault={() => router.navigate('/register')}
+              onclick={(e) => {
+ e.preventDefault(); router.navigate('/register');
+}}
               class:active={currentPath === '/register'}>Register</a
             >
           </li>
@@ -47,19 +53,23 @@
           <li class="md:mx-2">
             <a
               href="/dashboard"
-              on:click|preventDefault={() => router.navigate('/dashboard')}
+              onclick={(e) => {
+ e.preventDefault(); router.navigate('/dashboard');
+}}
               class:active={currentPath === '/dashboard'}>Dashboard</a
             >
           </li>
           <li class="md:mx-2">
             <a
               href="/teams"
-              on:click|preventDefault={() => router.navigate('/teams')}
+              onclick={(e) => {
+ e.preventDefault(); router.navigate('/teams');
+}}
               class:active={currentPath === '/teams'}>Teams</a
             >
           </li>
           <li class="md:mx-2">
-            <button class="btn btn-ghost" on:click={handleLogout}>Logout</button>
+            <button class="btn btn-ghost" onclick={handleLogout}>Logout</button>
           </li>
         {/if}
       </ul>
@@ -91,23 +101,31 @@
         >
           {#if !isAuthenticated}
             <li>
-              <a href="/login" on:click|preventDefault={() => router.navigate('/login')}>Login</a>
+              <a href="/login" onclick={(e) => {
+ e.preventDefault(); router.navigate('/login');
+}}>Login</a>
             </li>
             <li>
-              <a href="/register" on:click|preventDefault={() => router.navigate('/register')}
+              <a href="/register" onclick={(e) => {
+ e.preventDefault(); router.navigate('/register');
+}}
                 >Register</a
               >
             </li>
           {:else}
             <li>
-              <a href="/dashboard" on:click|preventDefault={() => router.navigate('/dashboard')}
+              <a href="/dashboard" onclick={(e) => {
+ e.preventDefault(); router.navigate('/dashboard');
+}}
                 >Dashboard</a
               >
             </li>
             <li>
-              <a href="/teams" on:click|preventDefault={() => router.navigate('/teams')}>Teams</a>
+              <a href="/teams" onclick={(e) => {
+ e.preventDefault(); router.navigate('/teams');
+}}>Teams</a>
             </li>
-            <li><button on:click={handleLogout}>Logout</button></li>
+            <li><button onclick={handleLogout}>Logout</button></li>
           {/if}
         </ul>
       </div>
@@ -131,17 +149,23 @@
           <a
             class="link link-hover mb-1"
             href="/"
-            on:click|preventDefault={() => router.navigate('/')}>Home</a
+            onclick={(e) => {
+ e.preventDefault(); router.navigate('/');
+}}>Home</a
           >
           <a
             class="link link-hover my-1"
             href="/dashboard"
-            on:click|preventDefault={() => router.navigate('/dashboard')}>Dashboard</a
+            onclick={(e) => {
+ e.preventDefault(); router.navigate('/dashboard');
+}}>Dashboard</a
           >
           <a
             class="link link-hover my-1"
             href="/teams"
-            on:click|preventDefault={() => router.navigate('/teams')}>Teams</a
+            onclick={(e) => {
+ e.preventDefault(); router.navigate('/teams');
+}}>Teams</a
           >
         </nav>
         <aside>

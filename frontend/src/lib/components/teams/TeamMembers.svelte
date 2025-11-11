@@ -74,7 +74,7 @@
       <h3 class="card-title text-lg">Membros da Equipe</h3>
       <button
         class="btn btn-outline btn-primary btn-sm"
-        on:click={loadTeamMembers}
+        onclick={loadTeamMembers}
         disabled={loading}
       >
         <svg

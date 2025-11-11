@@ -76,7 +76,7 @@
           <h2 class="card-title text-3xl">👥 Clientes</h2>
           <button
             class="btn btn-primary"
-            on:click={handleNewCustomer}
+            onclick={handleNewCustomer}
             disabled={$customerStore.isLoading}
           >
             + Novo Cliente
@@ -135,7 +135,7 @@
           <button
             class="btn btn-outline"
             class:loading={$customerStore.isLoading}
-            on:click={() => customerStore.loadCustomers()}
+            onclick={() => customerStore.loadCustomers()}
             disabled={$customerStore.isLoading}
           >
             🔄 Atualizar

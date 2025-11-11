@@ -20,11 +20,11 @@
     </p>
 
     <div class="flex gap-4 justify-center mt-8">
-      <button class="btn btn-primary" on:click={goHome}>
+      <button class="btn btn-primary" onclick={goHome}>
         <Icon name="home" className="h-5 w-5 mr-2" />
         Ir para Home
       </button>
-      <button class="btn btn-outline" on:click={goBack}>
+      <button class="btn btn-outline" onclick={goBack}>
         <Icon name="arrow-left" className="h-5 w-5 mr-2" />
         Voltar
       </button>

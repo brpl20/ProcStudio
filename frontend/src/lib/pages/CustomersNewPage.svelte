@@ -98,7 +98,7 @@
     <!-- Customer Form -->
     <CustomerForm
       isLoading={$customerStore.isLoading}
-      on:submit={handleSubmit}
+      onsubmit={handleSubmit}
       on:cancel={handleCancel}
     />
   </div>
