@@ -4,7 +4,7 @@
   import Register from './Register.svelte';
   import ApiTester from './ApiTester.svelte';
 
-  $: ({ currentView } = $authStore);
+  let { currentView } = $derived($authStore);
 
   function handleLoginSuccess(userData) {
     authStore.loginSuccess(userData);

@@ -14,10 +14,10 @@
   import type { WhoAmIResponse } from '../api/types';
 
   // Reactive statements for user data
-  $: authUser = $authStore.user;
+  let authUser = $derived($authStore.user);
 
   // Cache status
-  $: cacheInfo = $cacheStatus;
+  let cacheInfo = $derived($cacheStatus);
 
   // Display data
   let loading = true;
@@ -25,8 +25,8 @@
   let currentUserData: WhoAmIResponse | null = null;
 
   // Derived data from whoami
-  $: whoAmIUser = currentUserData?.data;
-  $: userProfile = whoAmIUser?.attributes?.profile;
+  let whoAmIUser = $derived(currentUserData?.data);
+  let userProfile = $derived(whoAmIUser?.attributes?.profile);
 
   onMount(async () => {
     try {

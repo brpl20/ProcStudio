@@ -26,10 +26,10 @@
   import LawyersTestDebugPage from './lib/pages/LawyersTestDebugPage.svelte';
   import NotFoundPage from './lib/pages/NotFoundPage.svelte';
 
-  $: ({ isAuthenticated, showProfileCompletion, profileData, missingFields } = $authStore);
-  $: ({ currentPath, params } = $router);
+  let { isAuthenticated, showProfileCompletion, profileData, missingFields } = $derived($authStore);
+  let { currentPath, params } = $derived($router);
 
-  $: currentComponent = getComponent(currentPath);
+  let currentComponent = $derived(getComponent(currentPath));
 
   function getComponent(path: string) {
     if (path.match(/\/customers\/edit\/\d+/)) {

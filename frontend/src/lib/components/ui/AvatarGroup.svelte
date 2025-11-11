@@ -6,9 +6,15 @@
     avatar?: string;
   }
 
-  export let users: User[] = [];
-  export let maxDisplay: number = 2;
-  export let size: 'xs' | 'sm' | 'md' | 'lg' = 'sm';
+  let {
+    users = [],
+    maxDisplay = 2,
+    size = 'sm'
+  }: {
+    users?: User[];
+    maxDisplay?: number;
+    size?: 'xs' | 'sm' | 'md' | 'lg';
+  } = $props();
 
   const sizeClasses = {
     responsive: 'w-6 h-6 text-xs sm:w-8 sm:h-8 sm:text-sm md:w-10 md:h-10 md:text-base lg:w-12 lg:h-12 lg:text-lg',
@@ -72,8 +78,8 @@
     return '#ffffff'; // padrão
   }
 
-  $: displayUsers = users.slice(0, maxDisplay);
-  $: remainingCount = Math.max(0, users.length - maxDisplay);
+  let displayUsers = $derived(users.slice(0, maxDisplay));
+  let remainingCount = $derived(Math.max(0, users.length - maxDisplay));
 </script>
 
 {#if users.length === 0}

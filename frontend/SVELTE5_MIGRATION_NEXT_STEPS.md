@@ -27,6 +27,7 @@ The Svelte 5 migration is **75% complete** with excellent progress made on event
 - **Result:** Zero native DOM event handlers remain
 
 ### Phase 2: Event Dispatchers ✅ 83% (20/24)
+--> IGNORE EVERYTHING RELATED TO CUSTOMER FORMS, THOSE WILL BE FULLY REFACTORED
 Successfully migrated 10 components:
 1. ConfirmDialog.svelte + 2 parents
 2. Pagination.svelte + 1 parent
@@ -52,10 +53,11 @@ onConfirm(data);
 
 ### Phase 3: Reactive Statements 🟡 24% (~12/49 migrated)
 Converted ~12 reactive statements to `$derived()` and `$effect()`:
+--> IGNORE EVERYTHING RELATED TO CUSTOMER FORMS, THOSE WILL BE FULLY REFACTORED
 - CustomerFormStep1: 5 statements
 - CustomerFormStep2: 2 statements + 1 $effect
-- Pagination: 3 statements
 - CustomerFilters: 1 statement
+- Pagination: 3 statements
 - TeamManagement: 1 $effect
 
 **Patterns Applied:**
@@ -213,10 +215,10 @@ let {
    - Line: `on:remove={() => removeAddress(idx)}`
    - Line: `on:remove={() => removeBankAccount(index)}`
 
-2. **CustomersNewPage.svelte** (1 instance)
+2. **CustomersNewPage.svelte** (1 instance) - *MARKED FOR REFACTORING*
    - Line: `on:cancel={handleCancel}`
 
-3. **CustomersEditPage.svelte** (1 instance)
+3. **CustomersEditPage.svelte** (1 instance) - *MARKED FOR REFACTORING*
    - Line: `on:cancel={handleCancel}`
 
 4. **CustomerProfilePage.svelte** (1 instance) - *MARKED FOR REFACTORING*
