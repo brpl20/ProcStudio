@@ -1,9 +1,13 @@
+<!-- frontend/src/lib/components/teams/AdvogadosManagement.svelte (Atualizado) -->
 <script lang="ts">
   import { onMount } from 'svelte';
   import api from '../../api';
   import ConfirmDialog from '../ui/ConfirmDialog.svelte';
   import { userFormStore } from '../../stores/userFormStore.svelte.ts';
   import UserFormUnified from './UserFormUnified.svelte';
+  // ====================== 1. IMPORTAR O NOVO COMPONENTE =========================
+  import UserDetailView from './UserDetailView.svelte';
+  // ==============================================================================
 
   interface User {
     id: number;
@@ -31,6 +35,11 @@
   let showDeleteDialog = $state(false);
   let deletingUser = $state<User | null>(null);
 
+  // ====================== 2. ESTADO PARA O MODAL DE DETALHES =====================
+  let showDetailModal = $state(false);
+  let viewingUser = $state<User | null>(null);
+  // ==============================================================================
+
   async function loadUsers() {
     loading = true;
     error = null;
@@ -47,16 +56,33 @@
   function openCreateForm() {
     userFormStore.startCreate();
   }
-
-  // ============== ALTERAÇÃO: Chama o novo método startInvite ======================
+  
   function openInviteForm() {
-    userFormStore.startInvite(); // Agora chama a função correta para o fluxo de convite
+    userFormStore.startInvite();
   }
-  // ==============================================================================
-
+  
   function openEditForm(user: User) {
     userFormStore.startEdit(user);
   }
+
+  // =================== 3. FUNÇÃO PARA ABRIR O MODAL DE DETALHES =================
+  function openUserDetail(user: User) {
+    viewingUser = user;
+    showDetailModal = true;
+  }
+  // ==============================================================================
+
+  // ============= 6. FUNÇÃO PARA LIDAR COM O EVENTO DE EDIÇÃO ====================
+  function handleEditFromDetail(event: CustomEvent<User>) {
+    const userToEdit = event.detail;
+    showDetailModal = false; // Fecha o modal de detalhes
+    viewingUser = null;
+    // Um pequeno delay para garantir que o modal de detalhes fechou antes do de edição abrir
+    setTimeout(() => {
+      openEditForm(userToEdit);
+    }, 150);
+  }
+  // ==============================================================================
 
   function openDeleteDialog(user: User) {
     deletingUser = user;
@@ -85,25 +111,21 @@
       closeDeleteDialog();
     }
   }
-
-  // ===================== Mensagem de sucesso diferenciada para convite ======================
+  
   async function handleSaveSuccess() {
     if (userFormStore.mode === 'invite') {
       success = 'Convite enviado com sucesso!';
     } else {
       success = userFormStore.mode === 'create' ? 'Usuário criado com sucesso!' : 'Usuário atualizado com sucesso!';
     }
-    await loadUsers(); // Recarrega a lista de usuários
+    await loadUsers();
 
-    // Fecha o modal imediatamente resetando o store
     userFormStore.reset();
 
-    // Mantém a mensagem de sucesso visível na tela principal por um tempo
     setTimeout(() => {
       success = null;
     }, 1500);
   }
-  // =====================================================================================================
 
   $effect(() => {
     if (userFormStore.success) {
@@ -127,13 +149,11 @@
 </script>
 
 <div class="p-6">
-  <!-- Classes para uma responsividade fluida com flex-wrap e gap -->
   <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
     <div>
       <h2 class="text-2xl font-semibold text-gray-800">Gerenciar Usuários</h2>
       <p class="text-gray-600 text-sm mt-1">Crie, edite e gerencie usuários do sistema</p>
     </div>
-    <!-- Contêiner de botões também com flex-wrap e gap -->
     <div class="flex flex-wrap gap-4">
       <button class="btn btn-secondary" onclick={openInviteForm} disabled={loading}>
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -198,7 +218,12 @@
                   <td><div class="badge {user.attributes?.status === 'active' ? 'badge-success' : 'badge-warning'} badge-sm">{user.attributes?.status === 'active' ? 'Ativo' : 'Inativo'}</div></td>
                   <td><span class="text-sm font-mono">{user.attributes?.oab || '-'}</span></td>
                   <td class="text-center">
-                    <div class="flex justify-center space-x-2">
+                    <div class="flex justify-center space-x-1">
+                      <!-- ============= 4. BOTÃO "VER DETALHES" NA TABELA ============== -->
+                      <button class="btn btn-ghost btn-xs" onclick={() => openUserDetail(user)} title="Ver detalhes">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                      </button>
+                      <!-- ==================================================================== -->
                       <button class="btn btn-ghost btn-xs" onclick={() => openEditForm(user)} title="Editar usuário">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                       </button>
@@ -217,6 +242,7 @@
   </div>
 </div>
 
+<!-- Modal do Formulário de Edição/Criação -->
 <dialog class="modal" open={userFormStore.mode !== null}>
   <div class="modal-box w-11/12 max-w-4xl">
     <UserFormUnified />
@@ -225,6 +251,20 @@
     <button>close</button>
   </form>
 </dialog>
+
+<!-- ======================= 5. NOVO MODAL PARA DETALHES DO USUÁRIO ========================= -->
+<dialog class="modal" open={showDetailModal}>
+  <div class="modal-box w-11/12 max-w-4xl">
+    {#if viewingUser}
+      <UserDetailView user={viewingUser} on:edit={handleEditFromDetail} />
+    {/if}
+  </div>
+  <form method="dialog" class="modal-backdrop" onsubmit={(e) => { e.preventDefault(); showDetailModal = false; viewingUser = null; }}>
+    <button>close</button>
+  </form>
+</dialog>
+<!-- ======================================================================================== -->
+
 
 {#if showDeleteDialog && deletingUser}
   <ConfirmDialog

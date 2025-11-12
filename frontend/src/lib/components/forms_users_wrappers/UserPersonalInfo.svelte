@@ -6,7 +6,6 @@
   import Nationality from '../forms_commons/Nationality.svelte';
   import Birth from '../forms_commons/Birth.svelte';
 
-  // A prop 'personalInfo' agora está dentro da declaração $props()
   let {
     personalInfo = $bindable({
       cpf: '',
@@ -20,26 +19,40 @@
   } = $props();
 </script>
 
-<div class="divider pt-2">Informações Pessoais</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+  <div class="space-y-2">
+    <Cpf bind:value={personalInfo.cpf} required={true} />
+  </div>
+  
+  <div class="space-y-2">
+    <Rg bind:value={personalInfo.rg} required={true} />
+  </div>
+  
+  <div class="space-y-2">
+    <Gender bind:value={personalInfo.gender} required={true} />
+  </div>
+  
+  <div class="space-y-2">
+    <CivilStatus bind:value={personalInfo.civil_status} gender={personalInfo.gender} required={true} />
+  </div>
+  
+  <div class="space-y-2">
+    <Nationality bind:value={personalInfo.nationality} gender={personalInfo.gender} required={true} />
+  </div>
+  
+  <div class="space-y-2">
+    <Birth bind:value={personalInfo.birth} required={true} />
+  </div>
 
-<!-- O grid agora pode ter um campo que ocupa mais espaço -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-  <Cpf bind:value={personalInfo.cpf} required={true} />
-  <Rg bind:value={personalInfo.rg} required={true} />
-  <Gender bind:value={personalInfo.gender} required={true} />
-  <CivilStatus bind:value={personalInfo.civil_status} gender={personalInfo.gender} required={true} />
-  <Nationality bind:value={personalInfo.nationality} gender={personalInfo.gender} required={true} />
-  <Birth bind:value={personalInfo.birth} required={true} />
-
-  <div class="form-control md:col-span-2">
-    <label class="label" for="user-mother_name">
-      <span class="label-text">Nome da Mãe</span>
+  <div class="md:col-span-2 space-y-2">
+    <label class="block text-sm font-medium text-[#01013D]" for="user-mother_name">
+      Nome da Mãe <span class="text-red-500">*</span>
     </label>
     <input
       id="user-mother_name"
       type="text"
       placeholder="Nome completo da mãe"
-      class="input input-bordered w-full"
+      class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-[#0277EE] focus:ring-2 focus:ring-[#0277EE]/20 outline-none transition-all duration-200 text-[#01013D] placeholder-gray-400"
       bind:value={personalInfo.mother_name}
       required={true}
     />

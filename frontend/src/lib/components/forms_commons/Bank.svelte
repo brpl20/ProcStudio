@@ -52,12 +52,39 @@
   const showOperationField = $derived(selectedBankCode === '104'); // Apenas para Caixa Econômica
 
   // Effect to sync bank name with bank code
+  // CORREÇÃO: Adicionadas verificações para evitar atribuições redundantes e reatividade circular.
   $effect(() => {
     if (bankAccount.bank_name) {
       const matchingBank = BRAZILIAN_BANKS.find((bank) => bank.label === bankAccount.bank_name);
       if (matchingBank) {
-        selectedBankCode = matchingBank.value;
-        bankAccount.bank_number = matchingBank.value;
+        // Atualizar selectedBankCode apenas se diferente
+        if (selectedBankCode !== matchingBank.value) {
+          selectedBankCode = matchingBank.value;
+        }
+        // Atualizar bankAccount.bank_number apenas se diferente
+        if (bankAccount.bank_number !== matchingBank.value) {
+          bankAccount.bank_number = matchingBank.value;
+        }
+      } else {
+        // Se bank_name não corresponde a nenhum banco, limpar códigos associados
+        if (selectedBankCode !== '') {
+          selectedBankCode = '';
+        }
+        if (bankAccount.bank_number !== '') {
+          bankAccount.bank_number = '';
+        }
+      }
+    } else {
+      // Se bankAccount.bank_name estiver vazio, garantir que os códigos associados também estejam vazios
+      if (selectedBankCode !== '') {
+        selectedBankCode = '';
+      }
+      if (bankAccount.bank_number !== '') {
+        bankAccount.bank_number = '';
+      }
+      // Opcional: Limpar bankSearchTerm se bankAccount.bank_name estiver vazio
+      if (bankSearchTerm !== '') {
+        bankSearchTerm = '';
       }
     }
   });
@@ -78,7 +105,7 @@
   function selectBank(bank: BrazilianBank) {
     bankAccount.bank_name = bank.label;
     bankAccount.bank_number = bank.value;
-    selectedBankCode = bank.value;
+    selectedBankCode = bank.value; // Isso será sincronizado também pelo $effect, mas é útil ter aqui
     bankSearchTerm = bank.label;
     showBankDropdown = false;
     selectedDropdownIndex = -1;
@@ -102,13 +129,20 @@
     setTimeout(() => {
       showBankDropdown = false;
       selectedDropdownIndex = -1;
+      // Opcional: Se o termo de busca não for um banco válido, limpar
+      if (bankAccount.bank_name && bankSearchTerm !== bankAccount.bank_name) {
+        bankSearchTerm = bankAccount.bank_name;
+      } else if (!bankAccount.bank_name && bankSearchTerm) {
+        // Se não há banco selecionado, mas há termo de busca, limpar o termo.
+        bankSearchTerm = '';
+      }
     }, 200);
   }
 
   function handleBankKeydown(event: KeyboardEvent) {
     if (!showBankDropdown) {
-return;
-}
+      return;
+    }
     switch (event.key) {
       case 'ArrowDown':
         event.preventDefault();
@@ -121,8 +155,8 @@ return;
       case 'Enter':
         event.preventDefault();
         if (selectedDropdownIndex >= 0) {
-selectBank(filteredBanks[selectedDropdownIndex]);
-}
+          selectBank(filteredBanks[selectedDropdownIndex]);
+        }
         break;
       case 'Escape':
         event.preventDefault();
@@ -314,7 +348,7 @@ selectBank(filteredBanks[selectedDropdownIndex]);
   {#if showRemoveButton}
     <div class="flex justify-end mt-2">
       <button type="button" class="btn btn-error btn-sm" onclick={handleRemove} {disabled}>
-        ��️ Remover
+        ✖️ Remover
       </button>
     </div>
   {/if}
