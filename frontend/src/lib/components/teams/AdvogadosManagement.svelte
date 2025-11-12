@@ -137,7 +137,7 @@
   <!-- Header Section -->
   <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-6">
     <div>
-      <h2 class="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-[#01013D] to-[#0277EE] bg-clip-text text-transparent mb-2">
+      <h2 class="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-[#01013D] to-[#01013D] bg-clip-text text-transparent mb-2">
         Gerenciar Usuários
       </h2>
       <p class="text-gray-600 text-sm">Crie, edite e gerencie usuários do sistema</p>

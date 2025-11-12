@@ -71,7 +71,7 @@
       {#if $customerStore.isLoading && $customerStore.paginatedCustomers.length === 0}
         <div class="flex items-center justify-center min-h-[400px]">
           <div class="flex flex-col items-center gap-4">
-            <div class="w-16 h-16 border-4 border-[#0277EE] border-t-transparent rounded-full animate-spin"></div>
+            <div class="w-16 h-16 border-4 border-[#01013D] border-t-transparent rounded-full animate-spin"></div>
             <p class="text-[#01013D] font-medium">Carregando clientes...</p>
           </div>
         </div>
@@ -84,7 +84,7 @@
               <p class="text-gray-600">Gerenciar e visualizar todos os clientes</p>
             </div>
             <button
-              class="inline-flex items-center gap-2 bg-[#0277EE] hover:bg-[#01013D] text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="inline-flex items-center gap-2 bg-[#01013D] hover:bg-[#01013D] text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
               on:click={handleNewCustomer}
               disabled={$customerStore.isLoading}
             >
@@ -119,7 +119,7 @@
         {/if}
 
         <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 mb-6">
-          <div class="bg-gradient-to-r from-[#0277EE] to-[#01013D] px-6 py-4">
+          <div class="bg-gradient-to-r from-[#01013D] to-[#01013D] px-6 py-4">
             <h2 class="text-xl font-bold text-white flex items-center gap-2">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
@@ -142,7 +142,7 @@
         </div>
 
         <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
-          <div class="bg-gradient-to-r from-[#0277EE] to-[#01013D] px-6 py-4">
+          <div class="bg-gradient-to-r from-[#01013D] to-[#01013D] px-6 py-4">
             <h2 class="text-xl font-bold text-white flex items-center gap-2">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -159,7 +159,7 @@
             {#if $customerStore.isLoading && $customerStore.paginatedCustomers.length === 0}
               <div class="flex justify-center p-12">
                 <div class="text-center">
-                  <div class="w-12 h-12 border-4 border-[#0277EE] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                  <div class="w-12 h-12 border-4 border-[#01013D] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                   <p class="text-gray-500 font-medium">Carregando clientes...</p>
                 </div>
               </div>

@@ -1,5 +1,7 @@
 <script>
   import { WebsiteName } from '../config.js';
+    import logoProcStudio from '../../assets/procstudio_logotipo_vertical_sem_fundo.png'; 
+
 </script>
 
 <div class="min-h-screen bg-gradient-to-br from-[#eef0ef] via-white to-[#eef0ef] flex flex-col relative overflow-hidden">
@@ -16,8 +18,12 @@
         href="/"
         class="flex items-center group"
       >
-        <div class="text-3xl font-bold bg-gradient-to-r from-[#01013D] to-[#0277EE] bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300">
-          {WebsiteName}
+        <div class="text-3xl font-bold bg-gradient-to-r from-[#01013D] to-[#0277EE] bg-clip-text text-transparent">
+          <img 
+                src={logoProcStudio} 
+                alt="Logotipo do ProcStudio" 
+              class="h-20 w-auto"
+              />
         </div>
       </a>
       <div class="flex items-center space-x-4">

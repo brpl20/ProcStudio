@@ -5,6 +5,7 @@
   import { router } from '../stores/routerStore';
   import Icon from '../icons/icons.svelte';
   import { WebsiteName } from '../config.js';
+  import logoProcStudio from '../../assets/procstudio_logotipo_horizontal_sem_fundo.png'; 
 
   interface Props {
     showMenuButton?: boolean;
@@ -78,7 +79,7 @@
         router.navigate('/dashboard');
       }}
     >
-      {WebsiteName}
+    {WebsiteName}
     </a>
   </div>
 

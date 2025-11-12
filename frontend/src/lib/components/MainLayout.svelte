@@ -2,6 +2,7 @@
   import { WebsiteName } from '../config.js';
   import { authStore } from '../stores/authStore';
   import { router } from '../stores/routerStore';
+  import logoProcStudio from '../../assets/procstudio_logotipo_horizontal_sem_fundo.png'; 
 
   export let showFooter = true;
 
@@ -36,8 +37,12 @@
             on:click|preventDefault={() => { router.navigate('/'); closeMobileMenu(); }}
             class="flex items-center group"
           >
-            <div class="text-3xl font-bold bg-gradient-to-r from-[#01013D] to-[#0277EE] bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300">
-              {WebsiteName}
+            <div class="text-3xl font-bold bg-gradient-to-r from-[#01013D] to-[#0277EE] bg-clip-text text-transparent">
+              <img 
+                src={logoProcStudio} 
+                alt="Logotipo do ProcStudio" 
+              class="h-14 w-auto"
+              />
             </div>
           </a>
         </div>

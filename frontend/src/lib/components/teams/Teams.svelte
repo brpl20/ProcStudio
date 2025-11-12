@@ -62,8 +62,8 @@
       <button
         class={`flex items-center gap-2.5 px-6 py-3 rounded-md font-medium transition-all duration-300 ${
           activeTab === tab.id
-            ? 'bg-gradient-to-r from-[#0277EE] to-[#01013D] text-white shadow-lg shadow-[#0277EE]/30'
-            : 'text-gray-700 hover:bg-[#eef0ef] hover:text-[#0277EE]'
+            ? 'bg-gradient-to-r from-[#01013D] to-[#01013D] text-white shadow-lg shadow-[#01013D]/30'
+            : 'text-gray-700 hover:bg-[#eef0ef] hover:text-[]'
         }`}
         on:click={() => switchTab(tab.id)}
       >
@@ -81,7 +81,7 @@
       <div class="flex items-center justify-center p-16">
         <div class="text-center">
           <div class="inline-block mb-4">
-            <div class="loading loading-spinner loading-lg" style="color: #0277EE;"></div>
+            <div class="loading loading-spinner loading-lg" style="color: ;"></div>
           </div>
           <p class="text-lg text-gray-600 font-medium">Carregando...</p>
         </div>
@@ -120,6 +120,6 @@
 
 <style>
   :global(.loading) {
-    --loading-bg: #0277EE;
+    --loading-bg: ;
   }
 </style>

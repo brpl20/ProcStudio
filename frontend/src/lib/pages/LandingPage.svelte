@@ -1,6 +1,7 @@
 <script lang="ts">
   import MainLayout from '../components/MainLayout.svelte';
   import { router } from '../stores/routerStore';
+  import logoProcStudio from '../../assets/procstudio_logotipo_vertical_sem_fundo.png'; 
 
   let openFaq: number | null = null;
 
@@ -22,9 +23,11 @@
 
       <div class="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
-          <h1 class="text-6xl sm:text-7xl lg:text-8xl font-bold mb-6 bg-gradient-to-r from-[#01013D] via-[#0277EE] to-[#01013D] bg-clip-text text-transparent animate-fade-in">
-            ProcStudio
-          </h1>
+            <img 
+                src={logoProcStudio} 
+                alt="Logotipo do ProcStudio" 
+                class="h-48 w-auto mx-auto mb-6 animate-fade-in" 
+              />
           <p class="text-2xl sm:text-3xl lg:text-4xl text-[#01013D] opacity-80 mb-4 font-light animate-fade-in-delay-1">
             Sistema em Desenvolvimento
           </p>

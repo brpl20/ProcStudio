@@ -29,11 +29,11 @@
   function getRoleBadgeClass(role) {
     switch (role) {
     case 'lawyer':
-      return 'bg-[#0277EE] text-white';
+      return 'bg-[#01013D] text-white';
     case 'paralegal':
       return 'bg-[#01013D] text-white';
     case 'trainee':
-      return 'bg-[#0277EE]/20 text-[#01013D]';
+      return 'bg-[#01013D]/20 text-[#01013D]';
     case 'secretary':
       return 'bg-[#eef0ef] text-[#01013D] border border-[#01013D]/20';
     default:
@@ -66,7 +66,7 @@
 </script>
 
 <div class="bg-white rounded-2xl shadow-lg border border-[#eef0ef] overflow-hidden">
-  <div class="p-6 bg-gradient-to-br from-[#01013D] to-[#0277EE]">
+  <div class="p-6 bg-gradient-to-br from-[#01013D] to-[#01013D]">
     <div class="flex justify-between items-center">
       <h3 class="text-2xl font-bold text-white">Membros da Equipe</h3>
       <button
@@ -99,7 +99,7 @@
     {#if loading}
       <div class="flex flex-col items-center justify-center py-16">
         <div class="relative">
-          <div class="w-16 h-16 border-4 border-[#eef0ef] border-t-[#0277EE] rounded-full animate-spin"></div>
+          <div class="w-16 h-16 border-4 border-[#eef0ef] border-t-[#01013D] rounded-full animate-spin"></div>
           <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 border-4 border-transparent border-b-[#01013D] rounded-full animate-spin"></div>
         </div>
         <span class="mt-4 text-[#01013D] font-medium">Carregando membros...</span>
@@ -126,10 +126,10 @@
       </div>
     {:else if members.length === 0}
       <div class="text-center py-16">
-        <div class="mb-6 inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-[#eef0ef] to-[#0277EE]/10">
+        <div class="mb-6 inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-[#eef0ef] to-[#01013D]/10">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="h-12 w-12 text-[#0277EE]"
+            class="h-12 w-12 text-[#01013D]"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -148,11 +148,11 @@
     {:else}
       <div class="space-y-3">
         {#each members as member, index}
-          <div class="group bg-gradient-to-r from-[#eef0ef]/30 to-white hover:from-[#eef0ef]/50 hover:to-[#0277EE]/5 border border-[#eef0ef] hover:border-[#0277EE]/30 rounded-xl p-4 transition-all duration-300 hover:shadow-md">
+          <div class="group bg-gradient-to-r from-[#eef0ef]/30 to-white hover:from-[#eef0ef]/50 hover:to-[#01013D]/5 border border-[#eef0ef] hover:border-[#01013D]/30 rounded-xl p-4 transition-all duration-300 hover:shadow-md">
             <div class="flex items-center justify-between gap-4">
               <div class="flex items-center gap-4 flex-1 min-w-0">
                 <div class="relative flex-shrink-0">
-                  <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#01013D] to-[#0277EE] flex items-center justify-center ring-2 ring-white shadow-lg">
+                  <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#01013D] to-[#01013D] flex items-center justify-center ring-2 ring-white shadow-lg">
                     <span class="text-white font-bold text-lg">
                       {member.profile?.name?.charAt(0) || member.email?.charAt(0) || '?'}
                     </span>
@@ -206,9 +206,9 @@
             Total: <span class="text-[#01013D] font-bold">{members.length}</span> membro{members.length !== 1 ? 's' : ''}
           </span>
           <div class="flex gap-2">
-            <div class="w-2 h-2 rounded-full bg-[#0277EE] animate-pulse"></div>
-            <div class="w-2 h-2 rounded-full bg-[#0277EE] animate-pulse" style="animation-delay: 0.2s"></div>
-            <div class="w-2 h-2 rounded-full bg-[#0277EE] animate-pulse" style="animation-delay: 0.4s"></div>
+            <div class="w-2 h-2 rounded-full bg-[#01013D] animate-pulse"></div>
+            <div class="w-2 h-2 rounded-full bg-[#01013D] animate-pulse" style="animation-delay: 0.2s"></div>
+            <div class="w-2 h-2 rounded-full bg-[#01013D] animate-pulse" style="animation-delay: 0.4s"></div>
           </div>
         </div>
       </div>
