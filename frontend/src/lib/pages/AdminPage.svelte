@@ -20,9 +20,9 @@
   let cacheInfo = $derived($cacheStatus);
 
   // Display data
-  let loading = true;
-  let error = null;
-  let currentUserData: WhoAmIResponse | null = null;
+  let loading = $state(true);
+  let error = $state(null);
+  let currentUserData = $state<WhoAmIResponse | null>(null);
 
   // Derived data from whoami
   let whoAmIUser = $derived(currentUserData?.data);

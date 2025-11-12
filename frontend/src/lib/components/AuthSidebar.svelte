@@ -11,7 +11,7 @@
   import Breadcrumbs from './Breadcrumbs.svelte';
   import AuthGuard from './AuthGuard.svelte';
 
-  let { activeSection = '' }: { activeSection?: string } = $props();
+  let { activeSection = '', children }: { activeSection?: string } = $props();
 
   let isAuthenticated = $derived($authStore.isAuthenticated);
   let currentPath = $derived(router.currentPath);
@@ -139,7 +139,7 @@
 
       <!-- Conteúdo principal -->
       <div class="flex-1 container px-6 lg:px-12 py-3 lg:py-6">
-        <slot />
+        {@render children()}
       </div>
 
       <!-- Footer -->

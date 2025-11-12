@@ -15,8 +15,8 @@
 
   let timeoutId;
   let warningId;
-  let showWarning = false;
-  let remainingTime = warningMinutes;
+  let showWarning = $state(false);
+  let remainingTime = $state(warningMinutes);
 
   let isAuthenticated = $derived($authStore.isAuthenticated);
 

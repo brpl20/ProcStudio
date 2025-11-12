@@ -3,10 +3,12 @@
   import { router } from '../stores/routerStore';
   import Icon from '../icons/icons.svelte';
 
-  export let error = null;
-  export let message = 'Algo deu errado. Por favor, tente novamente.';
-  export let showRetry = true;
-  export let showHome = true;
+  let {
+    error = null,
+    message = 'Algo deu errado. Por favor, tente novamente.',
+    showRetry = true,
+    showHome = true
+  } = $props();
 
   function handleRetry() {
     window.location.reload();

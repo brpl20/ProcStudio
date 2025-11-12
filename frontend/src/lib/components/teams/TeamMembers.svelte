@@ -4,9 +4,9 @@
 
   let { teamId = null }: { teamId?: number | null } = $props();
 
-  let members = [];
-  let loading = true;
-  let error = null;
+  let members = $state([]);
+  let loading = $state(true);
+  let error = $state(null);
 
   async function loadTeamMembers() {
     if (!teamId) {

@@ -7,7 +7,8 @@
   let {
     requireAuth = true,
     redirectTo = '/login',
-    message = 'Você precisa estar autenticado para acessar esta página.'
+    message = 'Você precisa estar autenticado para acessar esta página.',
+    children
   }: {
     requireAuth?: boolean;
     redirectTo?: string;
@@ -43,7 +44,7 @@
 </script>
 
 {#if !requireAuth || isAuthenticated}
-  <slot />
+  {@render children()}
 {:else}
   <div class="hero min-h-screen bg-base-200">
     <div class="hero-content text-center">

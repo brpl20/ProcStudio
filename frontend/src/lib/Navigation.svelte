@@ -1,8 +1,10 @@
 <script>
   import { authStore } from './stores/authStore';
 
-  export let currentPage = 'home';
-  export let onNavigate = () => {};
+  let {
+    currentPage = 'home',
+    onNavigate = () => {}
+  } = $props();
 
   function navigateTo(page) {
     onNavigate(page);

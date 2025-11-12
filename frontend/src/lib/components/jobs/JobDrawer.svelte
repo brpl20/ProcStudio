@@ -10,12 +10,12 @@
 
   let editor: HTMLDivElement;
   let quill: Quill | null = null;
-  let showAutocomplete = false;
-  let autocompletePosition = { x: 0, y: 0 };
+  let showAutocomplete = $state(false);
+  let autocompletePosition = $state({ x: 0, y: 0 });
   let searchTerm = '';
   let selectedUser: UserProfileData | null = null;
   let currentMentionRange: any = null;
-  let selectedIndex = 0;
+  let selectedIndex = $state(0);
   let debounceTimer: number | null = null;
 
   // Role translations

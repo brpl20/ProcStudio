@@ -1,7 +1,12 @@
 <!-- components/ui/StatusBadge.svelte -->
 <script lang="ts">
-  export let status: string = '';
-  export let customClasses: string = '';
+  let {
+    status = '',
+    customClasses = ''
+  }: {
+    status?: string;
+    customClasses?: string;
+  } = $props();
 
   const statusClassMap: Record<string, string> = {
     active: 'badge-success',
@@ -19,8 +24,8 @@
     unconfirmed: 'Não'
   };
 
-  const badgeClass = statusClassMap[status] || 'badge-ghost';
-  const displayText = statusTextMap[status] || status;
+  let badgeClass = $derived(statusClassMap[status] || 'badge-ghost');
+  let displayText = $derived(statusTextMap[status] || status);
 </script>
 
 <span class="badge {badgeClass} {customClasses}">

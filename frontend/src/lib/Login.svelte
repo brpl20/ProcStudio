@@ -2,13 +2,17 @@
   import api from './api/index';
   import type { LoginResponse } from './api/index';
 
-  let email = '';
-  let password = '';
-  let loading = false;
-  let message = '';
-  let isSuccess = false;
+  let {
+    onLoginSuccess = () => {}
+  }: {
+    onLoginSuccess?: (result: LoginResponse) => void;
+  } = $props();
 
-  export let onLoginSuccess: (result: LoginResponse) => void = () => {};
+  let email = $state('');
+  let password = $state('');
+  let loading = $state(false);
+  let message = $state('');
+  let isSuccess = $state(false);
 
   async function handleSubmit() {
     if (!email || !password) {

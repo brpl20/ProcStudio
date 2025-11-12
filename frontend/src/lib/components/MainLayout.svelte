@@ -3,7 +3,7 @@
   import { authStore } from '../stores/authStore';
   import { router } from '../stores/routerStore';
 
-  let { showFooter = true } = $props();
+  let { showFooter = true, children } = $props();
 
   let isAuthenticated = $derived($authStore.isAuthenticated);
   let currentPath = $derived(router.currentPath);
@@ -134,7 +134,7 @@
 
   <!-- Main content -->
   <div class="flex-1 container mx-auto px-4 py-8">
-    <slot />
+    {@render children()}
   </div>
 
   <!-- Footer -->

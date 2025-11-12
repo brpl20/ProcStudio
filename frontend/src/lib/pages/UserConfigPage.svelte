@@ -6,12 +6,12 @@
   import type { WhoAmIResponse } from '../api/types';
 
   // Display data
-  let loading = true;
-  let error = null;
-  let currentUserData: WhoAmIResponse | null = null;
-  let uploadingAvatar = false;
-  let showAvatarEditor = false;
-  let successMessage = '';
+  let loading = $state(true);
+  let error = $state(null);
+  let currentUserData = $state<WhoAmIResponse | null>(null);
+  let uploadingAvatar = $state(false);
+  let showAvatarEditor = $state(false);
+  let successMessage = $state('');
 
   // Derived data from whoami
   let whoAmIUser = $derived(currentUserData?.data);

@@ -1,5 +1,5 @@
 <script>
-  export let user = null;
+  let { user = null } = $props();
 </script>
 
 {#if user && user.data}
