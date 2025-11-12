@@ -84,7 +84,7 @@
               <p class="text-gray-600">Gerenciar e visualizar todos os clientes</p>
             </div>
             <button
-              class="inline-flex items-center gap-2 bg-[#01013D] hover:bg-[#01013D] text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="inline-flex items-center gap-2 bg-gradient-to-r from-[#0277EE] to-[#01013D] hover:shadow-lg text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 shadow-md transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
               on:click={handleNewCustomer}
               disabled={$customerStore.isLoading}
             >
