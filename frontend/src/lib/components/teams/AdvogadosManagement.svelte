@@ -28,8 +28,6 @@
   let error: string | null = null;
   let success: string | null = null;
 
-  const formState = userFormStore;
-
   let showDeleteDialog = false;
   let deletingUser: User | null = null;
 
@@ -87,10 +85,10 @@
   }
 
   async function handleSaveSuccess() {
-    if ($formState.mode === 'invite') {
+    if (userFormStore.mode === 'invite') {
       success = 'Convite enviado com sucesso!';
     } else {
-      success = $formState.mode === 'create' ? 'Usuário criado com sucesso!' : 'Usuário atualizado com sucesso!';
+      success = userFormStore.mode === 'create' ? 'Usuário criado com sucesso!' : 'Usuário atualizado com sucesso!';
     }
     await loadUsers();
     userFormStore.reset();
@@ -99,11 +97,11 @@
     }, 1500);
   }
 
-  $: {
-    if ($formState.success) {
+  $effect(() => {
+    if (userFormStore.success) {
       handleSaveSuccess();
     }
-  }
+  });
 
   function getRoleBadgeClass(role: string): string {
     const map: Record<string, string> = { 
@@ -284,7 +282,7 @@
 </div>
 
 <!-- Modal Dialog -->
-<dialog class="modal" open={$formState.mode !== null}>
+<dialog class="modal" open={userFormStore.mode !== null}>
   <div class="modal-box w-11/12 max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl">
     <UserFormUnified />
   </div>
