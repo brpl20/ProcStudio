@@ -41,6 +41,7 @@ const getInitialFormData = (): UserFormData => ({
 // Create a Svelte 5 rune-based store
 class UserFormStore {
   mode = $state<'create' | 'edit' | 'invite' | null>(null);
+  open = $state<boolean>(false);
   formData = $state<UserFormData>(getInitialFormData());
   loading = $state(false);
   error = $state<string | null>(null);
@@ -79,8 +80,9 @@ class UserFormStore {
   }
 
   startCreate() {
-    this.reset();
+    this.close();
     this.mode = 'create';
+    this.open = true
   }
 
   startEdit(user: any) {
@@ -134,6 +136,7 @@ class UserFormStore {
     };
 
     this.mode = 'edit';
+    this.open = true
     this.editingUserId = user.id;
     this.editingUserProfileId = user.attributes.user_profile_id;
     this.error = null;
@@ -141,12 +144,13 @@ class UserFormStore {
   }
 
   startInvite() {
-    this.reset();
+    this.close();
     this.mode = 'invite';
+    this.open = true
   }
 
-  reset() {
-    this.mode = null;
+  close() {
+    this.open = false;
     this.formData = getInitialFormData();
     this.loading = false;
     this.error = null;

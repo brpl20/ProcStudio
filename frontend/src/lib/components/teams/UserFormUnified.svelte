@@ -34,7 +34,7 @@
         Criar Novo Usuário
       {:else if userFormStore.mode === 'invite'}
         Convidar Usuários por Email
-      {:else}
+      {:else if userFormStore.mode === 'edit'}
         Editar Usuário
       {/if}
     </h2>
@@ -203,7 +203,7 @@
     <button 
       type="button" 
       class="px-6 py-3 rounded-lg border border-gray-300 text-[#01013D] font-medium hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
-      onclick={() => userFormStore.reset()} 
+      onclick={() => userFormStore.close()} 
       disabled={userFormStore.loading}
     >
       Cancelar
@@ -224,7 +224,7 @@
         Criar Usuário
       {:else if userFormStore.mode === 'invite'}
         Enviar Convite{#if userFormStore.inviteEmails.length > 1}s{/if}
-      {:else}
+      {:else if userFormStore.mode === 'edit'}
         Salvar Alterações
       {/if}
     </button>

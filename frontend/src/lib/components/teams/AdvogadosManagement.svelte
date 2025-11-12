@@ -114,12 +114,14 @@
   async function handleSaveSuccess() {
     if (userFormStore.mode === 'invite') {
       success = 'Convite enviado com sucesso!';
-    } else {
-      success = userFormStore.mode === 'create' ? 'Usuário criado com sucesso!' : 'Usuário atualizado com sucesso!';
+    } else if (userFormStore.mode === 'create') {
+      success = 'Usuário criado com sucesso!';
+    } else if (userFormStore.mode === 'edit') {
+      success = 'Usuário editado com sucesso!';
     }
     await loadUsers();
 
-    userFormStore.reset();
+    userFormStore.close();
 
     setTimeout(() => {
       success = null;
@@ -242,11 +244,11 @@
 </div>
 
 <!-- Modal do Formulário de Edição/Criação -->
-<dialog class="modal" open={userFormStore.mode !== null}>
+<dialog class="modal" open={userFormStore.open}>
   <div class="modal-box w-11/12 max-w-4xl">
     <UserFormUnified />
   </div>
-  <form method="dialog" class="modal-backdrop" onsubmit={(e) => { e.preventDefault(); userFormStore.reset(); }}>
+  <form method="dialog" class="modal-backdrop" onsubmit={(e) => { e.preventDefault(); userFormStore.close(); }}>
     <button>close</button>
   </form>
 </dialog>
