@@ -8,22 +8,14 @@
 
   export let users: User[] = [];
   export let maxDisplay: number = 2;
-  export let size: 'xs' | 'sm' | 'md' | 'lg' = 'sm';
+  export let size: 'responsive';
 
   const sizeClasses = {
-    responsive: 'w-6 h-6 text-xs sm:w-8 sm:h-8 sm:text-sm md:w-10 md:h-10 md:text-base lg:w-12 lg:h-12 lg:text-lg',
-    xs: 'w-6 h-6 text-xs',
-    sm: 'w-8 h-8 text-xs', 
-    md: 'w-10 h-10 text-sm',
-    lg: 'w-12 h-12 text-base'
+    responsive: 'w-7 h-7 text-[11px] md:w-9 md:h-9 md:text-[13px]',
   };
 
   const plusCountSizeClasses = {
-    responsive: 'w-4 h-4 text-xs sm:w-5 sm:h-5 sm:text-xs md:w-6 md:h-6 md:text-xs lg:w-8 lg:h-8 lg:text-sm',
-    xs: 'w-4 h-4 text-xs',
-    sm: 'w-5 h-5 text-xs', 
-    md: 'w-6 h-6 text-xs',
-    lg: 'w-8 h-8 text-xs'
+    responsive: 'w-6 h-6',
   };
 
   // Função para gerar hash simples baseado no nome do usuário
@@ -87,7 +79,7 @@
 {#if users.length === 0}
   <span class="text-base-content/30">-</span>
 {:else}
-  <div class="avatar-group -space-x-3 justify-center">
+  <div class="avatar-group -space-x-4 sm:-space-x-6 justify-center">
     {#each displayUsers as user, index}
       <div class="avatar">
         {#if user.avatar}
@@ -113,7 +105,7 @@
       <div class="avatar placeholder -ml-1">
         <div 
           class="bg-primary text-primary-content rounded-full {plusCountSizeClasses[size]} font-medium"
-          style="display: flex !important; align-items: center; justify-content: center;"
+          style="display: flex !important; align-items: center; justify-content: center; border: none !important;"
         >
           +{remainingCount}
         </div>

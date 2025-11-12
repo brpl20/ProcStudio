@@ -1,7 +1,5 @@
-<!-- components/ui/SearchInput.svelte -->
 <script lang="ts">
   import Icon from '../../icons/icons.svelte'
-
 
   interface Props {
     value?: string;
@@ -12,11 +10,11 @@
     onSearchChange?: (value: string) => void;
   }
 
-  const {
+  let {
     value = $bindable(''),
     placeholder = 'Pesquisar...',
     debounceMs = 200,
-    width = 'w-64',
+    width = 'w-90',
     className = '',
     onSearchChange = () => {}
   }: Props = $props();
@@ -28,12 +26,14 @@
   function handleInput() {
     clearTimeout(timer);
     timer = setTimeout(() => {
+      value = localValue; // ← ADICIONE ESTA LINHA
       onSearchChange(localValue);
     }, debounceMs);
   }
 
   function clearSearch() {
     localValue = '';
+    value = ''; // ← ADICIONE ESTA LINHA
     onSearchChange('');
   }
 
@@ -51,7 +51,6 @@
 </script>
 
 <div class="relative {width} {className}">
-
     <!-- Search Icon -->
     <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none z-10">
       <Icon

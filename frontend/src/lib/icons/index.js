@@ -6,7 +6,6 @@ import Reports from './Reports.svelte';
 import Tasks from './Tasks.svelte';
 import Teams from './Teams.svelte';
 import Logout from './Logout.svelte';
-import Hamburger from './Hamburger.svelte';
 import Search from './Search.svelte';
 import Notification from './Notification.svelte';
 import Heart from './Heart.svelte';
@@ -29,6 +28,7 @@ import Filter from './Filter.svelte';
 import Info from './Info.svelte';
 import Check from './Check.svelte';
 import Default from './Default.svelte';
+import Plus from './Plus.svelte';
 
 // Icon component exports
 export {
@@ -39,7 +39,6 @@ export {
   Tasks,
   Teams,
   Logout,
-  Hamburger,
   Search,
   Notification,
   Heart,
@@ -61,7 +60,8 @@ export {
   Filter,
   Info,
   Check,
-  Default
+  Default,
+  Plus,
 };
 
 // Icon mapping for dynamic loading
@@ -73,7 +73,6 @@ export const iconMap = {
   tasks: Tasks,
   teams: Teams,
   logout: Logout,
-  hamburger: Hamburger,
   search: Search,
   notification: Notification,
   heart: Heart,
@@ -95,7 +94,8 @@ export const iconMap = {
   filter: Filter,
   info: Info,
   check: Check,
-  default: Default
+  default: Default,
+  plus: Plus,
 };
 
 // Helper function to get icon component by name
