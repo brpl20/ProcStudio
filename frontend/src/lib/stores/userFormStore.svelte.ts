@@ -150,6 +150,7 @@ class UserFormStore {
   }
 
   close() {
+    this.mode = null;
     this.open = false;
     this.formData = getInitialFormData();
     this.loading = false;
@@ -158,6 +159,10 @@ class UserFormStore {
     this.editingUserId = null;
     this.editingUserProfileId = null;
     this.inviteEmails = []; // Limpa a lista de convites
+  }
+
+  reset() {
+    this.close();
   }
 
   async submit() {
