@@ -6,18 +6,16 @@
   import { usersCacheStore, allUserProfiles } from '../../stores/usersCacheStore';
   import type { UserProfileData } from '../../api/types/user.types';
 
-  export let isOpen = false;
+  let { isOpen = false }: { isOpen?: boolean } = $props();
 
   let editor: HTMLDivElement;
   let quill: Quill | null = null;
   let showAutocomplete = false;
   let autocompletePosition = { x: 0, y: 0 };
   let searchTerm = '';
-  let userProfiles: UserProfileData[] = [];
   let selectedUser: UserProfileData | null = null;
   let currentMentionRange: any = null;
   let selectedIndex = 0;
-  let filteredUsers: UserProfileData[] = [];
   let debounceTimer: number | null = null;
 
   // Role translations
@@ -27,11 +25,13 @@
     admin: 'Administrador'
   };
 
-  $: userProfiles = $allUserProfiles;
-  $: filteredUsers = searchUsers(searchTerm);
-  $: if (showAutocomplete && filteredUsers.length > 0) {
-    selectedIndex = 0; // Pre-select first user when list updates
-  }
+  let userProfiles = $derived($allUserProfiles);
+  let filteredUsers = $derived(searchUsers(searchTerm));
+  $effect(() => {
+    if (showAutocomplete && filteredUsers.length > 0) {
+      selectedIndex = 0; // Pre-select first user when list updates
+    }
+  });
 
   onMount(async () => {
     // Initialize users cache

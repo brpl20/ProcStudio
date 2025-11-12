@@ -1,14 +1,20 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import { authStore } from '../stores/authStore';
   import { router } from '../stores/routerStore';
   import Icon from '../icons/icons.svelte';
 
-  export let requireAuth = true;
-  export let redirectTo = '/login';
-  export let message = 'Você precisa estar autenticado para acessar esta página.';
+  let {
+    requireAuth = true,
+    redirectTo = '/login',
+    message = 'Você precisa estar autenticado para acessar esta página.'
+  }: {
+    requireAuth?: boolean;
+    redirectTo?: string;
+    message?: string;
+  } = $props();
 
-  $: isAuthenticated = $authStore.isAuthenticated;
+  let isAuthenticated = $derived($authStore.isAuthenticated);
 
   onMount(() => {
     checkAuth();
@@ -29,9 +35,11 @@
     }
   }
 
-  $: if (requireAuth) {
-    checkAuth();
-  }
+  $effect(() => {
+    if (requireAuth) {
+      checkAuth();
+    }
+  });
 </script>
 
 {#if !requireAuth || isAuthenticated}

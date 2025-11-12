@@ -1,17 +1,24 @@
-<script>
+<script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   import { authStore } from '../stores/authStore';
   import { router } from '../stores/routerStore';
 
-  export let timeoutMinutes = 30; // Default 30 minutes
-  export let warningMinutes = 5; // Show warning 5 minutes before timeout
+  interface Props {
+    timeoutMinutes?: number;
+    warningMinutes?: number;
+  }
+
+  let {
+    timeoutMinutes = 30,
+    warningMinutes = 5
+  }: Props = $props();
 
   let timeoutId;
   let warningId;
   let showWarning = false;
   let remainingTime = warningMinutes;
 
-  $: isAuthenticated = $authStore.isAuthenticated;
+  let isAuthenticated = $derived($authStore.isAuthenticated);
 
   function resetTimer() {
     clearTimeout(timeoutId);
@@ -85,12 +92,14 @@
     clearTimeout(warningId);
   });
 
-  $: if (isAuthenticated) {
-    resetTimer();
-  } else {
-    clearTimeout(timeoutId);
-    clearTimeout(warningId);
-  }
+  $effect(() => {
+    if (isAuthenticated) {
+      resetTimer();
+    } else {
+      clearTimeout(timeoutId);
+      clearTimeout(warningId);
+    }
+  });
 </script>
 
 {#if showWarning}

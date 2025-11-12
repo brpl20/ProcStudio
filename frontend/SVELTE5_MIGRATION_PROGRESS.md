@@ -169,11 +169,12 @@ let customerToDelete = $state<Customer | null>(null);
 **Files Requiring Migration:**
 - App.svelte
 - AuthLayout.svelte
-- CustomerFormStep1.svelte
-- CustomerProfileView.svelte
-- CustomerFormStep2.svelte
-- CustomerFilters.svelte
-- CustomerForm.svelte
+- CUSTOMER : IGNORE EVERYTHING FROM CUSTOMER - THIS WILL BE REFACTORED IN ANOTHER TIME
+  - CustomerFormStep1.svelte
+  - CustomerProfileView.svelte
+  - CustomerFormStep2.svelte
+  - CustomerFilters.svelte
+  - CustomerForm.svelte
 - AvatarGroup.svelte
 - Pagination.svelte
 - SessionTimeout.svelte
@@ -190,12 +191,13 @@ let customerToDelete = $state<Customer | null>(null);
 #### 3. Event Dispatchers (24 instances across 12 files)
 
 **Files Using `createEventDispatcher`:**
-1. CustomerFormStep1.svelte
-2. CustomerProfileView.svelte
-3. CustomerList.svelte
-4. CustomerFormStep2.svelte
-5. CustomerFilters.svelte
-6. CustomerForm.svelte
+IGNORE CUSTOMER:
+  1. CustomerFormStep1.svelte
+  2. CustomerProfileView.svelte
+  3. CustomerList.svelte
+  4. CustomerFormStep2.svelte
+  5. CustomerFilters.svelte
+  6. CustomerForm.svelte
 7. AvatarUpload.svelte
 8. Pagination.svelte
 9. ConfirmDialog.svelte

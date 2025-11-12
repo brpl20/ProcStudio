@@ -1,6 +1,5 @@
 <!-- components/customers/CustomerList.svelte -->
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
   import ConfirmDialog from '../ui/ConfirmDialog.svelte';
   import StatusBadge from '../ui/StatusBadge.svelte';
   import type { Customer, CustomerStatus, ProfileCustomer } from '../../api/types/customer.types';
@@ -11,19 +10,31 @@
     phoneMask
   } from '../../utils/profileCustomerUtils';
 
-  let { customers = [], isLoading = false }: { customers?: Customer[]; isLoading?: boolean } = $props();
-
-  const dispatch = createEventDispatcher<{
-    edit: Customer;
-    editProfile: ProfileCustomer;
-    viewProfile: Customer;
-    delete: number;
-    deleteProfile: string;
-    updateStatus: { id: number; status: CustomerStatus };
-    resendConfirmation: number;
-    inactivateProfile: string;
-    restoreProfile: string;
-  }>();
+  let {
+    customers = [],
+    isLoading = false,
+    onEdit = () => {},
+    onEditProfile = () => {},
+    onViewProfile = () => {},
+    onDelete = () => {},
+    onDeleteProfile = () => {},
+    onUpdateStatus = () => {},
+    onResendConfirmation = () => {},
+    onInactivateProfile = () => {},
+    onRestoreProfile = () => {}
+  }: {
+    customers?: Customer[];
+    isLoading?: boolean;
+    onEdit?: (customer: Customer) => void;
+    onEditProfile?: (profileCustomer: ProfileCustomer) => void;
+    onViewProfile?: (customer: Customer) => void;
+    onDelete?: (customerId: number) => void;
+    onDeleteProfile?: (profileId: string) => void;
+    onUpdateStatus?: (detail: { id: number; status: CustomerStatus }) => void;
+    onResendConfirmation?: (customerId: number) => void;
+    onInactivateProfile?: (profileId: string) => void;
+    onRestoreProfile?: (profileId: string) => void;
+  } = $props();
 
   let customerToDelete = $state<Customer | null>(null);
   let profileToDelete = $state<ProfileCustomer | null>(null);
@@ -42,19 +53,19 @@
   }
 
   function handleEditClick(customer: Customer): void {
-    dispatch('edit', customer);
+    onEdit(customer);
   }
 
   function handleEditProfileClick(profileCustomer: ProfileCustomer): void {
-    dispatch('editProfile', profileCustomer);
+    onEditProfile(profileCustomer);
   }
 
   function handleViewProfileClick(customer: Customer): void {
-    dispatch('viewProfile', customer);
+    onViewProfile(customer);
   }
 
   function handleStatusChange(customerId: number, newStatus: CustomerStatus): void {
-    dispatch('updateStatus', { id: customerId, status: newStatus });
+    onUpdateStatus({ id: customerId, status: newStatus });
   }
 
   function confirmDelete(customer: Customer): void {
@@ -71,25 +82,25 @@
 
   function handleDeleteConfirm(): void {
     if (customerToDelete) {
-      dispatch('delete', customerToDelete.id);
+      onDelete(customerToDelete.id);
       customerToDelete = null;
     } else if (profileToDelete) {
-      dispatch('deleteProfile', profileToDelete.id);
+      onDeleteProfile(profileToDelete.id);
       profileToDelete = null;
     }
     showDeleteConfirm = false;
   }
 
   function handleResendConfirmation(customerId: number): void {
-    dispatch('resendConfirmation', customerId);
+    onResendConfirmation(customerId);
   }
 
   function handleInactivateProfile(profileCustomer: ProfileCustomer): void {
-    dispatch('inactivateProfile', profileCustomer.id);
+    onInactivateProfile(profileCustomer.id);
   }
 
   function handleRestoreProfile(profileCustomer: ProfileCustomer): void {
-    dispatch('restoreProfile', profileCustomer.id);
+    onRestoreProfile(profileCustomer.id);
   }
 </script>
 
@@ -593,5 +604,5 @@
   confirmText="Excluir"
   cancelText="Cancelar"
   type="danger"
-  on:confirm={handleDeleteConfirm}
+  onConfirm={handleDeleteConfirm}
 />

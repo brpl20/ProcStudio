@@ -83,7 +83,7 @@
         </div>
       </div>
     {:else if activeTab === 'teams'}
-      <TeamManagement {myTeam} on:teamUpdated={loadMyTeam} />
+      <TeamManagement {myTeam} onTeamUpdated={loadMyTeam} />
     {:else if activeTab === 'advogados'}
       <AdvogadosManagement />
     {:else if activeTab === 'offices'}

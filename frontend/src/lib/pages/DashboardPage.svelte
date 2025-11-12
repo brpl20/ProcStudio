@@ -4,7 +4,7 @@
   // import ApiTester from '../ApiTester.svelte';
   import { authStore } from '../stores/authStore';
 
-  $: ({ user } = $authStore);
+  let { user } = $derived($authStore);
 </script>
 
 <AuthSidebar activeSection="dashboard">

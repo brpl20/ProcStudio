@@ -1,22 +1,24 @@
 <!-- components/customers/CustomerFilters.svelte -->
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
-
-  export let searchTerm: string = '';
-  export let statusFilter: string = '';
-  export let capacityFilter: string = '';
-  export let customerTypeFilter: string = '';
-  export let isLoading: boolean = false;
-
-  const dispatch = createEventDispatcher<{
-    search: { term: string };
-    filterChange: {
-      status: string;
-      capacity: string;
-      customerType: string;
-    };
-    clearFilters: void;
-  }>();
+  let {
+    searchTerm = $bindable(''),
+    statusFilter = $bindable(''),
+    capacityFilter = $bindable(''),
+    customerTypeFilter = $bindable(''),
+    isLoading = false,
+    onSearch = () => {},
+    onFilterChange = () => {},
+    onClearFilters = () => {}
+  }: {
+    searchTerm?: string;
+    statusFilter?: string;
+    capacityFilter?: string;
+    customerTypeFilter?: string;
+    isLoading?: boolean;
+    onSearch?: (detail: { term: string }) => void;
+    onFilterChange?: (detail: { status: string; capacity: string; customerType: string }) => void;
+    onClearFilters?: () => void;
+  } = $props();
 
   let searchInput: HTMLInputElement;
   let searchTimeout: ReturnType<typeof setTimeout>;
@@ -25,12 +27,12 @@
   function handleSearchInput(): void {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
-      dispatch('search', { term: searchTerm });
+      onSearch({ term: searchTerm });
     }, 500);
   }
 
   function handleFilterChange(): void {
-    dispatch('filterChange', {
+    onFilterChange({
       status: statusFilter,
       capacity: capacityFilter,
       customerType: customerTypeFilter
@@ -42,11 +44,11 @@
     statusFilter = '';
     capacityFilter = '';
     customerTypeFilter = '';
-    dispatch('clearFilters');
+    onClearFilters();
   }
 
   // Check if any filters are active
-  $: hasActiveFilters = searchTerm || statusFilter || capacityFilter || customerTypeFilter;
+  let hasActiveFilters = $derived(searchTerm || statusFilter || capacityFilter || customerTypeFilter);
 </script>
 
 <div class="card bg-base-200 shadow-sm mb-6">

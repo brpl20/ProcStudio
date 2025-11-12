@@ -18,7 +18,7 @@
     <button
       class="btn btn-ghost"
       class:btn-active={currentPage === 'home'}
-      on:click={() => navigateTo('home')}
+      onclick={() => navigateTo('home')}
       disabled={currentPage === 'home'}
     >
       🏠 Home
@@ -26,13 +26,13 @@
     <button
       class="btn btn-ghost"
       class:btn-active={currentPage === 'teams'}
-      on:click={() => navigateTo('teams')}
+      onclick={() => navigateTo('teams')}
       disabled={currentPage === 'teams'}
     >
       👥 Times
     </button>
   </div>
   <div class="navbar-end">
-    <button class="btn btn-outline btn-error" on:click={handleLogout}> 🚪 Sair </button>
+    <button class="btn btn-outline btn-error" onclick={handleLogout}> 🚪 Sair </button>
   </div>
 </nav>

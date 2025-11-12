@@ -206,7 +206,7 @@
       </div>
     </div>
   {:else if showForm}
-    <OfficeForm office={editingOffice} on:close={handleCloseForm} on:success={handleFormSuccess} />
+    <OfficeForm office={editingOffice} onClose={handleCloseForm} onSuccess={handleFormSuccess} />
   {:else}
     <div class="mb-6">
       <div class="flex justify-between items-center mb-4">
@@ -290,9 +290,9 @@
       <OfficeList
         {offices}
         {showDeleted}
-        on:edit={(e) => handleEdit(e.detail)}
-        on:delete={(e) => handleDelete(e.detail)}
-        on:restore={(e) => handleRestore(e.detail)}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onRestore={handleRestore}
       />
     {/if}
   {/if}

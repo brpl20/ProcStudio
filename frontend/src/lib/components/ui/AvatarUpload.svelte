@@ -1,26 +1,36 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
-
-  export let currentAvatarUrl: string | null = null;
-  export let userName: string = '';
-  export let loading: boolean = false;
-
-  const dispatch = createEventDispatcher();
+  let {
+    currentAvatarUrl = null,
+    userName = '',
+    loading = false,
+    onError = () => {},
+    onUpload = () => {},
+    onRemove = () => {},
+    onColorChange = () => {}
+  }: {
+    currentAvatarUrl?: string | null;
+    userName?: string;
+    loading?: boolean;
+    onError?: (detail: { message: string }) => void;
+    onUpload?: (detail: { file: File; preview: string }) => void;
+    onRemove?: () => void;
+    onColorChange?: (detail: { color: string }) => void;
+  } = $props();
 
   let fileInput: HTMLInputElement;
-  let previewUrl: string | null = currentAvatarUrl;
-  let isDragging = false;
-  let imageFile: File | null = null;
-  let cropperActive = false;
-  let imageElement: HTMLImageElement;
+  let previewUrl = $state<string | null>(currentAvatarUrl);
+  let isDragging = $state(false);
+  let imageFile = $state<File | null>(null);
+  let cropperActive = $state(false);
+  let imageElement = $state<HTMLImageElement | undefined>(undefined);
 
   // Cropper state
-  let cropX = 0;
-  let cropY = 0;
-  let cropSize = 200;
-  let scale = 1;
-  let imageNaturalWidth = 0;
-  let imageNaturalHeight = 0;
+  let cropX = $state(0);
+  let cropY = $state(0);
+  let cropSize = $state(200);
+  let scale = $state(1);
+  let imageNaturalWidth = $state(0);
+  let imageNaturalHeight = $state(0);
 
   // Color options for default avatar
   const avatarColors = [
@@ -33,8 +43,8 @@
     'bg-error',
     'bg-neutral'
   ];
-  let selectedColor = 'bg-primary';
-  let useCustomColor = false;
+  let selectedColor = $state('bg-primary');
+  let useCustomColor = $state(false);
 
   function handleFileSelect(event: Event) {
     const target = event.target as HTMLInputElement;
@@ -46,12 +56,12 @@
 
   function processFile(file: File) {
     if (!file.type.startsWith('image/')) {
-      dispatch('error', { message: 'Por favor, selecione um arquivo de imagem válido.' });
+      onError({ message: 'Por favor, selecione um arquivo de imagem válido.' });
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      dispatch('error', { message: 'A imagem deve ter no máximo 5MB.' });
+      onError({ message: 'A imagem deve ter no máximo 5MB.' });
       return;
     }
 
@@ -130,7 +140,7 @@ return;
 
       canvas.toBlob(async (blob) => {
         if (blob) {
-          dispatch('upload', {
+          onUpload({
             file: new File([blob], 'avatar.jpg', { type: 'image/jpeg' }),
             preview: canvas.toDataURL('image/jpeg', 0.9)
           });
@@ -145,14 +155,14 @@ return;
     previewUrl = null;
     imageFile = null;
     useCustomColor = true;
-    dispatch('remove');
+    onRemove();
   }
 
   function selectCustomColor(color: string) {
     selectedColor = color;
     useCustomColor = true;
     previewUrl = null;
-    dispatch('colorChange', { color });
+    onColorChange({ color });
   }
 
   function cancelCrop() {
@@ -162,11 +172,11 @@ return;
   }
 
   // Mouse controls for cropper
-  let isDraggingCrop = false;
-  let dragStartX = 0;
-  let dragStartY = 0;
-  let initialCropX = 0;
-  let initialCropY = 0;
+  let isDraggingCrop = $state(false);
+  let dragStartX = $state(0);
+  let dragStartY = $state(0);
+  let initialCropX = $state(0);
+  let initialCropY = $state(0);
 
   function startDrag(event: MouseEvent) {
     isDraggingCrop = true;

@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import api from '../../api';
 
-  export let teamId = null;
+  let { teamId = null }: { teamId?: number | null } = $props();
 
   let members = [];
   let loading = true;
@@ -63,9 +63,11 @@
   });
 
   // Reload when teamId changes
-  $: if (teamId) {
-    loadTeamMembers();
-  }
+  $effect(() => {
+    if (teamId) {
+      loadTeamMembers();
+    }
+  });
 </script>
 
 <div class="card bg-base-100 border border-base-300">

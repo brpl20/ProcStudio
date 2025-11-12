@@ -14,12 +14,12 @@
   let successMessage = '';
 
   // Derived data from whoami
-  $: whoAmIUser = currentUserData?.data;
-  $: userProfile = whoAmIUser?.attributes?.profile;
-  $: userTeam = whoAmIUser?.attributes?.team;
-  $: userOffices = whoAmIUser?.attributes?.offices || [];
-  $: userPhones = whoAmIUser?.attributes?.phones || [];
-  $: userAddresses = whoAmIUser?.attributes?.addresses || [];
+  let whoAmIUser = $derived(currentUserData?.data);
+  let userProfile = $derived(whoAmIUser?.attributes?.profile);
+  let userTeam = $derived(whoAmIUser?.attributes?.team);
+  let userOffices = $derived(whoAmIUser?.attributes?.offices || []);
+  let userPhones = $derived(whoAmIUser?.attributes?.phones || []);
+  let userAddresses = $derived(whoAmIUser?.attributes?.addresses || []);
 
   onMount(async () => {
     try {
@@ -391,10 +391,10 @@ return;
           currentAvatarUrl={userProfile?.avatar_url}
           userName={userProfile?.name || ''}
           loading={uploadingAvatar}
-          on:upload={handleAvatarUpload}
-          on:remove={handleAvatarRemove}
-          on:colorChange={handleColorChange}
-          on:error={(e) => error = e.detail.message}
+          onUpload={handleAvatarUpload}
+          onRemove={handleAvatarRemove}
+          onColorChange={handleColorChange}
+          onError={(e) => error = e.message}
         />
 
         <div class="modal-action">

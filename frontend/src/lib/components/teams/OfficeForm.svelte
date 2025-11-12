@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
   import { onMount } from 'svelte';
   import api from '../../api';
   import Cnpj from '../forms_commons/Cnpj.svelte';
@@ -37,9 +36,16 @@
     submitOfficeForm
   } from '../../utils/office-form-processor';
 
-  const office = $state(null);
+  let {
+    office = null,
+    onClose = () => {},
+    onSuccess = () => {}
+  }: {
+    office?: any;
+    onClose?: () => void;
+    onSuccess?: () => void;
+  } = $props();
 
-  const dispatch = createEventDispatcher();
   const isEdit = $derived(!!office);
 
   // Use typed form data from schema
@@ -86,7 +92,7 @@
   });
 
   function handleClose() {
-    dispatch('close');
+    onClose();
   }
 
   function handleLogoChange(event) {
@@ -280,7 +286,7 @@
       if (response.success) {
         success = response.message || `Escritório ${isEdit ? 'atualizado' : 'criado'} com sucesso!`;
         setTimeout(() => {
-          dispatch('success');
+          onSuccess();
         }, 1500);
       } else {
         error = response.message || 'Erro ao salvar escritório';

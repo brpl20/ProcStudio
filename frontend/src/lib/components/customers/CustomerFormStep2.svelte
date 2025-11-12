@@ -1,6 +1,5 @@
 <!-- components/customers/CustomerFormStep2.svelte -->
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
   import {
     validateCPFRequired,
     formatCPF,
@@ -23,60 +22,74 @@
     formatPhoneForPix
   } from '../../utils/form-helpers';
 
-  export let formData: CustomerFormData;
-  export let errors: Record<string, string> = {};
-  export let touched: Record<string, boolean> = {};
-  export let isLoading: boolean = false;
-  export let guardianLabel: string = 'Responsável';
-  export let useSameAddress: boolean = false;
-  export let useSameBankAccount: boolean = false;
-
-  const dispatch = createEventDispatcher<{
-    fieldBlur: { field: string; value: any };
-    cpfInput: Event;
-    birthDateChange: Event;
-    useSameAddressChange: { checked: boolean };
-    useSameBankAccountChange: { checked: boolean };
-  }>();
+  let {
+    formData,
+    errors = {},
+    touched = {},
+    isLoading = false,
+    guardianLabel = 'Responsável',
+    useSameAddress = $bindable(false),
+    useSameBankAccount = $bindable(false),
+    onFieldBlur = () => {},
+    onCpfInput = () => {},
+    onBirthDateChange = () => {},
+    onUseSameAddressChange = () => {},
+    onUseSameBankAccountChange = () => {}
+  }: {
+    formData: CustomerFormData;
+    errors?: Record<string, string>;
+    touched?: Record<string, boolean>;
+    isLoading?: boolean;
+    guardianLabel?: string;
+    useSameAddress?: boolean;
+    useSameBankAccount?: boolean;
+    onFieldBlur?: (detail: { field: string; value: any }) => void;
+    onCpfInput?: (detail: { value: string }) => void;
+    onBirthDateChange?: (detail: { value: string }) => void;
+    onUseSameAddressChange?: (detail: { checked: boolean }) => void;
+    onUseSameBankAccountChange?: (detail: { checked: boolean }) => void;
+  } = $props();
 
   // Brazilian states
   const states: BrazilianState[] = BRAZILIAN_STATES;
 
   // Bank search state
-  let bankSearchTerm = '';
-  let showBankDropdown = false;
-  let selectedBankCode = '';
-  let filteredBanks: BrazilianBank[] = [];
-  let selectedDropdownIndex = -1;
+  let bankSearchTerm = $state('');
+  let showBankDropdown = $state(false);
+  let selectedBankCode = $state('');
+  let filteredBanks = $state<BrazilianBank[]>([]);
+  let selectedDropdownIndex = $state(-1);
 
   // Check if Operação field should be shown (only for Caixa Econômica - code 104)
-  $: showOperationField = selectedBankCode === '104';
+  let showOperationField = $derived(selectedBankCode === '104');
 
   // Initialize bank search when bank name changes
-  $: if (formData.bank_accounts_attributes[0].bank_name) {
-    const matchingBank = BRAZILIAN_BANKS.find(
-      (bank) => bank.label === formData.bank_accounts_attributes[0].bank_name
-    );
-    if (matchingBank) {
-      selectedBankCode = matchingBank.value;
+  $effect(() => {
+    if (formData.bank_accounts_attributes[0].bank_name) {
+      const matchingBank = BRAZILIAN_BANKS.find(
+        (bank) => bank.label === formData.bank_accounts_attributes[0].bank_name
+      );
+      if (matchingBank) {
+        selectedBankCode = matchingBank.value;
+      }
     }
-  }
+  });
 
   // Event handlers - EXACTLY like Step1
   function handleBlur(fieldName: string, value: any) {
-    dispatch('fieldBlur', { field: fieldName, value });
+    onFieldBlur({ field: fieldName, value });
   }
 
   function handleCPFInput(event: Event) {
     const input = event.target as HTMLInputElement;
     formData.cpf = formatCPF(input.value);
-    dispatch('cpfInput', { value: formData.cpf });
+    onCpfInput({ value: formData.cpf });
   }
 
   function handleBirthDateChange(event: Event) {
     const input = event.target as HTMLInputElement;
     formData.birth = input.value;
-    dispatch('birthDateChange', { value: formData.birth });
+    onBirthDateChange({ value: formData.birth });
   }
 
   // Bank search handlers
@@ -491,7 +504,7 @@
       type="checkbox"
       class="checkbox checkbox-primary"
       bind:checked={useSameAddress}
-      onchange={() => dispatch('useSameAddressChange', { checked: useSameAddress })}
+      onchange={() => onUseSameAddressChange({ checked: useSameAddress })}
       disabled={isLoading}
     />
     <span class="label-text">Usar mesmo endereço do representado</span>
@@ -605,7 +618,7 @@
       type="checkbox"
       class="checkbox checkbox-primary"
       bind:checked={useSameBankAccount}
-      onchange={() => dispatch('useSameBankAccountChange', { checked: useSameBankAccount })}
+      onchange={() => onUseSameBankAccountChange({ checked: useSameBankAccount })}
       disabled={isLoading}
     />
     <span class="label-text">Usar mesma conta bancária do representado</span>
