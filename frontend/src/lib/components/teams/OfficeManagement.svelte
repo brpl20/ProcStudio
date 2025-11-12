@@ -317,9 +317,9 @@
         <OfficeList
           {offices}
           {showDeleted}
-          on:edit={(e) => handleEdit(e.detail)}
-          on:delete={(e) => handleDelete(e.detail)}
-          on:restore={(e) => handleRestore(e.detail)}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onRestore={handleRestore}
         />
       {/if}
     </div>

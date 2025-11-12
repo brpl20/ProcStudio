@@ -1,30 +1,29 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
   import api from '../../api';
   import TeamMembers from './TeamMembers.svelte';
 
-  export let myTeam = null;
+  let { myTeam = null, onTeamUpdated = () => {} } = $props();
 
-  const dispatch = createEventDispatcher();
+  let editMode = $state(false);
+  let loading = $state(false);
+  let error = $state(null);
+  let success = $state(null);
 
-  let editMode = false;
-  let loading = false;
-  let error = null;
-  let success = null;
-
-  let formData = {
+  let formData = $state({
     name: '',
     description: '',
     subdomain: ''
-  };
+  });
 
-  $: if (myTeam && myTeam.name !== undefined) {
-    formData = {
-      name: myTeam.name || '',
-      description: myTeam.description || '',
-      subdomain: myTeam.subdomain || ''
-    };
-  }
+  $effect(() => {
+    if (myTeam && myTeam.name !== undefined) {
+      formData = {
+        name: myTeam.name || '',
+        description: myTeam.description || '',
+        subdomain: myTeam.subdomain || ''
+      };
+    }
+  });
 
   async function handleSave() {
     if (!myTeam) {
@@ -48,7 +47,7 @@
       if (response.success) {
         success = 'Equipe atualizada com sucesso!';
         editMode = false;
-        dispatch('teamUpdated');
+        onTeamUpdated();
 
         setTimeout(() => {
           success = null;

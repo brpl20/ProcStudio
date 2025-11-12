@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
   import { buildLogoUrl, getLogoThumbnailStyle, getPlaceholderEmoji } from '$lib/utils/logo.utils';
 
   interface Office {
@@ -10,21 +9,30 @@
     [key: string]: any;
   }
 
-  export let offices: Office[] = [];
-  export let showDeleted = false;
-
-  const dispatch = createEventDispatcher();
+  let {
+    offices = [],
+    showDeleted = false,
+    onEdit = () => {},
+    onDelete = () => {},
+    onRestore = () => {}
+  }: {
+    offices?: Office[];
+    showDeleted?: boolean;
+    onEdit?: (office: Office) => void;
+    onDelete?: (office: Office) => void;
+    onRestore?: (office: Office) => void;
+  } = $props();
 
   function handleEdit(office: Office): void {
-    dispatch('edit', office);
+    onEdit(office);
   }
 
   function handleDelete(office: Office): void {
-    dispatch('delete', office);
+    onDelete(office);
   }
 
   function handleRestore(office: Office): void {
-    dispatch('restore', office);
+    onRestore(office);
   }
 
   function formatCurrency(value: number): string {
