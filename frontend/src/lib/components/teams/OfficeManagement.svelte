@@ -5,23 +5,23 @@
   import OfficeList from './OfficeList.svelte';
   import { lawyerStore } from '../../stores/lawyerStore.svelte';
 
-  let offices = [];
-  let loading = true;
-  let error = null;
-  let showForm = false;
-  let editingOffice = null;
-  let showDeleted = false;
-  let showOfficeSelection = false;
+  let offices = $state([]);
+  let loading = $state(true);
+  let error = $state(null);
+  let showForm = $state(false);
+  let editingOffice = $state(null);
+  let showDeleted = $state(false);
+  let showOfficeSelection = $state(false);
 
-  // Check for active lawyers
-  $: hasActiveLawyers = lawyerStore.activeLawyers.length > 0;
-  $: canCreateOffice = hasActiveLawyers;
-  $: tooltipMessage = !hasActiveLawyers
+  // Check for active lawyers - using $derived for better reactivity tracking
+  let hasActiveLawyers = $derived(lawyerStore.activeLawyers.length > 0);
+  let canCreateOffice = $derived(lawyerStore.initialized && hasActiveLawyers);
+  let tooltipMessage = $derived(!hasActiveLawyers
     ? 'É necessário ter pelo menos um advogado ativo no sistema para criar um escritório'
-    : '';
+    : '');
 
-  // Debug logging
-  $: {
+  // Debug logging using $effect in runes mode
+  $effect(() => {
     console.log('OfficeManagement - Debug:', {
       totalLawyers: lawyerStore.lawyers.length,
       activeLawyers: lawyerStore.activeLawyers.length,
@@ -35,7 +35,7 @@
     if (lawyerStore.lawyers.length > 0) {
       console.log('First lawyer:', lawyerStore.lawyers[0]);
     }
-  }
+  });
 
   async function loadOffices() {
     try {

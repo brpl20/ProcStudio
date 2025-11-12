@@ -23,13 +23,13 @@
     };
   }
 
-  let users: User[] = [];
-  let loading = false;
-  let error: string | null = null;
-  let success: string | null = null;
+  let users: User[] = $state([]);
+  let loading = $state(false);
+  let error: string | null = $state(null);
+  let success: string | null = $state(null);
 
-  let showDeleteDialog = false;
-  let deletingUser: User | null = null;
+  let showDeleteDialog = $state(false);
+  let deletingUser: User | null = $state(null);
 
   async function loadUsers() {
     loading = true;
