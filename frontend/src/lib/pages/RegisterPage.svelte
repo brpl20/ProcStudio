@@ -90,7 +90,7 @@
       <!-- Back Button -->
       <button
         class="m-6 mb-0 inline-flex items-center text-gray-600 hover:text-[#0277EE] transition-colors duration-300 font-medium text-sm"
-        on:click={goHome}
+        onclick={goHome}
       >
         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -103,7 +103,7 @@
         <h2 class="text-3xl font-bold text-[#01013D] text-center mb-8 mt-4">Registrar-se</h2>
 
         <!-- Form -->
-        <form on:submit|preventDefault={handleRegister} class="space-y-5">
+        <form onsubmit={(e) => { e.preventDefault(); handleRegister(); }} class="space-y-5">
           <!-- OAB Input -->
           <div class="relative">
             <label for="oab" class="block text-sm font-semibold text-[#01013D] mb-2">
@@ -164,7 +164,7 @@
               />
               <button
                 type="button"
-                on:click={() => (showPassword = !showPassword)}
+                onclick={() => (showPassword = !showPassword)}
                 class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-[#0277EE] transition-colors"
               >
                 {#if showPassword}
@@ -199,7 +199,7 @@
               />
               <button
                 type="button"
-                on:click={() => (showPasswordConfirmation = !showPasswordConfirmation)}
+                onclick={() => (showPasswordConfirmation = !showPasswordConfirmation)}
                 class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-[#0277EE] transition-colors"
               >
                 {#if showPasswordConfirmation}
@@ -272,7 +272,7 @@
           <button
             type="button"
             class="w-full py-3 border-2 border-[#01013D] text-[#01013D] font-semibold rounded-lg hover:bg-[#01013D] hover:text-white transition-all duration-300"
-            on:click={goToLogin}
+            onclick={goToLogin}
           >
             Fazer login
           </button>

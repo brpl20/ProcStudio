@@ -38,14 +38,14 @@
           <div class="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in-delay-3">
             <button 
               class="group relative px-8 py-4 bg-[#0277EE] text-white text-lg font-semibold rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-[#0277EE]/30 w-full sm:w-auto"
-              on:click={() => router.navigate('/register')}
+              onclick={() => router.navigate('/register')}
             >
               <span class="relative z-10">Começar agora</span>
               <div class="absolute inset-0 bg-gradient-to-r from-[#0277EE] to-[#01013D] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </button>
             <button 
               class="px-8 py-4 bg-transparent text-[#01013D] text-lg font-semibold rounded-xl border-2 border-[#01013D] transition-all duration-300 hover:bg-[#01013D] hover:text-white hover:scale-105 hover:shadow-xl w-full sm:w-auto"
-              on:click={() => router.navigate('/login')}
+              onclick={() => router.navigate('/login')}
             >
               Fazer login
             </button>
@@ -184,7 +184,7 @@
 
               <button
                 class="w-full py-4 bg-gradient-to-r from-[#0277EE] to-[#01013D] text-white font-bold rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg transform"
-                on:click={() => router.navigate('/register')}
+                onclick={() => router.navigate('/register')}
               >
                 Selecionar este plano
               </button>
@@ -238,7 +238,7 @@
 
               <button
                 class="w-full py-4 bg-gradient-to-r from-[#0277EE] to-[#01013D] text-white font-bold rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg transform"
-                on:click={() => router.navigate('/register')}
+                onclick={() => router.navigate('/register')}
               >
                 Selecionar este plano
               </button>
@@ -275,7 +275,7 @@
           <div class="group border border-gray-200 rounded-xl overflow-hidden hover:border-[#0277EE] transition-all duration-300">
             <button
               class="w-full px-6 py-5 text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-colors duration-300"
-              on:click={() => toggleFaq(0)}
+              onclick={() => toggleFaq(0)}
             >
               <span class="text-lg font-semibold text-[#01013D] pr-8">Lorem ipsum dolor sit amet consectetur?</span>
               <svg
@@ -300,7 +300,7 @@
           <div class="group border border-gray-200 rounded-xl overflow-hidden hover:border-[#0277EE] transition-all duration-300">
             <button
               class="w-full px-6 py-5 text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-colors duration-300"
-              on:click={() => toggleFaq(1)}
+              onclick={() => toggleFaq(1)}
             >
               <span class="text-lg font-semibold text-[#01013D] pr-8">Adipiscing elit sed do eiusmod tempor?</span>
               <svg
@@ -325,7 +325,7 @@
           <div class="group border border-gray-200 rounded-xl overflow-hidden hover:border-[#0277EE] transition-all duration-300">
             <button
               class="w-full px-6 py-5 text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-colors duration-300"
-              on:click={() => toggleFaq(2)}
+              onclick={() => toggleFaq(2)}
             >
               <span class="text-lg font-semibold text-[#01013D] pr-8">Incididunt ut labore et dolore magna aliqua?</span>
               <svg
@@ -350,7 +350,7 @@
           <div class="group border border-gray-200 rounded-xl overflow-hidden hover:border-[#0277EE] transition-all duration-300">
             <button
               class="w-full px-6 py-5 text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-colors duration-300"
-              on:click={() => toggleFaq(3)}
+              onclick={() => toggleFaq(3)}
             >
               <span class="text-lg font-semibold text-[#01013D] pr-8">Ut enim ad minim veniam quis nostrud?</span>
               <svg
@@ -375,7 +375,7 @@
           <div class="group border border-gray-200 rounded-xl overflow-hidden hover:border-[#0277EE] transition-all duration-300">
             <button
               class="w-full px-6 py-5 text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-colors duration-300"
-              on:click={() => toggleFaq(4)}
+              onclick={() => toggleFaq(4)}
             >
               <span class="text-lg font-semibold text-[#01013D] pr-8">Exercitation ullamco laboris nisi aliquip?</span>
               <svg
@@ -400,7 +400,7 @@
           <div class="group border border-gray-200 rounded-xl overflow-hidden hover:border-[#0277EE] transition-all duration-300">
             <button
               class="w-full px-6 py-5 text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-colors duration-300"
-              on:click={() => toggleFaq(5)}
+              onclick={() => toggleFaq(5)}
             >
               <span class="text-lg font-semibold text-[#01013D] pr-8">Duis aute irure dolor in reprehenderit?</span>
               <svg
@@ -454,7 +454,7 @@
         </p>
         <button
           class="px-10 py-4 bg-white text-[#0277EE] text-lg font-bold rounded-xl hover:bg-[#eef0ef] transition-all duration-300 hover:scale-105 hover:shadow-2xl"
-          on:click={() => router.navigate('/register')}
+          onclick={() => router.navigate('/register')}
         >
           Começar gratuitamente
         </button>
