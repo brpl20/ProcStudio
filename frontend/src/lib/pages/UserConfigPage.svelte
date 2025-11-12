@@ -5,19 +5,19 @@
   import api from '../api/index';
   import type { WhoAmIResponse } from '../api/types';
 
-  let loading = true;
-  let error = null;
-  let currentUserData: WhoAmIResponse | null = null;
-  let uploadingAvatar = false;
-  let showAvatarEditor = false;
-  let successMessage = '';
+  let loading = $state(true);
+  let error = $state(null);
+  let currentUserData = $state<WhoAmIResponse | null>(null);
+  let uploadingAvatar = $state(false);
+  let showAvatarEditor = $state(false);
+  let successMessage = $state('');
 
-  $: whoAmIUser = currentUserData?.data;
-  $: userProfile = whoAmIUser?.attributes?.profile;
-  $: userTeam = whoAmIUser?.attributes?.team;
-  $: userOffices = whoAmIUser?.attributes?.offices || [];
-  $: userPhones = whoAmIUser?.attributes?.phones || [];
-  $: userAddresses = whoAmIUser?.attributes?.addresses || [];
+  let whoAmIUser = $derived(currentUserData?.data);
+  let userProfile = $derived(whoAmIUser?.attributes?.profile);
+  let userTeam = $derived(whoAmIUser?.attributes?.team);
+  let userOffices = $derived(whoAmIUser?.attributes?.offices || []);
+  let userPhones = $derived(whoAmIUser?.attributes?.phones || []);
+  let userAddresses = $derived(whoAmIUser?.attributes?.addresses || []);
 
   onMount(async () => {
     try {

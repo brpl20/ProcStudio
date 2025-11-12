@@ -2,19 +2,19 @@
   import { WebsiteName } from '../config.js';
   import { authStore } from '../stores/authStore';
   import { router } from '../stores/routerStore';
-  import logoProcStudio from '../../assets/procstudio_logotipo_horizontal_sem_fundo.png'; 
+  import logoProcStudio from '../../assets/procstudio_logotipo_horizontal_sem_fundo.png';
 
-  export let showFooter = true;
+  let { showFooter = true, children } = $props();
 
-  $: isAuthenticated = $authStore.isAuthenticated;
-  $: currentPath = router.currentPath;
+  let isAuthenticated = $derived($authStore.isAuthenticated);
+  let currentPath = $derived(router.currentPath);
 
   function handleLogout() {
     authStore.logout();
     router.navigate('/');
   }
 
-  let mobileMenuOpen = false;
+  let mobileMenuOpen = $state(false);
 
   function toggleMobileMenu() {
     mobileMenuOpen = !mobileMenuOpen;
@@ -170,7 +170,7 @@
 
   <!-- Main content -->
   <main class="flex-1">
-    <slot />
+    {@render children()}
   </main>
 
   <!-- Footer -->

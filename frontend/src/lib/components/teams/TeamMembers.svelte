@@ -2,11 +2,11 @@
   import { onMount } from 'svelte';
   import api from '../../api';
 
-  export let teamId = null;
+  let { teamId = null } = $props();
 
-  let members = [];
-  let loading = true;
-  let error = null;
+  let members = $state([]);
+  let loading = $state(true);
+  let error = $state(null);
 
   async function loadTeamMembers() {
     if (!teamId) {
@@ -60,9 +60,11 @@
     }
   });
 
-  $: if (teamId) {
-    loadTeamMembers();
-  }
+  $effect(() => {
+    if (teamId) {
+      loadTeamMembers();
+    }
+  });
 </script>
 
 <div class="bg-white rounded-2xl shadow-lg border border-[#eef0ef] overflow-hidden">

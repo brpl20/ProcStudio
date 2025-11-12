@@ -12,26 +12,26 @@
   import AuthGuard from './AuthGuard.svelte';
   import logoProcStudio from '../../assets/procstudio_logotipo_vertical_sem_fundo.png';
 
-  export const activeSection: string = '';
+  let { activeSection = '', children }: { activeSection?: string } = $props();
 
-  $: isAuthenticated = $authStore.isAuthenticated;
-  $: currentPath = router.currentPath;
+  let isAuthenticated = $derived($authStore.isAuthenticated);
+  let currentPath = $derived(router.currentPath);
 
-  let isDrawerOpen = true;
-  let isUserToggled = false;
-  let isUserDropdownOpen = false;
+  let isDrawerOpen = $state(true);
+  let isUserToggled = $state(false);
+  let isUserDropdownOpen = $state(false);
 
-  let currentUserData: WhoAmIResponse | null = null;
-  let isLoadingProfile = true;
+  let currentUserData = $state<WhoAmIResponse | null>(null);
+  let isLoadingProfile = $state(true);
 
-  $: whoAmIUser = currentUserData?.data;
-  $: userProfile = whoAmIUser?.attributes?.profile;
+  let whoAmIUser = $derived(currentUserData?.data);
+  let userProfile = $derived(whoAmIUser?.attributes?.profile);
 
-  $: userDisplayName = userProfile?.full_name || userProfile?.name || 'Usuário';
-  $: userRole = getUserRole(userProfile);
-  $: userEmail = whoAmIUser?.attributes?.email || '';
-  $: userInitials = getUserInitials(userDisplayName);
-  $: userAvatarUrl = userProfile?.avatar_url;
+  let userDisplayName = $derived(userProfile?.full_name || userProfile?.name || 'Usuário');
+  let userRole = $derived(getUserRole(userProfile));
+  let userEmail = $derived(whoAmIUser?.attributes?.email || '');
+  let userInitials = $derived(getUserInitials(userDisplayName));
+  let userAvatarUrl = $derived(userProfile?.avatar_url);
 
   function getUserRole(profile: any): string {
     const role = profile?.role || '';
@@ -171,7 +171,7 @@
 
       <!-- Main Content -->
       <div class="flex-1 container px-6 lg:px-12 py-6">
-        <slot />
+        {@render children()}
       </div>
 
       <!-- Footer -->
