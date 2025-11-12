@@ -34,7 +34,7 @@
         <div class="flex-shrink-0">
           <a
             href="/"
-            on:click|preventDefault={() => { router.navigate('/'); closeMobileMenu(); }}
+            onclick={(e) => { e.preventDefault(); router.navigate('/'); closeMobileMenu(); }}
             class="flex items-center group"
           >
             <div class="text-3xl font-bold bg-gradient-to-r from-[#01013D] to-[#0277EE] bg-clip-text text-transparent">
@@ -52,14 +52,14 @@
           {#if !isAuthenticated}
             <a
               href="/login"
-              on:click|preventDefault={() => router.navigate('/login')}
+              onclick={(e) => { e.preventDefault(); router.navigate('/login'); }}
               class="px-6 py-2.5 text-[#01013D] font-semibold rounded-lg hover:bg-[#eef0ef] transition-all duration-300 {currentPath === '/login' ? 'bg-[#eef0ef]' : ''}"
             >
               Login
             </a>
             <a
               href="/register"
-              on:click|preventDefault={() => router.navigate('/register')}
+              onclick={(e) => { e.preventDefault(); router.navigate('/register'); }}
               class="ml-2 px-6 py-2.5 bg-gradient-to-r from-[#0277EE] to-[#01013D] text-white font-semibold rounded-lg hover:shadow-lg hover:scale-105 transition-all duration-300"
             >
               Cadastrar
@@ -67,21 +67,21 @@
           {:else}
             <a
               href="/dashboard"
-              on:click|preventDefault={() => router.navigate('/dashboard')}
+              onclick={(e) => { e.preventDefault(); router.navigate('/dashboard'); }}
               class="px-6 py-2.5 text-[#01013D] font-semibold rounded-lg hover:bg-[#eef0ef] transition-all duration-300 {currentPath === '/dashboard' ? 'bg-[#eef0ef]' : ''}"
             >
               Dashboard
             </a>
             <a
               href="/teams"
-              on:click|preventDefault={() => router.navigate('/teams')}
+              onclick={(e) => { e.preventDefault(); router.navigate('/teams'); }}
               class="px-6 py-2.5 text-[#01013D] font-semibold rounded-lg hover:bg-[#eef0ef] transition-all duration-300 {currentPath === '/teams' ? 'bg-[#eef0ef]' : ''}"
             >
               Teams
             </a>
             <button
               class="ml-2 px-6 py-2.5 text-[#01013D] font-semibold rounded-lg border-2 border-[#01013D] hover:bg-[#01013D] hover:text-white transition-all duration-300"
-              on:click={handleLogout}
+              onclick={handleLogout}
             >
               Logout
             </button>
@@ -91,7 +91,7 @@
         <!-- Mobile menu button -->
         <div class="md:hidden">
           <button
-            on:click={toggleMobileMenu}
+            onclick={toggleMobileMenu}
             class="inline-flex items-center justify-center p-2 rounded-lg text-[#01013D] hover:bg-[#eef0ef] transition-colors duration-300"
             aria-expanded={mobileMenuOpen}
           >
@@ -128,14 +128,14 @@
             {#if !isAuthenticated}
               <a
                 href="/login"
-                on:click|preventDefault={() => { router.navigate('/login'); closeMobileMenu(); }}
+                onclick={(e) => { e.preventDefault(); router.navigate('/login'); closeMobileMenu(); }}
                 class="px-4 py-3 text-[#01013D] font-semibold rounded-lg hover:bg-[#eef0ef] transition-all duration-300 {currentPath === '/login' ? 'bg-[#eef0ef]' : ''}"
               >
                 Login
               </a>
               <a
                 href="/register"
-                on:click|preventDefault={() => { router.navigate('/register'); closeMobileMenu(); }}
+                onclick={(e) => { e.preventDefault(); router.navigate('/register'); closeMobileMenu(); }}
                 class="px-4 py-3 bg-gradient-to-r from-[#0277EE] to-[#01013D] text-white font-semibold rounded-lg text-center hover:shadow-lg transition-all duration-300"
               >
                 Cadastrar
@@ -143,21 +143,21 @@
             {:else}
               <a
                 href="/dashboard"
-                on:click|preventDefault={() => { router.navigate('/dashboard'); closeMobileMenu(); }}
+                onclick={(e) => { e.preventDefault(); router.navigate('/dashboard'); closeMobileMenu(); }}
                 class="px-4 py-3 text-[#01013D] font-semibold rounded-lg hover:bg-[#eef0ef] transition-all duration-300 {currentPath === '/dashboard' ? 'bg-[#eef0ef]' : ''}"
               >
                 Dashboard
               </a>
               <a
                 href="/teams"
-                on:click|preventDefault={() => { router.navigate('/teams'); closeMobileMenu(); }}
+                onclick={(e) => { e.preventDefault(); router.navigate('/teams'); closeMobileMenu(); }}
                 class="px-4 py-3 text-[#01013D] font-semibold rounded-lg hover:bg-[#eef0ef] transition-all duration-300 {currentPath === '/teams' ? 'bg-[#eef0ef]' : ''}"
               >
                 Teams
               </a>
               <button
                 class="px-4 py-3 text-[#01013D] font-semibold rounded-lg border-2 border-[#01013D] hover:bg-[#01013D] hover:text-white transition-all duration-300 text-left"
-                on:click={() => { handleLogout(); closeMobileMenu(); }}
+                onclick={() => { handleLogout(); closeMobileMenu(); }}
               >
                 Logout
               </button>
@@ -198,7 +198,7 @@
               <li>
                 <a
                   href="/"
-                  on:click|preventDefault={() => router.navigate('/')}
+                  onclick={(e) => { e.preventDefault(); router.navigate('/'); }}
                   class="text-gray-600 hover:text-[#0277EE] transition-colors duration-300 flex items-center group"
                 >
                   <span class="w-1.5 h-1.5 bg-[#0277EE] rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
@@ -208,7 +208,7 @@
               <li>
                 <a
                   href="/dashboard"
-                  on:click|preventDefault={() => router.navigate('/dashboard')}
+                  onclick={(e) => { e.preventDefault(); router.navigate('/dashboard'); }}
                   class="text-gray-600 hover:text-[#0277EE] transition-colors duration-300 flex items-center group"
                 >
                   <span class="w-1.5 h-1.5 bg-[#0277EE] rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
@@ -218,7 +218,7 @@
               <li>
                 <a
                   href="/teams"
-                  on:click|preventDefault={() => router.navigate('/teams')}
+                  onclick={(e) => { e.preventDefault(); router.navigate('/teams'); }}
                   class="text-gray-600 hover:text-[#0277EE] transition-colors duration-300 flex items-center group"
                 >
                   <span class="w-1.5 h-1.5 bg-[#0277EE] rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>

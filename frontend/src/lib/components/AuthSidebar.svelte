@@ -154,7 +154,7 @@
       {#if !isDrawerOpen && isUserToggled}
         <button
           class="btn btn-circle bg-gradient-to-r from-[#0277EE] to-[#01013D] text-white fixed top-6 left-6 z-50 hidden lg:flex hover:shadow-lg shadow-[#0277EE]/30"
-          on:click={toggleDrawer}
+          onclick={toggleDrawer}
           title="Abrir menu"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -191,7 +191,7 @@
           {#if !(isUserToggled && !isDrawerOpen)}
             <a
               href="/"
-              on:click|preventDefault={() => router.navigate('/')}
+              onclick={(e) => { e.preventDefault(); router.navigate('/'); }}
               class="text-2xl font-bold bg-gradient-to-r from-[#01013D] to-[#0277EE] bg-clip-text text-transparent hover:scale-105 transition-transform duration-300"
             >
                <img 
@@ -205,7 +205,7 @@
           <!-- Desktop toggle button -->
           <button
             class="btn btn-ghost btn-sm hidden lg:flex ml-auto"
-            on:click={toggleDrawer}
+            onclick={toggleDrawer}
             title={isDrawerOpen ? 'Recolher menu' : 'Expandir menu'}
           >
             <svg class="w-5 h-5 text-[#0277EE]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -232,7 +232,8 @@
               <li>
                 <a
                   href={item.path}
-                  on:click|preventDefault={() => {
+                  onclick={(e) => {
+                    e.preventDefault();
                     router.navigate(item.path);
                     closeDrawer();
                   }}
@@ -258,8 +259,8 @@
         {#if isAuthenticated}
           <div class="border-t border-gray-100 p-2 relative">
             <button
-              on:click={toggleUserDropdown}
-              on:blur={() => setTimeout(closeUserDropdown, 200)}
+              onclick={toggleUserDropdown}
+              onblur={() => setTimeout(closeUserDropdown, 200)}
               class={`flex items-center gap-3 w-full p-3 rounded-lg cursor-pointer transition-all duration-300 hover:bg-[#eef0ef] ${
                 isUserToggled && !isDrawerOpen ? 'justify-center' : ''
               }`}
@@ -339,7 +340,7 @@
                   <li>
                     <button
                       class="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-[#eef0ef] hover:text-[#0277EE] transition-colors flex items-center gap-2"
-                      on:click={handleUserClick}
+                      onclick={handleUserClick}
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -371,7 +372,7 @@
                   <li class="border-t border-gray-100">
                     <button
                       class="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2 font-medium"
-                      on:click={handleLogout}
+                      onclick={handleLogout}
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
