@@ -1,13 +1,12 @@
-<!-- frontend/src/lib/components/teams/AdvogadosManagement.svelte (Atualizado) -->
+
 <script lang="ts">
   import { onMount } from 'svelte';
   import api from '../../api';
   import ConfirmDialog from '../ui/ConfirmDialog.svelte';
   import { userFormStore } from '../../stores/userFormStore.svelte.ts';
   import UserFormUnified from './UserFormUnified.svelte';
-  // ====================== 1. IMPORTAR O NOVO COMPONENTE =========================
   import UserDetailView from './UserDetailView.svelte';
-  // ==============================================================================
+  
 
   interface User {
     id: number;

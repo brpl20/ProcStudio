@@ -103,7 +103,6 @@
       </div>
     </div>
   {:else}
-    <!-- O restante do formulário para 'create' e 'edit' permanece o mesmo -->
     <div class="space-y-6">
       <div class="bg-white rounded-xl shadow-sm border border-[#eef0ef] overflow-hidden">
         <div class="bg-gradient-to-r from-[#0277EE] to-[#01013D] px-6 py-4">
