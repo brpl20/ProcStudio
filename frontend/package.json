@@ -38,11 +38,11 @@
   "dependencies": {
     "@rails/actioncable": "^8.0.201",
     "@sveltejs/mcp": "^0.1.11",
-    "@tailwindcss/vite": "^4.1.12",
+    "@tailwindcss/vite": "^4.1.17",
     "@types/quill": "^2.0.14",
     "daisyui": "^5.0.50",
     "quill": "^2.0.3",
-    "tailwindcss": "^4.1.12"
+    "tailwindcss": "^4.1.17"
   },
   "lint-staged": {
     "*.{js,ts,svelte}": [

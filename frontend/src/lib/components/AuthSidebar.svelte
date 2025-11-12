@@ -10,36 +10,33 @@
   import Footer from './Footer.svelte';
   import Breadcrumbs from './Breadcrumbs.svelte';
   import AuthGuard from './AuthGuard.svelte';
+  import logoProcStudio from '../../assets/procstudio_logotipo_vertical_sem_fundo.png';
 
-  let { activeSection = '', children }: { activeSection?: string } = $props();
+  export const activeSection: string = '';
 
-  let isAuthenticated = $derived($authStore.isAuthenticated);
-  let currentPath = $derived(router.currentPath);
+  $: isAuthenticated = $authStore.isAuthenticated;
+  $: currentPath = router.currentPath;
 
-  // Drawer state management
-  let isDrawerOpen = $state(true); // Start open on desktop
-  let isUserToggled = $state(false); // Track if user manually toggled
+  let isDrawerOpen = true;
+  let isUserToggled = false;
+  let isUserDropdownOpen = false;
 
-  // WhoAmI data
-  let currentUserData = $state<WhoAmIResponse | null>(null);
-  let isLoadingProfile = $state(true);
+  let currentUserData: WhoAmIResponse | null = null;
+  let isLoadingProfile = true;
 
-  // Derived data from whoami
-  let whoAmIUser = $derived(currentUserData?.data);
-  let userProfile = $derived(whoAmIUser?.attributes?.profile);
+  $: whoAmIUser = currentUserData?.data;
+  $: userProfile = whoAmIUser?.attributes?.profile;
 
-  // Computed user display properties using whoami data
-  let userDisplayName = $derived(userProfile?.full_name || userProfile?.name || 'Usuário');
-  let userRole = $derived(getUserRole(userProfile));
-  let userEmail = $derived(whoAmIUser?.attributes?.email || '');
-  let userInitials = $derived(getUserInitials(userDisplayName));
-  let userAvatarUrl = $derived(userProfile?.avatar_url);
+  $: userDisplayName = userProfile?.full_name || userProfile?.name || 'Usuário';
+  $: userRole = getUserRole(userProfile);
+  $: userEmail = whoAmIUser?.attributes?.email || '';
+  $: userInitials = getUserInitials(userDisplayName);
+  $: userAvatarUrl = userProfile?.avatar_url;
 
   function getUserRole(profile: any): string {
     const role = profile?.role || '';
     const gender = profile?.gender || '';
 
-    // Translate lawyer role based on gender
     if (role && role.toLowerCase().includes('lawyer')) {
       return gender === 'female' ? 'Advogada' : 'Advogado';
     }
@@ -62,6 +59,7 @@
   }
 
   function handleLogout(): void {
+    isUserDropdownOpen = false;
     authStore.logout();
     router.navigate('/');
   }
@@ -74,6 +72,7 @@
   }
 
   function handleUserClick(): void {
+    isUserDropdownOpen = false;
     router.navigate('/user-config');
     closeDrawer();
   }
@@ -87,7 +86,36 @@
     }
   }
 
-  // Fetch whoami data on mount and handle responsive drawer
+  function toggleUserDropdown(): void {
+    isUserDropdownOpen = !isUserDropdownOpen;
+  }
+
+  function closeUserDropdown(): void {
+    isUserDropdownOpen = false;
+  }
+
+  const menuItems = [
+    { icon: 'dashboard', label: 'Dashboard', path: '/dashboard' },
+    { icon: 'admin', label: 'Admin', path: '/admin' },
+    { icon: 'settings', label: 'Configurações', path: '/settings' },
+    { icon: 'reports', label: 'Relatórios', path: '/reports' },
+    { icon: 'tasks', label: 'Jobs', path: '/jobs' },
+    { icon: 'teams', label: 'Time', path: '/teams' },
+    { icon: 'work', label: 'Trabalhos', path: '/works' },
+    { icon: 'customer', label: 'Clientes', path: '/customers' },
+  ];
+
+  const iconPaths = {
+    dashboard: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6',
+    admin: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z',
+    settings: 'M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4',
+    reports: 'M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+    tasks: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4',
+    teams: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z',
+    work: 'M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
+    customer: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
+  };
+
   onMount(async () => {
     if (isAuthenticated) {
       try {
@@ -98,36 +126,40 @@
       }
     }
 
-    // Handle window resize for responsive drawer behavior
     function handleResize() {
       if (!isUserToggled) {
-        // Only auto-adjust if user hasn't manually toggled
-        const isDesktop = window.innerWidth >= 1024; // lg breakpoint
+        const isDesktop = window.innerWidth >= 1024;
         isDrawerOpen = isDesktop;
       }
     }
 
-    handleResize(); // Set initial state
+    handleResize();
     window.addEventListener('resize', handleResize);
 
     return () => {
       window.removeEventListener('resize', handleResize);
     };
   });
+
+  function isActive(path: string): boolean {
+    return currentPath === path;
+  }
 </script>
 
 <AuthGuard>
   <div class="drawer lg:drawer-open">
     <input id="admin-drawer" type="checkbox" class="drawer-toggle" />
-    <div class="drawer-content flex flex-col min-h-screen bg-base-200">
+    <div class="drawer-content flex flex-col min-h-screen bg-[#eef0ef]">
       <!-- Floating toggle button for desktop when drawer is closed -->
       {#if !isDrawerOpen && isUserToggled}
         <button
-          class="btn btn-circle btn-primary fixed top-4 left-4 z-50 hidden lg:flex"
-          onclick={toggleDrawer}
+          class="btn btn-circle bg-gradient-to-r from-[#0277EE] to-[#01013D] text-white fixed top-6 left-6 z-50 hidden lg:flex hover:shadow-lg shadow-[#0277EE]/30"
+          on:click={toggleDrawer}
           title="Abrir menu"
         >
-          <Icon name="menu" className="w-5 h-5" />
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
         </button>
       {/if}
 
@@ -137,289 +169,232 @@
       <!-- Breadcrumbs -->
       <Breadcrumbs />
 
-      <!-- Conteúdo principal -->
-      <div class="flex-1 container px-6 lg:px-12 py-3 lg:py-6">
-        {@render children()}
+      <!-- Main Content -->
+      <div class="flex-1 container px-6 lg:px-12 py-6">
+        <slot />
       </div>
 
       <!-- Footer -->
       <Footer />
     </div>
 
-    <!-- Menu lateral -->
+    <!-- Sidebar -->
     <div class="drawer-side">
       <label for="admin-drawer" class="drawer-overlay"></label>
-      <ul class={`menu menu-lg p-4 ${isUserToggled && !isDrawerOpen ? 'w-20' : 'w-80'} min-h-full bg-base-100 lg:border-r text-base-content transition-all duration-300`}>
-        <!-- Título com botão de toggle -->
-        <li>
-          <div class="normal-case menu-title text-xl font-bold text-primary flex flex-row items-center">
-            {#if !(isUserToggled && !isDrawerOpen)}
-              <a href="/" class="grow" onclick={(e) => {
- e.preventDefault(); router.navigate('/');
-}}>
-                {WebsiteName}
-              </a>
-            {/if}
-            <!-- Desktop toggle button -->
-            <button
-              class="btn btn-ghost btn-sm hidden lg:flex"
-              onclick={toggleDrawer}
-              title={isDrawerOpen ? 'Recolher menu' : 'Expandir menu'}
+      
+      <div class={`flex flex-col min-h-full bg-white border-r border-gray-200 transition-all duration-300 ${
+        isUserToggled && !isDrawerOpen ? 'w-20' : 'w-80'
+      }`}>
+        
+        <!-- Sidebar Header -->
+        <div class="border-b border-gray-100 p-4 flex items-center justify-between gap-2">
+          {#if !(isUserToggled && !isDrawerOpen)}
+            <a
+              href="/"
+              on:click|preventDefault={() => router.navigate('/')}
+              class="text-2xl font-bold bg-gradient-to-r from-[#01013D] to-[#0277EE] bg-clip-text text-transparent hover:scale-105 transition-transform duration-300"
             >
-              <Icon name={isDrawerOpen ? 'chevron-left' : 'chevron-right'} className="w-5 h-5" />
-            </button>
-            {#if !(isUserToggled && !isDrawerOpen)}
-              <!-- Mobile close button -->
-              <label for="admin-drawer" class="lg:hidden ml-3"> ✕ </label>
-            {/if}
-          </div>
-        </li>
-
-        <!-- Dashboard -->
-        <li>
-          <a
-            href="/dashboard"
-            class={currentPath === '/dashboard' ? 'active bg-primary !text-white [&_svg]:!text-white' : 'text-base-content hover:text-base-content [&_svg]:text-primary'}
-            onclick={(e) => {
-              e.preventDefault();
-              router.navigate('/dashboard');
-              closeDrawer();
-            }}
+               <img 
+                src={logoProcStudio} 
+                alt="Logotipo do ProcStudio" 
+              class="h-25 w-auto"
+              />
+            </a>
+          {/if}
+          
+          <!-- Desktop toggle button -->
+          <button
+            class="btn btn-ghost btn-sm hidden lg:flex ml-auto"
+            on:click={toggleDrawer}
+            title={isDrawerOpen ? 'Recolher menu' : 'Expandir menu'}
           >
-            <Icon name="dashboard" />
-            Dashboard
-          </a>
-        </li>
+            <svg class="w-5 h-5 text-[#0277EE]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d={isDrawerOpen ? "M15 19l-7-7 7-7" : "M9 5l7 7-7 7"}
+              ></path>
+            </svg>
+          </button>
+          
+          {#if !(isUserToggled && !isDrawerOpen)}
+            <!-- Mobile close button -->
+            <label for="admin-drawer" class="lg:hidden btn btn-ghost btn-sm">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </label>
+          {/if}
+        </div>
 
-        <!-- Admin -->
-        <li>
-          <a
-            href="/admin"
-            class={currentPath === '/admin' ? 'active bg-primary !text-white [&_svg]:!text-white' : 'text-base-content hover:text-base-content [&_svg]:text-primary'}
-            onclick={(e) => {
-              e.preventDefault();
-              router.navigate('/admin');
-              closeDrawer();
-            }}
-          >
-            <Icon name="admin" />
-            Admin
-          </a>
-        </li>
+        <!-- Menu Items -->
+        <nav class="flex-1 px-2 py-4 overflow-y-auto">
+          <ul class="space-y-1">
+            {#each menuItems as item (item.path)}
+              <li>
+                <a
+                  href={item.path}
+                  on:click|preventDefault={() => {
+                    router.navigate(item.path);
+                    closeDrawer();
+                  }}
+                  class={`flex items-center gap-4 px-4 py-3 rounded-lg font-medium transition-all duration-300 group ${
+                    isActive(item.path)
+                      ? 'bg-gradient-to-r from-[#0277EE] to-[#01013D] text-white shadow-lg shadow-[#0277EE]/30'
+                      : 'text-gray-700 hover:bg-[#eef0ef] hover:text-[#0277EE]'
+                  }`}
+                >
+                  <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={iconPaths[item.icon]}></path>
+                  </svg>
+                  {#if !(isUserToggled && !isDrawerOpen)}
+                    <span>{item.label}</span>
+                  {/if}
+                </a>
+              </li>
+            {/each}
+          </ul>
+        </nav>
 
-        <!-- Configurações -->
-        <li>
-          <a
-            href="/settings"
-            class={currentPath === '/settings' ? 'active bg-primary !text-white [&_svg]:!text-white' : 'text-base-content hover:text-base-content [&_svg]:text-primary'}
-            onclick={(e) => {
-              e.preventDefault();
-              router.navigate('/settings');
-              closeDrawer();
-            }}
-          >
-            <Icon name="settings" />
-            Configurações
-          </a>
-        </li>
-
-        <!-- Relatórios -->
-        <li>
-          <a
-            href="/reports"
-            class={currentPath === '/reports' ? 'active bg-primary !text-white [&_svg]:!text-white' : 'text-base-content hover:text-base-content [&_svg]:text-primary'}
-            onclick={(e) => {
-              e.preventDefault();
-              router.navigate('/reports');
-              closeDrawer();
-            }}
-          >
-            <Icon name="reports" />
-            Relatórios
-          </a>
-        </li>
-
-        <!-- Jobs -->
-        <li>
-          <a
-            href="/jobs"
-            class={currentPath === '/jobs' ? 'active bg-primary !text-white [&_svg]:!text-white' : 'text-base-content hover:text-base-content [&_svg]:text-primary'}
-            onclick={(e) => {
-              e.preventDefault();
-              router.navigate('/jobs');
-              closeDrawer();
-            }}
-          >
-            <Icon name="tasks" />
-            Jobs
-          </a>
-        </li>
-
-        <!-- Time -->
-        <li>
-          <a
-            href="/teams"
-            class={currentPath === '/teams' ? 'active bg-primary !text-white [&_svg]:!text-white' : 'text-base-content hover:text-base-content [&_svg]:text-primary'}
-            onclick={(e) => {
-              e.preventDefault();
-              router.navigate('/teams');
-              closeDrawer();
-            }}
-          >
-            <Icon name="teams" />
-            Time
-          </a>
-        </li>
-
-        <!-- Trabalhos -->
-        <li>
-          <a
-            href="/works"
-            class={currentPath === '/works' ? 'active bg-primary !text-white [&_svg]:!text-white' : 'text-base-content hover:text-base-content [&_svg]:text-primary'}
-            onclick={(e) => {
-              e.preventDefault();
-              router.navigate('/works');
-              closeDrawer();
-            }}
-          >
-            <Icon name="work" />
-            Trabalhos
-          </a>
-        </li>
-
-        <!-- Clientes -->
-        <li>
-          <a
-            href="/customers"
-            class={currentPath === '/customers' ? 'active bg-primary !text-white [&_svg]:!text-white' : 'text-base-content hover:text-base-content [&_svg]:text-primary'}
-            onclick={(e) => {
-              e.preventDefault();
-              router.navigate('/customers');
-              closeDrawer();
-            }}
-          >
-            <Icon name="customer" />
-            Clientes
-          </a>
-        </li>
-
-        <!-- User Menu no final -->
+        <!-- User Menu Section -->
         {#if isAuthenticated}
-          <li class="mt-auto">
-            <div class="dropdown dropdown-top w-full">
-              <button
-                type="button"
-                class="btn btn-ghost w-full justify-start px-4 py-3 hover:bg-base-200"
-              >
-                <div class="flex items-center gap-3 w-full">
-                  <div class="avatar placeholder">
-                    <div class="bg-primary text-primary-content rounded-full w-8">
-                      {#if userAvatarUrl}
-                        <img
-                          src={userAvatarUrl}
-                          alt="Avatar"
-                          class="rounded-full w-8 h-8 object-cover"
-                        />
-                      {:else}
-                        <span class="text-sm">{userInitials}</span>
-                      {/if}
-                    </div>
-                  </div>
-                  <div class="flex-1 text-left">
-                    {#if isLoadingProfile}
-                      <div class="loading loading-spinner loading-xs"></div>
-                    {:else}
-                      <div class="text-sm font-medium">
-                        {userDisplayName}
-                      </div>
-                      {#if userRole}
-                        <div class="text-xs opacity-70">
-                          {userRole}
-                        </div>
-                      {/if}
-                    {/if}
-                  </div>
-                  <Icon name="chevron-up" className="w-4 h-4 opacity-50" strokeWidth="1.5" />
+          <div class="border-t border-gray-100 p-2 relative">
+            <button
+              on:click={toggleUserDropdown}
+              on:blur={() => setTimeout(closeUserDropdown, 200)}
+              class={`flex items-center gap-3 w-full p-3 rounded-lg cursor-pointer transition-all duration-300 hover:bg-[#eef0ef] ${
+                isUserToggled && !isDrawerOpen ? 'justify-center' : ''
+              }`}
+            >
+              <div class="avatar placeholder flex-shrink-0">
+                <div class="bg-gradient-to-br from-[#0277EE] to-[#01013D] text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-sm">
+                  {#if userAvatarUrl}
+                    <img
+                      src={userAvatarUrl}
+                      alt="Avatar"
+                      class="rounded-full w-10 h-10 object-cover"
+                    />
+                  {:else}
+                    {userInitials}
+                  {/if}
                 </div>
-              </button>
+              </div>
+              
+              {#if !(isUserToggled && !isDrawerOpen)}
+                <div class="flex-1 min-w-0 text-left">
+                  {#if isLoadingProfile}
+                    <div class="loading loading-spinner loading-xs"></div>
+                  {:else}
+                    <div class="text-sm font-semibold text-gray-900 truncate">
+                      {userDisplayName}
+                    </div>
+                    {#if userRole}
+                      <div class="text-xs text-gray-500 truncate">
+                        {userRole}
+                      </div>
+                    {/if}
+                  {/if}
+                </div>
+                
+                <svg class={`w-4 h-4 text-gray-400 flex-shrink-0 transition-transform duration-300 ${isUserDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              {/if}
+            </button>
 
-              <ul
-                class="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-72 mb-2 border border-base-300 z-[100] animate-[slideUp_0.2s_ease-out]"
-              >
-                <!-- User info section -->
-                <li class="px-3 py-2">
-                  <div class="flex items-center gap-3 pointer-events-none">
-                    <div class="avatar placeholder">
-                      <div class="bg-primary text-primary-content rounded-full w-10">
-                        {#if userAvatarUrl}
-                          <img
-                            src={userAvatarUrl}
-                            alt="Avatar"
-                            class="rounded-full w-10 h-10 object-cover"
-                          />
-                        {:else}
-                          <span class="text-lg">{userInitials}</span>
+            <!-- User Dropdown Menu -->
+            {#if isUserDropdownOpen}
+              <div class="absolute bottom-full left-2 right-2 mb-2 bg-white rounded-xl shadow-xl border border-gray-100 z-50 animate-in fade-in slide-in-from-bottom-2 duration-200">
+                <ul class="w-full py-1">
+                  <!-- User Info -->
+                  <li class="px-4 py-3 border-b border-gray-100">
+                    <div class="flex items-center gap-3">
+                      <div class="avatar placeholder">
+                        <div class="bg-gradient-to-br from-[#0277EE] to-[#01013D] text-white rounded-full w-10 h-10 flex items-center justify-center font-bold">
+                          {#if userAvatarUrl}
+                            <img
+                              src={userAvatarUrl}
+                              alt="Avatar"
+                              class="rounded-full w-10 h-10 object-cover"
+                            />
+                          {:else}
+                            {userInitials}
+                          {/if}
+                        </div>
+                      </div>
+                      <div>
+                        <div class="font-semibold text-gray-900 text-sm">{userDisplayName}</div>
+                        {#if userRole}
+                          <div class="text-xs text-gray-500">{userRole}</div>
                         {/if}
                       </div>
                     </div>
-                    <div class="flex-1">
-                      <div class="font-medium">{userDisplayName}</div>
-                      {#if userRole}
-                        <div class="text-xs opacity-70">{userRole}</div>
-                      {/if}
-                    </div>
-                  </div>
-                </li>
-
-                {#if userEmail}
-                  <li class="px-3 pb-2">
-                    <div class="text-xs text-base-content/60 pointer-events-none">
-                      {userEmail}
-                    </div>
                   </li>
-                {/if}
 
-                <div class="divider my-1 h-px bg-base-content/10"></div>
+                  {#if userEmail}
+                    <li class="px-4 py-2 text-xs text-gray-500 border-b border-gray-100">
+                      {userEmail}
+                    </li>
+                  {/if}
 
-                <!-- Profile Configuration -->
-                <li>
-                  <button class="px-3 py-2" onclick={handleUserClick}>
-                    <Icon name="user" className="w-4 h-4" strokeWidth="1.5" />
-                    Meu Perfil
-                  </button>
-                </li>
+                  <!-- Profile -->
+                  <li>
+                    <button
+                      class="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-[#eef0ef] hover:text-[#0277EE] transition-colors flex items-center gap-2"
+                      on:click={handleUserClick}
+                    >
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                      </svg>
+                      Meu Perfil
+                    </button>
+                  </li>
 
-                <div class="divider my-1 h-px bg-base-content/10"></div>
+                  <!-- Help & Support -->
+                  <li>
+                    <button class="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-[#eef0ef] hover:text-[#0277EE] transition-colors flex items-center gap-2">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                      Ajuda
+                    </button>
+                  </li>
 
-                <!-- Help and Support -->
-                <li>
-                  <button class="px-3 py-2">
-                    <Icon name="help" className="w-4 h-4" strokeWidth="1.5" />
-                    Ajuda
-                  </button>
-                </li>
-                <li>
-                  <button class="px-3 py-2">
-                    <Icon name="support" className="w-4 h-4" strokeWidth="1.5" />
-                    Suporte
-                  </button>
-                </li>
+                  <li>
+                    <button class="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-[#eef0ef] hover:text-[#0277EE] transition-colors flex items-center gap-2">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                      </svg>
+                      Suporte
+                    </button>
+                  </li>
 
-                <div class="divider my-1 h-px bg-base-content/10"></div>
-
-                <!-- Logout -->
-                <li>
-                  <button class="px-3 py-2 text-error" onclick={handleLogout}>
-                    <Icon name="logout-alt" className="w-4 h-4" strokeWidth="1.5" />
-                    Sair
-                  </button>
-                </li>
-              </ul>
-            </div>
-          </li>
+                  <!-- Logout -->
+                  <li class="border-t border-gray-100">
+                    <button
+                      class="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2 font-medium"
+                      on:click={handleLogout}
+                    >
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                      </svg>
+                      Sair
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            {/if}
+          </div>
         {/if}
-      </ul>
+      </div>
     </div>
   </div>
 </AuthGuard>
 
+<style>
+  :global(.drawer-overlay) {
+    background-color: rgba(1, 1, 61, 0.3);
+  }
+
+  :global(.drawer-side) {
+    background: transparent;
+  }
+</style>
