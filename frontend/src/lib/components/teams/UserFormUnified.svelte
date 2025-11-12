@@ -105,7 +105,7 @@
   {:else}
     <div class="space-y-6">
       <div class="bg-white rounded-xl shadow-sm border border-[#eef0ef] overflow-hidden">
-        <div class="bg-gradient-to-r from-[#0277EE] to-[#01013D] px-6 py-4">
+        <div class="bg-gradient-to-r from-[#01013D] to-[#01013D] px-6 py-4">
           <div class="flex items-center gap-3">
             <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
               <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -121,7 +121,7 @@
       </div>
 
       <div class="bg-white rounded-xl shadow-sm border border-[#eef0ef] overflow-hidden">
-        <div class="bg-gradient-to-r from-[#0277EE] to-[#01013D] px-6 py-4">
+        <div class="bg-gradient-to-r from-[#01013D] to-[#01013D] px-6 py-4">
           <div class="flex items-center gap-3">
             <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
               <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -137,7 +137,7 @@
       </div>
 
       <div class="bg-white rounded-xl shadow-sm border border-[#eef0ef] overflow-hidden">
-        <div class="bg-gradient-to-r from-[#0277EE] to-[#01013D] px-6 py-4">
+        <div class="bg-gradient-to-r from-[#01013D] to-[#01013D] px-6 py-4">
           <div class="flex items-center gap-3">
             <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
               <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -153,7 +153,7 @@
       </div>
 
       <div class="bg-white rounded-xl shadow-sm border border-[#eef0ef] overflow-hidden">
-        <div class="bg-gradient-to-r from-[#0277EE] to-[#01013D] px-6 py-4">
+        <div class="bg-gradient-to-r from-[#01013D] to-[#01013D] px-6 py-4">
           <div class="flex items-center gap-3">
             <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
               <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -169,7 +169,7 @@
       </div>
 
       <div class="bg-white rounded-xl shadow-sm border border-[#eef0ef] overflow-hidden">
-        <div class="bg-gradient-to-r from-[#0277EE] to-[#01013D] px-6 py-4">
+        <div class="bg-gradient-to-r from-[#01013D] to-[#01013D] px-6 py-4">
           <div class="flex items-center gap-3">
             <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
               <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
