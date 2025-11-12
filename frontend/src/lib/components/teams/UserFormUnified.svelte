@@ -15,13 +15,13 @@
   function handleAddEmail() {
     userFormStore.addEmail(currentEmail);
     if (!userFormStore.error) {
-      currentEmail = ''; 
+      currentEmail = '';
     }
   }
 
   function handleKeyPress(event: KeyboardEvent) {
     if (event.key === 'Enter') {
-      event.preventDefault(); 
+      event.preventDefault();
       handleAddEmail();
     }
   }
@@ -51,7 +51,7 @@
         </div>
         <h3 class="text-lg font-semibold text-[#01013D]">Emails para Convite</h3>
       </div>
-      
+
       <div class="space-y-4">
         <div>
             <label class="block text-sm font-medium text-[#01013D] mb-2" for="invite-email">
@@ -86,7 +86,7 @@
               {#each userFormStore.inviteEmails as email, index (email)}
                 <div class="flex items-center gap-2 bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1.5 rounded-full">
                   <span>{email}</span>
-                  <button 
+                  <button
                     type="button"
                     class="w-5 h-5 flex items-center justify-center bg-blue-200 rounded-full hover:bg-blue-300 text-blue-900"
                     onclick={() => userFormStore.removeEmail(index)}
@@ -200,18 +200,18 @@
   {/if}
 
   <div class="flex justify-end gap-3 pt-6 border-t border-[#eef0ef]">
-    <button 
-      type="button" 
-      class="px-6 py-3 rounded-lg border border-gray-300 text-[#01013D] font-medium hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
-      onclick={() => userFormStore.close()} 
+    <button
+      type="button"
+      class="px-6 py-3 rounded-lg border border-gray-300 text-[#01013D] font-medium hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+      onclick={() => userFormStore.close()}
       disabled={userFormStore.loading}
     >
       Cancelar
     </button>
-    <button 
-      type="submit" 
-      class="px-6 py-3 rounded-lg bg-gradient-to-r from-[#0277EE] to-[#01013D] text-white font-medium hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2" 
-      onclick={handleSubmit} 
+    <button
+      type="submit"
+      class="px-6 py-3 rounded-lg bg-gradient-to-r from-[#0277EE] to-[#01013D] text-white font-medium hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+      onclick={handleSubmit}
       disabled={userFormStore.loading || (userFormStore.mode === 'invite' && userFormStore.inviteEmails.length === 0)}
     >
       {#if userFormStore.loading}

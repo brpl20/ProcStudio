@@ -43,7 +43,7 @@
 
         authStore.loginSuccess(result);
 
-        await new Promise(resolve => setTimeout(resolve, 0));
+        await new Promise((resolve) => setTimeout(resolve, 0));
 
         const redirectUrl = window.sessionStorage.getItem('redirectAfterLogin');
         if (redirectUrl) {
@@ -99,7 +99,9 @@
         <h2 class="text-3xl font-bold text-[#01013D] text-center mb-8 mt-4">Entrar</h2>
 
         <!-- Form -->
-        <form onsubmit={(e) => { e.preventDefault(); handleLogin(); }} class="space-y-6">
+        <form onsubmit={(e) => {
+ e.preventDefault(); handleLogin();
+}} class="space-y-6">
           <!-- Email Input -->
           <div class="relative">
             <label for="email" class="block text-sm font-semibold text-[#01013D] mb-2">

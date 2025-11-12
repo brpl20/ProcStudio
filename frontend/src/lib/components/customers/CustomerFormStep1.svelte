@@ -64,7 +64,7 @@
         Informações Pessoais
       </h3>
     </div>
-    
+
     <div class="p-6 bg-[#eef0ef]">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Name -->
@@ -336,7 +336,7 @@
         Informações de Acesso
       </h3>
     </div>
-    
+
     <div class="p-6 bg-[#eef0ef]">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Email -->
@@ -448,7 +448,7 @@
         Endereço
       </h3>
     </div>
-    
+
     <div class="p-6 bg-[#eef0ef]">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- ZIP Code -->
@@ -559,7 +559,7 @@
         Dados Bancários
       </h3>
     </div>
-    
+
     <div class="p-6 bg-[#eef0ef]">
       <Bank
         bind:bankAccount={formData.bank_accounts_attributes[0]}
@@ -588,7 +588,7 @@
         Informações Previdenciárias
       </h3>
     </div>
-    
+
     <div class="p-6 bg-[#eef0ef]">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Benefit Number -->

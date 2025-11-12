@@ -85,7 +85,7 @@
             </div>
             <button
             class="inline-flex items-center gap-2 bg-gradient-to-r from-[#0277EE] to-[#01013D] hover:shadow-lg text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 shadow-md transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
-              on:click={handleNewCustomer}
+              onclick={handleNewCustomer}
               disabled={$customerStore.isLoading}
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -204,7 +204,7 @@
         <div class="mt-6 flex justify-center">
           <button
             class="inline-flex items-center gap-2 bg-gradient-to-r from-[#0277EE] to-[#01013D] hover:shadow-lg text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 shadow-md transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
-            on:click={() => customerStore.loadCustomers()}
+            onclick={() => customerStore.loadCustomers()}
             disabled={$customerStore.isLoading}
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

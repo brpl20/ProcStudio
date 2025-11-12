@@ -1,6 +1,6 @@
 <script>
   import { WebsiteName } from '../config.js';
-    import logoProcStudio from '../../assets/procstudio_logotipo_vertical_sem_fundo.png'; 
+    import logoProcStudio from '../../assets/procstudio_logotipo_vertical_sem_fundo.png';
 
 </script>
 
@@ -19,9 +19,9 @@
         class="flex items-center group"
       >
         <div class="text-3xl font-bold bg-gradient-to-r from-[#01013D] to-[#0277EE] bg-clip-text text-transparent">
-          <img 
-                src={logoProcStudio} 
-                alt="Logotipo do ProcStudio" 
+          <img
+                src={logoProcStudio}
+                alt="Logotipo do ProcStudio"
               class="h-20 w-auto"
               />
         </div>

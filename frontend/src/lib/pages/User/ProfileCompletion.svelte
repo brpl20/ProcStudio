@@ -243,7 +243,9 @@
           </div>
         {/if}
 
-        <form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+        <form onsubmit={(e) => {
+ e.preventDefault(); handleSubmit();
+}}>
           <div class="space-y-6">
             {#if isFieldRequired('name') || isFieldRequired('last_name') || isFieldRequired('role') || ((formData.role === 'lawyer' || userData.role === 'lawyer') && (isFieldRequired('oab') || !userData.oab))}
               <div class="bg-white rounded-xl shadow-sm border border-[#eef0ef] overflow-hidden">

@@ -16,7 +16,7 @@
   <div class="space-y-2">
     <Name bind:value={basicInfo.name} required={true} />
   </div>
-  
+
   <div class="space-y-2">
     <LastName bind:value={basicInfo.last_name} required={true} />
   </div>

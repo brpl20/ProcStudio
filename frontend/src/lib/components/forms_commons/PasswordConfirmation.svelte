@@ -1,5 +1,5 @@
 <script lang="ts">
-  /* eslint-disable prefer-const */
+
   import type { Snippet } from 'svelte';
 
   interface Props {

@@ -14,18 +14,18 @@
     {
       id: 'teams',
       label: 'Gerenciar Equipe',
-      icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 8.048M7 14H5a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2h-2m-1-7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>`,
+      icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 8.048M7 14H5a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2h-2m-1-7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>'
     },
     {
       id: 'advogados',
       label: 'Gerenciar Usuários',
-      icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
+      icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>'
     },
     {
       id: 'offices',
       label: 'Escritórios',
-      icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"></path></svg>`,
-    },
+      icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"></path></svg>'
+    }
   ];
 
   async function loadMyTeam() {
@@ -65,7 +65,7 @@
             ? 'bg-gradient-to-r from-[#01013D] to-[#01013D] text-white shadow-lg shadow-[#01013D]/30'
             : 'text-gray-700 hover:bg-[#eef0ef] hover:text-[]'
         }`}
-        on:click={() => switchTab(tab.id)}
+        onclick={() => switchTab(tab.id)}
       >
         <span class="flex-shrink-0">
           {@html tab.icon}

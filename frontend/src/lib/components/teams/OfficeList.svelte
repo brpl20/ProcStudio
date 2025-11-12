@@ -86,9 +86,9 @@
                       {office.name}
                     </h3>
                     {#if office.site}
-                      <a 
-                        href={office.site} 
-                        target="_blank" 
+                      <a
+                        href={office.site}
+                        target="_blank"
                         class="text-sm text-[#0277EE] hover:text-[#01013D] transition-colors duration-200 truncate block"
                       >
                         {office.site}
@@ -112,7 +112,7 @@
 
                 <!-- Actions Menu -->
                 <div class="relative group/menu ml-4">
-                  <button 
+                  <button
                     class="p-2 rounded-lg text-gray-400 hover:text-[#0277EE] hover:bg-[#eef0ef] transition-all duration-200"
                     aria-label="Opções do escritório"
                   >
@@ -122,8 +122,8 @@
                   </button>
                   <div class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-[#eef0ef] opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all duration-200 z-50">
                     {#if !office.deleted}
-                      <button 
-                        on:click={() => handleEdit(office)}
+                      <button
+                        onclick={() => handleEdit(office)}
                         class="w-full text-left px-4 py-3 text-sm text-[#0277EE] hover:bg-[#eef0ef] transition-colors duration-200 flex items-center gap-2 border-b border-[#eef0ef]"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -131,8 +131,8 @@
                         </svg>
                         Editar
                       </button>
-                      <button 
-                        on:click={() => handleDelete(office)}
+                      <button
+                        onclick={() => handleDelete(office)}
                         class="w-full text-left px-4 py-3 text-sm text-orange-600 hover:bg-[#eef0ef] transition-colors duration-200 flex items-center gap-2"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -141,8 +141,8 @@
                         Arquivar
                       </button>
                     {:else}
-                      <button 
-                        on:click={() => handleRestore(office)}
+                      <button
+                        onclick={() => handleRestore(office)}
                         class="w-full text-left px-4 py-3 text-sm text-green-600 hover:bg-[#eef0ef] transition-colors duration-200 flex items-center gap-2 border-b border-[#eef0ef]"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -150,8 +150,8 @@
                         </svg>
                         Restaurar
                       </button>
-                      <button 
-                        on:click={() => handleDelete(office)}
+                      <button
+                        onclick={() => handleDelete(office)}
                         class="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-[#eef0ef] transition-colors duration-200 flex items-center gap-2"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

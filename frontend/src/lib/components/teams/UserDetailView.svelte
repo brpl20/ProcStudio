@@ -41,11 +41,11 @@
       bank_accounts?: { bank_name?: string; agency?: string; account_number?: string }[];
     };
   }
-  
+
   // 1. MUDANÇA PRINCIPAL: Usando $props() para declarar as propriedades
   // O componente agora espera uma prop 'user' e uma prop 'onEdit' que é uma função.
-  let { user, onEdit } = $props<{ 
-    user: User; 
+  let { user, onEdit } = $props<{
+    user: User;
     onEdit: (user: User) => void;
   }>();
 
@@ -56,7 +56,9 @@
 
   // Função para obter rótulos mais amigáveis para cargos
   function getRoleLabel(role: string | undefined): string {
-    if (!role) return 'Não informado';
+    if (!role) {
+return 'Não informado';
+}
     const map: Record<string, string> = {
       lawyer: 'Advogado',
       paralegal: 'Paralegal',
@@ -111,7 +113,7 @@
           </div>
 
           <!-- O resto do template permanece o mesmo... -->
-          
+
           <!-- Informações Pessoais -->
           <div class="card bg-base-100 shadow">
             <div class="card-body">
@@ -123,14 +125,14 @@
                   </label>
                   <input id="email" type="text" value={user.attributes.access_email || 'Não informado'} class="input input-bordered w-full" readonly />
                 </div>
-                
+
                 <div>
                     <label class="label" for="role">
                       <span class="label-text font-semibold">Cargo</span>
                     </label>
                     <input id="role" type="text" value={getRoleLabel(user.attributes.role)} class="input input-bordered w-full" readonly />
                 </div>
-                
+
                 {#if user.attributes.role === 'lawyer'}
                   <div>
                     <label class="label" for="oab">

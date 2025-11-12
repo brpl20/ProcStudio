@@ -17,7 +17,7 @@
 
   function handleBlur() {
     touched = true;
-    
+
     // 1. Checa se é obrigatório e vazio
     if (required && !value) {
       errors = 'Este campo é obrigatório.';

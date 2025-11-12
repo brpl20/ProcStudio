@@ -97,7 +97,7 @@
           ? 'bg-gray-100 text-[#01013D] hover:bg-gray-200'
           : 'bg-gradient-to-r from-[#0277EE] to-[#01013D] text-white hover:shadow-lg hover:shadow-[#0277EE]/30'
       }`}
-      on:click={toggleEdit}
+      onclick={toggleEdit}
       disabled={loading}
     >
       {editMode ? 'Cancelar' : 'Editar'}
@@ -138,7 +138,9 @@
           <div class="p-6 sm:p-8">
             <h3 class="text-xl sm:text-2xl font-bold text-[#01013D] mb-8">Dados da Equipe</h3>
 
-            <form on:submit|preventDefault={handleSave} class="space-y-6">
+            <form onsubmit={(e) => {
+ e.preventDefault(); handleSave();
+}} class="space-y-6">
               <div>
                 <label class="block text-sm font-semibold text-[#01013D] mb-3" for="team-name">
                   Nome da Equipe
@@ -193,7 +195,7 @@
                   <button
                     type="button"
                     class="px-6 py-3 rounded-xl font-semibold text-[#01013D] bg-gray-100 hover:bg-gray-200 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed order-2 sm:order-1"
-                    on:click={handleCancel}
+                    onclick={handleCancel}
                     disabled={loading}
                   >
                     Cancelar

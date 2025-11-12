@@ -67,13 +67,17 @@
   }
 
   async function handleDeleteConfirm() {
-    if (!deletingUser) return;
+    if (!deletingUser) {
+return;
+}
     try {
       const response = await api.users.deleteUser(String(deletingUser.id));
       if (response.success) {
         success = 'Usuário removido com sucesso!';
         loadUsers();
-        setTimeout(() => { success = null; }, 3000);
+        setTimeout(() => {
+ success = null;
+}, 3000);
       } else {
         error = response.message || 'Erro ao remover usuário';
       }
@@ -104,24 +108,24 @@
   });
 
   function getRoleBadgeClass(role: string): string {
-    const map: Record<string, string> = { 
-      lawyer: 'bg-blue-100 text-blue-900', 
-      paralegal: 'bg-indigo-100 text-indigo-900', 
-      trainee: 'bg-cyan-100 text-cyan-900', 
-      secretary: 'bg-sky-100 text-sky-900' 
+    const map: Record<string, string> = {
+      lawyer: 'bg-blue-100 text-blue-900',
+      paralegal: 'bg-indigo-100 text-indigo-900',
+      trainee: 'bg-cyan-100 text-cyan-900',
+      secretary: 'bg-sky-100 text-sky-900'
     };
     return map[role] || 'bg-gray-100 text-gray-900';
   }
 
   function getRoleLabel(role: string): string {
-    const map: Record<string, string> = { 
-      lawyer: 'Advogado', 
-      paralegal: 'Paralegal', 
-      trainee: 'Estagiário', 
-      secretary: 'Secretário', 
-      counter: 'Contador', 
-      excounter: 'Ex-contador', 
-      representant: 'Representante' 
+    const map: Record<string, string> = {
+      lawyer: 'Advogado',
+      paralegal: 'Paralegal',
+      trainee: 'Estagiário',
+      secretary: 'Secretário',
+      counter: 'Contador',
+      excounter: 'Ex-contador',
+      representant: 'Representante'
     };
     return map[role] || role;
   }
@@ -140,12 +144,12 @@
       </h2>
       <p class="text-gray-600 text-sm">Crie, edite e gerencie usuários do sistema</p>
     </div>
-    
+
     <!-- Button Group -->
     <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-      <button 
+      <button
         class="px-5 py-2.5 rounded-xl font-semibold bg-gray-100 text-[#01013D] hover:bg-gray-200 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-        on:click={openInviteForm} 
+        onclick={openInviteForm}
         disabled={loading}
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -153,9 +157,9 @@
         </svg>
         Convidar
       </button>
-      <button 
+      <button
         class="px-5 py-2.5 rounded-xl font-semibold bg-gradient-to-r from-[#0277EE] to-[#01013D] text-white hover:shadow-lg hover:shadow-[#0277EE]/30 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-        on:click={openCreateForm} 
+        onclick={openCreateForm}
         disabled={loading}
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -256,16 +260,16 @@
                 </td>
                 <td class="px-6 py-4">
                   <div class="flex justify-center gap-2">
-                    <button 
+                    <button
                       class="p-2 rounded-lg text-[#0277EE] hover:bg-[#0277EE]/10 transition-colors duration-200"
-                      on:click={() => openEditForm(user)} 
+                      onclick={() => openEditForm(user)}
                       title="Editar usuário"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                     </button>
-                    <button 
+                    <button
                       class="p-2 rounded-lg text-red-600 hover:bg-red-100 transition-colors duration-200"
-                      on:click={() => openDeleteDialog(user)} 
+                      onclick={() => openDeleteDialog(user)}
                       title="Remover usuário"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
@@ -286,7 +290,9 @@
   <div class="modal-box w-11/12 max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl">
     <UserFormUnified />
   </div>
-  <form method="dialog" class="modal-backdrop" on:submit|preventDefault={() => userFormStore.reset()}>
+  <form method="dialog" class="modal-backdrop" onsubmit={(e) => {
+ e.preventDefault(); userFormStore.reset();
+}}>
     <button>close</button>
   </form>
 </dialog>

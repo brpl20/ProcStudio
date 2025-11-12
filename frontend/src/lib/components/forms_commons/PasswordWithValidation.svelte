@@ -1,5 +1,5 @@
 <script lang="ts">
-  /* eslint-disable prefer-const */
+
   import type { TextFieldProps } from '../../types/form-field-contract';
   import {
     DEFAULT_PASSWORD_CONFIG,

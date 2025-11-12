@@ -154,9 +154,9 @@
               </h2>
               <p class="text-gray-600 text-sm mt-1">Escolha como deseja cadastrar seu escritório</p>
             </div>
-            <button 
+            <button
               class="p-2 rounded-lg text-gray-400 hover:text-[#01013D] hover:bg-[#eef0ef] transition-all duration-200"
-              on:click={handleCloseSelection}
+              onclick={handleCloseSelection}
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -170,7 +170,7 @@
             <!-- Existing Office Option -->
             <button
               class="group bg-white border-2 border-[#eef0ef] hover:border-[#0277EE] rounded-2xl p-8 transition-all duration-300 hover:shadow-xl hover:shadow-[#0277EE]/20 text-left"
-              on:click={() => handleOfficeSelection(false)}
+              onclick={() => handleOfficeSelection(false)}
             >
               <div class="flex flex-col items-center text-center space-y-4">
                 <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#eef0ef] to-[#0277EE]/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
@@ -195,7 +195,7 @@
             <!-- New Office Option -->
             <button
               class="group bg-white border-2 border-[#eef0ef] hover:border-[#0277EE] rounded-2xl p-8 transition-all duration-300 hover:shadow-xl hover:shadow-[#0277EE]/20 text-left"
-              on:click={() => handleOfficeSelection(true)}
+              onclick={() => handleOfficeSelection(true)}
             >
               <div class="flex flex-col items-center text-center space-y-4">
                 <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#eef0ef] to-[#0277EE]/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
@@ -231,12 +231,12 @@
         </h2>
         <p class="text-gray-600 text-sm">Crie, edite e gerencie escritórios do sistema</p>
       </div>
-      
+
       <button
         class="px-5 py-2.5 rounded-xl font-semibold bg-gradient-to-r from-[#0277EE] to-[#01013D] text-white hover:shadow-lg hover:shadow-[#0277EE]/30 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
         class:opacity-50={!canCreateOffice}
         disabled={!canCreateOffice}
-        on:click={handleCreate}
+        onclick={handleCreate}
         title={tooltipMessage}
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -254,7 +254,7 @@
             type="checkbox"
             class="sr-only peer"
             bind:checked={showDeleted}
-            on:change={toggleShowDeleted}
+            onchange={toggleShowDeleted}
           />
           <div class="w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-gradient-to-r peer-checked:from-[#0277EE] peer-checked:to-[#01013D] transition-all duration-300"></div>
           <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 peer-checked:translate-x-5 shadow-md"></div>

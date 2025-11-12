@@ -16,7 +16,7 @@
   <div class="space-y-2">
     <Email bind:value={credentials.email} required={true} />
   </div>
-  
+
   {#if !isEditMode}
     <div class="space-y-2">
       <Password
@@ -27,7 +27,7 @@
         required={false}
       />
     </div>
-    
+
     <div class="space-y-2">
       <Password
         bind:value={credentials.password_confirmation}

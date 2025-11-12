@@ -103,7 +103,9 @@
         <h2 class="text-3xl font-bold text-[#01013D] text-center mb-8 mt-4">Registrar-se</h2>
 
         <!-- Form -->
-        <form onsubmit={(e) => { e.preventDefault(); handleRegister(); }} class="space-y-5">
+        <form onsubmit={(e) => {
+ e.preventDefault(); handleRegister();
+}} class="space-y-5">
           <!-- OAB Input -->
           <div class="relative">
             <label for="oab" class="block text-sm font-semibold text-[#01013D] mb-2">

@@ -5,7 +5,7 @@
   // Opções de Gênero (regra de negócio aplicada aqui)
   const genderOptions = [
     { value: 'male', label: 'Masculino' },
-    { value: 'female', label: 'Feminino' },
+    { value: 'female', label: 'Feminino' }
   ];
 
   let {

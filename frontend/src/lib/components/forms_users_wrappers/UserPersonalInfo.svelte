@@ -23,23 +23,23 @@
   <div class="space-y-2">
     <Cpf bind:value={personalInfo.cpf} required={true} />
   </div>
-  
+
   <div class="space-y-2">
     <Rg bind:value={personalInfo.rg} required={true} />
   </div>
-  
+
   <div class="space-y-2">
     <Gender bind:value={personalInfo.gender} required={true} />
   </div>
-  
+
   <div class="space-y-2">
     <CivilStatus bind:value={personalInfo.civil_status} gender={personalInfo.gender} required={true} />
   </div>
-  
+
   <div class="space-y-2">
     <Nationality bind:value={personalInfo.nationality} gender={personalInfo.gender} required={true} />
   </div>
-  
+
   <div class="space-y-2">
     <Birth bind:value={personalInfo.birth} required={true} />
   </div>

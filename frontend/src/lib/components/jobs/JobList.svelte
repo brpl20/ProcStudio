@@ -102,8 +102,8 @@
       <div class="flex-1">
         <h3 class="text-red-900 font-bold text-base mb-1">Erro ao carregar jobs</h3>
         <p class="text-red-800 text-sm mb-4">{error}</p>
-        <button 
-          on:click={onRetry}
+        <button
+          onclick={onRetry}
           class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-all duration-200 font-semibold text-sm hover:shadow-lg hover:shadow-red-600/30"
         >
           Tentar novamente
@@ -232,7 +232,7 @@
                           <p class="text-sm font-bold text-[#0277EE]">{job.work_number}</p>
                         </div>
                       {/if}
-                      
+
                       {#if job.customer_id}
                         <div class="bg-[#eef0ef]/50 rounded-lg p-3">
                           <p class="text-xs font-semibold text-gray-500 uppercase mb-1 tracking-wide">Cliente</p>

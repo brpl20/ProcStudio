@@ -1,12 +1,16 @@
 <script>
   import { router } from './router.svelte';
 
-  export let href = '';
-  export let replace = false;
-  export let native = false;
-  export let className = '';
-  export let activeClass = 'active';
-  export let exact = false;
+  let {
+    href = '',
+    replace = false,
+    native = false,
+    className = '',
+    activeClass = 'active',
+    exact = false,
+    children,
+    ...restProps
+  } = $props();
 
   const isActive = $derived(router.isActive(href, exact));
   const computedClass = $derived(
@@ -15,8 +19,8 @@
 
   function handleClick(e) {
     if (native) {
-return;
-}
+      return;
+    }
 
     e.preventDefault();
     router.navigate(href, replace);
@@ -28,7 +32,7 @@ return;
   class={computedClass}
   data-native={native}
   onclick={handleClick}
-  {...$$restProps}
+  {...restProps}
 >
-  <slot />
+  {@render children?.()}
 </a>

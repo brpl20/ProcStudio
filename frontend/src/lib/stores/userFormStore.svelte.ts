@@ -35,7 +35,7 @@ const getInitialFormData = (): UserFormData => ({
   personalInfo: { cpf: '', rg: '', gender: '', civil_status: 'single', nationality: 'brazilian', birth: '', mother_name: '' },
   contactInfo: { phone: '', address: { street: '', number: '', complement: '', neighborhood: '', city: '', state: '', zip_code: '' } },
   credentials: { email: '', password: '', password_confirmation: '' },
-  bankAccount: { bank_name: '', bank_number: '', type_account: '', agency: '', account: '', operation: '', pix: '' },
+  bankAccount: { bank_name: '', bank_number: '', type_account: '', agency: '', account: '', operation: '', pix: '' }
 });
 
 // Create a Svelte 5 rune-based store
@@ -57,7 +57,9 @@ class UserFormStore {
     this.error = null;
     const trimmedEmail = email.trim();
 
-    if (!trimmedEmail) return;
+    if (!trimmedEmail) {
+return;
+}
 
     // Validação de formato de e-mail simples
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -82,7 +84,7 @@ class UserFormStore {
   startCreate() {
     this.close();
     this.mode = 'create';
-    this.open = true
+    this.open = true;
   }
 
   startEdit(user: any) {
@@ -131,12 +133,12 @@ class UserFormStore {
         agency: bankAccount.agency || '',
         account: bankAccount.account || '',
         operation: bankAccount.operation || '',
-        pix: bankAccount.pix || '',
-      },
+        pix: bankAccount.pix || ''
+      }
     };
 
     this.mode = 'edit';
-    this.open = true
+    this.open = true;
     this.editingUserId = user.id;
     this.editingUserProfileId = user.attributes.user_profile_id;
     this.error = null;
@@ -146,7 +148,7 @@ class UserFormStore {
   startInvite() {
     this.close();
     this.mode = 'invite';
-    this.open = true
+    this.open = true;
   }
 
   close() {
@@ -179,7 +181,7 @@ class UserFormStore {
             throw new Error('Adicione pelo menos um e-mail para enviar convites.');
         }
         // Envia todos os convites em paralelo para melhor performance
-        const invitePromises = inviteEmails.map(email => api.users.sendInvite(email));
+        const invitePromises = inviteEmails.map((email) => api.users.sendInvite(email));
         response = await Promise.all(invitePromises);
 
       } else {
@@ -192,7 +194,7 @@ class UserFormStore {
           account_type: bankAccount.type_account,
           agency: bankAccount.agency,
           account: bankAccount.account,
-          pix: bankAccount.pix,
+          pix: bankAccount.pix
         };
 
         if (bankAccount.operation) {
@@ -274,7 +276,7 @@ class UserFormStore {
 
       // Se a resposta for um array (de Promise.all), verifica se todos os itens dentro são bem-sucedidos.
       const isSuccess = Array.isArray(response)
-          ? response.every(res => res && res.success !== false)
+          ? response.every((res) => res && res.success !== false)
           : response && response.success !== false;
 
       if (isSuccess) {

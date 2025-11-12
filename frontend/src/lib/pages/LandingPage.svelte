@@ -1,7 +1,7 @@
 <script lang="ts">
   import MainLayout from '../components/MainLayout.svelte';
   import { router } from '../stores/routerStore';
-  import logoProcStudio from '../../assets/procstudio_logotipo_vertical_sem_fundo.png'; 
+  import logoProcStudio from '../../assets/procstudio_logotipo_vertical_sem_fundo.png';
 
   let openFaq: number | null = null;
 
@@ -23,10 +23,10 @@
 
       <div class="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
-            <img 
-                src={logoProcStudio} 
-                alt="Logotipo do ProcStudio" 
-                class="h-48 w-auto mx-auto mb-6 animate-fade-in" 
+            <img
+                src={logoProcStudio}
+                alt="Logotipo do ProcStudio"
+                class="h-48 w-auto mx-auto mb-6 animate-fade-in"
               />
           <p class="text-2xl sm:text-3xl lg:text-4xl text-[#01013D] opacity-80 mb-4 font-light animate-fade-in-delay-1">
             Sistema em Desenvolvimento
@@ -36,14 +36,14 @@
           </p>
 
           <div class="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in-delay-3">
-            <button 
+            <button
               class="group relative px-8 py-4 bg-[#0277EE] text-white text-lg font-semibold rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-[#0277EE]/30 w-full sm:w-auto"
               onclick={() => router.navigate('/register')}
             >
               <span class="relative z-10">Começar agora</span>
               <div class="absolute inset-0 bg-gradient-to-r from-[#0277EE] to-[#01013D] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </button>
-            <button 
+            <button
               class="px-8 py-4 bg-transparent text-[#01013D] text-lg font-semibold rounded-xl border-2 border-[#01013D] transition-all duration-300 hover:bg-[#01013D] hover:text-white hover:scale-105 hover:shadow-xl w-full sm:w-auto"
               onclick={() => router.navigate('/login')}
             >
@@ -145,7 +145,7 @@
           <!-- Individual Plan -->
           <div class="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
             <div class="absolute inset-0 bg-gradient-to-br from-[#0277EE]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            
+
             <div class="relative p-8 md:p-10">
               <div class="mb-6">
                 <h4 class="text-3xl font-bold text-[#01013D] mb-2">Individual</h4>
@@ -196,9 +196,9 @@
             <div class="absolute top-0 right-0 bg-gradient-to-br from-[#0277EE] to-[#01013D] text-white px-4 py-2 rounded-bl-lg">
               <span class="text-sm font-bold">Popular</span>
             </div>
-            
+
             <div class="absolute inset-0 bg-gradient-to-br from-[#0277EE]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            
+
             <div class="relative p-8 md:p-10">
               <div class="mb-6">
                 <h4 class="text-3xl font-bold text-[#01013D] mb-2">CNPJ</h4>

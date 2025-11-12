@@ -73,7 +73,7 @@
       <h3 class="text-2xl font-bold text-white">Membros da Equipe</h3>
       <button
         class="group relative px-5 py-2.5 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed border border-white/20 hover:border-white/40 hover:shadow-lg hover:shadow-white/10"
-        on:click={loadTeamMembers}
+        onclick={loadTeamMembers}
         disabled={loading}
       >
         <div class="flex items-center gap-2">

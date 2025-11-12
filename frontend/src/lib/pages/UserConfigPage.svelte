@@ -31,7 +31,9 @@
 
   async function handleAvatarUpload(event: CustomEvent) {
     const { file } = event.detail;
-    if (!userProfile?.id) return;
+    if (!userProfile?.id) {
+return;
+}
 
     uploadingAvatar = true;
     error = null;
@@ -51,7 +53,9 @@
   }
 
   async function handleAvatarRemove() {
-    if (!userProfile?.id) return;
+    if (!userProfile?.id) {
+return;
+}
 
     uploadingAvatar = true;
     error = null;
@@ -71,7 +75,9 @@
 
   async function handleColorChange(event: CustomEvent) {
     const { color } = event.detail;
-    if (!userProfile?.id) return;
+    if (!userProfile?.id) {
+return;
+}
 
     uploadingAvatar = true;
     error = null;
@@ -92,7 +98,7 @@
 <AuthSidebar activeSection="user-config">
   <div class="min-h-screen bg-gradient-to-br from-[#eef0ef] to-white p-4 md:p-8">
     <div class="max-w-7xl mx-auto">
-      
+
       {#if loading}
         <div class="flex items-center justify-center min-h-[400px]">
           <div class="flex flex-col items-center gap-4">
@@ -137,7 +143,7 @@
                     {/if}
                   </div>
                   <button
-                    on:click={() => showAvatarEditor = true}
+                    onclick={() => showAvatarEditor = true}
                     class="absolute bottom-0 right-0 bg-white text-[#0277EE] rounded-full p-3 shadow-lg hover:bg-[#eef0ef] transition-all duration-300 hover:scale-110"
                   >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -369,7 +375,7 @@
             <div class="p-6">
               <div class="flex flex-wrap gap-4">
                 <button
-                  on:click={() => showAvatarEditor = true}
+                  onclick={() => showAvatarEditor = true}
                   class="flex items-center gap-2 bg-[#0277EE] hover:bg-[#01013D] text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-xl transform hover:-translate-y-0.5"
                 >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -422,7 +428,7 @@
         <div class="sticky top-0 bg-gradient-to-r from-[#0277EE] to-[#01013D] px-6 py-4 flex items-center justify-between">
           <h3 class="text-2xl font-bold text-white">Editar Foto do Perfil</h3>
           <button
-            on:click={() => showAvatarEditor = false}
+            onclick={() => showAvatarEditor = false}
             class="text-white hover:bg-white/20 rounded-full p-2 transition-colors duration-200"
           >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -445,7 +451,7 @@
 
         <div class="sticky bottom-0 bg-gray-50 px-6 py-4 flex justify-end gap-3 border-t">
           <button
-            on:click={() => showAvatarEditor = false}
+            onclick={() => showAvatarEditor = false}
             class="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg transition-colors duration-200"
           >
             Fechar
