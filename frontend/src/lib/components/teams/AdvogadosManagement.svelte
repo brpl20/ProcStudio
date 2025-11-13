@@ -4,6 +4,8 @@
   import ConfirmDialog from '../ui/ConfirmDialog.svelte';
   import { userFormStore } from '../../stores/userFormStore.svelte.ts';
   import UserFormUnified from './UserFormUnified.svelte';
+  // 1. IMPORTAR O NOVO COMPONENTE DE VISUALIZAÇÃO
+  import UserDetailView from './UserDetailView.svelte';
 
   interface User {
     id: number;
@@ -30,6 +32,10 @@
 
   let showDeleteDialog = $state(false);
   let deletingUser: User | null = $state(null);
+  
+  // 2. ESTADO PARA O MODAL DE DETALHES
+  let showDetailModal = $state(false);
+  let viewingUser: User | null = $state(null);
 
   async function loadUsers() {
     loading = true;
@@ -54,6 +60,23 @@
 
   function openEditForm(user: User) {
     userFormStore.startEdit(user);
+  }
+
+  // 3. FUNÇÃO PARA ABRIR O MODAL DE DETALHES
+  function openUserDetail(user: User) {
+    viewingUser = user;
+    showDetailModal = true;
+  }
+  
+  // FUNÇÃO PARA LIDAR COM O EVENTO DE EDIÇÃO VINDO DO MODAL DE DETALHES
+  function handleEditFromDetail(event: CustomEvent<User>) {
+    const userToEdit = event.detail;
+    showDetailModal = false; // Fecha o modal de detalhes
+    viewingUser = null;
+    // Um pequeno delay para garantir que a transição entre modais seja suave
+    setTimeout(() => {
+      openEditForm(userToEdit);
+    }, 150);
   }
 
   function openDeleteDialog(user: User) {
@@ -91,11 +114,13 @@ return;
   async function handleSaveSuccess() {
     if (userFormStore.mode === 'invite') {
       success = 'Convite enviado com sucesso!';
-    } else {
-      success = userFormStore.mode === 'create' ? 'Usuário criado com sucesso!' : 'Usuário atualizado com sucesso!';
+    } else if (userFormStore.mode === 'create') {
+      success = 'Usuário criado com sucesso!';
+    } else if (userFormStore.mode === 'edit') {
+      success = 'Usuário editado com sucesso!';
     }
     await loadUsers();
-    userFormStore.reset();
+    userFormStore.close();
     setTimeout(() => {
       success = null;
     }, 1500);
@@ -260,6 +285,14 @@ return;
                 </td>
                 <td class="px-6 py-4">
                   <div class="flex justify-center gap-2">
+                    <!-- 4. BOTÃO "VISUALIZAR" ADICIONADO -->
+                    <button
+                      class="p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors duration-200"
+                      onclick={() => openUserDetail(user)}
+                      title="Ver detalhes do usuário"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                    </button>
                     <button
                       class="p-2 rounded-lg text-[#0277EE] hover:bg-[#0277EE]/10 transition-colors duration-200"
                       onclick={() => openEditForm(user)}
@@ -285,14 +318,24 @@ return;
   </div>
 </div>
 
-<!-- Modal Dialog -->
-<dialog class="modal" open={userFormStore.mode !== null}>
+<!-- Modal Dialog (Formulário) -->
+<dialog class="modal" open={userFormStore.open}>
   <div class="modal-box w-11/12 max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl">
     <UserFormUnified />
   </div>
-  <form method="dialog" class="modal-backdrop" onsubmit={(e) => {
- e.preventDefault(); userFormStore.reset();
-}}>
+<form method="dialog" class="modal-backdrop" onsubmit={(e) => { e.preventDefault(); userFormStore.close(); }}>
+    <button>close</button>
+  </form>
+</dialog>
+
+<!-- 5. NOVO MODAL PARA DETALHES DO USUÁRIO -->
+<dialog class="modal" open={showDetailModal}>
+  <div class="modal-box w-11/12 max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl">
+    {#if viewingUser}
+      <UserDetailView user={viewingUser} on:edit={handleEditFromDetail} />
+    {/if}
+  </div>
+  <form method="dialog" class="modal-backdrop" onsubmit={(e) => { e.preventDefault(); showDetailModal = false; viewingUser = null; }}>
     <button>close</button>
   </form>
 </dialog>
