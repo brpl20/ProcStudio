@@ -5,12 +5,17 @@
   import { authStore } from '../stores/authStore';
   import JobList from '../components/jobs/JobList.svelte';
   import JobDrawer from '../components/jobs/JobDrawer.svelte';
-  import api, { type Job } from '../api';
+  import JobCreateModal from '../components/jobs/JobCreateModal.svelte';
+  import DraftDropdown from '../components/jobs/DraftDropdown.svelte';
+  import api, { type Job, type Draft } from '../api';
 
   let jobs: Job[] = $state([]);
   let loading = $state(true);
   let error = $state<string | null>(null);
   let isDrawerOpen = $state(false);
+  let isCreateModalOpen = $state(false);
+  let isDraftDropdownOpen = $state(false);
+  let selectedDraft = $state<Draft | null>(null);
 
   async function fetchJobs() {
     try {
@@ -38,7 +43,35 @@
   function toggleDrawer() {
     isDrawerOpen = !isDrawerOpen;
   }
+
+  function handleNewJobClick() {
+    isDraftDropdownOpen = !isDraftDropdownOpen;
+  }
+
+  function handleCreateNew() {
+    selectedDraft = null;
+    isCreateModalOpen = true;
+  }
+
+  function handleSelectDraft(draft: Draft) {
+    selectedDraft = draft;
+    isCreateModalOpen = true;
+  }
+
+  function handleJobCreated(job: Job) {
+    fetchJobs();
+  }
+
+  // Close dropdown when clicking outside
+  function handleClickOutside(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.dropdown-container')) {
+      isDraftDropdownOpen = false;
+    }
+  }
 </script>
+
+<svelte:window onclick={handleClickOutside} />
 
 <AuthSidebar>
   <div class="container mx-auto py-6 relative">
@@ -46,6 +79,36 @@
       <div class="card-body">
         <div class="flex justify-between items-center mb-6">
           <h2 class="card-title text-3xl">📋 Jobs</h2>
+
+          <!-- New Job Button with Draft Dropdown -->
+          <div class="dropdown-container relative">
+            <button class="btn btn-primary" onclick={handleNewJobClick}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+              Nova Tarefa
+            </button>
+
+            <!-- Draft Dropdown -->
+            <div class="absolute right-0 mt-2 z-50">
+              <DraftDropdown
+                bind:isOpen={isDraftDropdownOpen}
+                onSelectDraft={handleSelectDraft}
+                onCreateNew={handleCreateNew}
+              />
+            </div>
+          </div>
         </div>
 
         <JobList {jobs} {loading} {error} onRetry={fetchJobs} />
@@ -76,4 +139,9 @@
   </div>
 
   <JobDrawer bind:isOpen={isDrawerOpen} />
+  <JobCreateModal
+    bind:isOpen={isCreateModalOpen}
+    bind:selectedDraft={selectedDraft}
+    onSuccess={handleJobCreated}
+  />
 </AuthSidebar>

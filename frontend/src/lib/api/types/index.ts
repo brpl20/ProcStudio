@@ -75,5 +75,8 @@ export type {
 // Notification types
 export * from './notification.types';
 
+// Draft types
+export * from './draft.types';
+
 // Re-export shared types from office.types
 export type { Phone, Address, Email, BankAccount } from './office.types';

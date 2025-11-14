@@ -11,3 +11,4 @@ export { JobService } from './job.service';
 export { WorkService } from './work.service';
 export { CustomerService } from './customer.service';
 export { OfficeService } from './office.service';
+export { DraftService } from './draft.service';
