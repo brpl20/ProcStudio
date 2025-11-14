@@ -35,6 +35,10 @@ class Team < ApplicationRecord
   has_many :team_customers, dependent: :destroy
   has_many :customers, through: :team_customers
 
+  # Subscription and usage tracking
+  has_one :subscription, dependent: :destroy
+  has_one :usage_limit, dependent: :destroy
+
   before_validation :normalize_subdomain
 
   def to_s

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_14_005121) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_14_132129) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -639,6 +639,29 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_14_005121) do
     t.index ["work_id"], name: "index_recommendations_on_work_id"
   end
 
+  create_table "referral_invitations", force: :cascade do |t|
+    t.string "email", null: false
+    t.string "token", null: false
+    t.bigint "referred_by_id", null: false
+    t.bigint "referred_user_id"
+    t.string "status", default: "pending", null: false
+    t.boolean "reward_earned", default: false
+    t.datetime "accepted_at"
+    t.datetime "converted_at"
+    t.datetime "expires_at", null: false
+    t.jsonb "metadata", default: {}
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deleted_at"], name: "index_referral_invitations_on_deleted_at"
+    t.index ["email"], name: "index_referral_invitations_on_email"
+    t.index ["referred_by_id"], name: "index_referral_invitations_on_referred_by_id"
+    t.index ["referred_user_id"], name: "index_referral_invitations_on_referred_user_id"
+    t.index ["reward_earned"], name: "index_referral_invitations_on_reward_earned"
+    t.index ["status"], name: "index_referral_invitations_on_status"
+    t.index ["token"], name: "index_referral_invitations_on_token", unique: true
+  end
+
   create_table "represents", force: :cascade do |t|
     t.bigint "profile_customer_id", null: false
     t.datetime "created_at", null: false
@@ -657,6 +680,30 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_14_005121) do
     t.index ["representor_id", "active"], name: "index_represents_on_representor_id_and_active"
     t.index ["representor_id"], name: "index_represents_on_representor_id"
     t.index ["team_id"], name: "index_represents_on_team_id"
+  end
+
+  create_table "subscriptions", force: :cascade do |t|
+    t.bigint "team_id", null: false
+    t.string "plan_type", default: "basic", null: false
+    t.string "status", default: "active", null: false
+    t.string "stripe_subscription_id"
+    t.string "stripe_customer_id"
+    t.datetime "current_period_start"
+    t.datetime "current_period_end"
+    t.datetime "trial_end"
+    t.datetime "canceled_at"
+    t.integer "free_months_remaining", default: 0
+    t.integer "extra_users_count", default: 0
+    t.jsonb "metadata", default: {}
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deleted_at"], name: "index_subscriptions_on_deleted_at"
+    t.index ["plan_type"], name: "index_subscriptions_on_plan_type"
+    t.index ["status"], name: "index_subscriptions_on_status"
+    t.index ["stripe_customer_id"], name: "index_subscriptions_on_stripe_customer_id"
+    t.index ["stripe_subscription_id"], name: "index_subscriptions_on_stripe_subscription_id", unique: true
+    t.index ["team_id"], name: "index_subscriptions_on_team_id", unique: true
   end
 
   create_table "team_customers", force: :cascade do |t|
@@ -683,6 +730,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_14_005121) do
     t.datetime "updated_at", null: false
     t.index ["deleted_at"], name: "index_teams_on_deleted_at"
     t.index ["subdomain"], name: "index_teams_on_subdomain", unique: true
+  end
+
+  create_table "usage_limits", force: :cascade do |t|
+    t.bigint "team_id", null: false
+    t.integer "customers_count", default: 0
+    t.integer "jobs_count", default: 0
+    t.integer "works_count", default: 0
+    t.integer "documents_generated_total", default: 0
+    t.integer "documents_generated_month", default: 0
+    t.datetime "period_start"
+    t.datetime "period_end"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["team_id"], name: "index_usage_limits_on_team_id", unique: true
   end
 
   create_table "user_bank_accounts", force: :cascade do |t|
@@ -924,11 +985,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_14_005121) do
   add_foreign_key "profile_customers", "users", column: "created_by_id"
   add_foreign_key "recommendations", "profile_customers"
   add_foreign_key "recommendations", "works"
+  add_foreign_key "referral_invitations", "users", column: "referred_by_id"
+  add_foreign_key "referral_invitations", "users", column: "referred_user_id"
   add_foreign_key "represents", "profile_customers"
   add_foreign_key "represents", "profile_customers", column: "representor_id"
   add_foreign_key "represents", "teams"
+  add_foreign_key "subscriptions", "teams"
   add_foreign_key "team_customers", "customers"
   add_foreign_key "team_customers", "teams"
+  add_foreign_key "usage_limits", "teams"
   add_foreign_key "user_bank_accounts", "bank_accounts"
   add_foreign_key "user_bank_accounts", "user_profiles"
   add_foreign_key "user_emails", "emails"

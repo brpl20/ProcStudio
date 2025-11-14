@@ -13,6 +13,11 @@ Rails.application.routes.draw do
 
   get '/api/v1/customer/document' => 'profile_customers#prepare_document'
 
+  # Webhooks (outside API namespace for Stripe)
+  namespace :webhooks do
+    post 'stripe', to: 'stripe#create'
+  end
+
   namespace :api do
     namespace :v1 do
       resources :law_areas
@@ -34,6 +39,23 @@ Rails.application.routes.draw do
           get :verify
           post :accept
         end
+      end
+
+      # Referral Invitations
+      resources :referrals, only: [:index, :create] do
+        collection do
+          get :stats
+        end
+        member do
+          get :verify
+          post :accept
+        end
+      end
+
+      # Subscriptions
+      resource :subscription, only: [:show, :destroy], controller: 'subscriptions' do
+        post :create_checkout_session, on: :collection
+        delete :cancel, on: :collection, action: :destroy
       end
 
       resources :notifications do

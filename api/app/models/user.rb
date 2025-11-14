@@ -52,6 +52,10 @@ class User < ApplicationRecord
   has_many :user_offices, dependent: :destroy
   has_many :offices, through: :user_offices
 
+  # Referral system
+  has_many :sent_referrals, class_name: 'ReferralInvitation', foreign_key: :referred_by_id, dependent: :destroy
+  has_one :received_referral, class_name: 'ReferralInvitation', foreign_key: :referred_user_id, dependent: :nullify
+
   validates :email, presence: true
   accepts_nested_attributes_for :user_profile, reject_if: :all_blank
 

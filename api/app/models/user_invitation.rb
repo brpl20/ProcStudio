@@ -110,7 +110,7 @@ class UserInvitation < ApplicationRecord
     normalized_email = email.downcase.strip
     return unless User.exists?(email: normalized_email)
 
-    errors.add(:email, 'já está cadastrado na plataforma')
+    errors.add(:base, "O e-mail #{email} já está cadastrado na plataforma")
   end
 
   def no_pending_invitation_for_email
@@ -124,6 +124,6 @@ class UserInvitation < ApplicationRecord
 
     return unless existing.exists?
 
-    errors.add(:email, 'já possui um convite pendente')
+    errors.add(:base, "O e-mail #{email} já possui um convite pendente para este time")
   end
 end

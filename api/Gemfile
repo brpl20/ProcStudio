@@ -34,6 +34,9 @@ gem 'redis', '~> 5.0'
 gem 'sidekiq', '~> 7.2'
 gem 'sidekiq-cron', '~> 2.0'
 
+# Payment processing
+gem 'stripe', '~> 12.0'
+
 group :development, :test, :staging do
   gem 'claude-on-rails'
   gem 'faker'

@@ -3,7 +3,8 @@
 module Api
   module V1
     class InvitationsController < BackofficeController
-      skip_before_action :authenticate_user!, only: [:verify, :accept]
+      skip_before_action :authenticate_user, only: [:verify, :accept]
+      skip_before_action :set_current_team, only: [:verify, :accept]
 
       # POST /api/v1/invitations
       # Create and send invitations
@@ -14,16 +15,19 @@ module Api
           base_url: invitation_params[:base_url] || default_base_url
         )
 
-        if result.success?
+        # Check if we have data (partial success) or complete failure
+        if result.data.present?
+          # Partial or full success - return data with appropriate status
           render json: {
-            success: true,
+            success: result.success?,
             data: result.data,
             message: build_success_message(result.data[:summary])
-          }, status: :created
+          }, status: result.success? ? :created : :ok
         else
+          # Complete failure - no invitations created
           render json: {
             success: false,
-            errors: result.errors
+            errors: result.errors || ['Erro ao processar convites']
           }, status: :unprocessable_entity
         end
       rescue StandardError => e
