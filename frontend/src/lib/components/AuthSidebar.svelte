@@ -100,6 +100,7 @@
     { icon: 'settings', label: 'Configurações', path: '/settings' },
     { icon: 'reports', label: 'Relatórios', path: '/reports' },
     { icon: 'tasks', label: 'Jobs', path: '/jobs' },
+    { icon: 'tasks', label: 'Jobs 2', path: '/jobs2' },
     { icon: 'teams', label: 'Time', path: '/teams' },
     { icon: 'work', label: 'Trabalhos', path: '/works' },
     { icon: 'customer', label: 'Clientes', path: '/customers' }

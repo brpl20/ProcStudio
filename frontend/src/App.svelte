@@ -15,6 +15,7 @@
   import SettingsPage from './lib/pages/SettingsPage.svelte';
   import ReportsPage from './lib/pages/ReportsPage.svelte';
   import JobsPage from './lib/pages/JobsPage.svelte';
+  import JobsPage2 from './lib/pages/JobsPage2.svelte';
   import WorksPage from './lib/pages/WorksPage.svelte';
   import CustomersPage from './lib/pages/CustomersPage.svelte';
   import CustomersNewPage from './lib/pages/CustomersNewPage.svelte';
@@ -50,6 +51,7 @@
       '/settings': SettingsPage,
       '/reports': ReportsPage,
       '/jobs': JobsPage,
+      '/jobs2': JobsPage2,
       '/works': WorksPage,
       '/customers': CustomersPage,
       '/customers/new': CustomersNewPage,
