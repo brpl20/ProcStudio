@@ -16,7 +16,8 @@ import {
   JobService,
   WorkService,
   CustomerService,
-  OfficeService
+  OfficeService,
+  DraftService
 } from './services';
 
 // Re-export types for convenience
@@ -44,6 +45,7 @@ export class API {
   public works: WorkService;
   public customers: CustomerService;
   public offices: OfficeService;
+  public drafts: DraftService;
 
   constructor() {
     // Initialize HTTP client
@@ -59,6 +61,7 @@ export class API {
     this.works = new WorkService(this.httpClient);
     this.customers = new CustomerService(this.httpClient);
     this.offices = new OfficeService(this.httpClient);
+    this.drafts = new DraftService(this.httpClient);
 
     // Initialize auth from stored token
     this.auth.initializeAuth();
