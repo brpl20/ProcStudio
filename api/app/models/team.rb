@@ -26,6 +26,7 @@ class Team < ApplicationRecord
   validates :subdomain, presence: true, uniqueness: true, format: { with: /\A[a-z0-9-]+\z/ }
 
   has_many :users, dependent: :destroy
+  has_many :user_invitations, dependent: :destroy
   has_many :offices, dependent: :destroy
   has_many :works, dependent: :destroy
   has_many :jobs, dependent: :destroy

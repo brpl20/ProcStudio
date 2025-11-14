@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 Mailjet.configure do |config|
-  config.api_key = Rails.application.credentials.dig(:mailjet, :api_key)
-  config.secret_key = Rails.application.credentials.dig(:mailjet, :secret_key)
+  config.api_key = ENV['MAILJET_API_KEY']
+  config.secret_key = ENV['MAILJET_SECRET_KEY']
   config.default_from = 'contato@brunopellizzetti.com.br'
   config.api_version = 'v3.1'
 end

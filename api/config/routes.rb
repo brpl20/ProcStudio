@@ -28,6 +28,14 @@ Rails.application.routes.draw do
         end
       end
 
+      # User Invitations
+      resources :invitations, only: [:index, :create, :destroy] do
+        member do
+          get :verify
+          post :accept
+        end
+      end
+
       resources :notifications do
         member do
           patch :mark_as_read

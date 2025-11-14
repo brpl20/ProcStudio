@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_06_175117) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_14_005121) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -707,6 +707,27 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_06_175117) do
     t.index ["user_profile_id"], name: "index_user_emails_on_user_profile_id"
   end
 
+  create_table "user_invitations", force: :cascade do |t|
+    t.string "email", null: false
+    t.string "token", null: false
+    t.bigint "invited_by_id", null: false
+    t.bigint "team_id", null: false
+    t.string "status", default: "pending", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "accepted_at"
+    t.jsonb "metadata", default: {}
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deleted_at"], name: "index_user_invitations_on_deleted_at"
+    t.index ["email", "team_id", "status"], name: "index_user_invitations_on_email_and_team_id_and_status"
+    t.index ["email"], name: "index_user_invitations_on_email"
+    t.index ["invited_by_id"], name: "index_user_invitations_on_invited_by_id"
+    t.index ["status"], name: "index_user_invitations_on_status"
+    t.index ["team_id"], name: "index_user_invitations_on_team_id"
+    t.index ["token"], name: "index_user_invitations_on_token", unique: true
+  end
+
   create_table "user_offices", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "office_id", null: false
@@ -912,6 +933,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_06_175117) do
   add_foreign_key "user_bank_accounts", "user_profiles"
   add_foreign_key "user_emails", "emails"
   add_foreign_key "user_emails", "user_profiles"
+  add_foreign_key "user_invitations", "teams"
+  add_foreign_key "user_invitations", "users", column: "invited_by_id"
   add_foreign_key "user_offices", "offices"
   add_foreign_key "user_offices", "users"
   add_foreign_key "user_profile_works", "user_profiles"

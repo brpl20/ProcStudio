@@ -2,12 +2,12 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    # In development, allow localhost connections
-    if Rails.env.development?
+    # In development and test, allow localhost connections
+    if Rails.env.development? || Rails.env.test?
       origins 'http://localhost:5173', 'http://localhost:3000'
     else
       # In production, replace with your actual frontend domain
-      origins ENV.fetch('FRONTEND_URL', '*')
+      origins ENV.fetch('FRONTEND_URL', 'https://app.procstudio.com')
     end
 
     resource '*',
