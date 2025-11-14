@@ -186,10 +186,13 @@
         </div>
         <ul class="space-y-1">
           {#each drafts as draft}
-            <li>
-              <button
-                class="w-full text-left p-3 hover:bg-base-200 rounded-lg transition-colors flex items-start gap-3 relative group"
+            <li class="relative group">
+              <div
+                class="w-full text-left p-3 hover:bg-base-200 rounded-lg transition-colors flex items-start gap-3 cursor-pointer"
                 onclick={() => handleSelectDraft(draft)}
+                role="button"
+                tabindex="0"
+                onkeydown={(e) => e.key === 'Enter' && handleSelectDraft(draft)}
               >
                 <div class="flex-shrink-0 mt-1">
                   <svg
@@ -218,26 +221,26 @@
                     Atualizado {formatDate(draft.updated_at)}
                   </div>
                 </div>
-                <button
-                  class="btn btn-ghost btn-xs btn-circle opacity-0 group-hover:opacity-100 transition-opacity"
-                  onclick={(e) => handleDeleteDraft(draft, e)}
-                  title="Excluir rascunho"
+              </div>
+              <button
+                class="btn btn-ghost btn-xs btn-circle absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                onclick={(e) => handleDeleteDraft(draft, e)}
+                title="Excluir rascunho"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
               </button>
             </li>
           {/each}
