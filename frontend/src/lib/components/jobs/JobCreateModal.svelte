@@ -160,7 +160,9 @@
     }
   }
 
-  async function handleSubmit() {
+  async function handleSubmit(event: Event) {
+    event.preventDefault();
+
     try {
       loading = true;
       error = null;
@@ -316,7 +318,7 @@
         </div>
       {/if}
 
-      <form onsubmit|preventDefault={handleSubmit} class="space-y-4">
+      <form onsubmit={handleSubmit} class="space-y-4">
         <!-- Title -->
         <div class="form-control">
           <label for="title" class="label">
