@@ -151,8 +151,7 @@ return;
     this.open = true;
   }
 
-  close() {
-    this.mode = null;
+ close() {
     this.open = false;
     this.formData = getInitialFormData();
     this.loading = false;

@@ -5,6 +5,27 @@
   import api from '../api/index';
   import type { WhoAmIResponse } from '../api/types';
 
+  // --- NOVOS MAPAS DE TRADUÇÃO ---
+  const civilStatusMap: Record<string, string> = {
+    single: 'Solteiro(a)',
+    married: 'Casado(a)',
+    divorced: 'Divorciado(a)',
+    widowed: 'Viúvo(a)',
+    separated: 'Separado(a)'
+  };
+
+  const nationalityMap: Record<string, string> = {
+    brazilian: 'Brasileiro(a)'
+    // Adicione outras nacionalidades se necessário
+  };
+
+  const statusMap: Record<string, string> = {
+    active: 'Ativo',
+    inactive: 'Inativo',
+    pending: 'Pendente'
+  };
+  // --- FIM DOS MAPAS ---
+
   let loading = $state(true);
   let error = $state(null);
   let currentUserData = $state<WhoAmIResponse | null>(null);
@@ -32,8 +53,8 @@
   async function handleAvatarUpload(event: CustomEvent) {
     const { file } = event.detail;
     if (!userProfile?.id) {
-return;
-}
+        return;
+    }
 
     uploadingAvatar = true;
     error = null;
@@ -54,8 +75,8 @@ return;
 
   async function handleAvatarRemove() {
     if (!userProfile?.id) {
-return;
-}
+        return;
+    }
 
     uploadingAvatar = true;
     error = null;
@@ -76,8 +97,8 @@ return;
   async function handleColorChange(event: CustomEvent) {
     const { color } = event.detail;
     if (!userProfile?.id) {
-return;
-}
+        return;
+    }
 
     uploadingAvatar = true;
     error = null;
@@ -129,7 +150,7 @@ return;
             </div>
           {/if}
 
-          <div class="bg-gradient-to-br from-[#01013D] to-[#0277EE] rounded-2xl shadow-2xl overflow-hidden">
+          <div class="bg-gradient-to-br from-[#01013D] to-[#01013D] rounded-2xl shadow-2xl overflow-hidden">
             <div class="p-8 md:p-12">
               <div class="flex flex-col md:flex-row items-center gap-8">
                 <div class="relative group">
@@ -144,7 +165,7 @@ return;
                   </div>
                   <button
                     onclick={() => showAvatarEditor = true}
-                    class="absolute bottom-0 right-0 bg-white text-[#0277EE] rounded-full p-3 shadow-lg hover:bg-[#eef0ef] transition-all duration-300 hover:scale-110"
+                    class="absolute bottom-0 right-0 bg-white text-[#01013D] rounded-full p-3 shadow-lg hover:bg-[#eef0ef] transition-all duration-300 hover:scale-110"
                   >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -190,7 +211,7 @@ return;
 
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-              <div class="bg-gradient-to-r from-[#0277EE] to-[#01013D] px-6 py-4">
+              <div class="bg-gradient-to-r from-[#01013D] to-[#01013D] px-6 py-4">
                 <h2 class="text-xl font-bold text-white flex items-center gap-2">
                   <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -216,13 +237,19 @@ return;
                     <label class="text-xs font-semibold text-[#01013D] uppercase tracking-wider mb-1 block">Nascimento</label>
                     <div class="text-gray-700 font-medium bg-[#eef0ef] px-4 py-3 rounded-lg">{userProfile.birth}</div>
                   </div>
+                  
+                  <!-- ALTERAÇÕES AQUI -->
                   <div class="group">
                     <label class="text-xs font-semibold text-[#01013D] uppercase tracking-wider mb-1 block">Nacionalidade</label>
-                    <div class="text-gray-700 font-medium bg-[#eef0ef] px-4 py-3 rounded-lg">{userProfile.nationality}</div>
+                    <div class="text-gray-700 font-medium bg-[#eef0ef] px-4 py-3 rounded-lg">
+                      {nationalityMap[userProfile.nationality] || userProfile.nationality}
+                    </div>
                   </div>
                   <div class="group">
                     <label class="text-xs font-semibold text-[#01013D] uppercase tracking-wider mb-1 block">Estado Civil</label>
-                    <div class="text-gray-700 font-medium bg-[#eef0ef] px-4 py-3 rounded-lg">{userProfile.civil_status}</div>
+                    <div class="text-gray-700 font-medium bg-[#eef0ef] px-4 py-3 rounded-lg">
+                      {civilStatusMap[userProfile.civil_status] || userProfile.civil_status}
+                    </div>
                   </div>
                   <div class="group">
                     <label class="text-xs font-semibold text-[#01013D] uppercase tracking-wider mb-1 block">Gênero</label>
@@ -232,9 +259,11 @@ return;
                     <label class="text-xs font-semibold text-[#01013D] uppercase tracking-wider mb-1 block">Status</label>
                     <div class="inline-flex items-center bg-green-100 text-green-800 px-4 py-3 rounded-lg font-semibold">
                       <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                      {userProfile.status}
+                      {statusMap[userProfile.status] || userProfile.status}
                     </div>
                   </div>
+                   <!-- FIM DAS ALTERAÇÕES -->
+
                 </div>
                 {#if userProfile.mother_name}
                   <div class="pt-2">
@@ -247,7 +276,7 @@ return;
 
             {#if userTeam}
               <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-                <div class="bg-gradient-to-r from-[#0277EE] to-[#01013D] px-6 py-4">
+                <div class="bg-gradient-to-r from-[#01013D] to-[#01013D] px-6 py-4">
                   <h2 class="text-xl font-bold text-white flex items-center gap-2">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -271,7 +300,7 @@ return;
 
           {#if userOffices.length > 0}
             <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-              <div class="bg-gradient-to-r from-[#0277EE] to-[#01013D] px-6 py-4">
+              <div class="bg-gradient-to-r from-[#01013D] to-[#01013D] px-6 py-4">
                 <h2 class="text-xl font-bold text-white flex items-center gap-2">
                   <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -306,7 +335,7 @@ return;
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {#if userPhones.length > 0}
               <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-                <div class="bg-gradient-to-r from-[#0277EE] to-[#01013D] px-6 py-4">
+                <div class="bg-gradient-to-r from-[#01013D] to-[#01013D] px-6 py-4">
                   <h2 class="text-xl font-bold text-white flex items-center gap-2">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -329,7 +358,7 @@ return;
 
             {#if userAddresses.length > 0}
               <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-                <div class="bg-gradient-to-r from-[#0277EE] to-[#01013D] px-6 py-4">
+                <div class="bg-gradient-to-r from-[#01013D] to-[#01013D] px-6 py-4">
                   <h2 class="text-xl font-bold text-white flex items-center gap-2">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -363,7 +392,7 @@ return;
           </div>
 
           <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
-            <div class="bg-gradient-to-r from-[#0277EE] to-[#01013D] px-6 py-4">
+            <div class="bg-gradient-to-r from-[#01013D] to-[#01013D] px-6 py-4">
               <h2 class="text-xl font-bold text-white flex items-center gap-2">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -374,16 +403,6 @@ return;
             </div>
             <div class="p-6">
               <div class="flex flex-wrap gap-4">
-                <button
-                  onclick={() => showAvatarEditor = true}
-                  class="flex items-center gap-2 bg-[#0277EE] hover:bg-[#01013D] text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-xl transform hover:-translate-y-0.5"
-                >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  Alterar Foto
-                </button>
                 <button
                   disabled
                   class="flex items-center gap-2 bg-gray-300 text-gray-500 px-6 py-3 rounded-lg font-semibold cursor-not-allowed opacity-60"
