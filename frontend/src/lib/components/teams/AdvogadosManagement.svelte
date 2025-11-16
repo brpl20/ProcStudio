@@ -4,7 +4,6 @@
   import ConfirmDialog from '../ui/ConfirmDialog.svelte';
   import { userFormStore } from '../../stores/userFormStore.svelte.ts';
   import UserFormUnified from './UserFormUnified.svelte';
-  // 1. IMPORTAR O NOVO COMPONENTE DE VISUALIZAÇÃO
   import UserDetailView from './UserDetailView.svelte';
 
   interface User {
@@ -161,7 +160,6 @@ return;
 </script>
 
 <div class="w-full px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-  <!-- Header Section -->
   <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-6">
     <div>
       <h2 class="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-[#01013D] to-[#01013D] bg-clip-text text-transparent mb-2">
@@ -170,7 +168,6 @@ return;
       <p class="text-gray-600 text-sm">Crie, edite e gerencie usuários do sistema</p>
     </div>
 
-    <!-- Button Group -->
     <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
       <button
         class="px-5 py-2.5 rounded-xl font-semibold bg-gray-100 text-[#01013D] hover:bg-gray-200 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -195,7 +192,6 @@ return;
     </div>
   </div>
 
-  <!-- Success Alert -->
   {#if success}
     <div class="bg-green-50 border-l-4 border-green-500 rounded-lg p-4 flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
       <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -207,7 +203,6 @@ return;
     </div>
   {/if}
 
-  <!-- Error Alert -->
   {#if error}
     <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-4 flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
       <svg class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -220,7 +215,6 @@ return;
     </div>
   {/if}
 
-  <!-- Content Card -->
   <div class="bg-white rounded-2xl shadow-lg border border-[#eef0ef] overflow-hidden">
     {#if loading}
       <div class="p-12 text-center">
@@ -285,7 +279,6 @@ return;
                 </td>
                 <td class="px-6 py-4">
                   <div class="flex justify-center gap-2">
-                    <!-- 4. BOTÃO "VISUALIZAR" ADICIONADO -->
                     <button
                       class="p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors duration-200"
                       onclick={() => openUserDetail(user)}
@@ -318,7 +311,6 @@ return;
   </div>
 </div>
 
-<!-- Modal Dialog (Formulário) -->
 <dialog class="modal" open={userFormStore.open}>
   <div class="modal-box w-11/12 max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl">
     <UserFormUnified />
@@ -328,7 +320,6 @@ return;
   </form>
 </dialog>
 
-<!-- 5. NOVO MODAL PARA DETALHES DO USUÁRIO -->
 <dialog class="modal" open={showDetailModal}>
   <div class="modal-box w-11/12 max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl">
     {#if viewingUser}
@@ -340,7 +331,6 @@ return;
   </form>
 </dialog>
 
-<!-- Delete Confirmation Dialog -->
 {#if showDeleteDialog && deletingUser}
   <ConfirmDialog
     show={showDeleteDialog}

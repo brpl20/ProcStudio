@@ -8,13 +8,63 @@
   const toggleFaq = (index: number) => {
     openFaq = openFaq === index ? null : index;
   };
+
+  const faqs = [
+    {
+      question: "O ProcStudio tem inteligência artificial?",
+      answer: "Ainda não oferecemos funcionalidades de IA, mas estamos planejando implementar diversas opções de inteligência artificial que se integrarão naturalmente ao fluxo de trabalho diário do seu escritório, tornando suas rotinas ainda mais eficientes."
+    },
+    {
+      question: "O ProcStudio oferece assinatura eletrônica?",
+      answer: "No momento, não temos suporte para assinatura eletrônica. Porém, em breve implementaremos essa funcionalidade de forma nativa e através de integração com APIs de provedores reconhecidos do mercado."
+    },
+    {
+      question: "O ProcStudio tem plano gratuito?",
+      answer: "Sim! Nosso plano Básico é totalmente gratuito e ideal para advogados iniciantes ou profissionais autônomos. Ele inclui:<br>- Cadastro de clientes<br>- Criação de trabalhos e tarefas<br>- Geração de documentos<br><br>Observação: O plano gratuito possui limites de uso para essas funcionalidades."
+    },
+    {
+      question: "É possível adicionar membros no plano gratuito?",
+      answer: "Sim! Você pode incluir membros adicionais ao plano por apenas R$ 15,00 por membro/mês."
+    },
+    {
+      question: "Qual a diferença entre o plano gratuito e o plano pago?",
+      answer: "A principal diferença está nos limites de uso:<br><br><strong>Plano Básico (Gratuito):</strong><br>- Limites restritos para criação de documentos, trabalhos, tarefas e clientes<br>- Ideal para advogados autônomos<br><br><strong>Plano Pro (Pago):</strong><br>- Limites expandidos para todas as funcionalidades<br>- Cadastro de advogados com sociedades<br>- Recursos avançados para escritórios em crescimento"
+    },
+    {
+      question: "O ProcStudio permite múltiplos usuários com diferentes permissões?",
+      answer: "Ainda não, mas estamos trabalhando nisso! Planejamos implementar a criação de perfis diferenciados para paralegais, estagiários, secretárias e advogados, cada um com suas permissões específicas."
+    },
+    {
+      question: "O ProcStudio trabalha com controle de prazos processuais?",
+      answer: "No momento, essa funcionalidade ainda não está disponível. Entendemos que muitos advogados já controlam seus prazos diretamente nos sistemas judiciais, mas em uma implementação futura pretendemos incluir um sistema completo de gestão de prazos processuais."
+    },
+    {
+      question: "O ProcStudio possui integração com tribunais?",
+      answer: "Ainda não temos integração direta com os sistemas dos tribunais. Porém, estamos desenvolvendo uma extensão de navegador para alguns tribunais que permitirá trabalhar de modo mais fluido com os sistemas judiciais, facilitando a captura e organização de informações processuais."
+    },
+    {
+      question: "O ProcStudio permite a criação de documentos?",
+      answer: "Sim! Esta é uma das funcionalidades principais do sistema. Você pode gerar automaticamente:<br>- Procurações<br>- Contratos<br>- Declarações e Termos, por exemplo declaração de carência e termo de renuncia<br>- Contratos sociais (para criação de sociedades de advogados)<br><br>Enfim, nosso foco é suprir automação para os documentos mais utilizados na prática advocatícia.<br><br><strong>Futuro:</strong> Planejamos expandir ainda mais, incluindo petições, recursos e outros documentos essenciais para a advocacia."
+    },
+    {
+      question: "Como funciona a geração de documentos?",
+      answer: "O sistema utiliza templates pré-definidos no formato DOCX que são automaticamente preenchidos com as informações inseridas por você no sistema. Basta cadastrar os dados necessários (cliente, partes envolvidas, dados contratuais, área de atuação etc.) e o ProcStudio gera o documento completo, pronto para uso."
+    },
+    {
+      question: "Existe programa de indicações?",
+      answer: "Sim! O ProcStudio possui um programa de indicações. Quando você indicar outro usuário e ele contratar o Plano Pro, você ganhará um mês gratuito de acesso."
+    },
+    {
+      question: "Tem suporte ao financeiro do escritório?",
+      answer: "Temos algumas ferramentas que podem ajudar no seu financeiro, como especificações de honorários, indicações, divisão de honorários, organização da sociedade com distribuição de lucros ou não, retirada de pro-labore. Porém ainda não temos o módulo específico financeiro, o que será criado em uma implementação futura."
+    }
+  ];
 </script>
 
 <MainLayout>
   <div class="relative overflow-hidden">
     <!-- Hero Section -->
     <div class="relative min-h-[80vh] flex items-center">
-      <!-- Background decorative elements -->
       <div class="absolute inset-0 overflow-hidden pointer-events-none">
         <div class="absolute top-20 right-10 w-72 h-72 bg-[#0277EE] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
         <div class="absolute top-40 left-10 w-96 h-96 bg-[#0277EE] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
@@ -38,14 +88,14 @@
           <div class="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in-delay-3">
             <button
               class="group relative px-8 py-4 bg-[#0277EE] text-white text-lg font-semibold rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-[#0277EE]/30 w-full sm:w-auto"
-              onclick={() => router.navigate('/register')}
+              on:click={() => router.navigate('/register')}
             >
               <span class="relative z-10">Começar agora</span>
               <div class="absolute inset-0 bg-gradient-to-r from-[#0277EE] to-[#01013D] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </button>
             <button
               class="px-8 py-4 bg-transparent text-[#01013D] text-lg font-semibold rounded-xl border-2 border-[#01013D] transition-all duration-300 hover:bg-[#01013D] hover:text-white hover:scale-105 hover:shadow-xl w-full sm:w-auto"
-              onclick={() => router.navigate('/login')}
+              on:click={() => router.navigate('/login')}
             >
               Fazer login
             </button>
@@ -184,7 +234,7 @@
 
               <button
                 class="w-full py-4 bg-gradient-to-r from-[#0277EE] to-[#01013D] text-white font-bold rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg transform"
-                onclick={() => router.navigate('/register')}
+                on:click={() => router.navigate('/register')}
               >
                 Selecionar este plano
               </button>
@@ -238,7 +288,7 @@
 
               <button
                 class="w-full py-4 bg-gradient-to-r from-[#0277EE] to-[#01013D] text-white font-bold rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg transform"
-                onclick={() => router.navigate('/register')}
+                on:click={() => router.navigate('/register')}
               >
                 Selecionar este plano
               </button>
@@ -271,155 +321,31 @@
         </div>
 
         <div class="space-y-4">
-          <!-- FAQ Item 1 -->
-          <div class="group border border-gray-200 rounded-xl overflow-hidden hover:border-[#0277EE] transition-all duration-300">
-            <button
-              class="w-full px-6 py-5 text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-colors duration-300"
-              onclick={() => toggleFaq(0)}
-            >
-              <span class="text-lg font-semibold text-[#01013D] pr-8">Lorem ipsum dolor sit amet consectetur?</span>
-              <svg
-                class="w-6 h-6 text-[#0277EE] flex-shrink-0 transform transition-transform duration-300 {openFaq === 0 ? 'rotate-180' : ''}"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+          {#each faqs as faq, index}
+            <div class="group border border-gray-200 rounded-xl overflow-hidden hover:border-[#0277EE] transition-all duration-300">
+              <button
+                class="w-full px-6 py-5 text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-colors duration-300"
+                on:click={() => toggleFaq(index)}
               >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            <div class="overflow-hidden transition-all duration-300 {openFaq === 0 ? 'max-h-96' : 'max-h-0'}">
-              <div class="px-6 py-5 bg-gray-50 border-t border-gray-200">
-                <p class="text-gray-700 leading-relaxed">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
-                </p>
+                <span class="text-lg font-semibold text-[#01013D] pr-8">{faq.question}</span>
+                <svg
+                  class="w-6 h-6 text-[#0277EE] flex-shrink-0 transform transition-transform duration-300 {openFaq === index ? 'rotate-180' : ''}"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              <div class="overflow-hidden transition-all duration-300 {openFaq === index ? 'max-h-[500px]' : 'max-h-0'}">
+                <div class="px-6 py-5 bg-gray-50 border-t border-gray-200">
+                  <p class="text-gray-700 leading-relaxed">
+                    {@html faq.answer}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-
-          <!-- FAQ Item 2 -->
-          <div class="group border border-gray-200 rounded-xl overflow-hidden hover:border-[#0277EE] transition-all duration-300">
-            <button
-              class="w-full px-6 py-5 text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-colors duration-300"
-              onclick={() => toggleFaq(1)}
-            >
-              <span class="text-lg font-semibold text-[#01013D] pr-8">Adipiscing elit sed do eiusmod tempor?</span>
-              <svg
-                class="w-6 h-6 text-[#0277EE] flex-shrink-0 transform transition-transform duration-300 {openFaq === 1 ? 'rotate-180' : ''}"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            <div class="overflow-hidden transition-all duration-300 {openFaq === 1 ? 'max-h-96' : 'max-h-0'}">
-              <div class="px-6 py-5 bg-gray-50 border-t border-gray-200">
-                <p class="text-gray-700 leading-relaxed">
-                  Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <!-- FAQ Item 3 -->
-          <div class="group border border-gray-200 rounded-xl overflow-hidden hover:border-[#0277EE] transition-all duration-300">
-            <button
-              class="w-full px-6 py-5 text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-colors duration-300"
-              onclick={() => toggleFaq(2)}
-            >
-              <span class="text-lg font-semibold text-[#01013D] pr-8">Incididunt ut labore et dolore magna aliqua?</span>
-              <svg
-                class="w-6 h-6 text-[#0277EE] flex-shrink-0 transform transition-transform duration-300 {openFaq === 2 ? 'rotate-180' : ''}"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            <div class="overflow-hidden transition-all duration-300 {openFaq === 2 ? 'max-h-96' : 'max-h-0'}">
-              <div class="px-6 py-5 bg-gray-50 border-t border-gray-200">
-                <p class="text-gray-700 leading-relaxed">
-                  Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <!-- FAQ Item 4 -->
-          <div class="group border border-gray-200 rounded-xl overflow-hidden hover:border-[#0277EE] transition-all duration-300">
-            <button
-              class="w-full px-6 py-5 text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-colors duration-300"
-              onclick={() => toggleFaq(3)}
-            >
-              <span class="text-lg font-semibold text-[#01013D] pr-8">Ut enim ad minim veniam quis nostrud?</span>
-              <svg
-                class="w-6 h-6 text-[#0277EE] flex-shrink-0 transform transition-transform duration-300 {openFaq === 3 ? 'rotate-180' : ''}"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            <div class="overflow-hidden transition-all duration-300 {openFaq === 3 ? 'max-h-96' : 'max-h-0'}">
-              <div class="px-6 py-5 bg-gray-50 border-t border-gray-200">
-                <p class="text-gray-700 leading-relaxed">
-                  Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <!-- FAQ Item 5 -->
-          <div class="group border border-gray-200 rounded-xl overflow-hidden hover:border-[#0277EE] transition-all duration-300">
-            <button
-              class="w-full px-6 py-5 text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-colors duration-300"
-              onclick={() => toggleFaq(4)}
-            >
-              <span class="text-lg font-semibold text-[#01013D] pr-8">Exercitation ullamco laboris nisi aliquip?</span>
-              <svg
-                class="w-6 h-6 text-[#0277EE] flex-shrink-0 transform transition-transform duration-300 {openFaq === 4 ? 'rotate-180' : ''}"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            <div class="overflow-hidden transition-all duration-300 {openFaq === 4 ? 'max-h-96' : 'max-h-0'}">
-              <div class="px-6 py-5 bg-gray-50 border-t border-gray-200">
-                <p class="text-gray-700 leading-relaxed">
-                  Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <!-- FAQ Item 6 -->
-          <div class="group border border-gray-200 rounded-xl overflow-hidden hover:border-[#0277EE] transition-all duration-300">
-            <button
-              class="w-full px-6 py-5 text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-colors duration-300"
-              onclick={() => toggleFaq(5)}
-            >
-              <span class="text-lg font-semibold text-[#01013D] pr-8">Duis aute irure dolor in reprehenderit?</span>
-              <svg
-                class="w-6 h-6 text-[#0277EE] flex-shrink-0 transform transition-transform duration-300 {openFaq === 5 ? 'rotate-180' : ''}"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            <div class="overflow-hidden transition-all duration-300 {openFaq === 5 ? 'max-h-96' : 'max-h-0'}">
-              <div class="px-6 py-5 bg-gray-50 border-t border-gray-200">
-                <p class="text-gray-700 leading-relaxed">
-                  At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.
-                </p>
-              </div>
-            </div>
-          </div>
+          {/each}
         </div>
 
         <div class="mt-12 text-center">
@@ -454,7 +380,7 @@
         </p>
         <button
           class="px-10 py-4 bg-white text-[#0277EE] text-lg font-bold rounded-xl hover:bg-[#eef0ef] transition-all duration-300 hover:scale-105 hover:shadow-2xl"
-          onclick={() => router.navigate('/register')}
+          on:click={() => router.navigate('/register')}
         >
           Começar gratuitamente
         </button>
