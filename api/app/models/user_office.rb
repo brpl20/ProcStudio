@@ -61,7 +61,36 @@ class UserOffice < ApplicationRecord
     end
   }
 
+  # Callbacks to automatically sync UserProfile.office_id
+  after_create :sync_user_profile_office
+  after_destroy :clear_user_profile_office
+
   private
+
+  def sync_user_profile_office
+    # Find or create the user profile for this user
+    profile = user.user_profile || user.build_user_profile
+
+    # Update the office_id if it's not already set or is different
+    if profile.office_id != office_id
+      profile.update_column(:office_id, office_id)
+      Rails.logger.info "UserProfile ##{profile.id} associated with Office ##{office_id} via UserOffice creation"
+    end
+  end
+
+  def clear_user_profile_office
+    # When a UserOffice is destroyed, clear the office_id from user_profile
+    # Only if this is the user's only association with this office
+    remaining_associations = UserOffice.where(user_id: user_id, office_id: office_id).count
+
+    if remaining_associations.zero?
+      profile = user.user_profile
+      if profile&.office_id == office_id
+        profile.update_column(:office_id, nil)
+        Rails.logger.info "UserProfile ##{profile.id} disassociated from Office ##{office_id} via UserOffice destruction"
+      end
+    end
+  end
 
   def only_socio_can_be_administrator
     return unless is_administrator && partnership_type != 'socio'

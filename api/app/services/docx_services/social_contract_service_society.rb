@@ -133,7 +133,7 @@ module DocxServices
         paragraph.substitute_across_runs_with_block_regex('_dividends_') do |_|
           DIVIDENDS_TITLE
         end
-        
+
         paragraph.substitute_across_runs_with_block_regex('_dividends_text_') do |_|
           DIVIDENDS_TEXT
         end
@@ -142,22 +142,22 @@ module DocxServices
         paragraph.substitute_across_runs_with_block_regex('_dividends_') do |_|
           ''
         end
-        
+
         paragraph.substitute_across_runs_with_block_regex('_dividends_text_') do |_|
           ''
         end
       end
-      
+
       # Check if any partner has pro_labore compensation
       partners_compensation = @formatter_office.partners_compensation
       has_pro_labore = partners_compensation.any? { |partner| partner[:compensation_type] == 'pro_labore' }
-      
+
       if has_pro_labore
         # If any partner has pro_labore, replace with specific text from constants
         paragraph.substitute_across_runs_with_block_regex('_pro_labore_') do |_|
           PRO_LABORE_TITLE
         end
-        
+
         paragraph.substitute_across_runs_with_block_regex('_pro_labore_text_') do |_|
           PRO_LABORE_TEXT
         end
@@ -166,7 +166,7 @@ module DocxServices
         paragraph.substitute_across_runs_with_block_regex('_pro_labore_') do |_|
           ''
         end
-        
+
         paragraph.substitute_across_runs_with_block_regex('_pro_labore_text_') do |_|
           ''
         end
@@ -176,22 +176,25 @@ module DocxServices
     def substitute_administrator_placeholders(paragraph)
       partners_info = @formatter_office.partners_info
       administrators = partners_info.select { |p| p[:is_administrator] }
-      
+
       if administrators.empty?
         # No administrators, clear the placeholder
         paragraph.substitute_across_runs_with_block_regex('_partner_full_name_administrator_') do |_|
-          ''
+          '--- CUIDADO: selecione um sócio administrador ---'
         end
       elsif administrators.size == 1
         # Single administrator
         admin_index = administrators.first[:number] - 1
+        # AQUI ESTÁ PROBLEMA ->
+        # Problema corrigido, não estava havendo a correta atribuição
+        # Entre sócios, escritórios e UserProfiles
         admin_formatter = @user_formatters[admin_index]
         admin_user = @office.user_profiles[admin_index]
-        
+
         # Determine gender for the single administrator and get prefix from constants
         gender = determine_administrator_gender(admin_user)
         prefix = ADMINISTRATOR_PREFIXES[:single][gender]
-        
+
         paragraph.substitute_across_runs_with_block_regex('_partner_full_name_administrator_') do |_|
           "#{prefix} #{admin_formatter.full_name}"
         end
@@ -200,16 +203,16 @@ module DocxServices
         admin_users = administrators.map do |admin|
           @office.user_profiles[admin[:number] - 1]
         end
-        
+
         # Check if all administrators are female and get prefix from constants
         all_female = admin_users.all? { |user| determine_administrator_gender(user) == :female }
         prefix = all_female ? ADMINISTRATOR_PREFIXES[:multiple][:all_female] : ADMINISTRATOR_PREFIXES[:multiple][:mixed_or_male]
-        
+
         # Get all administrator names
         admin_names = administrators.map do |admin|
           @user_formatters[admin[:number] - 1].full_name
         end
-        
+
         # Format the names list
         formatted_names = if admin_names.size == 2
           admin_names.join(' e ')
@@ -217,7 +220,7 @@ module DocxServices
           last_name = admin_names.pop
           "#{admin_names.join(', ')} e #{last_name}"
         end
-        
+
         paragraph.substitute_across_runs_with_block_regex('_partner_full_name_administrator_') do |_|
           "#{prefix} #{formatted_names}"
         end
@@ -228,21 +231,21 @@ module DocxServices
       paragraph.substitute_across_runs_with_block_regex('_current_date_') do |_|
         I18n.l(Date.current, format: :long)
       end
-      
+
       paragraph.substitute_across_runs_with_block_regex('_date_') do |_|
         I18n.l(Date.current, format: :long)
       end
     end
-    
+
     def determine_administrator_gender(user)
       # Use the same gender determination logic from FormatterOffices
       return :male unless user
-      
+
       # Check if user has gender field
       if user.respond_to?(:gender)
         return user.gender&.to_sym == :female ? :female : :male
       end
-      
+
       # Default to male if we can't determine
       :male
     end
@@ -365,18 +368,18 @@ module DocxServices
       num_signature_rows_to_add.times do |row_num|
         # Duplicate the row
         new_row = signature_row_node.dup
-        
+
         # Calculate which partner numbers this row will handle
         first_partner_num = 3 + (row_num * 2)  # Partners 3, 5, 7...
         second_partner_num = first_partner_num + 1  # Partners 4, 6, 8...
-        
+
         # Process each cell in the new row
         cells = new_row.xpath('.//w:tc')
         cells.each_with_index do |cell, cell_idx|
           # Create temporary paragraph objects to use substitute method
           cell.xpath('.//w:p').each do |p_node|
             temp_paragraph = Docx::Elements::Containers::Paragraph.new(p_node, {}, nil)
-            
+
             if cell_idx == 0
               # First cell - replace partner_1 with odd numbered partners (3, 5, 7...)
               temp_paragraph.substitute_across_runs_with_block_regex('_partner_1_full_name_') do |_|
@@ -407,12 +410,12 @@ module DocxServices
             end
           end
         end
-        
+
         # Add the modified row after the last inserted row
         last_inserted.add_next_sibling(new_row)
         last_inserted = new_row
-        
-        Rails.logger.info "[Signature Table] Added row #{row_num + 1} with placeholders for partners #{first_partner_num}" + 
+
+        Rails.logger.info "[Signature Table] Added row #{row_num + 1} with placeholders for partners #{first_partner_num}" +
                          (second_partner_num <= partners.count ? " and #{second_partner_num}" : "")
       end
     end

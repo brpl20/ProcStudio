@@ -204,7 +204,7 @@ module Api
       def process_file_uploads(file_params)
         process_logo_upload(file_params[:logo]) if file_params[:logo].present?
         process_social_contracts_upload(file_params[:social_contracts]) if file_params[:social_contracts].present?
-        process_social_contract_generation if @office.create_social_contract == 'true'
+        process_social_contract_generation if should_generate_social_contract?
       end
 
       def process_logo_upload(logo)
@@ -240,7 +240,80 @@ module Api
 
       def process_social_contract_generation
         Rails.logger.info "Social contract generation requested for office #{@office.id}"
-        # TODO: Call generate_social_contract service when implemented
+
+        begin
+          # Generate the social contract document using the facade service
+          service = DocxServices::SocialContractServiceFacade.new(@office.id)
+          file_path = service.call
+
+          # Create a file-like object from the generated document
+          File.open(file_path, 'rb') do |file|
+            # Create a wrapper object that mimics an uploaded file
+            uploaded_file = ContractFileWrapper.new(file, file_path)
+
+            metadata_params = {
+              uploaded_by_id: current_user.id,
+              document_date: Date.current,
+              description: "Contrato Social gerado automaticamente para #{@office.name}"
+            }
+
+            if @office.upload_social_contract(uploaded_file, metadata_params)
+              Rails.logger.info "Social contract generated and uploaded successfully for office #{@office.id}"
+              Rails.logger.info "Generated file path: #{file_path}"
+            else
+              Rails.logger.error "Failed to upload generated social contract for office #{@office.id}"
+              Rails.logger.error "Office errors: #{@office.errors.full_messages}"
+            end
+          end
+
+          # Optionally, clean up the temporary file after successful upload
+          File.delete(file_path) if File.exist?(file_path) && Rails.env.production?
+
+        rescue StandardError => e
+          Rails.logger.error "Social contract generation failed for office #{@office.id}: #{e.message}"
+          Rails.logger.error e.backtrace.first(10).join("\n")
+          # Not failing the entire office creation if contract generation fails
+          # You might want to add this error to a notification system or queue for retry
+        end
+      end
+
+      def should_generate_social_contract?
+        return false unless @office.create_social_contract.present?
+
+        # Handle both string and boolean values
+        case @office.create_social_contract
+        when true, 'true', 'TRUE', 'True', '1', 1
+          true
+        else
+          false
+        end
+      end
+
+      # Wrapper class to make a File object compatible with S3 upload expectations
+      class ContractFileWrapper
+        attr_reader :original_filename, :content_type
+
+        def initialize(file, file_path)
+          @file = file
+          @original_filename = File.basename(file_path)
+          @content_type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        end
+
+        def read(*args)
+          @file.read(*args)
+        end
+
+        def size
+          @file.size
+        end
+
+        def rewind
+          @file.rewind
+        end
+
+        def close
+          @file.close
+        end
       end
 
       def render_create_success

@@ -131,10 +131,10 @@ module DocxServices
         lawyer_num = index + 1
         lawyer = @lawyers[index]
         compensations = lawyer_info.compensations.order(effective_date: :desc)
-        
+
         # Get the most recent compensation
         current_compensation = compensations.first
-        
+
         {
           number: lawyer_num,
           lawyer_name: lawyer ? FormatterQualification.new(lawyer).full_name(upcase: true) : nil,
@@ -254,24 +254,24 @@ module DocxServices
 
       NumberValidator.format(partner_quotes)
     end
-    
+
     # Proportional-aware calculation methods
     def calculate_proportional_quote_value(percentage)
       return nil unless is_proportional
       calculate_partner_quote_value(percentage)
     end
-    
+
     def format_proportional_quote_value(percentage)
       value = calculate_proportional_quote_value(percentage)
       return nil unless value
       MonetaryValidator.format(value)
     end
-    
+
     def calculate_proportional_number_of_quotes(percentage)
       return nil unless is_proportional
       calculate_partner_number_of_quotes(percentage)
     end
-    
+
     def format_proportional_number_of_quotes(percentage)
       quotes = calculate_proportional_number_of_quotes(percentage)
       return nil unless quotes
