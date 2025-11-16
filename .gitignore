@@ -65,3 +65,7 @@ swarm.log
 tests/node_modules/
 node_modules/
 
+# Generated DOCX files
+/api/app/services/docx_services/output/*.docx
+/api/app/services/docx_services/output/~$*
+
