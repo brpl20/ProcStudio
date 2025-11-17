@@ -65,7 +65,7 @@ class Work < ApplicationRecord
   has_many :powers, through: :power_works
 
   # New S3 file management system
-  has_many :file_metadata, as: :attachable, dependent: :destroy
+  has_many :file_metadata, as: :attachable, dependent: :destroy, class_name: 'FileMetadata'
 
   has_many :documents, dependent: :destroy
   has_many :pending_documents, dependent: :destroy

@@ -58,7 +58,7 @@ class Office < ApplicationRecord
   has_many :user_profiles, dependent: :nullify
 
   # New S3 file management system
-  has_many :file_metadata, as: :attachable, dependent: :destroy
+  has_many :file_metadata, as: :attachable, dependent: :destroy, class_name: 'FileMetadata'
 
   enum :society, {
     individual: 'individual', # Sociedade Unipessoal

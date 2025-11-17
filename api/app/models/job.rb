@@ -48,7 +48,7 @@ class Job < ApplicationRecord
   belongs_to :created_by, class_name: 'User'
 
   # New S3 file management system
-  has_many :file_metadata, as: :attachable, dependent: :destroy
+  has_many :file_metadata, as: :attachable, dependent: :destroy, class_name: 'FileMetadata'
 
   has_many :job_user_profiles, dependent: :destroy
   has_many :user_profiles, through: :job_user_profiles

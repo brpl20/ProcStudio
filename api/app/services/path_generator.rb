@@ -80,9 +80,9 @@ module PathGenerator
     # Smart team extraction with validation
     team_id = case model
               when Office then model.team_id
-              when UserProfile then model.user&.current_team_id || model.office&.team_id
-              when Job then model.team_id || model.office&.team_id
-              when Work then model.team_id || model.job&.team_id || model.job&.office&.team_id
+              when UserProfile then model.user&.team_id || model.office&.team_id
+              when Job then model.team_id
+              when Work then model.team_id
               end
 
     raise TeamNotFoundError, "Cannot determine team for #{model.class}" if team_id.nil?

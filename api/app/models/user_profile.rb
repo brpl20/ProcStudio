@@ -50,7 +50,7 @@ class UserProfile < ApplicationRecord
   belongs_to :office, optional: true
 
   # New S3 file management system
-  has_many :file_metadata, as: :attachable, dependent: :destroy
+  has_many :file_metadata, as: :attachable, dependent: :destroy, class_name: 'FileMetadata'
   has_many :notifications, dependent: :destroy
 
   delegate :team, to: :user

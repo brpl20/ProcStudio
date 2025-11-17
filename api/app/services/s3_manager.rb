@@ -248,32 +248,34 @@ class S3Manager
   end
 
   def list_by_team(team_id)
-    # Simplified approach using subqueries for better readability
+    # Collect all IDs for each model type
     office_ids = Office.where(team_id: team_id).pluck(:id)
     user_profile_ids = UserProfile.joins(:user)
-                                   .where(users: { current_team_id: team_id })
+                                   .where(users: { team_id: team_id })
                                    .or(UserProfile.where(office_id: office_ids))
                                    .pluck(:id)
-    job_ids = Job.where(team_id: team_id)
-                 .or(Job.where(office_id: office_ids))
-                 .pluck(:id)
-    work_ids = Work.joins(:job)
-                   .where(jobs: { team_id: team_id })
-                   .pluck(:id)
+    job_ids = Job.where(team_id: team_id).pluck(:id)
+    work_ids = Work.where(team_id: team_id).pluck(:id)
+    temp_upload_ids = TempUpload.where(team_id: team_id).pluck(:id)
 
-    FileMetadata.where(
-      attachable_type: 'Office', attachable_id: office_ids
-    ).or(
-      FileMetadata.where(attachable_type: 'UserProfile', attachable_id: user_profile_ids)
-    ).or(
-      FileMetadata.where(attachable_type: 'Job', attachable_id: job_ids)
-    ).or(
-      FileMetadata.where(attachable_type: 'Work', attachable_id: work_ids)
-    ).or(
-      FileMetadata.where(attachable_type: 'TempUpload')
-                  .joins("INNER JOIN temp_uploads ON attachable_id = temp_uploads.id")
-                  .where(temp_uploads: { team_id: team_id })
-    )
+    # Build conditions for each type
+    conditions = []
+    conditions << { attachable_type: 'Office', attachable_id: office_ids } if office_ids.any?
+    conditions << { attachable_type: 'UserProfile', attachable_id: user_profile_ids } if user_profile_ids.any?
+    conditions << { attachable_type: 'Job', attachable_id: job_ids } if job_ids.any?
+    conditions << { attachable_type: 'Work', attachable_id: work_ids } if work_ids.any?
+    conditions << { attachable_type: 'TempUpload', attachable_id: temp_upload_ids } if temp_upload_ids.any?
+
+    # Return empty if no conditions
+    return FileMetadata.none if conditions.empty?
+
+    # Build the query using OR conditions
+    query = FileMetadata.where(conditions.shift)
+    conditions.each do |condition|
+      query = query.or(FileMetadata.where(condition))
+    end
+
+    query
   end
 
   def apply_filters(query, filters)
