@@ -47,6 +47,9 @@ class Job < ApplicationRecord
   belongs_to :profile_customer, optional: true
   belongs_to :created_by, class_name: 'User'
 
+  # New S3 file management system
+  has_many :file_metadata, as: :attachable, dependent: :destroy
+
   has_many :job_user_profiles, dependent: :destroy
   has_many :user_profiles, through: :job_user_profiles
   has_many :assignees, -> { where(job_user_profiles: { role: 'assignee' }) },
@@ -156,6 +159,29 @@ class Job < ApplicationRecord
   # Verificar se tem pelo menos um assignee válido do team
   def valid_assignees?
     assignees.joins(:user).exists?(users: { team_id: team_id })
+  end
+
+  # S3 File Management Methods
+
+  def attachments
+    file_metadata.by_category('job_attachment')
+  end
+
+  def upload_attachment(file, user_profile: nil, **options)
+    S3Manager.upload(
+      file,
+      model: self,
+      user_profile: user_profile,
+      metadata: options.merge(file_type: 'attachment')
+    )
+  end
+
+  def attachment_urls(expires_in: 3600)
+    attachments.map { |fm| fm.url(expires_in: expires_in) }
+  end
+
+  def delete_attachment(file_metadata_id)
+    attachments.find(file_metadata_id).destroy
   end
 
   private

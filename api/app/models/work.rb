@@ -64,6 +64,9 @@ class Work < ApplicationRecord
   has_many :power_works, dependent: :destroy
   has_many :powers, through: :power_works
 
+  # New S3 file management system
+  has_many :file_metadata, as: :attachable, dependent: :destroy
+
   has_many :documents, dependent: :destroy
   has_many :pending_documents, dependent: :destroy
 
@@ -169,5 +172,36 @@ class Work < ApplicationRecord
       total_received: procedures.sum(:received_value),
       total_honorary: total_honorary_value
     }
+  end
+
+  # S3 File Management Methods
+
+  DOCUMENT_TYPES = %w[procuration waiver deficiency_statement honorary].freeze
+
+  def work_documents
+    file_metadata.by_category('work_document')
+  end
+
+  def upload_document(file, document_type:, user_profile: nil, **options)
+    raise ArgumentError, "Invalid document type" unless DOCUMENT_TYPES.include?(document_type)
+
+    S3Manager.upload(
+      file,
+      model: self,
+      user_profile: user_profile,
+      metadata: options.merge(file_type: document_type)
+    )
+  end
+
+  def documents_by_type(type)
+    file_metadata.where("metadata->>'file_type' = ?", type)
+  end
+
+  def document_urls(expires_in: 3600)
+    work_documents.map { |fm| fm.url(expires_in: expires_in) }
+  end
+
+  def delete_document(file_metadata_id)
+    work_documents.find(file_metadata_id).destroy
   end
 end

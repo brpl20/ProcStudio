@@ -171,6 +171,40 @@ class S3Service
       nil
     end
 
+    # Stream download to avoid memory issues
+    def download_stream(s3_key, &block)
+      return nil if s3_key.blank?
+
+      client.get_object(bucket: bucket_name, key: s3_key) do |chunk|
+        block.call(chunk)
+      end
+    rescue Aws::S3::Errors::NoSuchKey
+      Rails.logger.error "S3 file not found: #{s3_key}"
+      nil
+    rescue StandardError => e
+      Rails.logger.error "Failed to stream download #{s3_key}: #{e.message}"
+      nil
+    end
+
+    # Get file info without downloading
+    def head(s3_key)
+      return nil if s3_key.blank?
+
+      response = client.head_object(bucket: bucket_name, key: s3_key)
+      {
+        content_type: response.content_type,
+        content_length: response.content_length,
+        last_modified: response.last_modified,
+        etag: response.etag,
+        metadata: response.metadata
+      }
+    rescue Aws::S3::Errors::NotFound
+      nil
+    rescue StandardError => e
+      Rails.logger.error "Failed to head object #{s3_key}: #{e.message}"
+      nil
+    end
+
     private
 
     def client

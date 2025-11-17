@@ -39,7 +39,6 @@
 
 class UserProfile < ApplicationRecord
   include DeletedFilterConcern
-  include S3Attachable
   include Draftable
 
   acts_as_paranoid
@@ -50,7 +49,8 @@ class UserProfile < ApplicationRecord
   belongs_to :user, inverse_of: :user_profile
   belongs_to :office, optional: true
 
-  has_one_attached :avatar
+  # New S3 file management system
+  has_many :file_metadata, as: :attachable, dependent: :destroy
   has_many :notifications, dependent: :destroy
 
   delegate :team, to: :user
@@ -146,6 +146,34 @@ class UserProfile < ApplicationRecord
     return I18n.t('general.without_email') if emails.blank?
 
     emails.last.email
+  end
+
+  # S3 File Management Methods
+
+  def avatar
+    file_metadata.by_category('avatar').first
+  end
+
+  def upload_avatar(file, user_profile: nil, **options)
+    # Delete old avatar if exists
+    avatar&.destroy
+
+    # Upload new avatar
+    # Note: user_profile parameter can be self or another UserProfile (e.g., admin uploading for user)
+    S3Manager.upload(
+      file,
+      model: self,
+      user_profile: user_profile || self,
+      metadata: options.merge(file_type: 'avatar')
+    )
+  end
+
+  def avatar_url(expires_in: 3600)
+    avatar&.url(expires_in: expires_in)
+  end
+
+  def delete_avatar
+    avatar&.destroy
   end
 
   private
