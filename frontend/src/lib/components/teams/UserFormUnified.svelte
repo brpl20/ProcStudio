@@ -27,7 +27,7 @@
   }
 </script>
 
-<div class="space-y-6 p-6">
+<form class="space-y-6 p-6" on:submit|preventDefault={handleSubmit}>
   <div class="mb-8">
     <h2 class="text-3xl font-bold text-[#01013D]">
       {#if userFormStore.mode === 'create'}
@@ -64,13 +64,13 @@
                 placeholder="usuario@exemplo.com"
                 class="flex-grow px-4 py-3 rounded-lg border border-gray-300 focus:border-[#0277EE] focus:ring-2 focus:ring-[#0277EE]/20 outline-none transition-all duration-200 text-[#01013D] placeholder-gray-400"
                 bind:value={currentEmail}
-                onkeydown={handleKeyPress}
+                on:keydown={handleKeyPress}
                 disabled={userFormStore.loading}
               />
               <button
                 type="button"
                 class="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-r from-[#0277EE] to-[#01013D] text-white font-bold text-2xl flex items-center justify-center hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                onclick={handleAddEmail}
+                on:click={handleAddEmail}
                 disabled={userFormStore.loading}
                 aria-label="Adicionar email"
               >
@@ -89,7 +89,7 @@
                   <button
                     type="button"
                     class="w-5 h-5 flex items-center justify-center bg-blue-200 rounded-full hover:bg-blue-300 text-blue-900"
-                    onclick={() => userFormStore.removeEmail(index)}
+                    on:click={() => userFormStore.removeEmail(index)}
                     disabled={userFormStore.loading}
                     aria-label="Remover {email}"
                   >
@@ -203,7 +203,7 @@
     <button
       type="button"
       class="px-6 py-3 rounded-lg border border-gray-300 text-[#01013D] font-medium hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-      onclick={() => userFormStore.close()}
+      on:click={() => userFormStore.close()}
       disabled={userFormStore.loading}
     >
       Cancelar
@@ -211,7 +211,6 @@
     <button
       type="submit"
       class="px-6 py-3 rounded-lg bg-gradient-to-r from-[#0277EE] to-[#01013D] text-white font-medium hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-      onclick={handleSubmit}
       disabled={userFormStore.loading || (userFormStore.mode === 'invite' && userFormStore.inviteEmails.length === 0)}
     >
       {#if userFormStore.loading}
@@ -241,4 +240,4 @@
       </div>
     </div>
   {/if}
-</div>
+</form>

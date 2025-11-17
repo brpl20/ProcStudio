@@ -1,4 +1,3 @@
-<!-- /frontend/src/lib/components/forms_commons/Nationality.svelte -->
 <script lang="ts">
   import type { SelectFieldProps } from '../../types/form-field-contract';
 
@@ -7,7 +6,7 @@
   }
 
   let {
-    value = $bindable('brazilian'), // Default para 'brazilian'
+    value = $bindable('brazilian'),
     gender = '',
     id = 'nationality',
     labelText = 'Nacionalidade',
@@ -20,7 +19,6 @@
     testId = undefined
   }: NationalityProps = $props();
 
-  // Dynamically generate options based on gender
   const nationalityOptions = $derived(
     gender === 'female'
       ? [
@@ -66,7 +64,6 @@
     aria-describedby={errors && touched ? `${id}-error` : undefined}
     data-testid={testId || `${id}-select`}
   >
-    <!-- Não há necessidade de "Selecione..." se há um padrão -->
     {#each nationalityOptions as option}
       <option value={option.value}>{option.label}</option>
     {/each}

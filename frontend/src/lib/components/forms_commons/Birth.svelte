@@ -1,4 +1,3 @@
-<!-- /frontend/src/lib/components/forms_commons/Birth.svelte -->
 <script lang="ts">
   import type { TextFieldProps } from '../../types/form-field-contract';
 

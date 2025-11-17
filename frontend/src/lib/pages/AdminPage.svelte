@@ -52,7 +52,6 @@
       </div>
     </div>
 
-    <!-- Cache Status Section -->
     <div class="divider">Cache Status</div>
     <div class="card bg-base-100 shadow-xl">
       <div class="card-body">
@@ -100,7 +99,6 @@
       </div>
     </div>
 
-    <!-- User Data Section -->
     <div class="divider">User Data Test</div>
     <div class="card bg-base-100 shadow-xl">
       <div class="card-body">
@@ -116,7 +114,6 @@
           </div>
         {:else}
           <div class="space-y-4">
-            <!-- Auth User Data from authStore -->
             <div class="bg-base-200 p-4 rounded-lg">
               <h4 class="font-semibold mb-2">Auth User (from login):</h4>
               {#if authUser}
@@ -133,12 +130,10 @@
               {/if}
             </div>
 
-            <!-- User Profile Data from whoami -->
             <div class="bg-base-200 p-4 rounded-lg">
               <h4 class="font-semibold mb-2">User Profile (from whoami):</h4>
               {#if userProfile}
                 <div class="flex items-start gap-4 mb-4">
-                  <!-- Avatar Display -->
                   <div class="avatar">
                     <div class="w-16 rounded-full">
                       {#if userProfile.avatar_url}
@@ -153,7 +148,6 @@
                     </div>
                   </div>
 
-                  <!-- Profile Info -->
                   <div class="flex-1 grid grid-cols-2 gap-2 text-sm">
                     <div><strong>Profile ID:</strong> {userProfile.id || 'N/A'}</div>
                     <div><strong>Full Name:</strong> {userProfile.full_name || 'N/A'}</div>
@@ -180,7 +174,6 @@
                   </div>
                 </div>
 
-                <!-- Team and Office Info -->
                 {#if whoAmIUser?.attributes?.team}
                   <div class="bg-base-300 p-2 rounded mt-2">
                     <strong>Team:</strong>
@@ -203,7 +196,6 @@
               {/if}
             </div>
 
-            <!-- Raw JSON for debugging -->
             <details class="collapse collapse-arrow bg-base-200">
               <summary class="collapse-title font-semibold">Raw Auth User JSON</summary>
               <div class="collapse-content">
@@ -222,7 +214,6 @@
       </div>
     </div>
 
-    <!-- Avatar Gallery from Cache -->
     <div class="divider">Cached Avatars Gallery</div>
     <div class="card bg-base-100 shadow-xl">
       <div class="card-body">
@@ -265,13 +256,11 @@
       </div>
     </div>
 
-    <!-- WebSocket Notifications Test Section -->
     <div class="divider">WebSocket Notifications Test</div>
     <div class="card bg-base-100 shadow-xl">
       <div class="card-body">
         <h3 class="card-title">Real-time Notifications</h3>
 
-        <!-- Connection Status -->
         <div class="stats stats-vertical lg:stats-horizontal shadow">
           <div class="stat">
             <div class="stat-title">WebSocket Status</div>
@@ -296,7 +285,6 @@
           </div>
         </div>
 
-        <!-- Debug Info -->
         <div class="alert alert-info mb-4">
           <div class="text-sm">
             <strong>WebSocket Debug Info:</strong><br />
@@ -314,7 +302,6 @@
           </div>
         </div>
 
-        <!-- Action Buttons -->
         <div class="flex flex-wrap gap-2 mt-4">
           <button
             class="btn btn-sm btn-primary"
@@ -356,7 +343,6 @@
           </button>
         </div>
 
-        <!-- Recent Notifications List -->
         <div class="mt-6">
           <h4 class="font-semibold mb-3">Recent Notifications</h4>
 
@@ -436,7 +422,6 @@
           {/if}
         </div>
 
-        <!-- Test Instructions -->
         <div class="alert alert-warning mt-6">
           <div>
             <h4 class="font-semibold">Testing Instructions:</h4>
@@ -460,7 +445,6 @@
       </div>
     </div>
 
-    <!-- CEP Test Section -->
     <div class="divider">CEP Validator Test</div>
   </div>
 </AuthSidebar>

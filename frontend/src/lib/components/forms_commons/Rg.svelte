@@ -1,8 +1,6 @@
-<!-- /frontend/src/lib/components/forms_commons/Rg.svelte -->
 <script lang="ts">
   import type { TextFieldProps } from '../../types/form-field-contract';
 
-  // Interface para permitir a passagem de uma função de formatação opcional
   interface RgProps extends TextFieldProps {
     formatFn?: (value: string) => string;
   }
@@ -19,7 +17,7 @@
     wrapperClass = '',
     inputClass = '',
     testId = undefined,
-    formatFn = undefined // Sem formatação por padrão
+    formatFn = undefined 
   }: RgProps = $props();
 
   function handleInput(event: Event) {

@@ -77,7 +77,6 @@
 
 <AuthLayout>
   <div class="w-full max-w-md mx-auto">
-    <!-- Header -->
     <div class="text-center mb-8 animate-fade-in">
       <h1 class="text-4xl font-bold bg-gradient-to-r from-[#01013D] to-[#0277EE] bg-clip-text text-transparent mb-2">
         Criar conta
@@ -85,9 +84,7 @@
       <p class="text-gray-600 text-lg">Junte-se a nós e comece hoje mesmo</p>
     </div>
 
-    <!-- Form Container -->
     <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 animate-fade-in-delay-1">
-      <!-- Back Button -->
       <button
         class="m-6 mb-0 inline-flex items-center text-gray-600 hover:text-[#0277EE] transition-colors duration-300 font-medium text-sm"
         onclick={goHome}
@@ -99,14 +96,11 @@
       </button>
 
       <div class="px-6 pb-8">
-        <!-- Title -->
         <h2 class="text-3xl font-bold text-[#01013D] text-center mb-8 mt-4">Registrar-se</h2>
 
-        <!-- Form -->
         <form onsubmit={(e) => {
  e.preventDefault(); handleRegister();
 }} class="space-y-5">
-          <!-- OAB Input -->
           <div class="relative">
             <label for="oab" class="block text-sm font-semibold text-[#01013D] mb-2">
               OAB
@@ -127,7 +121,6 @@
             </div>
           </div>
 
-          <!-- Email Input -->
           <div class="relative">
             <label for="email" class="block text-sm font-semibold text-[#01013D] mb-2">
               Email
@@ -148,7 +141,6 @@
             </div>
           </div>
 
-          <!-- Password Input -->
           <div class="relative">
             <label for="password" class="block text-sm font-semibold text-[#01013D] mb-2">
               Senha
@@ -184,7 +176,6 @@
             <p class="mt-1 text-xs text-gray-500">Mínimo de 6 caracteres</p>
           </div>
 
-          <!-- Confirm Password Input -->
           <div class="relative">
             <label for="passwordConfirmation" class="block text-sm font-semibold text-[#01013D] mb-2">
               Confirmar senha
@@ -218,7 +209,6 @@
             </div>
           </div>
 
-          <!-- Messages -->
           {#if errorMessage}
             <div class="p-4 bg-red-50 border-l-4 border-red-500 rounded-lg flex items-start space-x-3 animate-slide-down">
               <svg class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -237,7 +227,6 @@
             </div>
           {/if}
 
-          <!-- Submit Button -->
           <button
             type="submit"
             disabled={isLoading || successMessage}
@@ -259,14 +248,12 @@
           </button>
         </form>
 
-        <!-- Divider -->
         <div class="flex items-center my-8">
           <div class="flex-1 h-px bg-gray-200"></div>
           <span class="px-4 text-gray-500 text-sm font-medium">ou</span>
           <div class="flex-1 h-px bg-gray-200"></div>
         </div>
 
-        <!-- Login Link -->
         <div class="space-y-3">
           <p class="text-center text-gray-600 text-sm">
             Já tem uma conta?
@@ -280,7 +267,6 @@
           </button>
         </div>
 
-        <!-- Terms -->
         <div class="text-center mt-8 pt-6 border-t border-gray-100">
           <p class="text-xs text-gray-600 leading-relaxed">
             Ao criar uma conta, você concorda com nossos

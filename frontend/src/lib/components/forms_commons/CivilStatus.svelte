@@ -1,4 +1,3 @@
-<!-- /frontend/src/lib/components/forms_commons/CivilStatus.svelte -->
 <script lang="ts">
   import type { SelectFieldProps } from '../../types/form-field-contract';
 
@@ -20,7 +19,7 @@
     testId = undefined
   }: CivilStatusProps = $props();
 
-  // Dynamically generate options based on gender
+
   const civilStatusOptions = $derived(
     gender === 'female'
       ? [
