@@ -39,6 +39,8 @@ ProcStudio's S3 implementation is transitioning from ActiveStorage to a custom S
 3. **Singleton S3Manager** as the sole interface to S3
 4. **Temporary upload pool** for undesignated files
 5. **System flag** in database rather than separate folders
+6. **UserProfile-based attachments** instead of User model for all files
+7. **BREAKING CHANGES APPROACH** - Complete replacement without backward compatibility
 
 ---
 
@@ -71,6 +73,8 @@ Models → S3Attachable Concern → S3Service → AWS S3
 | UserProfile | avatar_s3_key column | has_one_attached :avatar | None |
 | Document | original_s3_key, signed_s3_key | has_one_attached :original, :signed | None |
 | CustomerFile | file_s3_key | has_one_attached :file | None |
+| Job | attachment_s3_key | has_one_attached :attachment | None |
+| Work | document_s3_keys (JSON) | multiple attachments | None |
 
 ---
 
@@ -91,7 +95,7 @@ All Models → S3Manager (Singleton) → S3Service → AWS S3
 class FileMetadata < ApplicationRecord
   # Polymorphic association to any model
   belongs_to :attachable, polymorphic: true
-  belongs_to :uploaded_by, class_name: 'User', optional: true
+  belongs_to :uploaded_by, class_name: 'UserProfile', optional: true
 
   # Core tracking fields
   # - s3_key: string (unique, indexed)
@@ -100,7 +104,7 @@ class FileMetadata < ApplicationRecord
   # - byte_size: bigint
   # - checksum: string (SHA256, for deduplication)
   # - created_by_system: boolean (tracks system vs user files)
-  # - file_category: string (logo, avatar, social_contract, etc.)
+  # - file_category: string (logo, avatar, social_contract, job_attachment, work_document, etc.)
   # - metadata: jsonb (flexible key-value storage)
   # - uploaded_at: datetime
   # - expires_at: datetime (for temporary files)
@@ -111,6 +115,11 @@ class FileMetadata < ApplicationRecord
   scope :by_category, ->(cat) { where(file_category: cat) }
   scope :temporary, -> { where.not(expires_at: nil) }
   scope :expired, -> { where('expires_at < ?', Time.current) }
+
+  # Helper method to get User from UserProfile
+  def user
+    uploaded_by&.user
+  end
 end
 ```
 
@@ -145,9 +154,9 @@ class S3Manager
       byte_size: file.size,
       checksum: checksum,
       created_by_system: system_generated,
-      uploaded_by: metadata[:current_user],
+      uploaded_by: metadata[:current_user_profile],
       file_category: detect_category(model, s3_key),
-      metadata: metadata.except(:current_user, :force_upload),
+      metadata: metadata.except(:current_user_profile, :force_upload),
       uploaded_at: Time.current
     )
   end
@@ -225,8 +234,10 @@ module PathGenerator
     case model
     when Office
       office_path(model, options)
-    when User, UserProfile
-      user_path(model, options)
+    when UserProfile
+      user_profile_path(model, options)
+    when Job
+      job_path(model, options)
     when Work
       work_path(model, options)
     when TempUpload
@@ -250,16 +261,31 @@ module PathGenerator
     end
   end
 
-  def user_path(user, options = {})
-    user_id = user.is_a?(UserProfile) ? user.user_id : user.id
-    team_id = extract_team_id(user)
+  def user_profile_path(profile, options = {})
+    team_id = extract_team_id(profile)
     ext = options[:extension] || 'jpg'
 
-    "#{base_prefix(team_id)}/users/#{user_id}/avatar/avatar-#{timestamp}.#{ext}"
+    "#{base_prefix(team_id)}/user-profiles/#{profile.id}/avatar/avatar-#{timestamp}.#{ext}"
+  end
+
+  def job_path(job, options = {})
+    team_id = extract_team_id(job)
+    type = options[:file_type] || 'attachment'
+    ext = options[:extension] || 'pdf'
+
+    "#{base_prefix(team_id)}/jobs/#{job.id}/#{type}/#{type}-#{timestamp}-#{random_hash}.#{ext}"
+  end
+
+  def work_path(work, options = {})
+    team_id = extract_team_id(work)
+    type = options[:file_type] || 'document'
+    ext = options[:extension] || 'pdf'
+
+    "#{base_prefix(team_id)}/works/#{work.id}/#{type}/#{type}-#{timestamp}-#{random_hash}.#{ext}"
   end
 
   def temp_path(temp_upload, options = {})
-    "#{base_prefix(temp_upload.team_id)}/temp-uploads/#{temp_upload.user_id}/#{timestamp}-#{temp_upload.original_filename}"
+    "#{base_prefix(temp_upload.team_id)}/temp-uploads/#{temp_upload.user_profile_id}/#{timestamp}-#{temp_upload.original_filename}"
   end
 
   def base_prefix(team_id)
@@ -278,8 +304,9 @@ module PathGenerator
     # Smart team extraction with validation
     team_id = case model
               when Office then model.team_id
-              when User then model.current_team&.id || model.team&.id
-              when UserProfile then model.user&.team&.id || model.office&.team_id
+              when UserProfile then model.user&.current_team&.id || model.office&.team_id
+              when Job then model.team_id || model.office&.team_id
+              when Work then model.team_id || model.job&.team_id
               end
 
     raise TeamNotFoundError, "Cannot determine team for #{model.class}" if team_id.nil?
@@ -291,7 +318,7 @@ end
 #### 4. TempUpload Model (For Undesignated Files)
 ```ruby
 class TempUpload < ApplicationRecord
-  belongs_to :user
+  belongs_to :user_profile
   belongs_to :team
 
   # Fields:
@@ -304,6 +331,11 @@ class TempUpload < ApplicationRecord
 
   scope :expired, -> { where('expires_at < ?', Time.current) }
 
+  # Helper method to get User
+  def user
+    user_profile&.user
+  end
+
   # Attach temporary file to a model
   def attach_to(model, as: :attachment)
     file_metadata = FileMetadata.find_by(s3_key: s3_key)
@@ -315,13 +347,13 @@ class TempUpload < ApplicationRecord
   end
 
   # Create from upload
-  def self.create_from_upload(file, user:, team:)
-    s3_key = PathGenerator.for_temp(user, team, file.original_filename)
+  def self.create_from_upload(file, user_profile:, team:)
+    s3_key = PathGenerator.for_temp(user_profile, team, file.original_filename)
 
     S3Service.upload(file, s3_key)
 
     create!(
-      user: user,
+      user_profile: user_profile,
       team: team,
       s3_key: s3_key,
       original_filename: file.original_filename,
@@ -339,19 +371,19 @@ end
 
 ### Guiding Principles
 
-1. **Non-Breaking Changes** - Maintain backward compatibility during migration
-2. **Incremental Migration** - Phase by phase, model by model
-3. **Data Integrity** - Never lose files or metadata
+1. **BREAKING CHANGES** - Complete replacement without backward compatibility
+2. **Direct Migration** - Remove ActiveStorage and old patterns immediately
+3. **Data Integrity** - Migrate all existing files to new system
 4. **Performance First** - Database queries over S3 operations
 5. **Clean Architecture** - Single responsibility, clear interfaces
 
 ### Development Approach
 
-1. **Parallel Implementation** - New system runs alongside old
-2. **Feature Flags** - Toggle between old and new per model
-3. **Comprehensive Testing** - Unit, integration, and migration tests
-4. **Monitoring** - Track both systems during transition
-5. **Rollback Plan** - Can revert at any phase
+1. **Complete Replacement** - Remove old system entirely
+2. **Single Implementation** - No feature flags or dual systems
+3. **Comprehensive Testing** - Unit, integration, and new system tests
+4. **Fresh Start** - Clean slate implementation
+5. **No Rollback** - Development environment allows full replacement
 
 ---
 
@@ -388,7 +420,7 @@ class CreateFileMetadata < ActiveRecord::Migration[7.0]
       t.string :checksum, null: false
       t.boolean :created_by_system, default: false, null: false
       t.string :file_category
-      t.references :uploaded_by, foreign_key: { to_table: :users }
+      t.references :uploaded_by, foreign_key: { to_table: :user_profiles }
       t.jsonb :metadata, default: {}
       t.datetime :uploaded_at, null: false
       t.datetime :expires_at
@@ -413,7 +445,7 @@ end
 # app/models/file_metadata.rb
 class FileMetadata < ApplicationRecord
   belongs_to :attachable, polymorphic: true
-  belongs_to :uploaded_by, class_name: 'User', optional: true
+  belongs_to :uploaded_by, class_name: 'UserProfile', optional: true
 
   validates :s3_key, presence: true, uniqueness: true
   validates :filename, presence: true
@@ -424,6 +456,7 @@ class FileMetadata < ApplicationRecord
 
   FILE_CATEGORIES = %w[
     logo avatar social_contract
+    job_attachment work_document
     procuration waiver deficiency_statement honorary
     customer_document temp_upload
   ].freeze
@@ -454,70 +487,17 @@ class FileMetadata < ApplicationRecord
   def expired?
     temporary? && expires_at < Time.current
   end
-end
-```
 
-### 1.4 Migrate Existing Data
-
-```ruby
-# lib/tasks/migrate_to_file_metadata.rake
-namespace :s3 do
-  desc "Migrate existing S3 files to FileMetadata"
-  task migrate_metadata: :environment do
-    puts "Starting metadata migration..."
-
-    # Migrate Office logos
-    Office.where.not(logo_s3_key: nil).find_each do |office|
-      FileMetadata.find_or_create_by(s3_key: office.logo_s3_key) do |fm|
-        fm.attachable = office
-        fm.filename = File.basename(office.logo_s3_key)
-        fm.content_type = 'image/jpeg' # Default, could detect from extension
-        fm.byte_size = S3Service.get_object_metadata(office.logo_s3_key)[:content_length] rescue 0
-        fm.checksum = Digest::SHA256.hexdigest(office.logo_s3_key) # Placeholder
-        fm.created_by_system = false
-        fm.file_category = 'logo'
-        fm.uploaded_at = office.updated_at
-      end
-      print '.'
-    end
-
-    # Migrate Office social contracts
-    OfficeAttachmentMetadata.social_contracts.find_each do |attachment|
-      FileMetadata.find_or_create_by(s3_key: attachment.s3_key) do |fm|
-        fm.attachable = attachment.office
-        fm.filename = attachment.filename
-        fm.content_type = attachment.content_type
-        fm.byte_size = attachment.byte_size
-        fm.checksum = Digest::SHA256.hexdigest(attachment.s3_key) # Placeholder
-        fm.created_by_system = attachment.custom_metadata&.dig('system_generated') || false
-        fm.file_category = 'social_contract'
-        fm.uploaded_by_id = attachment.uploaded_by_id
-        fm.metadata = attachment.custom_metadata || {}
-        fm.uploaded_at = attachment.created_at
-      end
-      print '.'
-    end
-
-    # Migrate UserProfile avatars
-    UserProfile.where.not(avatar_s3_key: nil).find_each do |profile|
-      FileMetadata.find_or_create_by(s3_key: profile.avatar_s3_key) do |fm|
-        fm.attachable = profile
-        fm.filename = File.basename(profile.avatar_s3_key)
-        fm.content_type = 'image/jpeg' # Default
-        fm.byte_size = S3Service.get_object_metadata(profile.avatar_s3_key)[:content_length] rescue 0
-        fm.checksum = Digest::SHA256.hexdigest(profile.avatar_s3_key)
-        fm.created_by_system = false
-        fm.file_category = 'avatar'
-        fm.uploaded_at = profile.updated_at
-      end
-      print '.'
-    end
-
-    puts "\nMigration complete!"
-    puts "Total FileMetadata records: #{FileMetadata.count}"
+  # Helper method to get User from UserProfile
+  def user
+    uploaded_by&.user
   end
 end
 ```
+
+### 1.4 Direct Data Transfer
+
+Since we're doing a complete replacement in development, existing data will be transferred directly to the new system when the models are updated. No incremental migration is needed.
 
 ---
 
@@ -538,7 +518,7 @@ class S3Manager
     delegate :upload, :download, :delete, :move, :copy, :list, :url, :stream, to: :instance
   end
 
-  def upload(file, model: nil, path: nil, system_generated: false, user: nil, metadata: {})
+  def upload(file, model: nil, path: nil, system_generated: false, user_profile: nil, metadata: {})
     raise ArgumentError, "Either model or path must be provided" unless model || path
 
     # Generate path
@@ -554,7 +534,7 @@ class S3Manager
 
     # Upload to S3
     begin
-      S3Service.upload(file, s3_key, build_s3_metadata(model, user, metadata))
+      S3Service.upload(file, s3_key, build_s3_metadata(model, user_profile, metadata))
     rescue => e
       Rails.logger.error "S3 upload failed: #{e.message}"
       raise UploadError, "Failed to upload file: #{e.message}"
@@ -569,7 +549,7 @@ class S3Manager
       byte_size: extract_file_size(file),
       checksum: checksum,
       created_by_system: system_generated,
-      uploaded_by: user,
+      uploaded_by: user_profile,
       file_category: detect_category(model, s3_key),
       metadata: metadata,
       uploaded_at: Time.current,
@@ -740,10 +720,12 @@ class S3Manager
     case model
     when Office
       s3_key.include?('/logo/') ? 'logo' : 'social_contract'
-    when UserProfile, User
+    when UserProfile
       'avatar'
+    when Job
+      'job_attachment'
     when Work
-      detect_work_document_type(s3_key)
+      detect_work_document_type(s3_key) || 'work_document'
     when TempUpload
       'temp_upload'
     else
@@ -757,9 +739,10 @@ class S3Manager
     end
   end
 
-  def build_s3_metadata(model, user, custom_metadata)
+  def build_s3_metadata(model, user_profile, custom_metadata)
     metadata = {
-      'uploaded-by' => user&.id&.to_s,
+      'uploaded-by-profile' => user_profile&.id&.to_s,
+      'uploaded-by-user' => user_profile&.user&.id&.to_s,
       'uploaded-at' => Time.current.iso8601,
       'model-type' => model&.class&.name,
       'model-id' => model&.id&.to_s
@@ -774,16 +757,32 @@ class S3Manager
   end
 
   def list_by_team(team_id)
-    # Complex join to get files for a team
-    FileMetadata
-      .joins("LEFT JOIN offices ON attachable_type = 'Office' AND attachable_id = offices.id")
-      .joins("LEFT JOIN users ON attachable_type = 'User' AND attachable_id = users.id")
-      .joins("LEFT JOIN user_profiles ON attachable_type = 'UserProfile' AND attachable_id = user_profiles.id")
-      .joins("LEFT JOIN user_profiles up2 ON up2.user_id = users.id")
-      .where(
-        "offices.team_id = :team_id OR users.team_id = :team_id OR up2.office_id IN (SELECT id FROM offices WHERE team_id = :team_id)",
-        team_id: team_id
-      )
+    # Simplified approach using subqueries for better readability
+    office_ids = Office.where(team_id: team_id).pluck(:id)
+    user_profile_ids = UserProfile.joins(:user)
+                                   .where(users: { current_team_id: team_id })
+                                   .or(UserProfile.where(office_id: office_ids))
+                                   .pluck(:id)
+    job_ids = Job.where(team_id: team_id)
+                 .or(Job.where(office_id: office_ids))
+                 .pluck(:id)
+    work_ids = Work.joins(:job)
+                   .where(jobs: { team_id: team_id })
+                   .pluck(:id)
+
+    FileMetadata.where(
+      attachable_type: 'Office', attachable_id: office_ids
+    ).or(
+      FileMetadata.where(attachable_type: 'UserProfile', attachable_id: user_profile_ids)
+    ).or(
+      FileMetadata.where(attachable_type: 'Job', attachable_id: job_ids)
+    ).or(
+      FileMetadata.where(attachable_type: 'Work', attachable_id: work_ids)
+    ).or(
+      FileMetadata.where(attachable_type: 'TempUpload')
+                  .joins("INNER JOIN temp_uploads ON attachable_id = temp_uploads.id")
+                  .where(temp_uploads: { team_id: team_id })
+    )
   end
 
   def apply_filters(query, filters)
@@ -834,69 +833,40 @@ end
 
 ---
 
-## Phase 3: ActiveStorage Removal
+## Phase 3: Direct Replacement
 
-### 3.1 Migration Script
+### 3.1 Complete System Replacement
+
+Since we're taking a breaking changes approach in development, we'll completely replace all old storage systems:
 
 ```ruby
-# lib/tasks/migrate_from_active_storage.rake
-namespace :active_storage do
-  desc "Migrate ActiveStorage files to S3Manager"
-  task migrate_to_s3: :environment do
-    require 'open-uri'
+# lib/tasks/clean_slate.rake
+namespace :s3 do
+  desc "Remove all old storage systems and implement new"
+  task clean_slate: :environment do
+    puts "Removing old storage systems..."
 
-    puts "Starting ActiveStorage migration..."
+    # Drop ActiveStorage tables
+    ActiveRecord::Base.connection.execute("DROP TABLE IF EXISTS active_storage_blobs CASCADE")
+    ActiveRecord::Base.connection.execute("DROP TABLE IF EXISTS active_storage_attachments CASCADE")
+    ActiveRecord::Base.connection.execute("DROP TABLE IF EXISTS active_storage_variant_records CASCADE")
 
-    # Migrate UserProfile avatars
-    UserProfile.joins(:avatar_attachment).find_each do |profile|
-      next if profile.avatar_s3_key.present? # Skip if already migrated
+    # Drop old metadata table
+    ActiveRecord::Base.connection.execute("DROP TABLE IF EXISTS office_attachment_metadata CASCADE")
 
-      blob = profile.avatar.blob
-
-      # Download from ActiveStorage
-      tempfile = Tempfile.new(['avatar', blob.filename.extension_with_delimiter])
-      tempfile.binmode
-      blob.download { |chunk| tempfile.write(chunk) }
-      tempfile.rewind
-
-      # Upload via S3Manager
-      file_wrapper = ActionDispatch::Http::UploadedFile.new(
-        tempfile: tempfile,
-        filename: blob.filename.to_s,
-        content_type: blob.content_type
-      )
-
-      metadata = S3Manager.upload(
-        file_wrapper,
-        model: profile,
-        user: profile.user,
-        metadata: { migrated_from: 'active_storage', blob_id: blob.id }
-      )
-
-      # Update model
-      profile.update_column(:avatar_s3_key, metadata.s3_key)
-
-      tempfile.close!
-      print '.'
-    rescue => e
-      puts "\nFailed to migrate avatar for UserProfile #{profile.id}: #{e.message}"
-    end
-
-    # Similar for Document and CustomerFile...
-
-    puts "\nMigration complete!"
+    puts "Clean slate complete! Ready for new S3Manager implementation."
   end
 
-  desc "Remove ActiveStorage tables"
-  task remove_tables: :environment do
-    if FileMetadata.count > 0 && ActiveStorage::Blob.count == 0
-      ActiveRecord::Base.connection.execute("DROP TABLE IF EXISTS active_storage_blobs CASCADE")
-      ActiveRecord::Base.connection.execute("DROP TABLE IF EXISTS active_storage_attachments CASCADE")
-      ActiveRecord::Base.connection.execute("DROP TABLE IF EXISTS active_storage_variant_records CASCADE")
-      puts "ActiveStorage tables removed successfully"
-    else
-      puts "Cannot remove tables - migration not complete or no FileMetadata records"
-    end
+  desc "Remove old S3 key columns"
+  task remove_old_columns: :environment do
+    remove_column :offices, :logo_s3_key if column_exists?(:offices, :logo_s3_key)
+    remove_column :user_profiles, :avatar_s3_key if column_exists?(:user_profiles, :avatar_s3_key)
+    remove_column :documents, :original_s3_key if column_exists?(:documents, :original_s3_key)
+    remove_column :documents, :signed_s3_key if column_exists?(:documents, :signed_s3_key)
+    remove_column :customer_files, :file_s3_key if column_exists?(:customer_files, :file_s3_key)
+    remove_column :jobs, :attachment_s3_key if column_exists?(:jobs, :attachment_s3_key)
+
+    puts "Old columns removed!"
   end
 end
 ```
@@ -915,7 +885,7 @@ class Office < ApplicationRecord
     file_metadata.by_category('logo').first
   end
 
-  def upload_logo(file, user: nil, **options)
+  def upload_logo(file, user_profile: nil, **options)
     # Delete old logo if exists
     logo&.destroy
 
@@ -923,7 +893,7 @@ class Office < ApplicationRecord
     S3Manager.upload(
       file,
       model: self,
-      user: user,
+      user_profile: user_profile,
       metadata: options.merge(file_type: 'logo')
     )
   end
@@ -936,11 +906,11 @@ class Office < ApplicationRecord
     file_metadata.by_category('social_contract')
   end
 
-  def upload_social_contract(file, user: nil, system_generated: false, **options)
+  def upload_social_contract(file, user_profile: nil, system_generated: false, **options)
     S3Manager.upload(
       file,
       model: self,
-      user: user,
+      user_profile: user_profile,
       system_generated: system_generated,
       metadata: options.merge(file_type: 'social_contract')
     )
@@ -959,7 +929,7 @@ end
 ```ruby
 # app/models/temp_upload.rb
 class TempUpload < ApplicationRecord
-  belongs_to :user
+  belongs_to :user_profile
   belongs_to :team
   has_one :file_metadata, as: :attachable, dependent: :destroy
 
@@ -967,9 +937,14 @@ class TempUpload < ApplicationRecord
 
   scope :expired, -> { joins(:file_metadata).where('file_metadata.expires_at < ?', Time.current) }
 
-  def self.create_from_file(file, user:, team:, expires_in: 7.days)
+  # Helper method to get User
+  def user
+    user_profile&.user
+  end
+
+  def self.create_from_file(file, user_profile:, team:, expires_in: 7.days)
     temp = create!(
-      user: user,
+      user_profile: user_profile,
       team: team,
       original_filename: file.original_filename
     )
@@ -977,7 +952,7 @@ class TempUpload < ApplicationRecord
     metadata = S3Manager.upload(
       file,
       model: temp,
-      user: user,
+      user_profile: user_profile,
       metadata: {
         expires_at: expires_in.from_now,
         file_category: 'temp_upload'
@@ -999,7 +974,70 @@ class TempUpload < ApplicationRecord
 end
 ```
 
-### 4.2 Background Jobs
+### 4.2 Job Model Implementation
+
+```ruby
+# app/models/job.rb
+class Job < ApplicationRecord
+  belongs_to :office
+  belongs_to :team
+  has_many :file_metadata, as: :attachable, dependent: :destroy
+
+  def attachments
+    file_metadata.by_category('job_attachment')
+  end
+
+  def upload_attachment(file, user_profile: nil, **options)
+    S3Manager.upload(
+      file,
+      model: self,
+      user_profile: user_profile,
+      metadata: options.merge(file_type: 'attachment')
+    )
+  end
+
+  def attachment_urls(expires_in: 3600)
+    attachments.map { |fm| fm.url(expires_in: expires_in) }
+  end
+end
+```
+
+### 4.3 Work Model Implementation
+
+```ruby
+# app/models/work.rb
+class Work < ApplicationRecord
+  belongs_to :job
+  has_many :file_metadata, as: :attachable, dependent: :destroy
+
+  DOCUMENT_TYPES = %w[procuration waiver deficiency_statement honorary].freeze
+
+  def documents
+    file_metadata.by_category('work_document')
+  end
+
+  def upload_document(file, document_type:, user_profile: nil, **options)
+    raise ArgumentError, "Invalid document type" unless DOCUMENT_TYPES.include?(document_type)
+
+    S3Manager.upload(
+      file,
+      model: self,
+      user_profile: user_profile,
+      metadata: options.merge(file_type: document_type)
+    )
+  end
+
+  def documents_by_type(type)
+    file_metadata.where("metadata->>'file_type' = ?", type)
+  end
+
+  def document_urls(expires_in: 3600)
+    documents.map { |fm| fm.url(expires_in: expires_in) }
+  end
+end
+```
+
+### 4.4 Background Jobs
 
 ```ruby
 # app/jobs/cleanup_expired_files_job.rb
@@ -1037,31 +1075,31 @@ end
 
 ---
 
-## Migration Path
+## Migration Path (Breaking Changes)
 
-### Step 1: Deploy FileMetadata (Week 1)
-1. Create migration and model
-2. Deploy to production
-3. Start dual-writing (old system + FileMetadata)
-4. Run migration rake task for existing files
+### Step 1: Clean Slate (Day 1)
+1. Run `rails s3:clean_slate` to remove all old storage systems
+2. Create FileMetadata migration and model
+3. Create TempUpload migration and model
+4. Deploy S3Manager service
 
-### Step 2: Switch Reads (Week 2)
-1. Update models to read from FileMetadata
-2. Add feature flag for rollback
-3. Monitor for issues
-4. Keep writing to both systems
+### Step 2: Implement New System (Day 2)
+1. Update all models to use FileMetadata associations
+2. Implement upload/download methods using S3Manager
+3. Update all controllers to use new patterns
+4. Remove all S3Attachable concerns
 
-### Step 3: Stop Dual Writing (Week 3)
-1. Remove old upload code
-2. Remove S3Attachable concern
-3. Update controllers to use S3Manager
-4. Keep old data for rollback
+### Step 3: Remove Old Code (Day 3)
+1. Delete S3Attachable concern file
+2. Delete old S3Service patterns
+3. Run `rails s3:remove_old_columns` to drop old columns
+4. Remove all ActiveStorage references
 
-### Step 4: Cleanup (Week 4)
-1. Remove ActiveStorage
-2. Drop old columns (logo_s3_key, avatar_s3_key)
-3. Drop OfficeAttachmentMetadata table
-4. Remove old code
+### Step 4: Testing & Documentation (Day 4)
+1. Test all file upload/download features
+2. Verify all models work with new system
+3. Update API documentation
+4. Update developer guides
 
 ---
 
@@ -1237,28 +1275,6 @@ end
 
 ---
 
-## Rollback Plan
-
-Each phase can be rolled back independently:
-
-### Phase 1 Rollback
-- Keep FileMetadata table but stop using it
-- Continue with existing system
-
-### Phase 2 Rollback
-- Switch back to S3Attachable/S3Service
-- Keep S3Manager for future retry
-
-### Phase 3 Rollback
-- Restore ActiveStorage associations
-- Re-enable dual writing
-
-### Phase 4 Rollback
-- Disable enhanced features
-- Return to basic implementation
-
----
-
 ## Success Criteria
 
 1. ✅ All files tracked in unified FileMetadata
@@ -1274,28 +1290,27 @@ Each phase can be rolled back independently:
 
 ---
 
-## Timeline
+## Timeline (Breaking Changes Implementation)
 
-| Week | Phase | Tasks |
-|------|-------|-------|
-| 1-2 | Phase 1 | Create FileMetadata, migrate existing data |
-| 3 | Phase 2 | Implement S3Manager, update models |
-| 4 | Phase 3 | Remove ActiveStorage, cleanup |
-| 5 | Phase 4 | Enhanced features, monitoring |
-| 6 | Testing | End-to-end testing, performance validation |
-| 7 | Deploy | Production rollout with monitoring |
-| 8 | Cleanup | Remove old code, documentation |
+| Day | Phase | Tasks |
+|-----|-------|-------|
+| 1 | Clean Slate | Remove old systems, create FileMetadata |
+| 2 | Implementation | Deploy S3Manager, update all models |
+| 3 | Replacement | Remove old code, columns, and concerns |
+| 4 | Testing | Complete testing and documentation |
+| 5 | Finalization | Performance tuning and monitoring setup |
 
 ---
 
 ## Conclusion
 
-This strategy provides:
-- **Unified** file tracking across all models
+This breaking changes strategy provides:
+- **Unified** file tracking across all models including Jobs and Works
+- **UserProfile-centric** attachments for consistent user tracking
 - **Performance** through database queries instead of S3 operations
-- **Flexibility** to mark files as system-generated
-- **Simplicity** through single S3Manager interface
-- **Reliability** through checksums and deduplication
-- **Scalability** through efficient queries and streaming
+- **Simplicity** through single S3Manager interface and cleaner list_by_team
+- **Clean Architecture** complete removal of legacy code
+- **Fast Implementation** 5-day complete replacement in development
+- **No Technical Debt** fresh start without backward compatibility baggage
 
-The phased approach ensures zero downtime and safe rollback at any point.
+The breaking changes approach allows for a clean, fast implementation perfect for development environments.

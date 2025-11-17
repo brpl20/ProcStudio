@@ -44,7 +44,6 @@
 class Office < ApplicationRecord
   include DeletedFilterConcern
   include CnpjValidatable
-  include S3Attachable
 
   acts_as_paranoid
 
@@ -58,12 +57,8 @@ class Office < ApplicationRecord
   has_many :compensations, through: :user_offices, class_name: 'UserSocietyCompensation'
   has_many :user_profiles, dependent: :nullify
 
-  # Remove ActiveStorage attachments - using direct S3 integration
-  # has_one_attached :logo, dependent: :purge_later
-  # has_many_attached :social_contracts, dependent: :purge_later
-
-  # Attachment metadata
-  has_many :attachment_metadata, class_name: 'OfficeAttachmentMetadata', dependent: :destroy
+  # New S3 file management system
+  has_many :file_metadata, as: :attachable, dependent: :destroy
 
   enum :society, {
     individual: 'individual', # Sociedade Unipessoal
@@ -130,6 +125,51 @@ class Office < ApplicationRecord
 
   def formatted_total_quotes_value
     "R$ #{format('%.2f', total_quotes_value).tr('.', ',')}"
+  end
+
+  # S3 File Management Methods
+
+  def logo
+    file_metadata.by_category('logo').first
+  end
+
+  def upload_logo(file, user_profile: nil, **options)
+    # Delete old logo if exists
+    logo&.destroy
+
+    # Upload new logo
+    S3Manager.upload(
+      file,
+      model: self,
+      user_profile: user_profile,
+      metadata: options.merge(file_type: 'logo')
+    )
+  end
+
+  def logo_url(expires_in: 3600)
+    logo&.url(expires_in: expires_in)
+  end
+
+  def social_contracts
+    file_metadata.by_category('social_contract')
+  end
+
+  def upload_social_contract(file, user_profile: nil, system_generated: false, **options)
+    S3Manager.upload(
+      file,
+      model: self,
+      user_profile: user_profile,
+      system_generated: system_generated,
+      metadata: options.merge(file_type: 'social_contract')
+    )
+  end
+
+  def social_contract_urls(expires_in: 3600)
+    social_contracts.map { |fm| fm.url(expires_in: expires_in) }
+  end
+
+  def delete_social_contract(file_metadata_id)
+    social_contracts.find(file_metadata_id).destroy
   end
 
   private
