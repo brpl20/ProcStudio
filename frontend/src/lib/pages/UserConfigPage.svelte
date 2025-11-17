@@ -4,19 +4,31 @@
   import AvatarUpload from '../components/ui/AvatarUpload.svelte';
   import api from '../api/index';
   import type { WhoAmIResponse } from '../api/types';
+  
+  import { userFormStore } from '../stores/userFormStore.svelte';
+  import UserFormUnified from '../components/teams/UserFormUnified.svelte'; // Verifique o caminho correto
 
-  // --- NOVOS MAPAS DE TRADUÇÃO ---
   const civilStatusMap: Record<string, string> = {
-    single: 'Solteiro(a)',
-    married: 'Casado(a)',
-    divorced: 'Divorciado(a)',
-    widowed: 'Viúvo(a)',
-    separated: 'Separado(a)'
+    single: 'Solteir',
+    married: 'Casad',
+    divorced: 'Divorciad',
+    widowed: 'Viúv',
+    separated: 'Separad'
   };
 
   const nationalityMap: Record<string, string> = {
-    brazilian: 'Brasileiro(a)'
-    // Adicione outras nacionalidades se necessário
+    brazilian: 'Brasileir'
+  };
+
+  const phoneTypeMap: Record<string, string> = {
+    landline: 'Fixo',
+    mobile: 'Celular'
+  };
+
+  const addressTypeMap: Record<string, string> = {
+    main: 'Principal',
+    home: 'Residencial',
+    work: 'Trabalho'
   };
 
   const statusMap: Record<string, string> = {
@@ -24,8 +36,7 @@
     inactive: 'Inativo',
     pending: 'Pendente'
   };
-  // --- FIM DOS MAPAS ---
-
+  
   let loading = $state(true);
   let error = $state(null);
   let currentUserData = $state<WhoAmIResponse | null>(null);
@@ -39,16 +50,62 @@
   let userOffices = $derived(whoAmIUser?.attributes?.offices || []);
   let userPhones = $derived(whoAmIUser?.attributes?.phones || []);
   let userAddresses = $derived(whoAmIUser?.attributes?.addresses || []);
+  let userBankAccounts = $derived(whoAmIUser?.attributes?.bank_accounts || []);
+
+  async function fetchCurrentUser() {
+      try {
+        currentUserData = await api.users.whoami();
+      } catch (err) {
+        error = err;
+      } finally {
+        loading = false;
+      }
+  }
 
   onMount(async () => {
-    try {
-      currentUserData = await api.users.whoami();
-      loading = false;
-    } catch (err) {
-      error = err;
-      loading = false;
+    await fetchCurrentUser();
+  });
+
+  function handleEditProfile() {
+    if (!whoAmIUser || !userProfile) {
+      error = 'Não foi possível carregar os dados do usuário para edição.';
+      return;
+    }
+
+    
+    const userForEditing = {
+      id: userProfile.id, 
+      attributes: {
+        ...userProfile,
+        user_id: whoAmIUser.id, 
+        access_email: whoAmIUser.attributes.email,
+        role: userProfile.role,
+        status: userProfile.status,
+        phones: userPhones,
+        addresses: userAddresses,
+        bank_accounts: userBankAccounts,
+      }
+    };
+    
+    userFormStore.startEdit(userForEditing);
+  }
+
+  // Este efeito agora reage diretamente à flag 'success' do store.
+  $effect(() => {
+    if (userFormStore.success) {
+      // 1. Inicia o recarregamento dos dados do usuário
+      loading = true;
+      fetchCurrentUser();
+
+      // 2. Exibe a mensagem de sucesso
+      successMessage = 'Perfil atualizado com sucesso!';
+      setTimeout(() => successMessage = '', 4000);
+      
+      // 3. Reseta a flag para que o efeito não rode em loop
+      userFormStore.success = false;
     }
   });
+
 
   async function handleAvatarUpload(event: CustomEvent) {
     const { file } = event.detail;
@@ -62,7 +119,7 @@
 
     try {
       await api.users.uploadAvatar(String(userProfile.id), file);
-      currentUserData = await api.users.whoami();
+      await fetchCurrentUser();
       successMessage = 'Foto do perfil atualizada com sucesso!';
       showAvatarEditor = false;
       setTimeout(() => successMessage = '', 3000);
@@ -84,7 +141,7 @@
 
     try {
       await api.users.removeAvatar(String(userProfile.id));
-      currentUserData = await api.users.whoami();
+      await fetchCurrentUser();
       successMessage = 'Foto removida com sucesso!';
       setTimeout(() => successMessage = '', 3000);
     } catch (err) {
@@ -105,7 +162,7 @@
 
     try {
       await api.users.updateAvatarColor(String(userProfile.id), color);
-      currentUserData = await api.users.whoami();
+      await fetchCurrentUser();
       successMessage = 'Cor do avatar atualizada com sucesso!';
       setTimeout(() => successMessage = '', 3000);
     } catch (err) {
@@ -194,17 +251,6 @@
                     </div>
                   </div>
                 </div>
-
-                <div class="grid grid-cols-2 gap-6">
-                  <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center border border-white/20">
-                    <div class="text-3xl font-bold text-white mb-1">{whoAmIUser?.attributes?.works_count || 0}</div>
-                    <div class="text-sm text-[#eef0ef]">Trabalhos</div>
-                  </div>
-                  <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center border border-white/20">
-                    <div class="text-3xl font-bold text-white mb-1">{whoAmIUser?.attributes?.jobs_count || 0}</div>
-                    <div class="text-sm text-[#eef0ef]">Jobs</div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -238,19 +284,19 @@
                     <div class="text-gray-700 font-medium bg-[#eef0ef] px-4 py-3 rounded-lg">{userProfile.birth}</div>
                   </div>
                   
-                  <!-- ALTERAÇÕES AQUI -->
                   <div class="group">
                     <label class="text-xs font-semibold text-[#01013D] uppercase tracking-wider mb-1 block">Nacionalidade</label>
                     <div class="text-gray-700 font-medium bg-[#eef0ef] px-4 py-3 rounded-lg">
-                      {nationalityMap[userProfile.nationality] || userProfile.nationality}
+                      {nationalityMap[userProfile.nationality] ? nationalityMap[userProfile.nationality] + (userProfile.gender === 'female' ? 'a' : 'o') : userProfile.nationality}
                     </div>
                   </div>
                   <div class="group">
                     <label class="text-xs font-semibold text-[#01013D] uppercase tracking-wider mb-1 block">Estado Civil</label>
                     <div class="text-gray-700 font-medium bg-[#eef0ef] px-4 py-3 rounded-lg">
-                      {civilStatusMap[userProfile.civil_status] || userProfile.civil_status}
+                      {civilStatusMap[userProfile.civil_status] ? civilStatusMap[userProfile.civil_status] + (userProfile.gender === 'female' ? 'a' : 'o') : userProfile.civil_status}
                     </div>
                   </div>
+
                   <div class="group">
                     <label class="text-xs font-semibold text-[#01013D] uppercase tracking-wider mb-1 block">Gênero</label>
                     <div class="text-gray-700 font-medium bg-[#eef0ef] px-4 py-3 rounded-lg">{userProfile.gender === 'female' ? 'Feminino' : 'Masculino'}</div>
@@ -262,8 +308,6 @@
                       {statusMap[userProfile.status] || userProfile.status}
                     </div>
                   </div>
-                   <!-- FIM DAS ALTERAÇÕES -->
-
                 </div>
                 {#if userProfile.mother_name}
                   <div class="pt-2">
@@ -348,7 +392,9 @@
                     <div class="flex items-center justify-between bg-[#eef0ef] px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors duration-200">
                       <span class="font-medium text-[#01013D]">{phone.phone_number}</span>
                       {#if phone.phone_type}
-                        <span class="text-xs bg-[#0277EE] text-white px-3 py-1 rounded-full font-semibold">{phone.phone_type}</span>
+                        <span class="text-xs bg-[#0277EE] text-white px-3 py-1 rounded-full font-semibold">
+                          {phoneTypeMap[phone.phone_type] || phone.phone_type}
+                        </span>
                       {/if}
                     </div>
                   {/each}
@@ -380,7 +426,9 @@
                         <p class="font-medium">CEP: {address.zip_code}</p>
                         {#if address.address_type}
                           <div class="pt-2">
-                            <span class="inline-block text-xs bg-[#0277EE] text-white px-3 py-1 rounded-full font-semibold">{address.address_type}</span>
+                            <span class="inline-block text-xs bg-[#0277EE] text-white px-3 py-1 rounded-full font-semibold">
+                              {addressTypeMap[address.address_type] || address.address_type}
+                            </span>
                           </div>
                         {/if}
                       </div>
@@ -404,24 +452,21 @@
             <div class="p-6">
               <div class="flex flex-wrap gap-4">
                 <button
-                  disabled
-                  class="flex items-center gap-2 bg-gray-300 text-gray-500 px-6 py-3 rounded-lg font-semibold cursor-not-allowed opacity-60"
+                  onclick={handleEditProfile}
+                  class="flex items-center gap-2 bg-[#0277EE] hover:bg-[#026ac8] text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200"
                 >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                   </svg>
                   Editar Perfil
-                  <span class="text-xs bg-white px-2 py-1 rounded-full">Em breve</span>
                 </button>
                 <button
-                  disabled
-                  class="flex items-center gap-2 bg-gray-300 text-gray-500 px-6 py-3 rounded-lg font-semibold cursor-not-allowed opacity-60"
+                  class="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold transition-colors duration-200"
                 >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
                   Alterar Senha
-                  <span class="text-xs bg-white px-2 py-1 rounded-full">Em breve</span>
                 </button>
               </div>
             </div>
@@ -440,6 +485,15 @@
       {/if}
     </div>
   </div>
+
+  {#if userFormStore.open && userFormStore.mode === 'edit'}
+    <div class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-[fadeIn_0.2s_ease-in]">
+      <div class="bg-[#f0f2f5] rounded-2xl shadow-2xl w-full max-w-4xl max-h-[95vh] overflow-y-auto animate-[slideUp_0.3s_ease-out]">
+        <UserFormUnified />
+      </div>
+    </div>
+  {/if}
+
 
   {#if showAvatarEditor}
     <div class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-[fadeIn_0.2s_ease-in]">

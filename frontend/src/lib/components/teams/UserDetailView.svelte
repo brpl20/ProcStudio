@@ -136,7 +136,6 @@
               </div>
 
               <div class="grid grid-cols-2 gap-6">
-                <!-- Example placeholders, removed as they don't apply to a generic user viewer -->
               </div>
             </div>
           </div>

@@ -3,7 +3,6 @@
   import { BANK_ACCOUNT_TYPES } from '../../constants/bank-account-types';
   import type { BrazilianBank } from '../../constants/brazilian-banks';
 
-  // Props using Svelte 5 runes
   let {
     bankAccount = $bindable({
       bank_name: '',
@@ -48,11 +47,8 @@
   let selectedDropdownIndex = $state(-1);
   let hasFocused = $state(false);
 
-  // Reactive derived values using Svelte 5 runes
-  const showOperationField = $derived(selectedBankCode === '104'); // Apenas para Caixa Econômica
+  const showOperationField = $derived(selectedBankCode === '104'); 
 
-  // Effect to sync bank name with bank code
-  // CORREÇÃO: Adicionadas verificações para evitar atribuições redundantes e reatividade circular.
   $effect(() => {
     if (bankAccount.bank_name) {
       const matchingBank = BRAZILIAN_BANKS.find((bank) => bank.label === bankAccount.bank_name);
@@ -105,7 +101,7 @@
   function selectBank(bank: BrazilianBank) {
     bankAccount.bank_name = bank.label;
     bankAccount.bank_number = bank.value;
-    selectedBankCode = bank.value; // Isso será sincronizado também pelo $effect, mas é útil ter aqui
+    selectedBankCode = bank.value; 
     bankSearchTerm = bank.label;
     showBankDropdown = false;
     selectedDropdownIndex = -1;
@@ -170,7 +166,6 @@
     onremove?.();
   }
 
-  // PIX helper functions
   function formatCpfForPix(cpf: string): string {
     if (!cpf) {
       return '';
@@ -212,7 +207,6 @@
     }
   }
 
-  // Reactive variables for PIX helpers using Svelte 5 runes
   const documentLabel = $derived(pixDocumentType === 'cpf' ? 'CPF' : 'CNPJ');
   const hasDocumentData = $derived(
     pixDocumentType === 'cpf' ? !!pixHelperData.cpf : !!pixHelperData.cnpj
@@ -249,7 +243,6 @@
       {#if selectedBankCode}<div class="text-sm text-base-content/60 mt-1">Código do banco: {selectedBankCode}</div>{/if}
     </div>
 
-    <!-- Account Type -->
     <div class="form-control w-full">
       <label for="{labelPrefix}-type-{index}" class="label pb-1"><span class="label-text">Tipo de Conta</span></label>
       <select id="{labelPrefix}-type-{index}" class="select select-bordered select-sm w-full" bind:value={bankAccount.type_account} {disabled} data-testid="{labelPrefix}-type-input-{index}">
@@ -260,19 +253,16 @@
       </select>
     </div>
 
-    <!-- Agência -->
     <div class="form-control w-full">
       <label for="{labelPrefix}-agency-{index}" class="label pb-1"><span class="label-text">Agência</span></label>
       <input id="{labelPrefix}-agency-{index}" type="text" class="input input-bordered input-sm w-full" bind:value={bankAccount.agency} {disabled} placeholder="0000" data-testid="{labelPrefix}-agency-input-{index}" />
     </div>
 
-    <!-- Conta -->
     <div class="form-control w-full">
       <label for="{labelPrefix}-account-{index}" class="label pb-1"><span class="label-text">Conta</span></label>
       <input id="{labelPrefix}-account-{index}" type="text" class="input input-bordered input-sm w-full" bind:value={bankAccount.account} {disabled} placeholder="00000-0" data-testid="{labelPrefix}-account-input-{index}" />
     </div>
 
-    <!-- Operação (Apenas para Caixa Econômica) -->
     {#if showOperationField}
       <div class="form-control w-full">
         <label for="{labelPrefix}-operation-{index}" class="label pb-1">
@@ -283,14 +273,12 @@
       </div>
     {/if}
 
-    <!-- PIX -->
     <div class="form-control w-full {showPixHelpers ? 'col-span-full' : ''}">
       <label for="{labelPrefix}-pix-{index}" class="label pb-1">
         <span class="label-text">PIX</span>
       </label>
 
       {#if showPixHelpers}
-        <!-- PIX Key Type Options -->
         <div class="flex gap-2 mb-2">
           <button
             type="button"

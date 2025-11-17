@@ -1,4 +1,3 @@
-<!-- /frontend/src/lib/components/forms_commons/Gender.svelte -->
 <script lang="ts">
   import type { SelectFieldProps } from '../../types/form-field-contract';
 
