@@ -121,6 +121,46 @@ module Api
         user_profile_internal_error_response(e, 'Erro interno do servidor')
       end
 
+      def upload_avatar
+        retrieve_user_profile
+
+        unless params[:avatar].present?
+          return render json: {
+            success: false,
+            message: 'Arquivo de avatar não fornecido',
+            errors: ['Avatar file is required']
+          }, status: :unprocessable_entity
+        end
+
+        begin
+          # Upload the avatar using S3Manager
+          file_metadata = @user_profile.upload_avatar(
+            params[:avatar],
+            user_profile: current_user.user_profile
+          )
+
+          # Return success with the avatar URL
+          render json: {
+            success: true,
+            message: 'Avatar enviado com sucesso',
+            data: {
+              id: @user_profile.id,
+              avatar_url: @user_profile.avatar_url,
+              file_metadata_id: file_metadata.id
+            }
+          }, status: :ok
+        rescue StandardError => e
+          Rails.logger.error "Avatar upload failed: #{e.message}"
+          Rails.logger.error e.backtrace.first(10).join("\n")
+
+          render json: {
+            success: false,
+            message: 'Erro ao fazer upload do avatar',
+            errors: [e.message]
+          }, status: :internal_server_error
+        end
+      end
+
       private
 
       def user_profiles_params

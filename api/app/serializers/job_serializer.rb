@@ -36,9 +36,8 @@ class JobSerializer
   include JSONAPI::Serializer
 
   def self.avatar_url_for(profile)
-    return unless profile.avatar.attached?
-
-    Rails.application.routes.url_helpers.rails_blob_url(profile.avatar, only_path: true)
+    # Use the new S3-based avatar_url method
+    profile.avatar_url
   end
 
   private_class_method :avatar_url_for

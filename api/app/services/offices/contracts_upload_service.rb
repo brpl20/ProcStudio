@@ -55,7 +55,15 @@ module Offices
 
     def upload_contract(contract, metadata_params)
       metadata = build_contract_metadata(contract, metadata_params)
-      office.upload_social_contract(contract, metadata)
+      office.upload_social_contract(
+        contract,
+        user_profile: current_user.user_profile,
+        **metadata
+      )
+      true
+    rescue StandardError => e
+      Rails.logger.error "Contract upload failed: #{e.message}"
+      false
     end
 
     def add_upload_error(contract, errors)
@@ -68,9 +76,8 @@ module Offices
       {
         document_date: params[:document_date],
         description: params[:description] || contract.original_filename,
-        custom_metadata: params[:custom_metadata],
-        uploaded_by_id: current_user.id
-      }
+        custom_metadata: params[:custom_metadata]
+      }.compact
     end
 
     def build_result(uploaded_count, errors)

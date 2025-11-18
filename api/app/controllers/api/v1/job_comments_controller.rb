@@ -17,7 +17,7 @@ module Api
 
       def index
         comments = @job.comments
-                     .includes(user_profile: { avatar_attachment: :blob })
+                     .includes(user_profile: :file_metadata)
                      .recent_first
 
         render_success(

@@ -103,6 +103,7 @@ Rails.application.routes.draw do
       resources :user_profiles do
         member do
           post :restore
+          post :upload_avatar
         end
 
         collection do

@@ -168,7 +168,8 @@ class UserProfile < ApplicationRecord
     )
   end
 
-  def avatar_url(expires_in: 3600)
+  def avatar_url(only_path: nil, expires_in: 3600)
+    # Ignore only_path parameter - always return full URL with S3
     avatar&.url(expires_in: expires_in)
   end
 

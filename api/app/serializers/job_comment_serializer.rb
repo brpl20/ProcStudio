@@ -33,9 +33,7 @@ class JobCommentSerializer
     {
       id: object.user_profile.id,
       name: object.user_profile.full_name,
-      avatar_url: if object.user_profile.avatar.attached?
-                    Rails.application.routes.url_helpers.rails_blob_url(object.user_profile.avatar, only_path: true)
-                  end
+      avatar_url: object.user_profile.avatar_url
     }
   end
 

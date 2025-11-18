@@ -12,11 +12,29 @@ module Offices
     def call(logo_file, metadata_params = {})
       return validation_error unless valid_logo_type?(logo_file)
 
-      upload_metadata = build_metadata(metadata_params)
-      @office.upload_logo(logo_file, upload_metadata)
+      # Use the new S3Manager upload method with user_profile
+      file_metadata = @office.upload_logo(
+        logo_file,
+        user_profile: @current_user.user_profile,
+        **build_metadata(metadata_params)
+      )
+
+      Result.new(
+        success: true,
+        message: 'Logo enviado com sucesso',
+        data: {
+          logo_url: @office.logo_url,
+          file_metadata_id: file_metadata.id
+        }
+      )
+    rescue StandardError => e
+      Result.new(
+        success: false,
+        message: "Erro ao fazer upload do logo: #{e.message}"
+      )
     end
 
-    Result = Struct.new(:success, :message, keyword_init: true)
+    Result = Struct.new(:success, :message, :data, keyword_init: true)
 
     private
 
@@ -36,10 +54,9 @@ module Offices
     def build_metadata(metadata_params)
       {
         document_date: metadata_params[:document_date],
-        description: metadata_params[:description],
-        custom_metadata: metadata_params[:custom_metadata],
-        uploaded_by_id: current_user.id
-      }
+        description: metadata_params[:description] || "Logo for #{@office.name}",
+        custom_metadata: metadata_params[:custom_metadata]
+      }.compact
     end
   end
 end

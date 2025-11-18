@@ -68,11 +68,11 @@ class Job < ApplicationRecord
       :work,
       :profile_customer,
       :team,
-      created_by: { user_profile: { avatar_attachment: :blob } },
-      assignees: { avatar_attachment: :blob },
-      supervisors: { avatar_attachment: :blob },
-      job_user_profiles: { user_profile: { avatar_attachment: :blob } },
-      comments: { user_profile: { avatar_attachment: :blob } }
+      created_by: :user_profile,
+      assignees: :file_metadata,
+      supervisors: :file_metadata,
+      job_user_profiles: { user_profile: :file_metadata },
+      comments: { user_profile: :file_metadata }
     )
   }
 

@@ -47,7 +47,23 @@ class OfficeSerializer
   attributes :name, :cnpj, :site, :quote_value, :number_of_quotes, :total_quotes_value, :proportional
 
   # Always include attachments
-  attributes :logo_url, :social_contracts_with_metadata
+  attribute :logo_url do |object|
+    object.logo_url
+  end
+
+  attribute :social_contracts_with_metadata do |object|
+    object.social_contracts.map do |contract|
+      {
+        id: contract.id,
+        filename: contract.filename,
+        content_type: contract.content_type,
+        byte_size: contract.byte_size,
+        uploaded_at: contract.uploaded_at,
+        url: contract.url,
+        uploaded_by: contract.uploaded_by&.full_name
+      }
+    end
+  end
 
   attributes :society, :foundation, :addresses, :phones, :emails, :bank_accounts, :works,
              :accounting_type, :oab_id, :oab_inscricao, :oab_link, :oab_status,
