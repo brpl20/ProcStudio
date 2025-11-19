@@ -25,7 +25,9 @@ module PathGenerator
 
   def office_path(office, options = {})
     type = options[:file_type] || 'logo'
-    ext = options[:extension] || 'jpg'
+
+    # Determine extension based on file type or from the provided filename
+    ext = options[:extension] || extract_extension_from_filename(options[:filename]) || default_extension_for_type(type)
 
     case type
     when 'logo'
@@ -92,5 +94,25 @@ module PathGenerator
   def sanitize_filename(filename)
     # Remove special characters and spaces from filename
     filename.gsub(/[^0-9a-zA-Z.\-_]/, '_')
+  end
+
+  def extract_extension_from_filename(filename)
+    return nil unless filename
+
+    # Extract extension from filename (e.g., "file.docx" -> "docx")
+    File.extname(filename).delete_prefix('.').downcase if filename.include?('.')
+  end
+
+  def default_extension_for_type(type)
+    case type
+    when 'logo'
+      'jpg'
+    when 'social_contract'
+      'pdf'  # Default to PDF for social contracts, but will use actual extension when available
+    when 'avatar'
+      'jpg'
+    else
+      'pdf'
+    end
   end
 end

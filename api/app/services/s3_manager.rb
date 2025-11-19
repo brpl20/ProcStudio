@@ -12,8 +12,12 @@ class S3Manager
   def upload(file, model: nil, path: nil, system_generated: false, user_profile: nil, metadata: {})
     raise ArgumentError, "Either model or path must be provided" unless model || path
 
+    # Add filename to metadata for PathGenerator to extract extension
+    filename = extract_filename(file)
+    metadata_with_filename = metadata.merge(filename: filename)
+
     # Generate path
-    s3_key = path || PathGenerator.for(model, metadata)
+    s3_key = path || PathGenerator.for(model, metadata_with_filename)
 
     # Calculate checksum for deduplication
     checksum = calculate_checksum(file)
@@ -35,7 +39,7 @@ class S3Manager
     FileMetadata.create!(
       attachable: model,
       s3_key: s3_key,
-      filename: extract_filename(file),
+      filename: filename,
       content_type: extract_content_type(file),
       byte_size: extract_file_size(file),
       checksum: checksum,
