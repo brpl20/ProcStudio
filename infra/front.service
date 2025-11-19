@@ -1,0 +1,18 @@
+[Unit]
+Description=Whats Organizer Front
+After=network.target
+
+[Service]
+User=front
+Group=front
+WorkingDirectory=/home/front/ProcStudio/frontend
+ExecStart=/bin/sh -lc 'export NVM_DIR="$${XDG_CONFIG_HOME:-$$HOME/.nvm}" && . "$$NVM_DIR/nvm.sh" && exec node --env-file=.env build/index'
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,164 @@
+name: Back deploy
+on:
+  workflow_call:
+    secrets:
+      host:
+        required: true
+      username:
+        required: true
+      key:
+        required: true
+      port:
+        required: true
+      fingerprint:
+        required: true
+      SHARED_BACK_FRONT_ENV:
+        required: true
+      SHARED_BACK_NGINX_ENV:
+        required: true
+      SHARED_BACK_REDIS_ENV:
+        required: true
+      BACK_ENV:
+        required: true
+      FRONT_ENV:
+        required: true
+      NGINX_ENV:
+        required: true
+      envs:
+        required: false
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: executing Back deployment using key
+      uses: appleboy/ssh-action@v1.1.0
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.KEY }}
+        port: ${{ secrets.PORT }}
+        fingerprint: ${{ secrets.FINGERPRINT }}
+        script: |
+          set -euo pipefail
+          export PROJECT="api"
+          export PROJECT_INFRA="infra"
+          export BRANCH="main"
+          export USER="${PROJECT}"
+          export GROUP="${USER}"
+          export HOME="/home/${USER}"
+          export PROJECT_DIR="${HOME}/ProcStudio"
+          export INFRA_DIR="${PROJECT_DIR}/${PROJECT_INFRA}"
+          export GLOBAL_ENV_DIR="${HOME}"
+          export LOCAL_ENV_DIR="${PROJECT_DIR}/${PROJECT}"
+          export SERVICE="back@.service"
+          export ERROR=false
+          export DISK_USAGE=$(df -h / | grep -E -o "[0-9]+%" | cut -d "%" -f 1)
+          export MESSAGE="ProcStudio-${PROJECT}:"
+          export GIT_URL="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
+          export ENOENT=127
+          readonly PROJECT PROJECT_INFRA BRANCH USER GROUP HOME PROJECT_DIR INFRA_DIR GLOBAL_ENV_DIR LOCAL_ENV_DIR SERVICE DISK_USAGE GIT_URL ENOENT
+
+          ENV_CHANGED="$(cmp -s "${GLOBAL_ENV_DIR}/.env" "${LOCAL_ENV_DIR}/.env"; echo $?)"
+
+          set +e
+          sudo -u "${USER}" bash <<EOF
+          set -u
+          if [ ! -d "${PROJECT_DIR}/.git" ]; then
+            [ -d "${PROJECT_DIR}" ] && rm -rf "${PROJECT_DIR}"
+            mkdir -p "${PROJECT_DIR}"
+            cd "${PROJECT_DIR}"
+            git clone --filter=blob:none --sparse "${GIT_URL}" .
+            git sparse-checkout set "${PROJECT}" "${PROJECT_INFRA}"
+          else
+            cd "${PROJECT_DIR}"
+            git remote set-url origin "${GIT_URL}"
+            git fetch origin "${BRANCH}"
+            git diff --quiet HEAD "origin/${BRANCH}" -- "${PROJECT}"
+            PROJECT_CHANGED=\$?
+            git diff --quiet HEAD "origin/${BRANCH}" -- "${PROJECT_INFRA}"
+            INFRA_CHANGED=\$?
+            if [ "\${PROJECT_CHANGED}" -eq 0 ] && [ "\${INFRA_CHANGED}" -eq 0 ] && [ "${ENV_CHANGED}" = "0" ]; then
+              echo "Nenhuma mudança detectada na pasta ${PROJECT}"
+              exit 1
+            fi
+            git reset --hard "origin/${BRANCH}"
+            git sparse-checkout set "${PROJECT}" "${PROJECT_INFRA}"
+          fi
+          EOF
+
+          readonly PROJECT_CHANGED=$?
+          if [ ${PROJECT_CHANGED} -eq 1 ]; then
+            exit
+          fi
+          set -e
+
+
+          cd "${PROJECT_DIR}/${PROJECT}"
+          if [ -f "${GLOBAL_ENV_DIR}/.env" ]; then
+            if [ "${ENV_CHANGED}" != "0" ]; then
+              if [ -f "${LOCAL_ENV_DIR}/.env" ]; then
+                chmod +w "${LOCAL_ENV_DIR}/.env"
+              fi
+              cp -f "${GLOBAL_ENV_DIR}/.env" "${LOCAL_ENV_DIR}" || true
+              chmod 400 "${LOCAL_ENV_DIR}/.env"
+              chown "${USER}:${GROUP}" "${LOCAL_ENV_DIR}/.env"
+            fi
+          else
+            echo "Erro: Falta o arquivo de segredos .env em '${LOCAL_ENV_DIR}'/.env"
+            exit ${ENOENT}
+          fi
+          cd -
+
+          sudo -u "${USER}" bash <<EOF
+          cd "${PROJECT_DIR}/${PROJECT}"
+
+          if [ ! -d .rbenv ]; then
+            git clone https://github.com/rbenv/rbenv.git ~/.rbenv
+          fi
+          if [ ! -d .rbenv/plugins/ruby-build ]; then
+            git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
+          fi
+          ~/.rbenv/bin/rbenv init
+          rbenv install 3.2.7
+          rbenv global 3.2.7
+          rbenv rehash
+          gem install bundler
+          bundle install
+          gem install mina
+          bundle exec mina production deploy
+          EOF
+
+          readonly STATUS=$?
+          if [ ${STATUS} -ne 0 ]; then
+            if [ ${STATUS} -eq ${ENOENT} ]; then
+              exit ${STATUS}
+            fi
+            # else
+            export ERROR=true
+          fi
+
+          cp  -f "${INFRA_DIR}/${SERVICE}" "/etc/systemd/system/${SERVICE}" ||
+            export ERROR=true
+          systemctl daemon-reload || export ERROR=true
+
+          set -a
+          source "${LOCAL_ENV_DIR}/.env" || export ERROR=true
+          set +a
+  
+          systemctl restart $(systemd-escape --template="${SERVICE}" "${API_PORT}") ||
+            export ERROR=true
+          systemctl enable $(systemd-escape --template="${SERVICE}" "${API_PORT}") ||
+            export ERROR=true
+
+          if [ ${ERROR} = true ]; then
+            export MESSAGE="${MESSAGE} Falhou ao Subir Imagem de Docker!"
+          else
+            export MESSAGE="${MESSAGE} Build feita com sucesso!"
+          fi
+          [ "$DISK_USAGE" -lt 90 ] || \
+            export MESSAGE="${MESSAGE} *** AVISO: Disco Lotado ***"
+          curl -X POST "https://hooks.zapier.com/hooks/catch/1863715/215sl1w/" \
+               -H "Content-Type: application/json" \
+               -d "{ \"message\": \"${MESSAGE}\" }"

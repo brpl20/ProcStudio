@@ -1,0 +1,31 @@
+[Unit]
+Description=Backend on port %i
+After=network.target
+
+[Service]
+User=back
+Group=back
+WorkingDirectory=/home/back/ProcStudio/api
+EnvironmentFile=/home/back/.env
+Environment=PATH=/home/back/.rbenv/shims:/home/back/.rbenv/bin:/usr/local/bin:/usr/bin:/bin
+
+Environment="PORT=%i"
+Environment="RAILS_LOG_TO_STDOUT=true"
+Environment="RAILS_ENV=production"
+Environment="RAILS_MAX_THREADS=5"
+Environment="WEB_CONCURRENCY=2"
+Environment="RAILS_SERVE_STATIC_FILES=trye
+ExecStart=/home/back/.rbenv/shims/bundle exec puma -C config/puma.rb -e production
+
+Restart=always
+RestartSec=5
+StandardOutput=append:/home/back/ProcStudio/api/log/production.log
+StandardError=append:/home/back/ProcStudio/api/log/production_error.log
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/back/ProcStudio/api/log /home/back/ProcStudio/api/tmp /home/back/ProcStudio/api/storage
+
+[Install]
+WantedBy=multi-user.target

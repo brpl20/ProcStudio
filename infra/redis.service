@@ -1,0 +1,18 @@
+[Unit]
+Description=Redis Service
+After=network.target
+
+[Service]
+User=redis
+Group=redis
+WorkingDirectory=/home/redis
+ExecStart=/usr/bin/redis-server
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+
+[Install]
+WantedBy=multi-user.target

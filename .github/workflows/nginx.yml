@@ -1,0 +1,123 @@
+name: Nginx deploy
+on:
+  workflow_call:
+    secrets:
+      host:
+        required: true
+      username:
+        required: true
+      key:
+        required: true
+      port:
+        required: true
+      fingerprint:
+        required: true
+      SHARED_BACK_FRONT_ENV:
+        required: true
+      SHARED_BACK_NGINX_ENV:
+        required: true
+      SHARED_BACK_REDIS_ENV:
+        required: true
+      BACK_ENV:
+        required: true
+      FRONT_ENV:
+        required: true
+      NGINX_ENV:
+        required: true
+      envs:
+        required: false
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: executing Nginx deployment using key
+      uses: appleboy/ssh-action@v1.1.0
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.KEY }}
+        port: ${{ secrets.PORT }}
+        fingerprint: ${{ secrets.FINGERPRINT }}
+        script: |
+          set -euo pipefail
+          export PROJECT="nginx"
+          export PROJECT_INFRA="infra"
+          export BRANCH="main"
+          export USER="${PROJECT}"
+          export HOME="/home/${USER}"
+          export PROJECT_DIR="${HOME}/ProcStudio"
+          export INFRA_DIR="${PROJECT_DIR}/${PROJECT_INFRA}"
+          export ENV_DIR="${HOME}"
+          export SERVICE="nginx.service"
+          export ERROR=false
+          export DISK_USAGE=$(df -h / | awk 'NR==2{print $5}' | tr -d '%')
+          export MESSAGE="ProcStudio-${PROJECT}:"
+          export GIT_URL="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
+          export ENOENT=127
+          readonly PROJECT PROJECT_INFRA BRANCH USER HOME PROJECT_DIR INFRA_DIR ENV_DIR SERVICE DISK_USAGE GIT_URL ENOENT
+
+          set +e
+          sudo -u "${USER}" bash <<EOF
+          set -u
+          if [ ! -d "${PROJECT_DIR}/.git" ]; then
+            [ -d "${PROJECT_DIR}" ] && rm -rf "${PROJECT_DIR}"
+            mkdir -p "${PROJECT_DIR}"
+            cd "${PROJECT_DIR}"
+            git clone "${GIT_URL}" .
+            git clone --filter=blob:none --sparse "${GIT_URL}" .
+            git sparse-checkout set "${PROJECT_INFRA}"
+          else
+            cd "${PROJECT_DIR}"
+            git remote set-url origin "${GIT_URL}"
+            git fetch origin "${BRANCH}"
+            git diff --quiet HEAD "origin/${BRANCH}" -- "${PROJECT}"
+            PROJECT_CHANGED=\$?
+            git diff --quiet HEAD "origin/${BRANCH}" -- "${PROJECT_INFRA}"
+            INFRA_CHANGED=\$?
+            if [ \${PROJECT_CHANGED} -eq 0 ] && [ \${INFRA_CHANGED} -eq 0 ]; then
+              echo "Nenhuma mudança detectada na pasta ${PROJECT}"
+              exit 1
+            fi
+            git reset --hard "origin/${BRANCH}"
+            git sparse-checkout set "${PROJECT}" "${PROJECT_INFRA}"
+          fi
+          EOF
+
+          readonly PROJECT_CHANGED=$?
+          if [ ${PROJECT_CHANGED} -eq 1 ]; then
+            exit
+          fi
+          set -e
+
+          if [ -f "${ENV_DIR}/.env" ]; then
+            cp -f "${ENV_DIR}/.env" .  || true
+              set -a
+              . "${ENV_DIR}/.env"
+              set +a
+          else
+            echo "Erro: Falta o arquivo de segredos .env em '${ENV_DIR}'/.env"
+            exit ${ENOENT}
+          fi
+
+          cd "${PROJECT_DIR}"
+          chmod +x infra/generate_nginx_conf.sh || true
+          ./infra/generate_nginx_conf.sh "${ENV_DIR}/.env" "${PROJECT_DIR}/infra/nginx.conf.tpl" "/etc/nginx/nginx.conf"
+
+          if [ "$(</etc/hostname)" != "${HOST}" ]; then
+            echo -e "Setting hostname to ${HOST}"
+            hostnamectl set-hostname "${HOST}"
+          fi
+
+          systemctl daemon-reload || ERROR=true
+          systemctl enable --now "${SERVICE}" || ERROR=true
+          systemctl restart "${SERVICE}" || ERROR=true
+
+          if [ "${ERROR}" = true ]; then
+            export MESSAGE="${MESSAGE} Falhou ao Subir Configuração do Nginx!"
+          else
+            export MESSAGE="${MESSAGE} Deploy do Nginx feito com sucesso!"
+          fi
+          [ "${DISK_USAGE}" -lt 90 ] || export MESSAGE="${MESSAGE} *** AVISO: Disco Lotado ***"
+          curl -X POST "https://hooks.zapier.com/hooks/catch/1863715/215sl1w/" -H "Content-Type: application/json" -d "{ \"message\": \"${MESSAGE}\" }"

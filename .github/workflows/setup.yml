@@ -1,0 +1,163 @@
+name: Set System Up
+on:
+  workflow_call:
+    secrets:
+      host:
+        required: true
+      username:
+        required: true
+      key:
+        required: true
+      port:
+        required: true
+      fingerprint:
+        required: true
+      SHARED_BACK_FRONT_ENV:
+        required: true
+      SHARED_BACK_NGINX_ENV:
+        required: true
+      SHARED_BACK_REDIS_ENV:
+        required: true
+      BACK_ENV:
+        required: true
+      FRONT_ENV:
+        required: true
+      NGINX_ENV:
+        required: true
+      envs:
+        required: false
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: executing System Setup using key
+      uses: appleboy/ssh-action@v1.1.0
+      env:
+        SHARED_BACK_FRONT_ENV: ${{ secrets.SHARED_BACK_FRONT_ENV }}
+        SHARED_BACK_NGINX_ENV: ${{ secrets.SHARED_BACK_NGINX_ENV }}
+        SHARED_BACK_REDIS_ENV: ${{ secrets.SHARED_BACK_REDIS_ENV }}
+        BACK_ENV: ${{ secrets.BACK_ENV }}
+        FRONT_ENV: ${{ secrets.FRONT_ENV }}
+        NGINX_ENV: ${{ secrets.NGINX_ENV }}
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.KEY }}
+        port: ${{ secrets.PORT }}
+        fingerprint: ${{ secrets.FINGERPRINT }}
+        envs: SHARED_BACK_FRONT_ENV,SHARED_BACK_NGINX_ENV,SHARED_BACK_REDIS_ENV,BACK_ENV,FRONT_ENV,NGINX_ENV
+        script: |
+          set -euo pipefail
+
+          export BACK_PROJECT="back"
+          export BACK_USER="${BACK_PROJECT}"
+          export BACK_GROUP="${BACK_USER}"
+
+          export FRONT_PROJECT="front"
+          export FRONT_USER="${FRONT_PROJECT}"
+          export FRONT_GROUP="${FRONT_USER}"
+
+          export NGINX_PROJECT="nginx"
+          export NGINX_USER="${NGINX_PROJECT}"
+          export NGINX_GROUP="${NGINX_USER}"
+
+          export REDIS_PROJECT="redis"
+          export REDIS_USER="${REDIS_PROJECT}"
+          export REDIS_GROUP="${REDIS_USER}"
+
+          export DISK_USAGE=$(df -h / | awk 'NR==2{print $5}' | tr -d '%')
+          export MESSAGE_INIT="ProcStudio-Setup:"
+
+          readonly BACK_PROJECT BACK_USER BACK_GROUP BACK_HOME    \
+            FRONT_PROJECT FRONT_USER FRONT_GROUP FRONT_HOME       \
+            NGINX_PROJECT NGINX_USER NGINX_GROUP NGINX_HOME       \
+            REDIS_PROJECT REDIS_USER REDIS_GROUP         \
+            REDIS_HOME DISK_USAGE MESSAGE_INIT
+
+          readonly ALL_USERS=("${BACK_USER}" "${FRONT_USER}" "${NGINX_USER}" "${REDIS_USER}")
+          readonly ALL_GROUPS=("${BACK_GROUP}" "${FRONT_GROUP}" "${NGINX_GROUP}" "${REDIS_GROUP}")
+          
+          BACK_ENV=$(echo -e "${SHARED_BACK_FRONT_ENV}\n${SHARED_BACK_NGINX_ENV}\n${SHARED_BACK_REDIS_ENV}\n${BACK_ENV}")
+          FRONT_ENV=$(echo -e "${SHARED_BACK_FRONT_ENV}\n${FRONT_ENV}")
+          NGINX_ENV=$(echo -e "${SHARED_BACK_NGINX_ENV}\n${NGINX_ENV}")
+          readonly REDIS_ENV=$(echo -e "${SHARED_BACK_REDIS_ENV}")
+
+          readonly ENVS=(
+            "${BACK_ENV}"
+            "${FRONT_ENV}"
+            "${NGINX_ENV}"
+            "${REDIS_ENV}"
+          )
+
+          declare -A USER_GROUP_LIST
+          declare -A USER_ENV_LIST
+
+          if [ ${#ALL_USERS[@]} -ne ${#ALL_GROUPS[@]} ] || [ ${#ALL_USERS[@]} -ne ${#ENVS[@]} ]; then
+            echo "Erro: Arrays têm tamanhos diferentes!" >&2
+            exit 1
+          fi
+
+          for i in "${!ALL_USERS[@]}"; do
+            SELECTED_USER=${ALL_USERS[$i]}
+            USER_GROUP_LIST[${SELECTED_USER}]=${ALL_GROUPS[$i]}
+            USER_ENV_LIST[${SELECTED_USER}]=${ENVS[$i]}
+          done
+
+          ERROR=false
+
+          if command -v apt >/dev/null 2>&1; then
+            apt update -y && apt upgrade -y
+            if ! command -v git >/dev/null 2>&1; then
+              apt install -y git
+            fi
+            if ! command -v curl >/dev/null 2>&1; then
+              apt install -y curl
+            fi
+            if ! command -v redis-server >/dev/null 2>&1; then
+              apt install -y redis-server
+            fi
+            if ! command -v nginx >/dev/null 2>&1; then
+              apt install -y nginx
+            fi
+            if ! command -v envsubst >/dev/null 2>&1; then
+              apt install -y gettext-base
+            fi
+            if ! command -v getent >/dev/null 2>&1; then
+              apt install -y passwd
+            fi
+            if ! command -v ffmpeg >/dev/null 2>&1; then
+              apt install -y ffmpeg
+            fi
+            if ! command -v sofice >/dev/null 2>&1; then
+              apt install -y libreoffice
+            fi
+          fi
+
+
+          for USERVAL in "${!USER_GROUP_LIST[@]}"; do
+            GROUPVAL=${USER_GROUP_LIST[$USERVAL]}
+            HOMEVAL="/home/${USERVAL}"
+            if ! getent group "${GROUPVAL}" >/dev/null 2>&1; then
+              groupadd -r "${GROUPVAL}"
+            fi
+            if ! id -u "${USERVAL}" >/dev/null 2>&1; then
+              useradd -m -d "${HOMEVAL}" -g "${GROUPVAL}" -s /bin/bash "${USERVAL}"
+            fi
+            mkdir -p "${HOMEVAL}"
+            echo "${USER_ENV_LIST[$USERVAL]}" > "${HOMEVAL}/.env"
+            chown -R "${USERVAL}:${GROUPVAL}" "${HOMEVAL}"
+            chmod 400 "${HOMEVAL}/.env"
+          done
+
+          sysctl -w net.ipv6.conf.all.disable_ipv6=1 net.ipv6.conf.default.disable_ipv6=1 net.ipv6.conf.lo.disable_ipv6=1
+
+          MESSAGE="${MESSAGE_INIT}"
+          if [ "${ERROR}" = true ]; then
+            MESSAGE="${MESSAGE} Falhou ao Subir Configuração do Sistema!"
+          else
+            MESSAGE="${MESSAGE} Deploy do Sistema feito com sucesso!"
+          fi
+          [ "${DISK_USAGE}" -lt 90 ] || MESSAGE="${MESSAGE} *** AVISO: Disco Lotado ***"
+          curl -X POST "https://hooks.zapier.com/hooks/catch/1863715/215sl1w/" -H "Content-Type: application/json" -d "{ \"message\": \"${MESSAGE}\" }"
