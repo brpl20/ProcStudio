@@ -24,4 +24,24 @@ class Admin::OfficePolicy < Admin::BasePolicy
   def destroy?
     lawyer?
   end
+
+  def upload_logo?
+    lawyer?
+  end
+
+  def upload_contracts?
+    lawyer?
+  end
+
+  def upload_attachment?
+    lawyer? || secretary?
+  end
+
+  def remove_attachment?
+    lawyer? || secretary?
+  end
+
+  def transfer_attachment?
+    lawyer?
+  end
 end

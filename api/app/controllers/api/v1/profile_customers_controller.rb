@@ -7,6 +7,7 @@ module Api
     class ProfileCustomersController < BackofficeController
       include InputSanitizer
       include ProfileCustomerResponses
+      include AttachmentTransferable
 
       before_action :load_active_storage_url_options unless Rails.env.production?
       before_action :validate_input_safety?, only: [:create, :update]
@@ -140,6 +141,65 @@ module Api
             message: error_messages.first,
             errors: error_messages
           }, status: :unprocessable_content
+        end
+      end
+
+      def upload_attachment
+        profile_customer  # This calls the private method to get @profile_customer
+        authorize @profile_customer, :update?, policy_class: Admin::CustomerPolicy
+
+        unless params[:attachment].present?
+          return profile_customer_error_response(
+            'Arquivo não fornecido',
+            ['Attachment file is required']
+          )
+        end
+
+        begin
+          # Generic customer attachment
+          file_metadata = S3Manager.upload(
+            params[:attachment],
+            model: @profile_customer,
+            user_profile: current_user.user_profile,
+            metadata: {
+              description: params[:description],
+              document_date: params[:document_date],
+              file_type: 'customer_attachment'
+            }
+          )
+
+          profile_customer_success_response(
+            'Anexo enviado com sucesso',
+            {
+              id: @profile_customer.id,
+              file_metadata_id: file_metadata.id,
+              filename: file_metadata.filename,
+              url: file_metadata.url,
+              byte_size: file_metadata.byte_size,
+              content_type: file_metadata.content_type
+            }
+          )
+        rescue StandardError => e
+          Rails.logger.error "Customer attachment upload failed: #{e.message}"
+          profile_customer_internal_error_response(e, 'Erro ao fazer upload do anexo')
+        end
+      end
+
+      def remove_attachment
+        profile_customer  # This calls the private method to get @profile_customer
+        authorize @profile_customer, :update?, policy_class: Admin::CustomerPolicy
+
+        begin
+          FileMetadata.where(attachable: @profile_customer, id: params[:attachment_id]).destroy_all
+
+          profile_customer_success_response(
+            'Anexo removido com sucesso',
+            { id: @profile_customer.id, attachment_id: params[:attachment_id] }
+          )
+        rescue ActiveRecord::RecordNotFound
+          profile_customer_not_found_response
+        rescue StandardError => e
+          profile_customer_internal_error_response(e, 'Erro ao remover anexo')
         end
       end
 

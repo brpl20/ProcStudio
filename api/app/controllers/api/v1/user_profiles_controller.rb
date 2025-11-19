@@ -4,6 +4,7 @@ module Api
   module V1
     class UserProfilesController < BackofficeController
       include UserProfileResponses
+      include AttachmentTransferable
 
       before_action :retrieve_user_profile, only: [:update, :show]
       before_action :retrieve_deleted_user_profile, only: [:restore]
@@ -161,6 +162,63 @@ module Api
         end
       end
 
+      def upload_attachment
+        retrieve_user_profile
+
+        unless params[:attachment].present?
+          return user_profile_error_response(
+            'Arquivo não fornecido',
+            ['Attachment file is required']
+          )
+        end
+
+        begin
+          # Generic user profile attachment (not avatar)
+          file_metadata = S3Manager.upload(
+            params[:attachment],
+            model: @user_profile,
+            user_profile: current_user.user_profile,
+            metadata: {
+              description: params[:description],
+              document_date: params[:document_date],
+              file_type: 'profile_attachment'
+            }
+          )
+
+          user_profile_success_response(
+            'Anexo enviado com sucesso',
+            {
+              id: @user_profile.id,
+              file_metadata_id: file_metadata.id,
+              filename: file_metadata.filename,
+              url: file_metadata.url,
+              byte_size: file_metadata.byte_size,
+              content_type: file_metadata.content_type
+            }
+          )
+        rescue StandardError => e
+          Rails.logger.error "UserProfile attachment upload failed: #{e.message}"
+          user_profile_internal_error_response(e, 'Erro ao fazer upload do anexo')
+        end
+      end
+
+      def remove_attachment
+        retrieve_user_profile
+
+        begin
+          FileMetadata.where(attachable: @user_profile, id: params[:attachment_id]).destroy_all
+
+          user_profile_success_response(
+            'Anexo removido com sucesso',
+            { id: @user_profile.id, attachment_id: params[:attachment_id] }
+          )
+        rescue ActiveRecord::RecordNotFound
+          user_profile_not_found_response
+        rescue StandardError => e
+          user_profile_internal_error_response(e, 'Erro ao remover anexo')
+        end
+      end
+
       private
 
       def user_profiles_params
@@ -218,7 +276,7 @@ module Api
         # Skip authorization for complete_profile since it has explicit authorization
         return if action_name == 'complete_profile'
 
-        authorize [:admin, :work], :"#{action_name}?"
+        authorize [:admin, :user], :"#{action_name}?"
       end
 
       def fetch_team_user_profiles

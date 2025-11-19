@@ -52,6 +52,7 @@ Rails.application.routes.draw do
           post :restore
           post :upload_attachment
           delete 'attachments/:attachment_id', action: :remove_attachment
+          post 'attachments/:attachment_id/transfer', action: :transfer_attachment
         end
 
         resources :comments, controller: 'job_comments', only: [:index, :create, :update, :destroy]
@@ -62,7 +63,9 @@ Rails.application.routes.draw do
           post :restore
           post :upload_logo
           post :upload_contracts
+          post :upload_attachment
           delete 'attachments/:attachment_id', action: :remove_attachment
+          post 'attachments/:attachment_id/transfer', action: :transfer_attachment
           patch 'attachments/metadata', action: :update_attachment_metadata
         end
 
@@ -74,6 +77,9 @@ Rails.application.routes.draw do
       resources :profile_customers do
         member do
           post :restore
+          post :upload_attachment
+          delete 'attachments/:attachment_id', action: :remove_attachment
+          post 'attachments/:attachment_id/transfer', action: :transfer_attachment
         end
 
         # Nested represents routes for a specific customer
@@ -106,6 +112,9 @@ Rails.application.routes.draw do
         member do
           post :restore
           post :upload_avatar
+          post :upload_attachment
+          delete 'attachments/:attachment_id', action: :remove_attachment
+          post 'attachments/:attachment_id/transfer', action: :transfer_attachment
         end
 
         collection do
@@ -117,8 +126,9 @@ Rails.application.routes.draw do
         member do
           post :restore
           post :convert_documents_to_pdf
-          post :upload_document
-          delete 'documents/:document_id', action: :remove_document
+          post :upload_attachment
+          delete 'attachments/:attachment_id', action: :remove_attachment
+          post 'attachments/:attachment_id/transfer', action: :transfer_attachment
         end
 
         resources :documents, only: [:update]
@@ -257,6 +267,13 @@ Rails.application.routes.draw do
 
       post '/login', to: 'auth#authenticate'
       delete '/logout', to: 'auth#destroy'
+
+      # Global attachment management
+      resources :attachments, only: [] do
+        member do
+          post :transfer
+        end
+      end
 
       # Current user endpoints
       get '/whoami', to: 'current_user#whoami'

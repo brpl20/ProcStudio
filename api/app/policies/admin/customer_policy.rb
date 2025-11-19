@@ -28,4 +28,16 @@ class Admin::CustomerPolicy < Admin::BasePolicy
   def destroy?
     lawyer? || paralegal? || secretary?
   end
+
+  def upload_attachment?
+    lawyer? || paralegal? || trainee? || secretary?
+  end
+
+  def remove_attachment?
+    lawyer? || paralegal? || trainee? || secretary?
+  end
+
+  def transfer_attachment?
+    lawyer? || paralegal?
+  end
 end

@@ -3,6 +3,8 @@
 module Api
   module V1
     class WorksController < BackofficeController
+      include AttachmentTransferable
+
       before_action :load_active_storage_url_options unless Rails.env.production?
 
       before_action :set_work, only: [:show, :update, :convert_documents_to_pdf]
@@ -147,34 +149,42 @@ module Api
         render json: { message: 'Documentos convertidos com sucesso!' }, status: :ok
       end
 
-      def upload_document
+      def upload_attachment
         set_work
 
-        unless params[:document].present?
+        unless params[:attachment].present?
           return render_error(
             message: 'Arquivo não fornecido',
-            errors: ['Document file is required']
-          )
-        end
-
-        unless params[:document_type].present?
-          return render_error(
-            message: 'Tipo de documento não especificado',
-            errors: ['Document type is required (procuration, waiver, deficiency_statement, honorary)']
+            errors: ['Attachment file is required']
           )
         end
 
         begin
-          file_metadata = @work.upload_document(
-            params[:document],
-            document_type: params[:document_type],
-            user_profile: current_user.user_profile,
+          # For works, we can optionally specify document type
+          metadata_params = {
             description: params[:description],
             document_date: params[:document_date]
-          )
+          }
+
+          if params[:document_type].present?
+            file_metadata = @work.upload_document(
+              params[:attachment],
+              document_type: params[:document_type],
+              user_profile: current_user.user_profile,
+              **metadata_params
+            )
+          else
+            # Generic attachment without specific type
+            file_metadata = S3Manager.upload(
+              params[:attachment],
+              model: @work,
+              user_profile: current_user.user_profile,
+              metadata: metadata_params.merge(file_type: 'work_attachment')
+            )
+          end
 
           render_success(
-            message: 'Documento enviado com sucesso',
+            message: 'Anexo enviado com sucesso',
             data: {
               id: @work.id,
               file_metadata_id: file_metadata.id,
@@ -186,28 +196,33 @@ module Api
             }
           )
         rescue StandardError => e
-          Rails.logger.error "Work document upload failed: #{e.message}"
+          Rails.logger.error "Work attachment upload failed: #{e.message}"
           render_error(
-            message: 'Erro ao fazer upload do documento',
+            message: 'Erro ao fazer upload do anexo',
             errors: [e.message]
           )
         end
       end
 
-      def remove_document
+      def remove_attachment
         set_work
 
         begin
-          @work.delete_document(params[:document_id])
+          if params[:document_type].present?
+            @work.delete_document(params[:attachment_id])
+          else
+            FileMetadata.where(attachable: @work, id: params[:attachment_id]).destroy_all
+          end
+
           render_success(
-            message: 'Documento removido com sucesso',
-            data: { id: @work.id, document_id: params[:document_id] }
+            message: 'Anexo removido com sucesso',
+            data: { id: @work.id, attachment_id: params[:attachment_id] }
           )
         rescue ActiveRecord::RecordNotFound
-          render_not_found('Documento')
+          render_not_found('Anexo')
         rescue StandardError => e
           render_error(
-            message: 'Erro ao remover documento',
+            message: 'Erro ao remover anexo',
             errors: [e.message]
           )
         end
