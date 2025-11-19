@@ -100,6 +100,19 @@ development/team-31/offices/37/social-contracts/contract-20251118234649-def456.p
 
 ## API Endpoints
 
+### Endpoint Pattern Summary
+The API provides two patterns for file uploads:
+
+1. **Specific endpoints** for predefined file types:
+   - Office Logo: `POST /api/v1/offices/:id/upload_logo`
+   - Office Social Contracts: `POST /api/v1/offices/:id/upload_contracts`
+   - UserProfile Avatar: `POST /api/v1/user_profiles/:id/upload_avatar`
+
+2. **Generic endpoints** for polymorphic attachments:
+   - Job Attachments: `POST /api/v1/jobs/:id/upload_attachment`
+   - Work Documents: `POST /api/v1/works/:id/upload_document`
+   - These endpoints work with the polymorphic FileMetadata model
+
 ### Office Logo Upload
 ```http
 POST /api/v1/offices/:id/upload_logo
@@ -154,6 +167,82 @@ Response:
   "success": true,
   "message": "3 contrato(s) adicionado(s) com sucesso",
   "uploaded_count": 3
+}
+```
+
+### Job Attachment Upload (Generic Polymorphic)
+```http
+POST /api/v1/jobs/:id/upload_attachment
+Content-Type: multipart/form-data
+
+Parameters:
+- attachment: File (any format)
+- description: String (optional)
+- document_date: Date (optional)
+
+Response:
+{
+  "success": true,
+  "message": "Anexo enviado com sucesso",
+  "data": {
+    "id": 1,
+    "file_metadata_id": 789,
+    "filename": "report.pdf",
+    "url": "https://s3-presigned-url...",
+    "byte_size": 1024000,
+    "content_type": "application/pdf"
+  }
+}
+```
+
+### Job Attachment Removal
+```http
+DELETE /api/v1/jobs/:id/attachments/:attachment_id
+
+Response:
+{
+  "success": true,
+  "message": "Anexo removido com sucesso",
+  "data": { "id": 1, "attachment_id": "789" }
+}
+```
+
+### Work Document Upload (Typed Documents)
+```http
+POST /api/v1/works/:id/upload_document
+Content-Type: multipart/form-data
+
+Parameters:
+- document: File (PDF, DOCX)
+- document_type: String (required - procuration, waiver, deficiency_statement, honorary)
+- description: String (optional)
+- document_date: Date (optional)
+
+Response:
+{
+  "success": true,
+  "message": "Documento enviado com sucesso",
+  "data": {
+    "id": 1,
+    "file_metadata_id": 890,
+    "filename": "procuration.pdf",
+    "document_type": "procuration",
+    "url": "https://s3-presigned-url...",
+    "byte_size": 512000,
+    "content_type": "application/pdf"
+  }
+}
+```
+
+### Work Document Removal
+```http
+DELETE /api/v1/works/:id/documents/:document_id
+
+Response:
+{
+  "success": true,
+  "message": "Documento removido com sucesso",
+  "data": { "id": 1, "document_id": "890" }
 }
 ```
 

@@ -50,6 +50,8 @@ Rails.application.routes.draw do
       resources :jobs do
         member do
           post :restore
+          post :upload_attachment
+          delete 'attachments/:attachment_id', action: :remove_attachment
         end
 
         resources :comments, controller: 'job_comments', only: [:index, :create, :update, :destroy]
@@ -115,6 +117,8 @@ Rails.application.routes.draw do
         member do
           post :restore
           post :convert_documents_to_pdf
+          post :upload_document
+          delete 'documents/:document_id', action: :remove_document
         end
 
         resources :documents, only: [:update]

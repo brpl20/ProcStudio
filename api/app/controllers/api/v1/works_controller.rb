@@ -147,6 +147,72 @@ module Api
         render json: { message: 'Documentos convertidos com sucesso!' }, status: :ok
       end
 
+      def upload_document
+        set_work
+
+        unless params[:document].present?
+          return render_error(
+            message: 'Arquivo não fornecido',
+            errors: ['Document file is required']
+          )
+        end
+
+        unless params[:document_type].present?
+          return render_error(
+            message: 'Tipo de documento não especificado',
+            errors: ['Document type is required (procuration, waiver, deficiency_statement, honorary)']
+          )
+        end
+
+        begin
+          file_metadata = @work.upload_document(
+            params[:document],
+            document_type: params[:document_type],
+            user_profile: current_user.user_profile,
+            description: params[:description],
+            document_date: params[:document_date]
+          )
+
+          render_success(
+            message: 'Documento enviado com sucesso',
+            data: {
+              id: @work.id,
+              file_metadata_id: file_metadata.id,
+              filename: file_metadata.filename,
+              document_type: params[:document_type],
+              url: file_metadata.url,
+              byte_size: file_metadata.byte_size,
+              content_type: file_metadata.content_type
+            }
+          )
+        rescue StandardError => e
+          Rails.logger.error "Work document upload failed: #{e.message}"
+          render_error(
+            message: 'Erro ao fazer upload do documento',
+            errors: [e.message]
+          )
+        end
+      end
+
+      def remove_document
+        set_work
+
+        begin
+          @work.delete_document(params[:document_id])
+          render_success(
+            message: 'Documento removido com sucesso',
+            data: { id: @work.id, document_id: params[:document_id] }
+          )
+        rescue ActiveRecord::RecordNotFound
+          render_not_found('Documento')
+        rescue StandardError => e
+          render_error(
+            message: 'Erro ao remover documento',
+            errors: [e.message]
+          )
+        end
+      end
+
       private
 
       def set_work

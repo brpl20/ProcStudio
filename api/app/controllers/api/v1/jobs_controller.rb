@@ -135,6 +135,63 @@ module Api
         render_not_found('Job')
       end
 
+      def upload_attachment
+        retrieve_job
+
+        unless params[:attachment].present?
+          return render_error(
+            message: 'Arquivo não fornecido',
+            errors: ['Attachment file is required']
+          )
+        end
+
+        begin
+          file_metadata = @job.upload_attachment(
+            params[:attachment],
+            user_profile: current_user.user_profile,
+            description: params[:description],
+            document_date: params[:document_date]
+          )
+
+          render_success(
+            message: 'Anexo enviado com sucesso',
+            data: {
+              id: @job.id,
+              file_metadata_id: file_metadata.id,
+              filename: file_metadata.filename,
+              url: file_metadata.url,
+              byte_size: file_metadata.byte_size,
+              content_type: file_metadata.content_type
+            }
+          )
+        rescue StandardError => e
+          Rails.logger.error "Job attachment upload failed: #{e.message}"
+          render_error(
+            message: 'Erro ao fazer upload do anexo',
+            errors: [e.message]
+          )
+        end
+      end
+
+      def remove_attachment
+        retrieve_job
+
+        begin
+          @job.delete_attachment(params[:attachment_id])
+          render_success(
+            message: 'Anexo removido com sucesso',
+            data: { id: @job.id, attachment_id: params[:attachment_id] }
+          )
+        rescue ActiveRecord::RecordNotFound
+          render_not_found('Anexo')
+        rescue StandardError => e
+          render_error(
+            message: 'Erro ao remover anexo',
+            errors: [e.message]
+          )
+        end
+      end
+
       private
 
       def retrieve_job
