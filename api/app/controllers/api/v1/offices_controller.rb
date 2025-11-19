@@ -209,11 +209,13 @@ module Api
 
       def process_logo_upload(logo)
         Rails.logger.info "Uploading logo for office #{@office.id}"
-        metadata_params = {
-          uploaded_by_id: current_user.id,
+        file_metadata = @office.upload_logo(
+          logo,
+          user_profile: current_user.user_profile,
           description: "Logo for #{@office.name}"
-        }
-        if @office.upload_logo(logo, metadata_params)
+        )
+
+        if file_metadata
           Rails.logger.info 'Logo uploaded successfully'
         else
           Rails.logger.error "Logo upload failed: #{@office.errors.full_messages}"
@@ -225,12 +227,14 @@ module Api
         Array(social_contracts).each do |contract|
           next if contract.blank?
 
-          metadata_params = {
-            uploaded_by_id: current_user.id,
+          file_metadata = @office.upload_social_contract(
+            contract,
+            user_profile: current_user.user_profile,
             document_date: Date.current,
             description: "Social contract for #{@office.name}"
-          }
-          if @office.upload_social_contract(contract, metadata_params)
+          )
+
+          if file_metadata
             Rails.logger.info 'Social contract uploaded successfully'
           else
             Rails.logger.error "Social contract upload failed: #{@office.errors.full_messages}"
@@ -251,13 +255,16 @@ module Api
             # Create a wrapper object that mimics an uploaded file
             uploaded_file = ContractFileWrapper.new(file, file_path)
 
-            metadata_params = {
-              uploaded_by_id: current_user.id,
+            # Upload the generated social contract using the new S3Manager
+            file_metadata = @office.upload_social_contract(
+              uploaded_file,
+              user_profile: current_user.user_profile,
+              system_generated: true,
               document_date: Date.current,
               description: "Contrato Social gerado automaticamente para #{@office.name}"
-            }
+            )
 
-            if @office.upload_social_contract(uploaded_file, metadata_params)
+            if file_metadata
               Rails.logger.info "Social contract generated and uploaded successfully for office #{@office.id}"
               Rails.logger.info "Generated file path: #{file_path}"
             else
