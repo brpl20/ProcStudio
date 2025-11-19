@@ -16,32 +16,87 @@ We've completely replaced ActiveStorage with a custom S3 file management system.
 ```ruby
 # Universal file tracking model
 FileMetadata
-  - attachable (polymorphic) # Can be Office, UserProfile, Job, Work, etc.
-  - s3_key                    # S3 path
-  - filename                  # Original filename
-  - content_type              # MIME type
-  - byte_size                 # File size
-  - checksum                  # SHA256 for deduplication
-  - uploaded_by               # UserProfile who uploaded
-  - file_category             # Type: logo, avatar, social_contract, etc.
+  - attachable (polymorphic)   # Can be Office, UserProfile, Job, Work, etc.
+  - s3_key                      # S3 path
+  - filename                    # Original filename
+  - content_type                # MIME type
+  - byte_size                   # File size in bytes
+  - checksum                    # SHA256 for deduplication
+  - created_by_system           # Boolean - true for system-generated files
+  - uploaded_by                 # UserProfile who uploaded
+  - file_category               # Type: logo, avatar, social_contract, etc.
+  - metadata                    # JSON hash with custom data
+  - uploaded_at                 # Timestamp of upload
+  - expires_at                  # Optional expiry date
 ```
 
 #### S3Manager Service
 Singleton service for all S3 operations:
-- `upload(file, model: nil, path: nil, user_profile: nil, metadata: {})`
+
+**Basic Methods:**
+- `upload(file, model: nil, path: nil, system_generated: false, user_profile: nil, metadata: {})`
 - `download(file_metadata)`
 - `delete(file_metadata)`
-- `move(file_metadata, to_model)`
-- `copy(file_metadata, to_model)`
+- `move(file_metadata, to_model, options = {})`
+- `copy(file_metadata, to_model, options = {})`
 - `list(scope, filters = {})`
 - `url(file_metadata, type: :view, expires_in: 3600)`
+- `stream(file_metadata, &block)`
+
+**System-Generated Files - Social Contract Example:**
+```ruby
+# In OfficesController#process_social_contract_generation
+File.open(file_path, 'rb') do |file|
+  # Create a wrapper for the generated DOCX file
+  uploaded_file = ContractFileWrapper.new(file, file_path)
+
+  # Upload with system_generated flag
+  file_metadata = office.upload_social_contract(
+    uploaded_file,
+    user_profile: current_user.user_profile,
+    system_generated: true,  # Mark as system-generated
+    document_date: Date.current,
+    description: "Contrato Social gerado automaticamente para #{office.name}"
+  )
+end
+```
+
+**User-Uploaded Files Example:**
+```ruby
+# Regular file upload
+file_metadata = office.upload_social_contract(
+  params[:contract],
+  user_profile: current_user.user_profile,
+  system_generated: false,  # User-uploaded file
+  document_date: params[:document_date],
+  description: params[:description]
+)
+```
 
 #### PathGenerator Module
-Generates consistent S3 paths:
+Generates consistent S3 paths with automatic extension detection:
+
+**Path Structure:**
 ```
-{environment}/team-{team_id}/{model_type}/{model_id}/{file_type}/{filename}
+{environment}/team-{team_id}/{model_type}/{model_id}/{file_type}/{filename-timestamp-hash}.{ext}
 ```
-Example: `development/team-31/offices/37/logo/logo-20251117195134.jpg`
+
+**Features:**
+- Automatically extracts file extension from original filename
+- Uses correct extension for each file type (e.g., `.docx` for Word documents, `.pdf` for PDFs)
+- Falls back to sensible defaults if no extension provided
+
+**Examples:**
+```
+# Logo with PNG extension
+development/team-31/offices/37/logo/logo-20251117195134.png
+
+# System-generated social contract (DOCX)
+development/team-31/offices/37/social-contracts/contract-20251118234648-abc123.docx
+
+# User-uploaded social contract (PDF)
+development/team-31/offices/37/social-contracts/contract-20251118234649-def456.pdf
+```
 
 ## API Endpoints
 
@@ -109,16 +164,25 @@ Response:
 office = Office.find(id)
 
 # Logo management
-office.upload_logo(file, user_profile: current_user.user_profile)
-office.logo_url           # Returns presigned S3 URL
+office.upload_logo(file, user_profile: current_user.user_profile, **options)
 office.logo                # Returns FileMetadata object
+office.logo_url(expires_in: 3600)  # Returns presigned S3 URL
 office.logo&.destroy       # Deletes logo
 
 # Social contracts
-office.upload_social_contract(file, user_profile: current_user.user_profile)
+office.upload_social_contract(
+  file,
+  user_profile: current_user.user_profile,
+  system_generated: false,  # Set to true for auto-generated contracts
+  **options
+)
 office.social_contracts    # Returns FileMetadata collection
-office.social_contract_urls # Returns array of presigned URLs
+office.social_contract_urls(expires_in: 3600) # Returns array of presigned URLs
 office.delete_social_contract(file_metadata_id)
+
+# Identifying system-generated contracts
+office.social_contracts.where(created_by_system: true)  # System-generated
+office.social_contracts.where(created_by_system: false) # User-uploaded
 ```
 
 ### UserProfile Model
@@ -174,10 +238,11 @@ bucket/
 │       ├── offices/
 │       │   └── 37/
 │       │       ├── logo/
-│       │       │   └── logo-20251117195134.jpg
+│       │       │   └── logo-20251117195134.png
 │       │       └── social-contracts/
-│       │           ├── contract-20251117194851-5b0ae3.pdf
-│       │           └── contract-20251117195104-4d85f5.pdf
+│       │           ├── contract-20251117194851-5b0ae3.pdf        # User-uploaded
+│       │           ├── contract-20251117195104-4d85f5.docx      # System-generated
+│       │           └── contract-20251118234648-abc123.docx      # System-generated
 │       ├── user-profiles/
 │       │   └── 61/
 │       │       └── avatar/
@@ -227,6 +292,47 @@ bucket/
 - Tracks file types and sizes
 - Generates usage reports
 
+## Accessing File Metadata
+
+### Through Model Associations
+```ruby
+# Get metadata for a file
+office = Office.find(id)
+metadata = office.logo
+
+# Access metadata fields
+metadata.id
+metadata.s3_key
+metadata.filename
+metadata.content_type
+metadata.byte_size
+metadata.checksum
+metadata.created_by_system    # true for system-generated
+metadata.uploaded_by          # UserProfile who uploaded
+metadata.metadata             # Custom metadata hash
+metadata.metadata['description']
+metadata.metadata['document_date']
+metadata.url                  # Presigned S3 URL
+```
+
+### Querying FileMetadata
+```ruby
+# Find system-generated files
+FileMetadata.system_generated
+
+# Find user-uploaded files
+FileMetadata.user_uploaded
+
+# Find by category
+FileMetadata.by_category('social_contract')
+
+# Find by uploader
+FileMetadata.where(uploaded_by: user_profile)
+
+# Find files for a specific model
+FileMetadata.where(attachable: office)
+```
+
 ## Testing
 
 ### Test file upload in console
@@ -236,7 +342,11 @@ file = File.open('test.jpg', 'rb')
 
 # Upload logo
 office = Office.first
-metadata = office.upload_logo(file, user_profile: UserProfile.first)
+metadata = office.upload_logo(
+  file,
+  user_profile: UserProfile.first,
+  description: "Company logo"
+)
 puts office.logo_url
 
 # Upload avatar
@@ -244,10 +354,20 @@ profile = UserProfile.first
 metadata = profile.upload_avatar(file, user_profile: profile)
 puts profile.avatar_url
 
-# Upload social contract
+# Upload social contract (user-uploaded)
 pdf = File.open('contract.pdf', 'rb')
-metadata = office.upload_social_contract(pdf, user_profile: profile)
+metadata = office.upload_social_contract(
+  pdf,
+  user_profile: profile,
+  system_generated: false,
+  description: "1a Alteração"
+)
 puts office.social_contract_urls
+
+# Check if contract is system-generated
+office.social_contracts.each do |contract|
+  puts "#{contract.filename}: System-generated? #{contract.created_by_system}"
+end
 ```
 
 ## Troubleshooting
@@ -265,6 +385,13 @@ puts office.social_contract_urls
 
 4. **Files not accessible**: Presigned URLs expired
    - Solution: Default expiry is 1 hour, increase with `expires_in` parameter
+
+5. **Wrong file extension in S3**: Files saved with incorrect extension
+   - Solution: PathGenerator now extracts extension from filename automatically
+   - System-generated DOCX files will use `.docx`, PDFs will use `.pdf`
+
+6. **"wrong number of arguments" error**: Method signatures changed
+   - Solution: Use keyword arguments for upload methods (see examples above)
 
 ## Security Notes
 
@@ -324,4 +451,4 @@ For issues or questions about the new S3 system:
 3. Ensure FileMetadata records exist in database
 4. Test with the provided console commands
 
-Last Updated: November 18, 2024
+Last Updated: November 19, 2024
