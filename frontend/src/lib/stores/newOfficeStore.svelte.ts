@@ -14,10 +14,20 @@ import {
   createDefaultValidationConfig
 } from '../schemas/new-office-form';
 
+// Extend the form data type to include files
+interface NewOfficeFormDataWithFiles extends NewOfficeFormData {
+  logoFile: File | null;
+  contractFiles: File[];
+}
+
 class NewOfficeStore {
   // Private state using Svelte 5 runes
   private state = $state({
-    formData: createDefaultNewOfficeFormData(),
+    formData: {
+      ...createDefaultNewOfficeFormData(),
+      logoFile: null,
+      contractFiles: []
+    } as NewOfficeFormDataWithFiles,
     formState: {
       loading: false,
       saving: false,
@@ -56,21 +66,19 @@ class NewOfficeStore {
     !this.state.formState.saving
   );
 
-  // Check if quote configuration is valid
   isQuoteConfigValid = $derived(
     this.state.formData.quote_value > 0 &&
     this.state.formData.number_of_quotes > 0
   );
 
-  // Calculate total capital
   totalCapital = $derived(
     this.state.formData.quote_value * this.state.formData.number_of_quotes
   );
 
   // Update form field
-  updateField<K extends keyof NewOfficeFormData>(
+  updateField<K extends keyof NewOfficeFormDataWithFiles>(
     field: K,
-    value: NewOfficeFormData[K]
+    value: NewOfficeFormDataWithFiles[K]
   ) {
     this.state.formData[field] = value;
     this.state.formState.isDirty = this.isDirty;
@@ -78,7 +86,7 @@ class NewOfficeStore {
   }
 
   // Update entire form data
-  updateFormData(data: Partial<NewOfficeFormData>) {
+  updateFormData(data: Partial<NewOfficeFormDataWithFiles>) {
     Object.assign(this.state.formData, data);
     this.state.formState.isDirty = this.isDirty;
     this.clearMessages();
@@ -91,29 +99,13 @@ class NewOfficeStore {
     this.clearMessages();
   }
 
-  // Add a partner
-  addPartner(partner: PartnerFormData) {
-    this.state.formData.partners = [...this.state.formData.partners, partner];
-    this.state.formState.isDirty = this.isDirty;
-  }
-
-  // Remove a partner
-  removePartner(index: number) {
-    this.state.formData.partners = this.state.formData.partners.filter((_, i) => i !== index);
-    this.state.formState.isDirty = this.isDirty;
-  }
-
-  // Update a specific partner
-  updatePartner(index: number, partner: PartnerFormData) {
-    if (index >= 0 && index < this.state.formData.partners.length) {
-      this.state.formData.partners[index] = partner;
-      this.state.formState.isDirty = this.isDirty;
-    }
-  }
-
   // Reset form
   resetForm() {
-    this.state.formData = createDefaultNewOfficeFormData();
+    this.state.formData = {
+      ...createDefaultNewOfficeFormData(),
+      logoFile: null,
+      contractFiles: []
+    };
     this.state.formState = {
       loading: false,
       saving: false,
@@ -135,7 +127,7 @@ class NewOfficeStore {
     this.state.formState.success = null;
   }
 
-  // Save new office
+  // Save new office and handle uploads
   async saveNewOffice(): Promise<Office | null> {
     if (!this.canSubmit) {
       this.state.formState.error = 'Formulário inválido ou incompleto';
@@ -143,35 +135,67 @@ class NewOfficeStore {
     }
 
     this.state.formState.saving = true;
-    this.state.formState.error = null;
-    this.state.formState.success = null;
+    this.clearMessages();
+
+    let createdOffice: Office | null = null;
 
     try {
-      // Transform form data to API format
+      // 1. Create the office first
       const apiData = transformNewOfficeFormToApiRequest(this.state.formData);
-
-      // Call API with wrapped data
       const response = await api.offices.createOffice(apiData);
 
-      if (response.success && response.data) {
-        this.state.currentOffice = response.data;
-        this.state.formState.success = 'Escritório criado com sucesso!';
-        this.state.formState.isDirty = false;
-        return response.data;
-      } else {
+      if (!response.success || !response.data) {
         this.state.formState.error = response.message || 'Erro ao criar escritório';
         return null;
       }
+
+      createdOffice = response.data;
+      this.state.currentOffice = createdOffice;
+      this.state.formState.success = 'Escritório criado com sucesso!';
+
+      // 2. If office is created, proceed to upload files
+      const officeId = createdOffice.id;
+      const { logoFile, contractFiles } = this.state.formData;
+      const uploadPromises: Promise<any>[] = [];
+
+      if (logoFile) {
+        this.state.formState.success = 'Escritório criado! Enviando logo...';
+        uploadPromises.push(api.offices.uploadOfficeLogo(officeId, logoFile));
+      }
+
+      if (contractFiles.length > 0) {
+        this.state.formState.success = 'Escritório criado! Enviando contratos...';
+        uploadPromises.push(api.offices.uploadOfficeContracts(officeId, contractFiles));
+      }
+
+      if (uploadPromises.length > 0) {
+        const uploadResults = await Promise.all(uploadPromises);
+        const allUploadsSuccessful = uploadResults.every(res => res.success);
+
+        if (allUploadsSuccessful) {
+          this.state.formState.success = 'Escritório e arquivos enviados com sucesso!';
+        } else {
+          this.state.formState.error = 'Escritório criado, mas houve um erro ao enviar um ou mais arquivos.';
+        }
+      }
+      
+      this.state.formState.isDirty = false;
+      return createdOffice;
+
     } catch (error) {
-      this.state.formState.error = error instanceof Error
-        ? error.message
-        : 'Erro inesperado ao criar escritório';
+      const errorMessage = error instanceof Error ? error.message : 'Erro inesperado';
+      if (createdOffice) {
+        this.state.formState.error = `Escritório criado, mas falha no envio de arquivos: ${errorMessage}`;
+      } else {
+        this.state.formState.error = `Erro ao criar escritório: ${errorMessage}`;
+      }
       return null;
     } finally {
       this.state.formState.saving = false;
     }
   }
-
+  
+  
   // Load office for editing
   async loadNewOffice(id: number): Promise<boolean> {
     this.state.formState.loading = true;

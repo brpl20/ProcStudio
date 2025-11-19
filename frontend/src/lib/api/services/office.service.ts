@@ -416,7 +416,63 @@ export class OfficeService {
   }
 
   /**
+   * Upload office logo using the dedicated endpoint.
+   * POST /api/v1/offices/:id/upload_logo
+   */
+  async uploadOfficeLogo(officeId: number, logoFile: File): Promise<AttachmentOperationResponse> {
+    try {
+      const formData = new FormData();
+      formData.append('logo', logoFile);
+
+      const response = await this.httpClient.post(`/offices/${officeId}/upload_logo`, formData, {
+        headers: {} // Browser sets Content-Type for FormData
+      });
+
+      return response as AttachmentOperationResponse;
+    } catch (error: unknown) {
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Erro ao fazer upload do logo.',
+        errors: error?.data?.errors
+      };
+    }
+  }
+
+  /**
+   * Upload office social contracts using the dedicated endpoint.
+   * POST /api/v1/offices/:id/upload_contracts
+   */
+  async uploadOfficeContracts(
+    officeId: number,
+    contractFiles: File[]
+  ): Promise<AttachmentOperationResponse> {
+    try {
+      const formData = new FormData();
+      contractFiles.forEach((file) => {
+        formData.append('contracts[]', file);
+      });
+
+      const response = await this.httpClient.post(
+        `/offices/${officeId}/upload_contracts`,
+        formData,
+        {
+          headers: {} // Browser sets Content-Type for FormData
+        }
+      );
+
+      return response as AttachmentOperationResponse;
+    } catch (error: unknown) {
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Erro ao fazer upload dos contratos.',
+        errors: error?.data?.errors
+      };
+    }
+  }
+
+  /**
    * Upload office logo
+   * @deprecated Use uploadOfficeLogo for the new endpoint
    */
   async uploadLogo(officeId: number, logoFile: File): Promise<UpdateOfficeResponse> {
     try {
@@ -444,6 +500,7 @@ export class OfficeService {
 
   /**
    * Upload social contracts (contrato social)
+   * @deprecated Use uploadOfficeContracts for the new endpoint
    */
   async uploadSocialContracts(
     officeId: number,

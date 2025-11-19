@@ -4,11 +4,11 @@
   import OabInformation from '../../components/forms_commons_wrappers/OabInformation.svelte';
   import PartnershipManagement from '../../components/forms_offices_wrappers/PartnershipManagement.svelte';
   import OfficeQuotesWrapper from '../../components/forms_offices_wrappers/OfficeQuotesWrapper.svelte';
-  import SocialContractCheckbox from '../../components/forms_offices/SocialContractCheckbox.svelte';
   import FormSection from '../../components/ui/FormSection.svelte';
   import Phone from '../../components/forms_commons/Phone.svelte';
   import Email from '../../components/forms_commons/Email.svelte';
   import Bank from '../../components/forms_commons/Bank.svelte';
+  import FileUpload from '../../components/forms_commons/FileUpload.svelte';
   import { newOfficeStore } from '../../stores/newOfficeStore.svelte';
   import { lawyerStore } from '../../stores/lawyerStore.svelte';
   import type { FormValidationConfig } from '../../schemas/new-office-form';
@@ -30,7 +30,17 @@
   let partnersWithProLabore = $state(newOfficeStore.formData.partnersWithProLabore);
   let proLaboreErrors = $state({});
 
-  // Sync partners back to store
+  // File states
+  let logoFiles = $state<File[]>([]);
+  
+  // Sync files back to store
+  $effect(() => {
+    // FileUpload component uses an array, but we only need one logo.
+    newOfficeStore.updateField('logoFile', logoFiles[0] || null);
+  });
+  
+  // O componente de contrato já usa um array, então pode ser bindeado diretamente.
+
   $effect(() => {
     newOfficeStore.updatePartners(partners);
   });
@@ -46,13 +56,11 @@
     newOfficeStore.updateField('oab_link', oabData.oab_link);
   });
 
-  // Initialize URL parameters
   function initializeUrlParams() {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       newOfficeParam = params.get('new_office') === 'true';
 
-      // Store all URL parameters for debug
       urlParams = {};
       for (const [key, value] of params.entries()) {
         urlParams[key] = value;
@@ -60,54 +68,37 @@
     }
   }
 
-  // Initialize on component mount
   initializeUrlParams();
 
-  // Initialize lawyer store once for all child components
   $effect(() => {
     if (!lawyerStore.initialized) {
       lawyerStore.init();
     }
-
     return () => {
-      // Cleanup on unmount if needed
       lawyerStore.cancel();
     };
   });
 
-  // Debug tracking with derived state (no effects to avoid loops)
-  let renderCount = $state(0);
-  let lastUpdate = $state('');
-
-  // Simple render tracking without effects
-  function updateRenderInfo() {
-    renderCount++;
-    lastUpdate = new Date().toISOString();
-  }
-
-  // Handle form submission
-  async function handleSubmit() {
+  // A lógica de preventDefault dentro da função continua correta
+  async function handleSubmit(event: Event) {
+    event.preventDefault(); 
     try {
-      updateRenderInfo();
       const result = await newOfficeStore.saveNewOffice();
       if (result) {
-        // Office created successfully
+        console.log('Office created successfully:', result);
       }
     } catch (error) {
       console.error('Error creating office:', error);
     }
   }
 
-  // Reset function with render tracking
   function resetForm() {
     newOfficeStore.resetForm();
-    updateRenderInfo();
+    logoFiles = []; // Limpa o array de logos
   }
 
-  // Handle validation configuration changes from wrapper
   function handleValidationConfigChange(config: FormValidationConfig) {
     newOfficeStore.setValidationConfig(config);
-    updateRenderInfo();
   }
 </script>
 
@@ -119,12 +110,8 @@
     {/if}
   </h1>
 
-  <form
-    onsubmit={(e) => {
-      e.preventDefault();
-      handleSubmit();
-    }}
-  >
+  <!-- CORREÇÃO FINAL AQUI: Usar 'onsubmit' (sintaxe Svelte 5 Runes) -->
+  <form onsubmit={handleSubmit}>
     <!-- Basic Information -->
     <OfficeBasicInformation
       bind:formData={newOfficeStore.formData}
@@ -134,7 +121,21 @@
       onValidationConfigChange={handleValidationConfigChange}
     />
 
-    <!-- Quote Configuration (Required for Partners) -->
+    <!-- Seção de Upload do Logo -->
+    <FormSection title="Logo do Escritório">
+      {#snippet children()}
+        <FileUpload
+          bind:files={logoFiles}
+          id="logo-upload"
+          labelText="Selecione o arquivo do logo"
+          accept="image/jpeg, image/png, image/gif, image/webp"
+          hint="Formatos aceitos: JPG, PNG, GIF, WEBP."
+          multiple={false}
+        />
+      {/snippet}
+    </FormSection>
+
+    <!-- Quote Configuration -->
     <OfficeQuotesWrapper
       bind:proportional={newOfficeStore.formData.proportional}
       bind:quoteValue={newOfficeStore.formData.quote_value}
@@ -150,16 +151,8 @@
       bind:cepValue={newOfficeStore.formData.address.zip_code}
       title="Endereço do Escritório"
       config={{
-        cep: {
-          id: 'office-cep',
-          labelText: 'CEP',
-          required: false
-        },
-        address: {
-          id: 'office-address',
-          required: false,
-          showRemoveButton: false
-        }
+        cep: { id: 'office-cep', labelText: 'CEP', required: false },
+        address: { id: 'office-address', required: false, showRemoveButton: false }
       }}
       useAPIValidation={true}
       showAddressInfo={false}
@@ -236,7 +229,7 @@
       {/snippet}
     </FormSection>
 
-    <!-- Partnership Management (Only enabled after quote configuration) -->
+    <!-- Partnership Management -->
     {#if newOfficeStore.isQuoteConfigValid}
       <PartnershipManagement
         bind:partners
@@ -263,10 +256,17 @@
       />
     {/if}
 
-    <!-- Social Contract -->
+    <!-- Social Contract Upload -->
     <FormSection title="Contrato Social">
       {#snippet children()}
-        <SocialContractCheckbox bind:checked={newOfficeStore.formData.create_social_contract} />
+        <FileUpload
+          bind:files={newOfficeStore.formData.contractFiles}
+          id="contract-upload"
+          labelText="Upload de Contrato Social"
+          accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          hint="Anexe um ou mais contratos em PDF ou DOCX."
+          multiple={true}
+        />
       {/snippet}
     </FormSection>
 
@@ -298,7 +298,7 @@
     {/if}
 
     {#if !newOfficeStore.isValid && newOfficeStore.isDirty}
-      <div class="alert alert-warning mt-4">
+     <div class="alert alert-warning mt-4">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="stroke-current shrink-0 h-6 w-6"
