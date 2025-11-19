@@ -13,10 +13,13 @@
 #  filename          :string           not null
 #  metadata          :jsonb
 #  s3_key            :string           not null
+#  transfer_metadata :jsonb
+#  transferred_at    :datetime
 #  uploaded_at       :datetime         not null
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #  attachable_id     :bigint           not null
+#  transferred_by_id :integer
 #  uploaded_by_id    :bigint
 #
 # Indexes
@@ -28,6 +31,9 @@
 #  index_file_metadata_on_expires_at               (expires_at)
 #  index_file_metadata_on_file_category            (file_category)
 #  index_file_metadata_on_s3_key                   (s3_key) UNIQUE
+#  index_file_metadata_on_transfer_metadata        (transfer_metadata) USING gin
+#  index_file_metadata_on_transferred_at           (transferred_at)
+#  index_file_metadata_on_transferred_by_id        (transferred_by_id)
 #  index_file_metadata_on_uploaded_at              (uploaded_at)
 #  index_file_metadata_on_uploaded_by_id           (uploaded_by_id)
 #
@@ -47,6 +53,9 @@ class FileMetadata < ApplicationRecord
   # Polymorphic association to any model
   belongs_to :attachable, polymorphic: true
   belongs_to :uploaded_by, class_name: 'UserProfile', optional: true
+
+  # Callbacks
+  before_destroy :delete_from_s3
 
   # Validations
   validates :s3_key, presence: true, uniqueness: true
@@ -92,5 +101,17 @@ class FileMetadata < ApplicationRecord
   # Helper method to get User from UserProfile
   def user
     uploaded_by&.user
+  end
+
+  private
+
+  # Delete file from S3 before destroying the record
+  def delete_from_s3
+    S3Manager.delete(self)
+  rescue StandardError => e
+    Rails.logger.error "Failed to delete file from S3: #{e.message}"
+    Rails.logger.error "File: #{s3_key}"
+    # Don't prevent deletion of database record even if S3 deletion fails
+    true
   end
 end

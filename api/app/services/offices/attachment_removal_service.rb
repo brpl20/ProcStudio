@@ -7,10 +7,10 @@ module Offices
     end
 
     def call(attachment_id)
-      attachment = find_attachment(attachment_id)
-      return attachment_not_found_error unless attachment
+      file_metadata = find_file_metadata(attachment_id)
+      return attachment_not_found_error unless file_metadata
 
-      remove_attachment_and_metadata(attachment)
+      remove_file(file_metadata)
       success_result(attachment_id)
     end
 
@@ -20,19 +20,18 @@ module Offices
 
     attr_reader :office
 
-    def find_attachment(attachment_id)
-      office.social_contracts.find(attachment_id)
-    rescue ActiveRecord::RecordNotFound
-      nil
+    def find_file_metadata(attachment_id)
+      # Find FileMetadata that belongs to this office
+      office.file_metadata.find_by(id: attachment_id)
     end
 
-    def remove_attachment_and_metadata(attachment)
-      remove_metadata(attachment)
-      attachment.purge
-    end
-
-    def remove_metadata(attachment)
-      office.attachment_metadata.find_by(blob_id: attachment.blob.id)&.destroy
+    def remove_file(file_metadata)
+      # Delete the FileMetadata record
+      # The before_destroy callback will handle S3 deletion
+      file_metadata.destroy
+    rescue StandardError => e
+      Rails.logger.error "Failed to remove file: #{e.message}"
+      raise
     end
 
     def attachment_not_found_error
