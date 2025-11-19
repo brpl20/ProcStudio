@@ -24,4 +24,20 @@ class Admin::UserPolicy < Admin::BasePolicy
   def restore?
     lawyer?
   end
+
+  def upload_avatar?
+    lawyer? || secretary?
+  end
+
+  def upload_attachment?
+    lawyer? || secretary?
+  end
+
+  def remove_attachment?
+    lawyer? || secretary?
+  end
+
+  def transfer_attachment?
+    lawyer?
+  end
 end

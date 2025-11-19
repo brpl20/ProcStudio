@@ -28,4 +28,16 @@ class Admin::WorkPolicy < Admin::BasePolicy
   def convert_documents_to_pdf?
     update?
   end
+
+  def upload_attachment?
+    update?
+  end
+
+  def remove_attachment?
+    update?
+  end
+
+  def transfer_attachment?
+    lawyer? || paralegal?
+  end
 end

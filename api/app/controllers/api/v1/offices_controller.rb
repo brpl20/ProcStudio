@@ -4,10 +4,11 @@ module Api
   module V1
     class OfficesController < BackofficeController # rubocop:disable Metrics/ClassLength
       include OfficeResponses
+      include AttachmentTransferable
 
       before_action :retrieve_office, only: [:show, :update]
       before_action :retrieve_deleted_office, only: [:restore]
-      before_action :perform_authorization, except: [:with_lawyers]
+      before_action :perform_authorization, except: [:with_lawyers, :upload_attachment, :upload_logo, :upload_contracts, :remove_attachment, :transfer_attachment]
 
       after_action :verify_authorized
 
@@ -116,6 +117,7 @@ module Api
 
       def upload_logo
         retrieve_office
+        authorize @office, :update?, policy_class: Admin::OfficePolicy
         service = Offices::LogoUploadService.new(@office, current_user)
 
         metadata_params = logo_metadata_params
@@ -135,6 +137,7 @@ module Api
 
       def upload_contracts
         retrieve_office
+        authorize @office, :update?, policy_class: Admin::OfficePolicy
         service = Offices::ContractsUploadService.new(@office, current_user)
 
         result = service.call(params[:contracts], contract_metadata_params)
@@ -148,8 +151,50 @@ module Api
         office_internal_error_response(e, 'Erro ao fazer upload dos contratos')
       end
 
+      def upload_attachment
+        retrieve_office
+        authorize @office, :update?, policy_class: Admin::OfficePolicy
+
+        unless params[:attachment].present?
+          return office_error_response(
+            'Arquivo não fornecido',
+            ['Attachment file is required']
+          )
+        end
+
+        begin
+          # Generic office attachment (not logo or social contract)
+          file_metadata = S3Manager.upload(
+            params[:attachment],
+            model: @office,
+            user_profile: current_user.user_profile,
+            metadata: {
+              description: params[:description],
+              document_date: params[:document_date],
+              file_type: 'office_attachment'
+            }
+          )
+
+          office_success_response(
+            'Anexo enviado com sucesso',
+            {
+              id: @office.id,
+              file_metadata_id: file_metadata.id,
+              filename: file_metadata.filename,
+              url: file_metadata.url,
+              byte_size: file_metadata.byte_size,
+              content_type: file_metadata.content_type
+            }
+          )
+        rescue StandardError => e
+          Rails.logger.error "Office attachment upload failed: #{e.message}"
+          office_internal_error_response(e, 'Erro ao fazer upload do anexo')
+        end
+      end
+
       def remove_attachment
         retrieve_office
+        authorize @office, :update?, policy_class: Admin::OfficePolicy
         service = Offices::AttachmentRemovalService.new(@office)
 
         result = service.call(params[:attachment_id])

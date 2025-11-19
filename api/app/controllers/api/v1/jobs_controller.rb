@@ -4,6 +4,7 @@ module Api
   module V1
     class JobsController < BackofficeController
       include JsonResponseConcern
+      include AttachmentTransferable
 
       before_action :retrieve_job, only: [:show, :update]
       before_action :perform_authorization, except: [:update]
@@ -70,7 +71,7 @@ module Api
       end
 
       def update
-        authorize @job, :update?, policy_class: Admin::WorkPolicy
+        authorize @job, :update?, policy_class: Admin::JobPolicy
 
         if @job.update(jobs_params)
           # Atualizar assignees se fornecidos
@@ -113,7 +114,7 @@ module Api
 
       def restore
         job = team_scoped(Job).with_deleted.find(params[:id])
-        authorize job, :restore?, policy_class: Admin::WorkPolicy
+        authorize job, :restore?, policy_class: Admin::JobPolicy
 
         if job.recover
           render json: {

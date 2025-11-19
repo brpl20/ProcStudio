@@ -24,4 +24,16 @@ class Admin::JobPolicy < Admin::BasePolicy
   def destroy?
     index?
   end
+
+  def upload_attachment?
+    index?
+  end
+
+  def remove_attachment?
+    index?
+  end
+
+  def transfer_attachment?
+    lawyer? || paralegal?
+  end
 end

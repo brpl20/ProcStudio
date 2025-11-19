@@ -165,6 +165,23 @@ class S3Manager
     S3Service.download_stream(file_metadata.s3_key, &block)
   end
 
+  # Move a file within S3 (copy and delete)
+  def move_file(from:, to:)
+    Rails.logger.info "Moving S3 file from #{from} to #{to}"
+
+    # Copy the file to new location
+    S3Service.copy_object(from, to)
+
+    # Delete the original file
+    S3Service.delete(from)
+
+    Rails.logger.info "Successfully moved S3 file from #{from} to #{to}"
+    true
+  rescue StandardError => e
+    Rails.logger.error "Failed to move S3 file: #{e.message}"
+    raise FileOperationError, "Failed to move file: #{e.message}"
+  end
+
   private
 
   def calculate_checksum(file)

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_17_215719) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_19_184742) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -243,6 +243,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_17_215719) do
     t.datetime "expires_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "transferred_at"
+    t.integer "transferred_by_id"
+    t.jsonb "transfer_metadata"
     t.index ["attachable_type", "attachable_id", "file_category"], name: "index_file_metadata_on_attachable_and_category"
     t.index ["attachable_type", "attachable_id"], name: "index_file_metadata_on_attachable"
     t.index ["checksum"], name: "index_file_metadata_on_checksum"
@@ -250,6 +253,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_17_215719) do
     t.index ["expires_at"], name: "index_file_metadata_on_expires_at"
     t.index ["file_category"], name: "index_file_metadata_on_file_category"
     t.index ["s3_key"], name: "index_file_metadata_on_s3_key", unique: true
+    t.index ["transfer_metadata"], name: "index_file_metadata_on_transfer_metadata", using: :gin
+    t.index ["transferred_at"], name: "index_file_metadata_on_transferred_at"
+    t.index ["transferred_by_id"], name: "index_file_metadata_on_transferred_by_id"
     t.index ["uploaded_at"], name: "index_file_metadata_on_uploaded_at"
     t.index ["uploaded_by_id"], name: "index_file_metadata_on_uploaded_by_id"
   end
