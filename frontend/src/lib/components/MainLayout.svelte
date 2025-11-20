@@ -35,16 +35,16 @@
           <a
             href="/"
             onclick={(e) => {
- e.preventDefault(); router.navigate('/'); closeMobileMenu();
-}}
+              e.preventDefault();
+              router.navigate('/');
+              closeMobileMenu();
+            }}
             class="flex items-center group"
           >
-            <div class="text-3xl font-bold bg-gradient-to-r from-[#01013D] to-[#0277EE] bg-clip-text text-transparent">
-              <img
-                src={logoProcStudio}
-                alt="Logotipo do ProcStudio"
-              class="h-14 w-auto"
-              />
+            <div
+              class="text-3xl font-bold bg-gradient-to-r from-[#01013D] to-[#0277EE] bg-clip-text text-transparent"
+            >
+              <img src={logoProcStudio} alt="Logotipo do ProcStudio" class="h-14 w-auto" />
             </div>
           </a>
         </div>
@@ -55,17 +55,22 @@
             <a
               href="/login"
               onclick={(e) => {
- e.preventDefault(); router.navigate('/login');
-}}
-              class="px-6 py-2.5 text-[#01013D] font-semibold rounded-lg hover:bg-[#eef0ef] transition-all duration-300 {currentPath === '/login' ? 'bg-[#eef0ef]' : ''}"
+                e.preventDefault();
+                router.navigate('/login');
+              }}
+              class="px-6 py-2.5 text-[#01013D] font-semibold rounded-lg hover:bg-[#eef0ef] transition-all duration-300 {currentPath ===
+              '/login'
+                ? 'bg-[#eef0ef]'
+                : ''}"
             >
               Login
             </a>
             <a
               href="/register"
               onclick={(e) => {
- e.preventDefault(); router.navigate('/register');
-}}
+                e.preventDefault();
+                router.navigate('/register');
+              }}
               class="ml-2 px-6 py-2.5 bg-gradient-to-r from-[#0277EE] to-[#01013D] text-white font-semibold rounded-lg hover:shadow-lg hover:scale-105 transition-all duration-300"
             >
               Cadastrar
@@ -74,18 +79,26 @@
             <a
               href="/dashboard"
               onclick={(e) => {
- e.preventDefault(); router.navigate('/dashboard');
-}}
-              class="px-6 py-2.5 text-[#01013D] font-semibold rounded-lg hover:bg-[#eef0ef] transition-all duration-300 {currentPath === '/dashboard' ? 'bg-[#eef0ef]' : ''}"
+                e.preventDefault();
+                router.navigate('/dashboard');
+              }}
+              class="px-6 py-2.5 text-[#01013D] font-semibold rounded-lg hover:bg-[#eef0ef] transition-all duration-300 {currentPath ===
+              '/dashboard'
+                ? 'bg-[#eef0ef]'
+                : ''}"
             >
               Dashboard
             </a>
             <a
               href="/teams"
               onclick={(e) => {
- e.preventDefault(); router.navigate('/teams');
-}}
-              class="px-6 py-2.5 text-[#01013D] font-semibold rounded-lg hover:bg-[#eef0ef] transition-all duration-300 {currentPath === '/teams' ? 'bg-[#eef0ef]' : ''}"
+                e.preventDefault();
+                router.navigate('/teams');
+              }}
+              class="px-6 py-2.5 text-[#01013D] font-semibold rounded-lg hover:bg-[#eef0ef] transition-all duration-300 {currentPath ===
+              '/teams'
+                ? 'bg-[#eef0ef]'
+                : ''}"
             >
               Teams
             </a>
@@ -105,12 +118,7 @@
             class="inline-flex items-center justify-center p-2 rounded-lg text-[#01013D] hover:bg-[#eef0ef] transition-colors duration-300"
             aria-expanded={mobileMenuOpen}
           >
-            <svg
-              class="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               {#if mobileMenuOpen}
                 <path
                   stroke-linecap="round"
@@ -139,17 +147,24 @@
               <a
                 href="/login"
                 onclick={(e) => {
- e.preventDefault(); router.navigate('/login'); closeMobileMenu();
-}}
-                class="px-4 py-3 text-[#01013D] font-semibold rounded-lg hover:bg-[#eef0ef] transition-all duration-300 {currentPath === '/login' ? 'bg-[#eef0ef]' : ''}"
+                  e.preventDefault();
+                  router.navigate('/login');
+                  closeMobileMenu();
+                }}
+                class="px-4 py-3 text-[#01013D] font-semibold rounded-lg hover:bg-[#eef0ef] transition-all duration-300 {currentPath ===
+                '/login'
+                  ? 'bg-[#eef0ef]'
+                  : ''}"
               >
                 Login
               </a>
               <a
                 href="/register"
                 onclick={(e) => {
- e.preventDefault(); router.navigate('/register'); closeMobileMenu();
-}}
+                  e.preventDefault();
+                  router.navigate('/register');
+                  closeMobileMenu();
+                }}
                 class="px-4 py-3 bg-gradient-to-r from-[#0277EE] to-[#01013D] text-white font-semibold rounded-lg text-center hover:shadow-lg transition-all duration-300"
               >
                 Cadastrar
@@ -158,26 +173,37 @@
               <a
                 href="/dashboard"
                 onclick={(e) => {
- e.preventDefault(); router.navigate('/dashboard'); closeMobileMenu();
-}}
-                class="px-4 py-3 text-[#01013D] font-semibold rounded-lg hover:bg-[#eef0ef] transition-all duration-300 {currentPath === '/dashboard' ? 'bg-[#eef0ef]' : ''}"
+                  e.preventDefault();
+                  router.navigate('/dashboard');
+                  closeMobileMenu();
+                }}
+                class="px-4 py-3 text-[#01013D] font-semibold rounded-lg hover:bg-[#eef0ef] transition-all duration-300 {currentPath ===
+                '/dashboard'
+                  ? 'bg-[#eef0ef]'
+                  : ''}"
               >
                 Dashboard
               </a>
               <a
                 href="/teams"
                 onclick={(e) => {
- e.preventDefault(); router.navigate('/teams'); closeMobileMenu();
-}}
-                class="px-4 py-3 text-[#01013D] font-semibold rounded-lg hover:bg-[#eef0ef] transition-all duration-300 {currentPath === '/teams' ? 'bg-[#eef0ef]' : ''}"
+                  e.preventDefault();
+                  router.navigate('/teams');
+                  closeMobileMenu();
+                }}
+                class="px-4 py-3 text-[#01013D] font-semibold rounded-lg hover:bg-[#eef0ef] transition-all duration-300 {currentPath ===
+                '/teams'
+                  ? 'bg-[#eef0ef]'
+                  : ''}"
               >
                 Teams
               </a>
               <button
                 class="px-4 py-3 text-[#01013D] font-semibold rounded-lg border-2 border-[#01013D] hover:bg-[#01013D] hover:text-white transition-all duration-300 text-left"
                 onclick={() => {
- handleLogout(); closeMobileMenu();
-}}
+                  handleLogout();
+                  closeMobileMenu();
+                }}
               >
                 Logout
               </button>
@@ -200,15 +226,15 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
           <!-- Brand -->
           <div class="space-y-4">
-            <h3 class="text-3xl font-bold bg-gradient-to-r from-[#01013D] to-[#0277EE] bg-clip-text text-transparent">
+            <h3
+              class="text-3xl font-bold bg-gradient-to-r from-[#01013D] to-[#0277EE] bg-clip-text text-transparent"
+            >
               {WebsiteName}
             </h3>
             <p class="text-gray-600 text-lg leading-relaxed">
-              Professional Resource Center API Platform
+              Sistema de gestão de escritórios de advocacia.
             </p>
-            <p class="text-sm text-gray-500">
-              Transformando a gestão jurídica com tecnologia de ponta
-            </p>
+            <p class="text-sm text-gray-500">Tecnologia por uma vida melhor</p>
           </div>
 
           <!-- Navigation -->
@@ -219,11 +245,14 @@
                 <a
                   href="/"
                   onclick={(e) => {
- e.preventDefault(); router.navigate('/');
-}}
+                    e.preventDefault();
+                    router.navigate('/');
+                  }}
                   class="text-gray-600 hover:text-[#0277EE] transition-colors duration-300 flex items-center group"
                 >
-                  <span class="w-1.5 h-1.5 bg-[#0277EE] rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                  <span
+                    class="w-1.5 h-1.5 bg-[#0277EE] rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                  ></span>
                   Home
                 </a>
               </li>
@@ -231,11 +260,14 @@
                 <a
                   href="/dashboard"
                   onclick={(e) => {
- e.preventDefault(); router.navigate('/dashboard');
-}}
+                    e.preventDefault();
+                    router.navigate('/dashboard');
+                  }}
                   class="text-gray-600 hover:text-[#0277EE] transition-colors duration-300 flex items-center group"
                 >
-                  <span class="w-1.5 h-1.5 bg-[#0277EE] rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                  <span
+                    class="w-1.5 h-1.5 bg-[#0277EE] rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                  ></span>
                   Dashboard
                 </a>
               </li>
@@ -243,12 +275,15 @@
                 <a
                   href="/teams"
                   onclick={(e) => {
- e.preventDefault(); router.navigate('/teams');
-}}
+                    e.preventDefault();
+                    router.navigate('/teams');
+                  }}
                   class="text-gray-600 hover:text-[#0277EE] transition-colors duration-300 flex items-center group"
                 >
-                  <span class="w-1.5 h-1.5 bg-[#0277EE] rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                  Teams
+                  <span
+                    class="w-1.5 h-1.5 bg-[#0277EE] rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                  ></span>
+                  Times
                 </a>
               </li>
             </ul>
@@ -259,15 +294,40 @@
             <h4 class="text-lg font-bold text-[#01013D] mb-4">Contato</h4>
             <ul class="space-y-3 text-gray-600">
               <li class="flex items-center">
-                <svg class="w-5 h-5 mr-2 text-[#0277EE]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                <svg
+                  class="w-5 h-5 mr-2 text-[#0277EE]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                  ></path>
                 </svg>
                 contato@procstudio.com
               </li>
               <li class="flex items-center">
-                <svg class="w-5 h-5 mr-2 text-[#0277EE]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <svg
+                  class="w-5 h-5 mr-2 text-[#0277EE]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                  ></path>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                  ></path>
                 </svg>
                 Brasil
               </li>
@@ -277,7 +337,8 @@
 
         <div class="border-t border-gray-200 mt-12 pt-8 text-center">
           <p class="text-gray-500 text-sm">
-            © {new Date().getFullYear()} {WebsiteName}. Todos os direitos reservados.
+            © {new Date().getFullYear()}
+            {WebsiteName}. Todos os direitos reservados.
           </p>
         </div>
       </div>
