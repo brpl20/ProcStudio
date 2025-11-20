@@ -150,7 +150,6 @@
   <div class="drawer lg:drawer-open">
     <input id="admin-drawer" type="checkbox" class="drawer-toggle" />
     <div class="drawer-content flex flex-col min-h-screen bg-[#eef0ef]">
-      <!-- Floating toggle button for desktop when drawer is closed -->
       {#if !isDrawerOpen && isUserToggled}
         <button
           class="btn btn-circle bg-gradient-to-r from-[#0277EE] to-[#01013D] text-white fixed top-6 left-6 z-50 hidden lg:flex hover:shadow-lg shadow-[#0277EE]/30"
@@ -163,22 +162,17 @@
         </button>
       {/if}
 
-      <!-- Top Bar -->
       <TopBar showMenuButton={true} />
 
-      <!-- Breadcrumbs -->
       <Breadcrumbs />
 
-      <!-- Main Content -->
       <div class="flex-1 container px-6 lg:px-12 py-6">
         {@render children()}
       </div>
 
-      <!-- Footer -->
       <Footer />
     </div>
 
-    <!-- Sidebar -->
     <div class="drawer-side">
       <label for="admin-drawer" class="drawer-overlay"></label>
 
@@ -186,7 +180,6 @@
         isUserToggled && !isDrawerOpen ? 'w-20' : 'w-80'
       }`}>
 
-        <!-- Sidebar Header -->
         <div class="border-b border-gray-100 p-4 flex items-center justify-between gap-2">
           {#if !(isUserToggled && !isDrawerOpen)}
             <a
@@ -204,7 +197,6 @@
             </a>
           {/if}
 
-          <!-- Desktop toggle button -->
           <button
             class="btn btn-ghost btn-sm hidden lg:flex ml-auto"
             onclick={toggleDrawer}
@@ -218,7 +210,6 @@
           </button>
 
           {#if !(isUserToggled && !isDrawerOpen)}
-            <!-- Mobile close button -->
             <label for="admin-drawer" class="lg:hidden btn btn-ghost btn-sm">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -227,7 +218,6 @@
           {/if}
         </div>
 
-        <!-- Menu Items -->
         <nav class="flex-1 px-2 py-4 overflow-y-auto">
           <ul class="space-y-1">
             {#each menuItems as item (item.path)}
@@ -257,7 +247,6 @@
           </ul>
         </nav>
 
-        <!-- User Menu Section -->
         {#if isAuthenticated}
           <div class="border-t border-gray-100 p-2 relative">
             <button
@@ -268,15 +257,17 @@
               }`}
             >
               <div class="avatar placeholder flex-shrink-0">
-                <div class="bg-gradient-to-br from-[#0277EE] to-[#01013D] text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-sm">
+                <div class="bg-gradient-to-br from-[#0277EE] to-[#01013D] text-white rounded-full w-10 h-10">
                   {#if userAvatarUrl}
                     <img
                       src={userAvatarUrl}
                       alt="Avatar"
-                      class="rounded-full w-10 h-10 object-cover"
+                      class="rounded-full w-full h-full object-cover"
                     />
                   {:else}
-                    {userInitials}
+                    <span class="flex items-center justify-center w-full h-full font-bold text-sm">
+                      {userInitials}
+                    </span>
                   {/if}
                 </div>
               </div>
@@ -303,23 +294,23 @@
               {/if}
             </button>
 
-            <!-- User Dropdown Menu -->
             {#if isUserDropdownOpen}
               <div class="absolute bottom-full left-2 right-2 mb-2 bg-white rounded-xl shadow-xl border border-gray-100 z-50 animate-in fade-in slide-in-from-bottom-2 duration-200">
                 <ul class="w-full py-1">
-                  <!-- User Info -->
                   <li class="px-4 py-3 border-b border-gray-100">
                     <div class="flex items-center gap-3">
                       <div class="avatar placeholder">
-                        <div class="bg-gradient-to-br from-[#0277EE] to-[#01013D] text-white rounded-full w-10 h-10 flex items-center justify-center font-bold">
+                        <div class="bg-gradient-to-br from-[#0277EE] to-[#01013D] text-white rounded-full w-10 h-10">
                           {#if userAvatarUrl}
                             <img
                               src={userAvatarUrl}
                               alt="Avatar"
-                              class="rounded-full w-10 h-10 object-cover"
+                              class="rounded-full w-full h-full object-cover"
                             />
                           {:else}
-                            {userInitials}
+                            <span class="flex items-center justify-center w-full h-full font-bold text-sm">
+                              {userInitials}
+                            </span>
                           {/if}
                         </div>
                       </div>
@@ -338,7 +329,6 @@
                     </li>
                   {/if}
 
-                  <!-- Profile -->
                   <li>
                     <button
                       class="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-[#eef0ef] hover:text-[#0277EE] transition-colors flex items-center gap-2"
@@ -351,7 +341,6 @@
                     </button>
                   </li>
 
-                  <!-- Help & Support -->
                   <li>
                     <button class="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-[#eef0ef] hover:text-[#0277EE] transition-colors flex items-center gap-2">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -370,7 +359,6 @@
                     </button>
                   </li>
 
-                  <!-- Logout -->
                   <li class="border-t border-gray-100">
                     <button
                       class="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2 font-medium"

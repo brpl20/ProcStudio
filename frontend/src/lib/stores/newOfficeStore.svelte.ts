@@ -1,8 +1,3 @@
-/**
- * New Office Store - Complete implementation for office creation
- * Manages form state and API interactions with full data structure
- */
-
 import api from '../api';
 import type { Office, CreateOfficeRequest, PartnerFormData } from '../api/types/office.types';
 import type { NewOfficeFormData, NewOfficeFormState, FormValidationConfig } from '../schemas/new-office-form';

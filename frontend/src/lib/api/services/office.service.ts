@@ -1,8 +1,3 @@
-/**
- * Office Service
- * Handles all office related API operations
- */
-
 import type { HttpClient } from '../utils/http-client';
 import type {
   Office,
