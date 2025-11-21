@@ -288,27 +288,29 @@
         </div>
     {/if}
 
-    <div class="bg-white rounded-xl shadow-sm border border-[#eef0ef] overflow-hidden">
-        <div class="bg-gradient-to-r from-[#01013D] to-[#01013D] px-6 py-4">
-            <div class="flex items-center gap-3">
-            <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-            </div>
-            <h3 class="text-lg font-semibold text-white">Contrato Social</h3>
-             <span class="ml-auto text-xs text-white/70 bg-white/20 px-3 py-1 rounded-full">Opcional</span>
-            </div>
-        </div>
-        <div class="p-6">
-            <FileUpload
-                bind:files={newOfficeStore.formData.contractFiles}
-                id="contract-upload"
-                labelText="Upload de Contrato Social"
-                accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                hint="Anexe um ou mais contratos em PDF ou DOCX."
-                multiple={true}
-            />
-        </div>
-    </div>
+    {#if !newOfficeParam}
+      <div class="bg-white rounded-xl shadow-sm border border-[#eef0ef] overflow-hidden">
+          <div class="bg-gradient-to-r from-[#01013D] to-[#01013D] px-6 py-4">
+              <div class="flex items-center gap-3">
+              <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+              </div>
+              <h3 class="text-lg font-semibold text-white">Contrato Social</h3>
+              <span class="ml-auto text-xs text-white/70 bg-white/20 px-3 py-1 rounded-full">Opcional</span>
+              </div>
+          </div>
+          <div class="p-6">
+              <FileUpload
+                  bind:files={newOfficeStore.formData.contractFiles}
+                  id="contract-upload"
+                  labelText="Upload de Contrato Social"
+                  accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                  hint="Anexe um ou mais contratos em PDF ou DOCX."
+                  multiple={true}
+              />
+          </div>
+      </div>
+    {/if}
   </div>
 
   <div class="flex justify-end gap-3 pt-6 border-t border-[#eef0ef]">
